@@ -1,7 +1,7 @@
 /*
  * @Author: dejavuwdh
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-08-09 17:52:32
+ * @LastEditTime: 2024-08-20 11:15:23
  * @Description:
  *
  *
@@ -14,6 +14,7 @@
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
 #include "AE_ROMPATCH.H"
+
 #ifdef AE103
 // 填入绝对地址
 #define PATCH0_ADDR 0x10084

@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-08-19 18:47:32
+ * @LastEditTime: 2024-08-20 11:16:08
  * @Description:
  *
  *
@@ -37,7 +37,7 @@ volatile sDynamicFlashInfo EXT_FLASH_DYNAMIC_INFO = { 0 };
 volatile sFixedFlashInfo *FLASH_FIX_INFO_PTR = NULL;
 volatile sDynamicFlashInfo *FLASH_DYNAMIC_INFO_PTR = NULL;
 
-#if 1
+#if (!GLE01)
 const char FIX_FIRMWARE_ID[] = "SPK32AE103\0";
 const char DYN_FIRMWARE_ID[] = "SPK32 AE103\036EC\003\0";
 #else

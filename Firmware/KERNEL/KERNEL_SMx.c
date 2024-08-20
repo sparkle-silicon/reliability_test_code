@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-06-13 18:29:36
+ * @LastEditTime: 2024-08-20 11:17:14
  * @Description: This is about the  national crypto algorithm implementation
  *
  *
@@ -13,8 +13,11 @@
  * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
-#if 1
 #include <KERNEL_SMx.H>
+
+#if !GLE01
+
+#if 1
 #ifdef AE103
 //SM2 elipse
 #if 1
@@ -628,7 +631,6 @@ ssign SM2_signer = {
 };
 
 #else
-#include <KERNEL_SMx.H>
 #ifdef AE103
 static DWORD SMx_Change(DWORD data)
 {
@@ -1807,4 +1809,5 @@ ssign SM2_signer = {
     .s[6] = 0x024143a4,
     .s[7] = 0xae94050c,
 };
+#endif
 #endif
