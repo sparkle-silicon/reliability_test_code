@@ -1851,7 +1851,10 @@
 // #define CAN3_TXB12 CAN3_REG(CAN_TXB12_OFFECT)
 /***********************************SPIM  Register Set**********************************/
 #if defined(AE103)
+#define SPIM_BASE_ADDR 0x7800UL
+#elif defined(GLE01)
 #define SPIM_BASE_ADDR 0x6000UL
+#endif
 #define SPIM_REG_SIZE DEC8
 #define SPIM_CTRL0_OFFSET HEX00
 #define SPIM_CTRL1_OFFSET HEX01
@@ -1883,7 +1886,7 @@
 #define SPIM_DA1 SPIM_REG(SPIM_DA1_OFFSET)
 #define SPIM_CSN0 SPIM_REG(SPIM_CSN0_OFFSET)
 #define SPIM_CSN1 SPIM_REG(SPIM_CSN1_OFFSET)
-#endif
+
 /***********************************ROM  Register Set**********************************/
 #if (defined(AE103))
 #define PECI_BASE_ADDR 0x7C00UL

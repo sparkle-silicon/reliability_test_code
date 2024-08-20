@@ -1,6 +1,6 @@
 TARGET ?= ec_main.elf			# elf file name ec_main
 # See LICENSE for license details.
-DOWNLOAD ?= flash					#download flash
+DOWNLOAD ?= crypto					#download flash
 SIZE:=riscv-nuclei-elf-size
 CC:=riscv-nuclei-elf-gcc 
 OBJDUMP:=riscv-nuclei-elf-objdump 

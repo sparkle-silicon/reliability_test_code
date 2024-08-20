@@ -19,7 +19,7 @@ void ROM_PATCH(void)
 {
     uint32_t PATCH_PTR = ROM_PATCH_ADDR + PATCH0_OFESET;
     volatile spatch_typdef *PATCH_INFO = FLASH_DYNAMIC_INFO_PTR->PATCH;
-    for(size_t count = 0; count < 8; count++)
+    for (size_t count = 0; count < 8; count++)
     {
         REG8(PATCH_PTR + PATCH_ADDRL_OFFSET) = PATCH_INFO[count].addrl;
         REG8(PATCH_PTR + PATCH_ADDRH_OFFSET) = PATCH_INFO[count].addrh;
@@ -27,7 +27,7 @@ void ROM_PATCH(void)
         REG8(PATCH_PTR + PATCH_DATA1_OFFSET) = PATCH_INFO[count].data.byte[1];
         REG8(PATCH_PTR + PATCH_DATA2_OFFSET) = PATCH_INFO[count].data.byte[2];
         REG8(PATCH_PTR + PATCH_DATA3_OFFSET) = PATCH_INFO[count].data.byte[3];
-        if(PATCH_INFO[count].last)
+        if (PATCH_INFO[count].last)
         {
             PATCH_PTR += 6;
         }
@@ -59,10 +59,10 @@ void MODULE_INIT(uint32_t *looplimit)
     // 2. Initialize APB CLOCK BUS ENABLE
     apb_MoudleClock_EN;
     // 4. Initialize DEBUG PRINTF
-    if(FLASH_FIX_INFO_PTR->DEBUG_PRINTF_Enable && FLASH_FIX_INFO_PTR->UART_Enable)
+    if (FLASH_FIX_INFO_PTR->DEBUG_PRINTF_Enable && FLASH_FIX_INFO_PTR->UART_Enable)
     {
         uart_channel = FLASH_FIX_INFO_PTR->Uartn_Print_SWitch; // ^ 0b10;
-        if(!((uart_channel == UART1_CHANNEL) && ((SYSCTL_PIO5_CFG & (0b1111U << 28)) == (0b1111U << 28))))
+        if (!((uart_channel == UART1_CHANNEL) && ((SYSCTL_PIO5_CFG & (0b1111U << 28)) == (0b1111U << 28))))
         {
             u_int32_t baud = (FLASH_FIX_INFO_PTR->DEBUG_BAUD_RATE + 1) * 3200;
             u_int32_t lcr = (FLASH_FIX_INFO_PTR->DEBUG_PRINTF_DLS);
@@ -73,23 +73,24 @@ void MODULE_INIT(uint32_t *looplimit)
             PRINTF_FIFO = UARTA_BASE_ADDR + (0x400 * (uart_channel ^ 0b10));
             baud = UART_Init(uart_channel, baud, lcr);
             printf("UART%x Init done\n", ((uart_channel & 0b10) ? uart_channel + 8 : uart_channel));
-            if(!FLASH_FIX_INFO_PTR->DEBUG_LEVEL)
+            if (!FLASH_FIX_INFO_PTR->DEBUG_LEVEL)
             {
                 printf("BAUD = %d\n", baud);
             }
-
         }
-        else { PRINTF_FIFO = *(volatile uint32_t *)NULL; }
-        if(!FLASH_FIX_INFO_PTR->DEBUG_LEVEL)
+        else
+        {
+            PRINTF_FIFO = *(volatile uint32_t *)NULL;
+        }
+        if (!FLASH_FIX_INFO_PTR->DEBUG_LEVEL)
         {
             printf("CHIP FREQ %d Hz\n", CHIP_CLOCK_INT_HIGH / (SYSCTL_CLKDIV_OSC80M + 1));
         }
-
     }
     // 5. Initialize DEBUGGER FUNCTION
-    if(FLASH_FIX_INFO_PTR->DEBUGGER_Enable)
+    if (FLASH_FIX_INFO_PTR->DEBUGGER_Enable)
     {
-        if(FLASH_FIX_INFO_PTR->DEBUGGER_UART_Enable && (SYSCTL_PIO5_CFG & (0b1111U << 28)) != (0b1111U << 28))
+        if (FLASH_FIX_INFO_PTR->DEBUGGER_UART_Enable && (SYSCTL_PIO5_CFG & (0b1111U << 28)) != (0b1111U << 28))
         {
             u_int32_t baud = (FLASH_FIX_INFO_PTR->DEBUG_BAUD_RATE + 1) * 3200;
             u_int32_t lcr = (FLASH_FIX_INFO_PTR->DEBUGGER_DLS);
@@ -97,7 +98,7 @@ void MODULE_INIT(uint32_t *looplimit)
             lcr |= (FLASH_FIX_INFO_PTR->DEBUGGER_PE << 3);
             lcr |= (FLASH_FIX_INFO_PTR->DEBUGGER_EPE << 4);
             lcr &= 0x1f;
-            if(PRINTF_FIFO != UART1_CHANNEL)
+            if (PRINTF_FIFO != UART1_CHANNEL)
             {
                 DEBUGGER_FIFO = UART1_BASE_ADDR;
                 baud = UART_Init(UART1_CHANNEL, baud, lcr);
@@ -108,14 +109,14 @@ void MODULE_INIT(uint32_t *looplimit)
                 DEBUGGER_FIFO = PRINTF_FIFO;
                 printf("This port will be used together because of the debugger and printf redirection conflict\n");
             }
-            if(!FLASH_FIX_INFO_PTR->DEBUG_LEVEL)
+            if (!FLASH_FIX_INFO_PTR->DEBUG_LEVEL)
             {
                 printf("BAUD = %d\n", baud);
             }
         }
-        if(FLASH_FIX_INFO_PTR->DEBUGGER_SMBUS_Enable)
+        if (FLASH_FIX_INFO_PTR->DEBUGGER_SMBUS_Enable)
         {
-            //code
+            // code
             printf("DEBUGEER SMBUS NO USED,READ CLOCK %dk\n", FLASH_FIX_INFO_PTR->SMBUS_CLOCK_Switch ? 100 : 400);
         }
     }
@@ -143,15 +144,16 @@ void Init(void)
     PRINTF_FIFO = UART0_BASE_ADDR;
     UART_Init(0, 115200, 3);
     printf("UART0 Init done\n");
-    SELECT_FLASH(INTERNAL_FLASH, QUAD_FLASH, NOPIN_FLASH, NOPIN_FLASH, looplimit);
+    // SELECT_FLASH(INTERNAL_FLASH, QUAD_FLASH, NOPIN_FLASH, NOPIN_FLASH, looplimit);
+    SELECT_FLASH(INTERNAL_FLASH, DUAL_FLASH, NOPIN_FLASH, NOPIN_FLASH, looplimit);
     goto * 0x80084;
 #else
     { // 初始化信息
         register uint64_t mcycle0, mcycle1;
         mcycle0 = READ_CSR_MCYCLE_VAR; // 保存时钟周期起始值
-        nop;						   // 等待时钟周期
+        nop;                           // 等待时钟周期
         mcycle1 = READ_CSR_MCYCLE_VAR; // 判断是否出现时钟周期变化
-        if(mcycle0 == mcycle1)
+        if (mcycle0 == mcycle1)
         {
             asm volatile("csrci 0x320, 0x5\n");
         } // 正常来说不可能，因此再开一次，无论成功与否都不再管理（假设该模块损坏）
@@ -159,11 +161,11 @@ void Init(void)
         // mcycle0 = READ_CSR_MCYCLE_VAR;
         // mcycle1 = READ_CSR_MCYCLE_VAR;
         ROM_CSR_MCYCLE_OVERHEAD = mcycle1 - mcycle0;
-        ROM_ERROR = 0;														   // error = 0
+        ROM_ERROR = 0;                                                       // error = 0
         looplimit = (CHIP_CLOCK_INT_HIGH / 15) / (SYSCTL_CLKDIV_OSC80M + 1); // 根据实际测试80M用20M频率需要64sec，因此需要除以16才能达到80M为1sec，20M为4sec，最高32sec
-        ROM_CNT = ROM_CNT_ROMREADY;											   // cnt = 1
+        ROM_CNT = ROM_CNT_ROMREADY;                                          // cnt = 1
         DEBUGGER_FIFO = PRINTF_FIFO = (volatile uint32_t)NULL;
-    #if ROM_DEBUG
+#if ROM_DEBUG
         { // debug临时
           // UART0 IOMUX
             SYSCTL_PIO1_CFG = (SYSCTL_PIO1_CFG & (0b1111 << 16)) | (0b1010 << 16);
@@ -186,7 +188,7 @@ void Init(void)
             UART0_IER = 0; // 不接收中断
             printf("SPK32AE103 ROM TestDebug Baud Rate = %d\n", freq / (divisor << 3));
             // printf("SPK32AE103 ROM MCYCLE OVERHEAD = %Ld\n", ROM_CSR_MCYCLE_OVERHEAD);
-            //校准timeout用
+            // 校准timeout用
             {
                 // uint64_t mcycle1 = READ_CSR_MCYCLE_VAR;
                 // for(volatile uint32_t counter = ROM_TIMEOUT; ((SPIF_READY & 0x1)) && counter; counter--);
@@ -194,7 +196,7 @@ void Init(void)
                 // uint64_t mcycle3 = READ_CSR_MCYCLE_VAR;
                 // printf("mcycle counter = %d\n", (mcycle2 - mcycle1 - (mcycle3 - mcycle2)));
             }
-            //测试flash写读
+            // 测试flash写读
             {
                 // SELECT_FLASH(EXTERNAL_FLASH, QUAD_FLASH, PIN5571_FLASH, PIN5571_FLASH);
                 // void *flash_addr = NULL;
@@ -221,31 +223,31 @@ void Init(void)
                 // }
             }
         }
-    #endif
+#endif
     }
     { // 第一步 获取flash信息
-    #if ROM_DEBUG
+#if ROM_DEBUG
         printf("Read Flash_Info Start\n");
-    #endif
+#endif
         {
             ROM_ERROR = READ_FLASH_INFO(looplimit);
-            if(ROM_ERROR == ROM_CNT_READ_INFO_ERROR)
+            if (ROM_ERROR == ROM_CNT_READ_INFO_ERROR)
             {
-            #if ROM_DEBUG
+#if ROM_DEBUG
                 {
                     printf("Read FLASH INFO ERROR\n");
                 }
-            #endif
+#endif
                 exit(ROM_ERROR); // goto debug
             }
         }
-        ROM_CNT = ROM_CNT_READ_INFO;//cnt = 2
+        ROM_CNT = ROM_CNT_READ_INFO; // cnt = 2
     }
     { // 第二步 模块功能使能
-    #if ROM_DEBUG
+#if ROM_DEBUG
         printf("Module Init Start\n");
-    #endif
-        if(EFUSE_DATA0 & BIT(16) && (!FLASH_FIX_INFO_PTR->PATCH_Disable) && (FLASH_DYNAMIC_INFO_PTR != NULL))
+#endif
+        if (EFUSE_DATA0 & BIT(16) && (!FLASH_FIX_INFO_PTR->PATCH_Disable) && (FLASH_DYNAMIC_INFO_PTR != NULL))
         {
             ROM_PATCH(); // debug
         }

@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-08-20 11:04:00
+ * @LastEditTime: 2024-08-16 15:30:20
  * @Description:
  *
  *
@@ -42,16 +42,11 @@ typedef enum FLASH_MODE
     QUAD_FLASH
 } SPIF_MODE;
 
-//默认时钟配置
-
-#define OSC_CLOCK_SWITCH 0           // 1（外部） 0（内部）
-#define CHIP_CLOCK_INT_LOW 32000     //
-#if GLE01
-#define CHIP_CLOCK_INT_HIGH 96000000 // 1(96) 2(48) 3(32M) 4（24）5（19.2）分频数（时钟）
-#else
-#define CHIP_CLOCK_INT_HIGH 80000000 // 1(80) 2(40) 3(26.6M) 4（20）5（38.4）分频数（时钟）
-#endif
-#define CHIP_CLOCK_EXT 32768         // 32000         // 1(96) 2(48) 3(32) 4（24）5（19.2）分频数（时钟）
+// 默认时钟配置
+#define OSC_CLOCK_SWITCH 0                                         // 1（外部） 0（内部）
+#define CHIP_CLOCK_INT_LOW 32000                                   //
+#define CHIP_CLOCK_INT_HIGH 96000000                               // 1(80) 2(40) 3(26.6M) 4（20）5（38.4）分频数（时钟）//192000000  // 1(192) 2(96) 3(64) 4（48）5（38.4）分频数（时钟）
+#define CHIP_CLOCK_EXT 32768                                       // 32000         // 1(96) 2(48) 3(32) 4（24）5（19.2）分频数（时钟）
 #define CHIP_CLOCK_SWITCH 4                                        // 1(192) 2(96) 3(64) 4（48）8（24）分频数（时钟）//2457600
 #define LOW_CHIP_CLOCK CHIP_CLOCK_INT_LOW                          // 32768
 #define HIGHT_CHIP_CLOCK (CHIP_CLOCK_INT_HIGH / CHIP_CLOCK_SWITCH) // 192M/CHIP_CLOCK_SWITCH
@@ -105,7 +100,6 @@ typedef enum FLASH_MODE
 #define SPIF_COMMAND_DUALIO_MID_DID 0x92
 #define SPIF_COMMAND_QUADIO_MID_DID 0x94
 
-
 #define ROM_Firmware_Reader 0x0
 #define ROM_NOFLASH 0x1
 #define ROM_NOFirmware 0x2
@@ -123,7 +117,7 @@ extern volatile uint32_t FLASH_CTRL;
 extern volatile uint32_t FLASH_ID;
 extern volatile uint32_t internal_flash_state; // 外部状态
 extern volatile uint32_t external_flash_state; // 内部状态
-extern volatile uint32_t external_flash_used;	// 使用外部flash
+extern volatile uint32_t external_flash_used;  // 使用外部flash
 
 extern volatile sFixedFlashInfo INT_FLASH_FIX_INFO;
 extern volatile sFixedFlashInfo EXT_FLASH_FIX_INFO;

@@ -128,9 +128,13 @@ void __weak Hook_1secEventA(void) // get all temp
     {
         printf("0x203B9:%x\n", *((VBYTE *)(0x203B9)));
         *((VBYTE *)(0x203B9)) = 0;
-        // Mailbox_Update_Function(0x3, 0x8000, 0x70800); // 发起mailbox更新
-        // Mailbox_Read_FLASHID();
-        // Mailbox_Read_EFUSE();
+        // Mailbox_FW_Extension_Trigger();
+        Mailbox_APB2_Source_Alloc_Trigger();
+
+        //  Mailbox_FW_Extension_Trigger();
+        //  Mailbox_Update_Function(0x3, 0x8000, 0x70800); // 发起mailbox更新
+        //  Mailbox_Read_FLASHID_Trigger();
+        //  Mailbox_Read_EFUSE_Trigger();
     }
 #endif
 }
@@ -154,52 +158,52 @@ extern void ADC_Cont_Sample_Init(uint8_t channelx, u_int8_t ADC_Databuffer_chann
 void __weak Hook_1secEventC(void) // update new rpm
 {
     RunTimeStamp++;
-    if(RunTimeStamp % 10 == 0)
+    if (RunTimeStamp % 10 == 0)
     {
-        //连续
-        // if(adc_cnt < 0)
-        //     adc_cnt = 0;
-        // ADC_Cont_Sample_Init(adc_cnt, 0, 0, mode_en);
-        // printf("ADC channel:%d\n", adc_cnt);
-        // adc_cnt++;
-        // if(adc_cnt > 11)
-        // {
-        //     adc_cnt = 0;
-        //     mode_en ^= 1;
-        // }
+        // 连续
+        //  if(adc_cnt < 0)
+        //      adc_cnt = 0;
+        //  ADC_Cont_Sample_Init(adc_cnt, 0, 0, mode_en);
+        //  printf("ADC channel:%d\n", adc_cnt);
+        //  adc_cnt++;
+        //  if(adc_cnt > 11)
+        //  {
+        //      adc_cnt = 0;
+        //      mode_en ^= 1;
+        //  }
 
-        //软件
-        // if(adc_cnt < 0)
-        //     adc_cnt = 0;
-        // mode_en &= 0x1;
-        // ADC_SW_Sample_Init(adc_cnt, 0, 0, mode_en);
-        // printf("ADC channel:%d mode:%d\n", adc_cnt, mode_en);
-        // printf("ADC Data:0x%x\n", ADC_SW_Sample(0));
-        // adc_cnt++;
-        // if(adc_cnt > 11)
-        // {
-        //     adc_cnt = 0;
-        //     mode_en ^= 1;
-        // }
+        // 软件
+        //  if(adc_cnt < 0)
+        //      adc_cnt = 0;
+        //  mode_en &= 0x1;
+        //  ADC_SW_Sample_Init(adc_cnt, 0, 0, mode_en);
+        //  printf("ADC channel:%d mode:%d\n", adc_cnt, mode_en);
+        //  printf("ADC Data:0x%x\n", ADC_SW_Sample(0));
+        //  adc_cnt++;
+        //  if(adc_cnt > 11)
+        //  {
+        //      adc_cnt = 0;
+        //      mode_en ^= 1;
+        //  }
 
-        //硬件
-        // if(adc_cnt<0)
-        //     adc_cnt=0;
-        // mode_en&=0x1;
-        // ADC_HW_Sample_Init(adc_cnt,0,0,mode_en,500);
-        // printf("ADC channel:%d mode:%d\n",adc_cnt,mode_en);
-        // adc_cnt++;
-        // if(adc_cnt >11)
-        // {
-        //     adc_cnt = 0;
-        //     mode_en^=1;
-        // }
+        // 硬件
+        //  if(adc_cnt<0)
+        //      adc_cnt=0;
+        //  mode_en&=0x1;
+        //  ADC_HW_Sample_Init(adc_cnt,0,0,mode_en,500);
+        //  printf("ADC channel:%d mode:%d\n",adc_cnt,mode_en);
+        //  adc_cnt++;
+        //  if(adc_cnt >11)
+        //  {
+        //      adc_cnt = 0;
+        //      mode_en^=1;
+        //  }
     }
-  	
-#if SUPPORT_FAN1||SUPPORT_FAN2
-    //FAN_LEV(FAN1_PWM_CHANNEL_SWITCH);
-    // FAN_Dynamic(FAN2_PWM_CHANNEL_SWITCH);
-    // FAN_PID(FAN1_PWM_CHANNEL_SWITCH);
+
+#if SUPPORT_FAN1 || SUPPORT_FAN2
+    // FAN_LEV(FAN1_PWM_CHANNEL_SWITCH);
+    //  FAN_Dynamic(FAN2_PWM_CHANNEL_SWITCH);
+    //  FAN_PID(FAN1_PWM_CHANNEL_SWITCH);
 #endif
 }
 //-----------------------------------------------------------------------------

@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-08-20 11:15:37
+ * @LastEditTime: 2024-08-08 16:55:09
  * @Description:
  *
  *
@@ -27,7 +27,7 @@
 
 // GLE01主系统相关控制宏
 #define GLE01 1                      // GLE01打开关闭
-#define FLASH_TO_IRAM0 0             // 打开crypto代码从flash搬运到IRAM0功能
+#define FLASH_TO_IRAM0 1             // 打开crypto代码从flash搬运到IRAM0功能
 #define MAILBOX_SMS_UPDATE_SUPPORT 1 // 打开4K SMS方式验证更新
 #define secure_area 0x80000          // 不能更新的安全区域 512K
 
@@ -78,7 +78,7 @@
 #define SUPPORT_BREATHING_LED 0        // LED
 // port80 &&pnp
 #define SUPPORT_LD_PNP 1           // 1:open logicdevice pnp  0:close pnp
-#define SUPPORT_LD_PNP_DEVBOARD 0 // 1:open logicdevice pnp when devboard  0:close pnp
+#define SUPPORT_LD_PNP_DEVBOARD 0  // 1:open logicdevice pnp when devboard  0:close pnp
 #define SUPPORT_8042DEBUG_OUTPUT 0 // 输出8042交互命令数据流到SRAM，必要时可以将这段内存打印出来观察
 #define SUPPORT_MEM_MALLOC 0       // 0 run mem_malloc 1 not run mem_malloc (if user it,can't user heap)
 
@@ -164,14 +164,14 @@
 #define FAN1_PWM_CHANNEL_SWITCH 4
 #define FAN2_PWM_CHANNEL_SWITCH 0
 #if defined(AE103)
-#define OSC_CLOCK_SWITCH 0           // 1（外部） 0（内部）
-#define CHIP_CLOCK_INT_LOW 32000     //
+#define OSC_CLOCK_SWITCH 0       // 1（外部） 0（内部）
+#define CHIP_CLOCK_INT_LOW 32000 //
 #if GLE01
 #define CHIP_CLOCK_INT_HIGH 96000000 // 1(80) 2(40) 3(26.6M) 4（20）5（38.4）分频数（时钟）//192000000  // 1(192) 2(96) 3(64) 4（48）5（38.4）分频数（时钟）
-#else 
+#else
 #define CHIP_CLOCK_INT_HIGH 80000000 // 1(80) 2(40) 3(26.6M) 4（20）5（38.4）分频数（时钟）//192000000  // 1(192) 2(96) 3(64) 4（48）5（38.4）分频数（时钟）
 #endif
-#define CHIP_CLOCK_EXT 32768         // 32000         // 1(96) 2(48) 3(32) 4（24）5（19.2）分频数（时钟）
+#define CHIP_CLOCK_EXT 32768 // 32000         // 1(96) 2(48) 3(32) 4（24）5（19.2）分频数（时钟）
 #if (OSC_CLOCK_SWITCH == 1)
 #define CHIP_CLOCK_SWITCH 4 // 1(96) 2(48) 3(32) 4（24）5（19.2）分频数（时钟）//2457600
 #define LOW_CHIP_CLOCK CHIP_CLOCK_EXT
