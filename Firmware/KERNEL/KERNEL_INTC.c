@@ -106,23 +106,25 @@ void intr1_gpio_c13(void) __weak; // 13
 void intr1_gpio_c14(void) __weak; // 14
 void intr1_gpio_c15(void) __weak; // 15
 #endif
-void intr1_gpio_e0(void) __weak; // 14 16
-void intr1_gpio_e1(void) __weak; // 15 17
-void intr1_gpio_e2(void) __weak; // 16 18
-void intr1_gpio_e3(void) __weak; // 17 19
-void intr1_gpio_e4(void) __weak; // 18 20
-void intr1_gpio_e5(void) __weak; // 19 21
-void intr1_gpio_e6(void) __weak; // 20 22
-void intr1_gpio_e7(void) __weak; // 21 23
-#if (defined(AE101) || defined(AE102))
-void intr1_gpio_e8(void) __weak;  // 22
-void intr1_gpio_e9(void) __weak;  // 23
-void intr1_gpio_e10(void) __weak; // 24
-void intr1_gpio_e11(void) __weak; // 25
-void intr1_gpio_e12(void) __weak; // 26
-void intr1_gpio_e13(void) __weak; // 27
-void intr1_gpio_e14(void) __weak; // 28
-void intr1_gpio_e15(void) __weak; // 29
+// void intr1_gpio_e0(void) __weak; // 14 16
+// void intr1_gpio_e1(void) __weak; // 15 17
+// void intr1_gpio_e2(void) __weak; // 16 18
+// void intr1_gpio_e3(void) __weak; // 17 19
+// void intr1_gpio_e4(void) __weak; // 18 20
+// void intr1_gpio_e5(void) __weak; // 19 21
+// void intr1_gpio_e6(void) __weak; // 20 22
+// void intr1_gpio_e7(void) __weak; // 21 23
+// void intr1_gpio_e8(void) __weak;  // 22
+// void intr1_gpio_e9(void) __weak;  // 23
+// void intr1_gpio_e10(void) __weak; // 24
+// void intr1_gpio_e11(void) __weak; // 25
+// void intr1_gpio_e12(void) __weak; // 26
+// void intr1_gpio_e13(void) __weak; // 27
+// void intr1_gpio_e14(void) __weak; // 28
+// void intr1_gpio_e15(void) __weak; // 29
+
+#if defined(AE103)
+#if (GLE01 == 1)
 void intr1_gpio_e16(void) __weak; // 30
 void intr1_gpio_e17(void) __weak; // 31
 void intr1_gpio_e18(void) __weak; // 32
@@ -131,24 +133,22 @@ void intr1_gpio_e20(void) __weak; // 34
 void intr1_gpio_e21(void) __weak; // 35
 void intr1_gpio_e22(void) __weak; // 36
 void intr1_gpio_e23(void) __weak; // 37
-#elif defined(AE103)
-#if (GLE01 == 1)
-void intr1_dma(void) __weak;	// 24
-void intr1_null25(void) __weak; // 25
+void intr1_dma(void) __weak;	  // 24
+void intr1_cec0(void) __weak;	  // 25
+void intr1_cec1(void) __weak;	  // 26
 #else
 void intr1_sm2(void) __weak; // 24
 void intr1_sm3(void) __weak; // 25
 #endif
-void intr1_null26(void) __weak;		 // 26
 void intr1_smbus4(void) __weak;		 // 27
 void intr1_smbus5(void) __weak;		 // 28
 void intr1_owi(void) __weak;		 // 29
-void intr1_cec(void) __weak;		 // 30
+void intr1_null30(void) __weak;		 // 30
 void intr1_peci(void) __weak;		 // 31
-void intr1_null32(void) __weak;		 // 32
-void intr1_null33(void) __weak;		 // 33
-void intr1_null34(void) __weak;		 // 34
-void intr1_null35(void) __weak;		 // 35
+void intr1_i3c0(void) __weak;		 // 32
+void intr1_i3c1(void) __weak;		 // 33
+void intr1_i3c2(void) __weak;		 // 34
+void intr1_i3c3(void) __weak;		 // 35
 void intr1_null36(void) __weak;		 // 36
 void intr1_null37(void) __weak;		 // 37
 void intr1_pmc2_ibf_ec(void) __weak; // 38
@@ -182,11 +182,11 @@ void intr1_null55(void) __weak; // 55 57
 void intr1_null56(void) __weak; // 56 58
 void intr1_null57(void) __weak; // 57 59
 #elif (defined(AE102) || defined(AE103))
-void intr1_nul55(void) __weak; // 53 55
-void intr1_nul56(void) __weak; // 54 56
-void intr1_nul57(void) __weak; // 55 57
-void intr1_nul58(void) __weak; // 56 58
-void intr1_spis(void) __weak;  // 57 59
+void intr1_smbus6(void) __weak; // 53 55
+void intr1_smbus7(void) __weak; // 54 56
+void intr1_smbus8(void) __weak; // 55 57
+void intr1_null58(void) __weak; // 56 58
+void intr1_null59(void) __weak; // 57 59
 #endif
 void intr1_por_int(void) __weak; // 58 60
 #if ((defined(AE103)) && (GLE01 == 1))
@@ -806,159 +806,158 @@ void intr1_gpio_c15(void)
 #endif
 }
 #endif
-void intr1_gpio_e0(void)
-{
-#if (defined(AE101) || defined(AE102))
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[105]++;
-#endif
-#endif
-#ifdef AE103
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[112]++;
-#endif
-#endif
-}
-void intr1_gpio_e1(void)
-{
-#if (defined(AE101) || defined(AE102))
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[106]++;
-#endif
-#endif
-#ifdef AE103
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[113]++;
-#endif
-#endif
-}
-void intr1_gpio_e2(void)
-{
-#if (defined(AE101) || defined(AE102))
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[107]++;
-#endif
-#endif
-#ifdef AE103
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[114]++;
-#endif
-#endif
-}
-void intr1_gpio_e3(void)
-{
-#if (defined(AE101) || defined(AE102))
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[108]++;
-#endif
-#endif
-#ifdef AE103
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[115]++;
-#endif
-#endif
-}
-void intr1_gpio_e4(void)
-{
-#if (defined(AE101) || defined(AE102))
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[109]++;
-#endif
-#endif
-#ifdef AE103
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[116]++;
-#endif
-#endif
-}
-void intr1_gpio_e5(void)
-{
-#if (defined(AE101) || defined(AE102))
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[110]++;
-#endif
-#endif
-#ifdef AE103
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[117]++;
-#endif
-#endif
-}
-void intr1_gpio_e6(void)
-{
-#if (defined(AE101) || defined(AE102))
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[111]++;
-#endif
-#endif
-#ifdef AE103
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[118]++;
-#endif
-#endif
-}
-void intr1_gpio_e7(void)
-{
-#if (defined(AE101) || defined(AE102))
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[112]++;
-#endif
-#endif
-#ifdef AE103
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[119]++;
-#endif
-#endif
-}
-#if (defined(AE101) || defined(AE102))
-void intr1_gpio_e8(void)
-{
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[113]++;
-#endif
-}
-void intr1_gpio_e9(void)
-{
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[114]++;
-#endif
-}
-void intr1_gpio_e10(void)
-{
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[115]++;
-#endif
-}
-void intr1_gpio_e11(void)
-{
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[116]++;
-#endif
-}
-void intr1_gpio_e12(void)
-{
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[117]++;
-#endif
-}
-void intr1_gpio_e13(void)
-{
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[118]++;
-#endif
-}
-void intr1_gpio_e14(void)
-{
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[119]++;
-#endif
-}
-void intr1_gpio_e15(void)
-{
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[120]++;
-#endif
-}
+// void intr1_gpio_e0(void)
+// {
+// #if (defined(AE101) || defined(AE102))
+// #if ENABLE_DEBUGGER_SUPPORT
+// 	Intr_num[105]++;
+// #endif
+// #endif
+// #ifdef AE103
+// #if ENABLE_DEBUGGER_SUPPORT
+// 	Intr_num[112]++;
+// #endif
+// #endif
+// }
+// void intr1_gpio_e1(void)
+// {
+// #if (defined(AE101) || defined(AE102))
+// #if ENABLE_DEBUGGER_SUPPORT
+// 	Intr_num[106]++;
+// #endif
+// #endif
+// #ifdef AE103
+// #if ENABLE_DEBUGGER_SUPPORT
+// 	Intr_num[113]++;
+// #endif
+// #endif
+// }
+// void intr1_gpio_e2(void)
+// {
+// #if (defined(AE101) || defined(AE102))
+// #if ENABLE_DEBUGGER_SUPPORT
+// 	Intr_num[107]++;
+// #endif
+// #endif
+// #ifdef AE103
+// #if ENABLE_DEBUGGER_SUPPORT
+// 	Intr_num[114]++;
+// #endif
+// #endif
+// }
+// void intr1_gpio_e3(void)
+// {
+// #if (defined(AE101) || defined(AE102))
+// #if ENABLE_DEBUGGER_SUPPORT
+// 	Intr_num[108]++;
+// #endif
+// #endif
+// #ifdef AE103
+// #if ENABLE_DEBUGGER_SUPPORT
+// 	Intr_num[115]++;
+// #endif
+// #endif
+// }
+// void intr1_gpio_e4(void)
+// {
+// #if (defined(AE101) || defined(AE102))
+// #if ENABLE_DEBUGGER_SUPPORT
+// 	Intr_num[109]++;
+// #endif
+// #endif
+// #ifdef AE103
+// #if ENABLE_DEBUGGER_SUPPORT
+// 	Intr_num[116]++;
+// #endif
+// #endif
+// }
+// void intr1_gpio_e5(void)
+// {
+// #if (defined(AE101) || defined(AE102))
+// #if ENABLE_DEBUGGER_SUPPORT
+// 	Intr_num[110]++;
+// #endif
+// #endif
+// #ifdef AE103
+// #if ENABLE_DEBUGGER_SUPPORT
+// 	Intr_num[117]++;
+// #endif
+// #endif
+// }
+// void intr1_gpio_e6(void)
+// {
+// #if (defined(AE101) || defined(AE102))
+// #if ENABLE_DEBUGGER_SUPPORT
+// 	Intr_num[111]++;
+// #endif
+// #endif
+// #ifdef AE103
+// #if ENABLE_DEBUGGER_SUPPORT
+// 	Intr_num[118]++;
+// #endif
+// #endif
+// }
+// void intr1_gpio_e7(void)
+// {
+// #if (defined(AE101) || defined(AE102))
+// #if ENABLE_DEBUGGER_SUPPORT
+// 	Intr_num[112]++;
+// #endif
+// #endif
+// #ifdef AE103
+// #if ENABLE_DEBUGGER_SUPPORT
+// 	Intr_num[119]++;
+// #endif
+// #endif
+// }
+// void intr1_gpio_e8(void)
+// {
+// #if ENABLE_DEBUGGER_SUPPORT
+// 	Intr_num[113]++;
+// #endif
+// }
+// void intr1_gpio_e9(void)
+// {
+// #if ENABLE_DEBUGGER_SUPPORT
+// 	Intr_num[114]++;
+// #endif
+// }
+// void intr1_gpio_e10(void)
+// {
+// #if ENABLE_DEBUGGER_SUPPORT
+// 	Intr_num[115]++;
+// #endif
+// }
+// void intr1_gpio_e11(void)
+// {
+// #if ENABLE_DEBUGGER_SUPPORT
+// 	Intr_num[116]++;
+// #endif
+// }
+// void intr1_gpio_e12(void)
+// {
+// #if ENABLE_DEBUGGER_SUPPORT
+// 	Intr_num[117]++;
+// #endif
+// }
+// void intr1_gpio_e13(void)
+// {
+// #if ENABLE_DEBUGGER_SUPPORT
+// 	Intr_num[118]++;
+// #endif
+// }
+// void intr1_gpio_e14(void)
+// {
+// #if ENABLE_DEBUGGER_SUPPORT
+// 	Intr_num[119]++;
+// #endif
+// }
+// void intr1_gpio_e15(void)
+// {
+// #if ENABLE_DEBUGGER_SUPPORT
+// 	Intr_num[120]++;
+// #endif
+// }
 void intr1_gpio_e16(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
@@ -1007,44 +1006,86 @@ void intr1_gpio_e23(void)
 	Intr_num[128]++;
 #endif
 }
-#elif defined(AE103)
-#if (GLE01 == 1)
+
 void intr1_dma(void) // 24
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[120]++;
 #endif
 }
-void intr1_null25(void) // 25
+
+void intr1_cec0(void) // 25
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[121]++;
 #endif
-}
-#else
-void intr1_sm2(void) // 24
-{
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[120]++;
+
+	DWORD stat, int_stat;
+	stat = CEC_Read(CEC0_SR_OFFSET);
+	if ((stat & 0xF0) != 0)
+	{
+		irqprint("CEC statu : %#x\n", stat);
+		irqprint("statu erro ! \n");
+		CEC_Write(0, CEC0_CTRL_OFFSET); // disable the CEC
+	}
+	int_stat = CEC_Read(CEC0_ISR_OFFSET);
+#if CEC_mode_select // initiator
+	if (int_stat & CEC_intStatue_sbis)
+	{
+	}
+	if (int_stat & CEC_intStatue_sfis)
+	{
+	}
+#else // follower
+	if (int_stat & CEC_intStatue_rhis)
+	{
+	}
+	if (int_stat & CEC_intStatue_rbis)
+	{
+	}
+	if (int_stat & CEC_intStatue_rfis)
+	{
+	}
 #endif
+	CEC_Write(int_stat, CEC0_ISR_OFFSET); // clear the CEC_INT
 }
-void intr1_sm3(void) // 25
+
+void intr1_cec1(void) // 26
 {
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[121]++;
-#endif
-}
-#endif
-void intr1_null26(void) // 26
-{
-	// if((SM4_STATUS & SM4_STATUS_DONE))
-	// {
-	// 	SM4_INT |= SM4_INT_INT;
-	// }
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[122]++;
 #endif
+
+	DWORD stat, int_stat;
+	stat = CEC_Read(CEC1_SR_OFFSET);
+	if ((stat & 0xF0) != 0)
+	{
+		irqprint("CEC statu : %#x\n", stat);
+		irqprint("statu erro ! \n");
+		CEC_Write(0, CEC1_CTRL_OFFSET); // disable the CEC
+	}
+	int_stat = CEC_Read(CEC1_ISR_OFFSET);
+#if CEC_mode_select // initiator
+	if (int_stat & CEC_intStatue_sbis)
+	{
+	}
+	if (int_stat & CEC_intStatue_sfis)
+	{
+	}
+#else // follower
+	if (int_stat & CEC_intStatue_rhis)
+	{
+	}
+	if (int_stat & CEC_intStatue_rbis)
+	{
+	}
+	if (int_stat & CEC_intStatue_rfis)
+	{
+	}
+#endif
+	CEC_Write(int_stat, CEC1_ISR_OFFSET); // clear the CEC_INT
 }
+
 void intr1_smbus4(void) // 27
 {
 	BYTE abrt_source_l = I2c_Readb(I2C_TX_ABRT_SOURCE_OFFSET, I2C_CHANNEL_4);
@@ -1155,74 +1196,49 @@ void intr1_smbus5(void) // 28
 	}
 #endif
 }
+
 void intr1_owi(void) // 29
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[125]++;
 #endif
 }
-void intr1_cec(void) // 30
+
+void intr1_null30(void) // 30
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[126]++;
 #endif
-	DWORD stat, int_stat;
-	stat = CEC_Read(CEC_SR_OFFSET);
-	if ((stat & 0xF0) != 0)
-	{
-		irqprint("CEC statu : %#x\n", stat);
-		irqprint("statu erro ! \n");
-		CEC_Write(0, CEC_CTRL_OFFSET); // disable the CEC
-	}
-	int_stat = CEC_Read(CEC_ISR_OFFSET);
-#if CEC_mode_select // initiator
-	if (int_stat & CEC_intStatue_sbis)
-	{
-	}
-	if (int_stat & CEC_intStatue_sfis)
-	{
-	}
-#else				// follower
-	if (int_stat & CEC_intStatue_rhis)
-	{
-	}
-	if (int_stat & CEC_intStatue_rbis)
-	{
-	}
-	if (int_stat & CEC_intStatue_rfis)
-	{
-	}
-#endif
-	CEC_Write(int_stat, CEC_ISR_OFFSET); // clear the CEC_INT
 }
+
 void intr1_peci(void) // 31
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[127]++;
 #endif
 }
-void intr1_null32(void) // 32
+void intr1_i3c0(void) // 32
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[128]++;
 #endif
 	irqprint("null 32\n");
 }
-void intr1_null33(void) // 33
+void intr1_i3c1(void) // 33
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[129]++;
 #endif
 	irqprint("null 33\n");
 }
-void intr1_null34(void) // 34
+void intr1_i3c2(void) // 34
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[130]++;
 #endif
 	irqprint("null 34\n");
 }
-void intr1_null35(void) // 35
+void intr1_i3c3(void) // 35
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[131]++;
@@ -1257,7 +1273,7 @@ void intr1_pmc2_obe_ec(void) // 39
 	Intr_num[135]++;
 #endif
 }
-#endif
+
 void intr1_pmc3_ibf_ec(void)
 {
 #if (defined(AE101) || defined(AE102))
@@ -1342,7 +1358,7 @@ void intr1_pmc5_obe_ec(void)
 #endif
 #endif
 }
-void intr1_ps2_1(void)
+void intr1_ps2_1(void) // 46
 {
 #if (defined(AE101) || defined(AE102))
 #if ENABLE_DEBUGGER_SUPPORT
@@ -1796,7 +1812,7 @@ void intr1_null57(void) // 57 59
 {
 }
 #elif (defined(AE102) || defined(AE103))
-void intr1_nul55(void)
+void intr1_smbus6(void)
 {
 #if (defined(AE101) || defined(AE102))
 #if ENABLE_DEBUGGER_SUPPORT
@@ -1809,7 +1825,7 @@ void intr1_nul55(void)
 #endif
 #endif
 }
-void intr1_nul56(void)
+void intr1_smbus7(void)
 {
 #if (defined(AE101) || defined(AE102))
 #if ENABLE_DEBUGGER_SUPPORT
@@ -1822,7 +1838,7 @@ void intr1_nul56(void)
 #endif
 #endif
 }
-void intr1_nul57(void)
+void intr1_smbus8(void)
 {
 #if (defined(AE101) || defined(AE102))
 #if ENABLE_DEBUGGER_SUPPORT
@@ -1835,7 +1851,7 @@ void intr1_nul57(void)
 #endif
 #endif
 }
-void intr1_nul58(void)
+void intr1_null58(void)
 {
 #if (defined(AE101) || defined(AE102))
 #if ENABLE_DEBUGGER_SUPPORT
@@ -1848,7 +1864,7 @@ void intr1_nul58(void)
 #endif
 #endif
 }
-void intr1_spis(void)
+void intr1_null59(void)
 {
 #if (defined(AE101) || defined(AE102))
 #if ENABLE_DEBUGGER_SUPPORT
@@ -2051,31 +2067,31 @@ const __weak FUNCT_PTR_V_V intr1_service[] =
 		intr1_gpio_c13, // 13
 		intr1_gpio_c14, // 14
 		intr1_gpio_c15, // 15
-		intr1_gpio_e0,	// 16
-		intr1_gpio_e1,	// 17
-		intr1_gpio_e2,	// 18
-		intr1_gpio_e3,	// 19
-		intr1_gpio_e4,	// 20
-		intr1_gpio_e5,	// 21
-		intr1_gpio_e6,	// 22
-		intr1_gpio_e7,	// 23
+		intr1_gpio_e16, // 16
+		intr1_gpio_e17, // 17
+		intr1_gpio_e18, // 18
+		intr1_gpio_e19, // 19
+		intr1_gpio_e20, // 20
+		intr1_gpio_e21, // 21
+		intr1_gpio_e22, // 22
+		intr1_gpio_e23, // 23
 #if (GLE01 == 1)
-		intr1_dma,	  // 24
-		intr1_null25, // 25
+		intr1_dma,	// 24
+		intr1_cec0, // 25
 #else
 		intr1_sm2, // 24
 		intr1_sm3, // 25
 #endif
-		intr1_null26,	   // 26
+		intr1_cec1,		   // 26
 		intr1_smbus4,	   // 27
 		intr1_smbus5,	   // 28
 		intr1_owi,		   // 29
-		intr1_cec,		   // 30
+		intr1_null30,	   // 30
 		intr1_peci,		   // 31
-		intr1_null32,	   // 32
-		intr1_null33,	   // 33
-		intr1_null34,	   // 34
-		intr1_null35,	   // 35
+		intr1_i3c0,		   // 32
+		intr1_i3c1,		   // 33
+		intr1_i3c2,		   // 34
+		intr1_i3c3,		   // 35
 		intr1_null36,	   // 36
 		intr1_null37,	   // 37
 		intr1_pmc2_ibf_ec, // 38
@@ -2095,11 +2111,11 @@ const __weak FUNCT_PTR_V_V intr1_service[] =
 		intr1_smbus1,	   // 52
 		intr1_smbus2,	   // 53
 		intr1_smbus3,	   // 54
-		intr1_nul55,	   // 55
-		intr1_nul56,	   // 56
-		intr1_nul57,	   // 57
-		intr1_nul58,	   // 58
-		intr1_spis,		   // 59
+		intr1_smbus6,	   // 55
+		intr1_smbus7,	   // 56
+		intr1_smbus8,	   // 57
+		intr1_null58,	   // 58
+		intr1_null59,	   // 59
 		intr1_por_int,	   // 60
 #if ((defined(AE103)) && (GLE01 == 1))
 		intr1_mailbox, // 61
