@@ -23,6 +23,9 @@
 
 // GLE01主系统相关控制宏
 #define ROM_DEBUG 1
+// 子系统从外部FLASH mirror代码到内部FLASH支持宏
+#define Crypto_Flash_Mirror_Support 0
+
 typedef enum FLASH_PIN
 {
     NOPIN_FLASH = -1,

@@ -29,5 +29,6 @@ void *SPIF_Wirte_FLASH(void *flashaddr, void *memaddr, size_t size, const uint32
 uint32_t SPIF_Erase_FLASH(uint8_t command, void *flash_addr, const uint32_t looplimit);
 uint32_t SPIF_Read_ID(const uint32_t looplimit);
 uint32_t READ_FLASH_INFO(const uint32_t looplimit);
-void  Flash_Update_Function(const uint32_t looplimit);
+void Flash_Update_Function(const uint32_t looplimit);
+void ALIGNED(4) Mailbox_EFLASH_Mirror_Trigger(BYTE mode, DWORD fw_size, DWORD start_addr);
 #endif

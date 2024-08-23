@@ -122,6 +122,7 @@ void MODULE_INIT(uint32_t *looplimit)
     }
     return;
 }
+
 void Init(void)
 {
     // //方案二，C跳转
@@ -143,7 +144,18 @@ void Init(void)
 #if GLE01
     PRINTF_FIFO = UART0_BASE_ADDR;
     UART_Init(0, 115200, 3);
+    UART_Init(1, 115200, 3);
+    E2CINTEN |= 0xFFFFFFFF; // 打开主系统到子系统32个mailbox中断使能
     printf("UART0 Init done\n");
+
+#if Crypto_Flash_Mirror_Support
+    E2CINFO7 = 0x5aa5;
+    while (C2EINFO7 != 0xa55a)
+        ; // 等待子系统初始化完毕
+    SELECT_FLASH(EXTERNAL_FLASH, DUAL_FLASH, NOPIN_FLASH, NOPIN_FLASH, looplimit);
+    Mailbox_EFLASH_Mirror_Trigger(0x2, 450 * 1024, 0);
+#endif
+
     // SELECT_FLASH(INTERNAL_FLASH, QUAD_FLASH, NOPIN_FLASH, NOPIN_FLASH, looplimit);
     SELECT_FLASH(INTERNAL_FLASH, DUAL_FLASH, NOPIN_FLASH, NOPIN_FLASH, looplimit);
     goto * 0x80084;
