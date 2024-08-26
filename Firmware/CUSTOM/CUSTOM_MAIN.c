@@ -121,18 +121,18 @@ void __weak Hook_1secEventA(void) // get all temp
 #if (I2C_MODULE_EN && SUPPORT_I2C_TEMPERATURE)
     get_temperature(2);
 #endif
-    // printf("C2EINT:%x,C2EINFO0:%x,C2EINFO1:%x\n", C2EINT, C2EINFO0, C2EINFO1);
+    printf("C2EINT:%x,C2EINFO0:%x,C2EINFO1:%x\n", C2EINT, C2EINFO0, C2EINFO1);
 
 #if (GLE01 == 1)
     if (*((VBYTE *)(0x203B9)) == 1)
     {
-        printf("0x203B9:%x\n", *((VBYTE *)(0x203B9)));
+        // printf("0x203B9:%x\n", *((VBYTE *)(0x203B9)));
         *((VBYTE *)(0x203B9)) = 0;
-        // Mailbox_FW_Extension_Trigger();
-        Mailbox_APB2_Source_Alloc_Trigger();
 
-        //  Mailbox_FW_Extension_Trigger();
-        //  Mailbox_Update_Function(0x3, 0x8000, 0x70800); // 发起mailbox更新
+        Mailbox_Test();
+        // Mailbox_FW_Extension_Trigger();
+        // Mailbox_APB2_Source_Alloc_Trigger();
+        // Mailbox_Update_Function(0x3, 0x8000, 0x70800); // 发起mailbox更新
         //  Mailbox_Read_FLASHID_Trigger();
         //  Mailbox_Read_EFUSE_Trigger();
     }

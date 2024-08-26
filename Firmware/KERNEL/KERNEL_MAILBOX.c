@@ -5,6 +5,14 @@ void mailbox_init(void)
     E2CINTEN |= 0xFFFFFFFF; // 打开主系统到子系统32个mailbox中断使能
 }
 
+void Mailbox_Test(void)
+{
+    E2CINFO0 = 0x10;                              // 命令字
+    E2CINFO1 = ((DWORD)(0x3 << 24) | (4 * 1024)); // BYTE3:固件位置标志 BYTE0~2:固件大小
+    E2CINFO2 = 0x60000;                           // 更新起始地址
+    E2CINT = 0x2;                                 // 触发对应中断
+}
+
 void Mailbox_FW_Extension_Trigger(void)
 {
     E2CINFO0 = 0x3;       // 命令字

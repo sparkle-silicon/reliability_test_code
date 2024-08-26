@@ -33,4 +33,5 @@ extern void Mailbox_Read_FLASHID_Trigger(void);
 extern void Mailbox_Read_EFUSE_Trigger(void);
 extern void Mailbox_FW_Extension_Trigger(void);
 extern void Mailbox_APB2_Source_Alloc_Trigger(void);
+extern void Mailbox_Test(void);
 #endif
