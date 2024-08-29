@@ -1,7 +1,7 @@
   /*
   * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-07-10 17:29:39
+ * @LastEditTime: 2024-08-29 14:11:41
   * @Description:
   *
   *
@@ -682,6 +682,7 @@ static int vprintf_internal(const char *fmt, va_list args)
         /* integer number formats - set up the flags and "break" */
       case 'b':
         flags |= SMALL;
+        // fall through
       case 'B':
         base = 2;
         break;
@@ -690,6 +691,7 @@ static int vprintf_internal(const char *fmt, va_list args)
         break;
       case 'x':
         flags |= SMALL;
+        // fall through
       case 'X':
         base = 16;
         break;
@@ -716,6 +718,7 @@ static int vprintf_internal(const char *fmt, va_list args)
       case 'd':
       case 'i':
         flags |= SIGN;
+        // fall through
       case 'u':
         break;
         /* nothing */;
