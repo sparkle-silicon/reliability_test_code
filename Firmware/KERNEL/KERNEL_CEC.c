@@ -27,7 +27,7 @@
 //*****************************************************************************
 void CEC_Write(WORD value, BYTE offset)
 {
-    CEC_REG(offset) = value;
+    CEC0_REG(offset) = value;
     return;
 }
 //*****************************************************************************
@@ -42,7 +42,7 @@ void CEC_Write(WORD value, BYTE offset)
 //*****************************************************************************
 WORD CEC_Read(BYTE offset)
 {
-    return CEC_REG(offset);
+    return CEC0_REG(offset);
 }
 //*****************************************************************************
 //
@@ -54,10 +54,10 @@ WORD CEC_Read(BYTE offset)
 //******************************************************************************
 void CEC_initiator_init(void)
 {
-   // enable the interrup
-    CEC_IER = CEC_Int_Send_Frame | CEC_Int_Send_Block | CEC_Int_erro;
-    CEC_CPSR = (HIGHT_CHIP_CLOCK / 10000) - 1;
-    CEC_CTRL = CEC_Ctr_Clean_tFIFO | CEC_Ctr_sdb | CEC_Ctr_en;// enable the broadcast frame send
+    // enable the interrup
+    CEC0_IER = CEC_Int_Send_Frame | CEC_Int_Send_Block | CEC_Int_erro;
+    CEC0_CPSR = (HIGHT_CHIP_CLOCK / 10000) - 1;
+    CEC0_CTRL = CEC_Ctr_Clean_tFIFO | CEC_Ctr_sdb | CEC_Ctr_en; // enable the broadcast frame send
 }
 //*****************************************************************************
 //
@@ -70,10 +70,10 @@ void CEC_initiator_init(void)
 void CEC_follower_init(void)
 {
     // enable the interrup
-    CEC_IER = CEC_Int_Receive_Head | CEC_Int_Receive_Block | CEC_Int_Receive_Frame | CEC_Int_erro;
-    CEC_CPSR = (HIGHT_CHIP_CLOCK / 10000) - 1;
-    CEC_ADDR = CEC_Initiator_address;             //"Initiator_address" as device_addr while follower
-    CEC_CTRL = CEC_Ctr_Clean_rFIFO | CEC_Ctr_eba | CEC_Ctr_rad | CEC_Ctr_en; // receive data no matter address
+    CEC0_IER = CEC_Int_Receive_Head | CEC_Int_Receive_Block | CEC_Int_Receive_Frame | CEC_Int_erro;
+    CEC0_CPSR = (HIGHT_CHIP_CLOCK / 10000) - 1;
+    CEC0_ADDR = CEC_Initiator_address;                                        //"Initiator_address" as device_addr while follower
+    CEC0_CTRL = CEC_Ctr_Clean_rFIFO | CEC_Ctr_eba | CEC_Ctr_rad | CEC_Ctr_en; // receive data no matter address
 }
 //*****************************************************************************
 //
@@ -86,27 +86,27 @@ void CEC_follower_init(void)
 void CEC_Frame_send(char *data, BYTE len, BYTE broadcast)
 {
 
-    if(len > 15)
+    if (len > 15)
     {
         dprint("the frame too long !! \n");
         return;
     }
-    if(broadcast)//head
+    if (broadcast) // head
     {
-        CEC_CTRL |= CEC_Ctr_sdb;
-        CEC_DA = (CEC_Initiator_address << 4) | CEC_Destination_address;
+        CEC0_CTRL |= CEC_Ctr_sdb;
+        CEC0_DA = (CEC_Initiator_address << 4) | CEC_Destination_address;
     }
     else
     {
-        CEC_CTRL &= ~CEC_Ctr_sdb;
-        CEC_DA = (CEC_Initiator_address << 4) | CEC_Destination_address;
+        CEC0_CTRL &= ~CEC_Ctr_sdb;
+        CEC0_DA = (CEC_Initiator_address << 4) | CEC_Destination_address;
     }
 
-    for(int i = 0; i < len - 1; i++)
+    for (int i = 0; i < len - 1; i++)
     {
-        CEC_DA = data[i];
+        CEC0_DA = data[i];
     }
-    CEC_DA = data[len - 1] | CEC_send_EOM;
-    CEC_CTRL |= CEC_Ctr_send; // Send fifo
+    CEC0_DA = data[len - 1] | CEC_send_EOM;
+    CEC0_CTRL |= CEC_Ctr_send; // Send fifo
     return;
 }

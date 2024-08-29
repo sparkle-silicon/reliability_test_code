@@ -559,29 +559,29 @@ void SECTION(".update.function") Flash_Update_Function(void)
 
 /***************************************************************************************************************/
 #if (GLE01 == 1)
-void Mailbox_SMS_UPDATE(DWORD fw_size, DWORD start_addr)
-{
-    printf("c");
-    Remaining_size = fw_size; // 更新固件大小
+// void Mailbox_SMS_UPDATE(DWORD fw_size, DWORD start_addr)
+// {
+//     printf("c");
+//     Remaining_size = fw_size; // 更新固件大小
 
-    if (ROM_COPY_CNT < Remaining_size)
-    {
-        // select_flash(EXTERNAL_FLASH);
-        // SPIF_Read_Interface(256, (DWORD)(0x0 + ROM_COPY_CNT), (BYTEP)(0x31000)); // 需要更新的数据从外部FLASH读入
-        E2CINFO0 = 0x10;                                  // 命令字
-        E2CINFO1 = ((DWORD)(0x3 << 24) | Remaining_size); // BYTE3:固件位置标志 BYTE0~2:固件大小
-        E2CINFO2 = start_addr + ROM_COPY_CNT;             // 更新起始地址
-        ROM_COPY_CNT += 256;
-        printf("d:%x,%x,%x\n", E2CINFO0, E2CINFO1, E2CINFO2);
-        E2CINT = 0x2; // 触发对应中断
-        // while ((C2EINFO1 != 0x1) || (C2EINFO1 != 0x2))
-        //     ; // 等待子系统更新回复
-    }
-    else
-    {
-        ROM_COPY_CNT = 0;
-    }
-}
+//     if (ROM_COPY_CNT < Remaining_size)
+//     {
+//         // select_flash(EXTERNAL_FLASH);
+//         // SPIF_Read_Interface(256, (DWORD)(0x0 + ROM_COPY_CNT), (BYTEP)(0x31000)); // 需要更新的数据从外部FLASH读入
+//         E2CINFO0 = 0x10;                                  // 命令字
+//         E2CINFO1 = ((DWORD)(0x3 << 24) | Remaining_size); // BYTE3:固件位置标志 BYTE0~2:固件大小
+//         E2CINFO2 = start_addr + ROM_COPY_CNT;             // 更新起始地址
+//         ROM_COPY_CNT += 256;
+//         printf("d:%x,%x,%x\n", E2CINFO0, E2CINFO1, E2CINFO2);
+//         E2CINT = 0x2; // 触发对应中断
+//         // while ((C2EINFO1 != 0x1) || (C2EINFO1 != 0x2))
+//         //     ; // 等待子系统更新回复
+//     }
+//     else
+//     {
+//         ROM_COPY_CNT = 0;
+//     }
+// }
 
 void ALIGNED(4) EC_SinglePage_Update(void)
 {
@@ -668,14 +668,11 @@ void ALIGNED(4) Mailbox_Update_Function(BYTE mode, DWORD fwsize, DWORD update_ad
     if (mailbox_update_mode == 0x1) // IRAM0模式更新
     {
     }
-    else if (mailbox_update_mode == 0x2) // 片外FLASH模式更新
+    else if (mailbox_update_mode == 0x2) // 片外FLASH模式更新（在rom里完成）
     {
-        // SPIF_ExternalFlash_Mirror(fw_size, start_addr);  //如果子系统从外部FLASH直接更新，则直接MIRROR
     }
     else if (mailbox_update_mode == 0x3) // 4K SMS模式更新
     {
-        printf("b");
-        Mailbox_SMS_UPDATE(fw_size, start_addr);
     }
     else if ((mailbox_update_mode >= 0x4) && (mailbox_update_mode <= 0x7)) // UART模式更新
     {

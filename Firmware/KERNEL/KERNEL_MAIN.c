@@ -459,6 +459,52 @@ void main_loop(void)
 		main_service();
 	}
 }
+
+VBYTEP OPTIMIZE0 USED SPIF_Read_Interface(register DWORD size, register DWORD addr, BYTEP read_buff)
+{
+	BYTE SPIF_READ_COMMAND;
+	DWORD SPIF_J;
+#define temp_addrs SPIF_addrs
+#define temp_data SPIF_data
+	if (size & 0b11)
+	{
+		size += 0b100;
+		size &= ~0b11;
+	}
+	// PRINTF_TX('M');
+	while (!(SPIF_READY & 0x1))
+		;
+	// PRINTF_TX('N');
+	// rom_wdt_feed();
+	while (SPIF_STATUS & 0xf)
+		;
+	// PRINTF_TX('W');
+	// rom_wdt_feed(); // 直到写完
+	while (!(SPIF_READY & 0x1))
+		;
+	// rom_wdt_feed(); // 读忙
+	SPIF_DBYTE = (size - 1) & 0xff;
+	while (!(SPIF_READY & 0x1))
+		;
+	// rom_wdt_feed();
+	if (SPIF_CTRL0 & BIT1)
+		SPIF_READ_COMMAND = 0x6b;
+	else
+		SPIF_READ_COMMAND = 0x3b;
+	SPIF_FIFO_TOP = (((addr & 0xFF) << 24) + ((addr & 0xFF00) << 8) + ((addr & 0xFF0000) >> 8) + SPIF_READ_COMMAND);
+	for (SPIF_J = 0; SPIF_J < (size >> 2); SPIF_J++)
+	{
+		while ((SPIF_FIFO_CNT & 0x3) == 0)
+			;
+		// rom_wdt_feed();
+		// printf("TOP:%x", SPIF_FIFO_TOP);
+		(*((DWORDP)(&(read_buff[SPIF_J << 2])))) = SPIF_FIFO_TOP;
+	}
+	return read_buff;
+#undef temp_addrs
+#undef temp_data
+}
+
 //----------------------------------------------------------------------------
 // FUNCTION: main
 // main entry
@@ -490,12 +536,14 @@ int __weak main(void)
 	// 若打开GLE01功能，则需要在GLE01主系统第一次启动时，将FLASH文件的256K后的固定32K代码搬运到IRAM0
 #if ((GLE01 == 1) && (FLASH_TO_IRAM0 == 1))
 	GLE01_RomCode_Transport();
-	E2CINFO0 = 0x5aa5;
+	E2CINFO7 = 0x5aa5;
+	while (C2EINFO7 != 0xa55a)
+		; // 等待子系统初始化完毕
 #endif
-	//dprint("0x30464 value is 0x%x\n", *(volatile unsigned int *)(0x30464));
-	//ADC_HW_Sample_Init(ADC_CHANNEL0, 0, 0, SINGLE_ENDED, 500);	//硬件触发采样
-	// ADC_HW_Sample_Init(ADC_CHANNEL11,0,0,DIFFERENTIAL,500);
-	// 3. jump loop
+
+	// printf("mirror success\n");
+
+	//  3. jump loop
 	main_loop();
 	return 0;
 }

@@ -36,16 +36,16 @@
 #define MEMORY_016SIZE DEC16
 #define MEMORY_008SIZE HEX08
 /*************************************************
-* MEMORY MAP (2K RAM RANGE FOR DEFINITION)
-**************************************************
-*
-*  0x0000-0x00FF : GLOBAL  VARIABLES
-*
-*  0x0100-0x18FF : KERNEL & CHIP LEVEL VATIABLES
-*
-*  0x1900-0x19FF : EC SPACE VARIABLES
-*
-*************************************************/
+ * MEMORY MAP (2K RAM RANGE FOR DEFINITION)
+ **************************************************
+ *
+ *  0x0000-0x00FF : GLOBAL  VARIABLES
+ *
+ *  0x0100-0x18FF : KERNEL & CHIP LEVEL VATIABLES
+ *
+ *  0x1900-0x19FF : EC SPACE VARIABLES
+ *
+ *************************************************/
 /****************************************************************
 --------------------- MEMORY SECTION 0 --------------------------
 ------------------- GLOBAL TEMP VARIABLES -----------------------
@@ -65,8 +65,8 @@
 #define F_Service_KBS (*(VBYTEP)(Service_BASE + 8))       // Service the local keyboard in response to a key press.
 #define F_Service_Reserved1 (*(VBYTEP)(Service_BASE + 9)) // Meaning unclear
 // Lo-Level Service
-#define F_Service_PCI3 (*(VBYTEP)(Service_BASE + 10)) // PMC2 PORT cmd/data process
-#define F_Service_PCI4 (*(VBYTEP)(Service_BASE + 11)) // PMC3 PORT cmd/data process
+#define F_Service_PCI3 (*(VBYTEP)(Service_BASE + 10))      // PMC2 PORT cmd/data process
+#define F_Service_PCI4 (*(VBYTEP)(Service_BASE + 11))      // PMC3 PORT cmd/data process
 #define F_Service_LPCRST (*(VBYTEP)(Service_BASE + 14))    // Meaning unclear
 #define F_Service_PCI5 (*(VBYTEP)(Service_BASE + 15))      // PMC4 PORT cmd/data process
 #define F_Service_PCI6 (*(VBYTEP)(Service_BASE + 16))      // PMC5 PORT cmd/data process
@@ -78,7 +78,7 @@
 #define F_Service_KBL (*(VBYTEP)(Service_BASE + 21))           // debuger service variable
 #define F_Service_Debugger_Send (*(VBYTEP)(Service_BASE + 22)) // debuger service variable
 #define F_Service_Debugger_Rrq (*(VBYTEP)(Service_BASE + 23))  // debuger service variable
-#define F_Service_Reserved3 (*(VBYTEP)(Service_BASE + 24)) // Meaning unclear
+#define F_Service_Reserved3 (*(VBYTEP)(Service_BASE + 24))     // Meaning unclear
 #define F_Service_PS2_Handler (*(VBYTEP)(Service_BASE + 25))
 // no set
 // #define     F_Service_UNLOCK
@@ -126,7 +126,7 @@
 #define timer_1hours_count (*(VWORDP)(OEMHook_MemBase + 6)) // Periodic timing flag
 /*GPIO Debounce*/
 #define Debounce_MemBase (OEMHook_MemBase + MEMORY_008SIZE) // 0x20040
-#define     DEBOUNCE_FLAG0          (*(VBYTEP)(Debounce_MemBase + 0))
+#define DEBOUNCE_FLAG0 (*(VBYTEP)(Debounce_MemBase + 0))
 #define DEBOUNCE_CONT0 (*(VBYTEP)(Debounce_MemBase + 1)) // Meaning unclear
 #define DEBOUNCE_CONT1 (*(VBYTEP)(Debounce_MemBase + 2)) // Meaning unclear
 #define DEBOUNCE_CONT2 (*(VBYTEP)(Debounce_MemBase + 3)) // Meaning unclear
@@ -181,7 +181,7 @@
 #define Gen_Info_BREAK_SCAN (*(VBYTEP)(Host_Flag_BASE + 10))
 #define AUX2ByteCommand (*(VBYTEP)(Host_Flag_BASE + 11))
 #define KB_Scan_Flag (*(VBYTEP)(Host_Flag_BASE + 12))
-#define MinuteCnt   (*(VBYTEP)(Host_Flag_BASE + 13))
+#define MinuteCnt (*(VBYTEP)(Host_Flag_BASE + 13))
 #define Debug_Num (*(VWORDP)(Host_Flag_BASE + 14))
 /*ACPI Interface*/
 #define ACPI_BASE (Host_Flag_BASE + MEMORY_016SIZE) // 0x20110
@@ -275,7 +275,7 @@
 // #define     SMI_LastQueryEvent      (*(VBYTEP)(SMI_MemBase + 0x3))
 #define SMI_QueryEvent (*(VBYTEP)(SMI_MemBase + 0x4))
 #define SCI_Response_Flag (*(VBYTEP)(SMI_MemBase + 0x5))
-#define SCI_Count         (*(VBYTEP)(SMI_MemBase + 0x6))
+#define SCI_Count (*(VBYTEP)(SMI_MemBase + 0x6))
 /*KBS Interface*/
 #define KBS_MemBase (SMI_MemBase + MEMORY_008SIZE)          // 0x20160
 #define KBD_SCAN_STATE (*(ukey_state *)(KBS_MemBase + 0x0)) // size 1/2byte
@@ -300,16 +300,16 @@
 #define Scanner_State_NUM_LOCK (*(VBYTEP)(Scanner_State_BASE + 1))
 #define Scanner_State_LEFT (*(VBYTEP)(Scanner_State_BASE + 2))
 #define Scanner_State_RIGHT (*(VBYTEP)(Scanner_State_BASE + 3))
-#define Scanner_State_ALT       (*(VBYTEP)(Scanner_State_BASE + 4))
+#define Scanner_State_ALT (*(VBYTEP)(Scanner_State_BASE + 4))
 #define Scanner_State_CONTROL (*(VBYTEP)(Scanner_State_BASE + 5))
-#define Scanner_State_OVERLAY   (*(VBYTEP)(Scanner_State_BASE + 6))
-#define Scanner_State_FN        (*(VBYTEP)(Scanner_State_BASE + 7))
+#define Scanner_State_OVERLAY (*(VBYTEP)(Scanner_State_BASE + 6))
+#define Scanner_State_FN (*(VBYTEP)(Scanner_State_BASE + 7))
 /*PS2 Interface*/
 #define PS2_MemBase (Scanner_State_BASE + MEMORY_008SIZE) // 0x20188
-#define	MS_Driver_Type  (*(VBYTEP)(PS2_MemBase + 0x0))
-#define	MS_Frame_Cnt    (*(VBYTEP)(PS2_MemBase + 0x1))
+#define MS_Driver_Type (*(VBYTEP)(PS2_MemBase + 0x0))
+#define MS_Frame_Cnt (*(VBYTEP)(PS2_MemBase + 0x1))
 #define TP_ACK_CUNT (*(VBYTEP)(PS2_MemBase + 0x5))
-#define MS_AutoReset_ACK_CNT    (*(VBYTEP)(PS2_MemBase + 0x6))
+#define MS_AutoReset_ACK_CNT (*(VBYTEP)(PS2_MemBase + 0x6))
 #define MS_Data_Cnt (*(VBYTEP)(PS2_MemBase + 0x7))
 #define PS2_PORT0_FLAG (*(VBYTEP)(PS2_MemBase + 0x8))
 /*--------------------------------------------------------------------*/
@@ -326,17 +326,17 @@
 // #define 	ps2_port0_reply_expected (*(VBYTEP)(PS2_MemBase + 0xD))
 // #define 	ps2_port1_reply_expected (*(VBYTEP)(PS2_MemBase + 0xE))
 #define ps2_portn_reply_expected (*(VBYTEP)(PS2_MemBase + 0xF))
-#define TP_ACK_Timeout           (*(VWORDP)(PS2_MemBase + 0x10))
-//KB Data Peding Buff
-#define     KBData_Buff_MemBase     (PS2_MemBase + MEMORY_032SIZE)
-//KB Data Peding Buff
-#define     MSData_Buff_MemBase     (KBData_Buff_MemBase + MEMORY_008SIZE)
+#define TP_ACK_Timeout (*(VWORDP)(PS2_MemBase + 0x10))
+// KB Data Peding Buff
+#define KBData_Buff_MemBase (PS2_MemBase + MEMORY_032SIZE)
+// KB Data Peding Buff
+#define MSData_Buff_MemBase (KBData_Buff_MemBase + MEMORY_008SIZE)
 /*INTC*/
-#define INTC_MemBase (MSData_Buff_MemBase + MEMORY_008SIZE)   // 0x20198
-#define LPC_MON_CNT (*(VBYTEP)(INTC_MemBase + 0x0))   // LPC存储偏移计数
-#define LPC_SOF (*(VBYTEP)(INTC_MemBase + 0x1))       // 接收起始标志
-#define LPC_EOF (*(VBYTEP)(INTC_MemBase + 0x2))       // 接收结束标志
-#define LongTime_Flag (*(VBYTEP)(INTC_MemBase + 0x3)) // 调试器内容
+#define INTC_MemBase (MSData_Buff_MemBase + MEMORY_008SIZE) // 0x20198
+#define LPC_MON_CNT (*(VBYTEP)(INTC_MemBase + 0x0))         // LPC存储偏移计数
+#define LPC_SOF (*(VBYTEP)(INTC_MemBase + 0x1))             // 接收起始标志
+#define LPC_EOF (*(VBYTEP)(INTC_MemBase + 0x2))             // 接收结束标志
+#define LongTime_Flag (*(VBYTEP)(INTC_MemBase + 0x3))       // 调试器内容
 /*PWM&TACH*/
 // PWM
 #define PWM_Membase ((INTC_MemBase + MEMORY_008SIZE)) // 0x201A0
@@ -506,7 +506,7 @@
 // #define     POWER_MemBase           (BRAM_MemBase + MEMORY_064SIZE)//0x20270
 #define DelayDoPowerSeq (*(VDWORDP)(POWER_MemBase + 0x0))
 #define System_PowerState (*(VBYTEP)(POWER_MemBase + 0x4))
-#define F_PST_BUSY          BIT(7)
+#define F_PST_BUSY BIT(7)
 // #define     CtrlPowStep             (*(VBYTEP)(POWER_MemBase + 0x5))
 // #define     PowSeqWait              (*(VBYTEP)(POWER_MemBase + 0x6))
 #define AutoColdBootTimer (*(VBYTEP)(POWER_MemBase + 0x7))
@@ -532,7 +532,7 @@
 #define PowerSequence_WaitTime (*(VWORDP)(POWER_MemBase + 0x1d))
 #define PowerSequence_Delay (*(VWORDP)(POWER_MemBase + 0x2b))
 // #define     AlwOnFlag	            (*(VBYTEP)(POWER_MemBase + 0x2c))
-#define     Auto_On     	        (*(VBYTEP)(POWER_MemBase + 0x2d))
+#define Auto_On (*(VBYTEP)(POWER_MemBase + 0x2d))
 #define Low_Power_Flag (*(VBYTEP)(POWER_MemBase + 0x2e))
 // BATTERY
 #define BATTERY_MemBase (POWER_MemBase + MEMORY_064SIZE) // 0x20318
@@ -570,8 +570,8 @@
 #define PowSeq_Record_Cnt (*(VBYTEP)(DEBUG_MemBase + 0xC))
 #define Buf_Num (*(VBYTEP)(DEBUG_MemBase + 0xD))            // 调试器内容
 #define Buf_Flag (*(VBYTEP)(DEBUG_MemBase + 0xE))           // 调试器内容
-#define Debug_PRINTF_LEVEL (*(VBYTEP)(DEBUG_MemBase + 0xF))        // 调试器内容
-#define Debug_Temp (*(VDWORDP)(DEBUG_MemBase + 0x10))        // 调试器内容
+#define Debug_PRINTF_LEVEL (*(VBYTEP)(DEBUG_MemBase + 0xF)) // 调试器内容
+#define Debug_Temp (*(VDWORDP)(DEBUG_MemBase + 0x10))       // 调试器内容
 #define Debug_Timeout_Count (*(VWORDP)(DEBUG_MemBase + 0x14))
 
 #ifdef AE103
@@ -598,8 +598,8 @@
 #define xOOB_PECI_CPU_T (*(VBYTEP)(eSPI_MemBase + 0x12))
 #define xOOB_PECI_Tj_max (*(VBYTEP)(eSPI_MemBase + 0x13))
 #define xOOB_KEY_CRASHLOG (*(VBYTEP)(eSPI_MemBase + 0x14))
-#define KEY_FCD_LOCK         BIT1
-#define KEY_FLD_LOCK         BIT2
+#define KEY_FCD_LOCK BIT1
+#define KEY_FLD_LOCK BIT2
 #define xOOB_PauseTimer (*(VBYTEP)(eSPI_MemBase + 0x15))
 #define xOOB_GET_FLASH_ADR3 (*(VBYTEP)(eSPI_MemBase + 0x16))
 #define xOOB_GET_FLASH_ADR2 (*(VBYTEP)(eSPI_MemBase + 0x17))
@@ -623,14 +623,14 @@
 
 #define PECI_MemBase (eSPI_MemBase + MEMORY_032SIZE) // 0x20398
 #define PECI_FLAG (*(VBYTEP)(PECI_MemBase + 0x0))
-#define F_PECI_STOP         BIT(7)
-#define F_PECI_BUSY         BIT(6)
-#define F_PECI_UPDATED      BIT(5)
-#define F_PECI_INIT5        BIT(4)
-#define F_PECI_INIT4        BIT(3)
-#define F_PECI_INIT3        BIT(2)
-#define F_PECI_INIT2        BIT(1)
-#define F_PECI_INIT         BIT(0)
+#define F_PECI_STOP BIT(7)
+#define F_PECI_BUSY BIT(6)
+#define F_PECI_UPDATED BIT(5)
+#define F_PECI_INIT5 BIT(4)
+#define F_PECI_INIT4 BIT(3)
+#define F_PECI_INIT3 BIT(2)
+#define F_PECI_INIT2 BIT(1)
+#define F_PECI_INIT BIT(0)
 #define PECI_CMD (*(VBYTEP)(PECI_MemBase + 0x1))
 #define PECI_CompletionCode (*(VBYTEP)(PECI_MemBase + 0x2))
 #define PECI_TIMER (*(VBYTEP)(PECI_MemBase + 0x3))
@@ -666,6 +666,6 @@
 #define DEFAULT_BASE_ADDR2 (PECI_MemBase + MEMORY_008SIZE) // 0x203B8
 #define DEFAULT_BASE_SIZE 0x2A8
 
-#endif  //end #if AE103
+#endif // end #if AE103
 /*--------------------------------------ALL DEFINITION END----------------------------------------------*/
 #endif

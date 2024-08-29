@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-08-20 11:19:54
+ * @LastEditTime: 2023-11-03 15:19:07
  * @Description:
  *
  *
@@ -29,6 +29,9 @@ void Mailbox_SecretKey();
 void Mailbox_Crypto();
 void Mailbox_SecureStorage();
 extern void Mailbox_C2E_Service(void);
-extern void Mailbox_Read_FLASHID(void);
-extern void Mailbox_Read_EFUSE(void);
+extern void Mailbox_Read_FLASHID_Trigger(void);
+extern void Mailbox_Read_EFUSE_Trigger(void);
+extern void Mailbox_FW_Extension_Trigger(void);
+extern void Mailbox_APB2_Source_Alloc_Trigger(void);
+extern void Mailbox_Test(void);
 #endif
