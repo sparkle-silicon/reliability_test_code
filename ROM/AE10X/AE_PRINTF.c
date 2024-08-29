@@ -1,7 +1,7 @@
   /*
   * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-08-29 14:11:56
+ * @LastEditTime: 2024-08-29 14:35:23
   * @Description:
   *
   *
@@ -400,6 +400,16 @@ static int vprintf_internal(const char *fmt, va_list args)
       case 'X':
         base = 16;
         break;
+      case 'f':
+      case 'e': // scientific notation
+      case 'g': // auto format specifie
+        flags |= SMALL;
+        // fall through
+      case 'F':
+      case 'E':
+      case 'G':
+        puts(" N/A "/*Unknown*/);// not available
+        continue;
       case 'd':
       case 'i':
         flags |= SIGN;
