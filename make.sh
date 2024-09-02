@@ -3,7 +3,7 @@
  # @Author: daweslinyu daowes.ly@qq.com
  # @Date: 2024-05-31 14:37:40
  # @LastEditors: daweslinyu daowes.ly@qq.com
- # @LastEditTime: 2024-07-29 19:02:37
+ # @LastEditTime: 2024-09-02 14:33:49
  # @FilePath: /SPK32AE103/Firmware/make.sh
  # @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 ### 
@@ -13,17 +13,36 @@ folder2="/mnt/hgfs/Share"
 folder3="/mnt/hgfs/share"
 binname="./main.bin"
 # clear
-cd ROM
+
+cd Firmware
 make clean -j4
 make compile -j4 DOWNLOAD=flash
-cd ../Firmware
-make clean -j4
-make compile -j4
+cp ./ec_main.bin ../
 cd ..
+sleep 2
+cd crypto_sys
+make clean -j4
+make compile -j4 DOWNLOAD=iram0
+cp ./encrypt_iram0.bin ../
+make clean -j4
+make compile -j4 DOWNLOAD=rom
+cp ./encrypt_rom.bin ../
+cd ..
+sleep 2
+cd ROM
+make clean -j4
+make compile -j4 DOWNLOAD=rom
+cp ./rom.bin ../
+cd ..
+sleep 2
+
 dd if=/dev/zero ibs=512k count=1 | tr "\000" "\377">main.bin
-dd if=./Firmware/ec_main.bin  of=main.bin bs=1k seek=0   conv=notrunc
+dd if=ec_main.bin  of=main.bin bs=1k seek=0   conv=notrunc
+# 0x40000(0xC0000)
+dd if=encrypt_iram0.bin  of=main.bin bs=1k seek=256  conv=notrunc
+dd if=encrypt_rom.bin  of=main.bin bs=1k seek=288  conv=notrunc
 # 0x60000(0xE0000)
-dd if=./ROM/rom.bin  of=main.bin bs=1k seek=384  conv=notrunc
+dd if=rom.bin  of=main.bin bs=1k seek=384  conv=notrunc
 #  dd if=./main.bin  of=main2.bin bs=512k seek=31  conv=notrunc #16M位置檢索
 # cp ./main2.bin /mnt/hgfs/Share/
 ##sed 's/cc.*/& eeeee/g' ./ec_main.bin
