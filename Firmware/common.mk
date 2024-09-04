@@ -39,20 +39,20 @@ C_SRCS_BOOT2 += $(AE10X_DIR)/AE_INIT.c
 C_SRCS_BOOT	 += $(C_SRCS)
 C_SRCS_BOOT1 += $(C_SRCS)
 C_SRCS_BOOT2 += $(C_SRCS)
-ASM_IBJS 		:= $(ASM_SRCS:.S=.i)
+# ASM_IBJS 		:= $(ASM_SRCS:.S=.i)
 ASM_OBJS 		:= $(ASM_SRCS:.S=.o)
-C_IBJS 			:= $(C_SRCS_BOOT:.c=.i)
-C_SBJS 			:= $(C_SRCS_BOOT:.c=.s)
+# C_IBJS 			:= $(C_SRCS_BOOT:.c=.i)
+# C_SBJS 			:= $(C_SRCS_BOOT:.c=.s)
 C_OBJS 			:= $(C_SRCS_BOOT:.c=.o)
 LINK_OBJS 		+= $(ASM_OBJS) $(C_OBJS)
 ASM_OBJS_BOOT1		:= $(ASM_OBJS:.o=1.o)
-C_IBJS_BOOT1 		:= $(C_SRCS_BOOT1:.c=1.i)
-C_SBJS_BOOT1 		:= $(C_SRCS_BOOT1:.c=1.s)
+# C_IBJS_BOOT1 		:= $(C_SRCS_BOOT1:.c=1.i)
+# C_SBJS_BOOT1 		:= $(C_SRCS_BOOT1:.c=1.s)
 C_OBJS_BOOT1		:= $(C_SRCS_BOOT1:.c=1.o)
 LINK_OBJS_BOOT1 	+= $(ASM_OBJS_BOOT1) $(C_OBJS_BOOT1) 
 ASM_OBJS_BOOT2		:= $(ASM_OBJS:.o=2.o)
-C_IBJS_BOOT2 		:= $(C_SRCS_BOOT2:.c=2.i)
-C_SBJS_BOOT2 		:= $(C_SRCS_BOOT2:.c=2.s)
+# C_IBJS_BOOT2 		:= $(C_SRCS_BOOT2:.c=2.i)
+# C_SBJS_BOOT2 		:= $(C_SRCS_BOOT2:.c=2.s)
 C_OBJS_BOOT2		:= $(C_SRCS_BOOT2:.c=2.o)
 LINK_OBJS_BOOT2 	+= $(ASM_OBJS_BOOT2) $(C_OBJS_BOOT2)
 LINK_DEPS 			+= $(LINKER_SCRIPT)
@@ -313,9 +313,14 @@ ifeq ($(USER_RISCV_LIBC_A),0)
 CFLAGS += -fno-builtin-printf 
 CFLAGS += -fno-builtin-memset
 CFLAGS += -DUSER_AE10X_LIBC_A 
-ifneq ($(wildcard $(AE10X_DIR)/libAE10X.a),)
-LDFLAGS += -L$(AE10X_DIR) -lAE10X
+ifeq ($(OS),Linux)
+ifneq ($(wildcard $(AE10X_DIR)/libLinuxAE10X.a),)
+LDFLAGS += -L$(AE10X_DIR) -lLinuxAE10X
 endif
+else #Windows or other commands
+LDFLAGS += -L$(AE10X_DIR) -lWinAE10X
+endif
+
 LDFLAGS += -nostdlib  -nodefaultlibs
 endif
 ifeq ($(USER_RISCV_LIBC_A),1) 
@@ -359,20 +364,23 @@ else #Windows or other commands
 	@echo Copyright (c)2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
 	@echo **********************************************************************************
 endif
-idep_file =$(@:.i=.d)
+# idep_file =$(@:.i=.d)
 odep_file =$(@:.o=.d)
-$(C_OBJS): %.o: %.s  $(HEADERS)
-	@$(CC) $(CFLAGS)   -c $< -o $@ 
-	@$(OBJDUMP) -D $@ > $(<:.s=.asm)
-	@echo CC 	$@
-$(C_SBJS): %.s: %.i  $(HEADERS)
-	@$(CC) $(CFLAGS)   -S $< -o $@
-$(C_IBJS): %.i: %.c $(HEADERS)
-	@$(CC) $(CFLAGS) -include sys/cdefs.h -Wp,-MD,$(idep_file) -E $< -o $@
+# $(C_OBJS): %.o: %.s  $(HEADERS)
+# 	@$(CC) $(CFLAGS)   -c $< -o $@ 
+# 	@$(OBJDUMP) -D $@ > $(<:.s=.asm)
+# 	@echo CC 	$(notdir $@)
+# $(C_SBJS): %.s: %.i  $(HEADERS)
+# 	@$(CC) $(CFLAGS)   -S $< -o $@
+# $(C_IBJS): %.i: %.c $(HEADERS)
+# 	@$(CC) $(CFLAGS) -include sys/cdefs.h -Wp,-MD,$(idep_file) -E $< -o $@
+$(C_OBJS): %.o: %.c $(HEADERS)
+	@$(CC) $(CFLAGS) $(CINCLUDES) -include sys/cdefs.h -save-temps=obj -Wp,-MD,$(odep_file) -c $< -o $@ 
+	@echo CC    $(notdir $@) 
 $(ASM_OBJS): %.o: %.S $(HEADERS)
-	@$(CC) $(CFLAGS) -Wp,-MD,$(odep_file) -c $< -o $@ 
+	@$(CC) $(CFLAGS) -Wp,-MD,$(odep_file) -c $< -o $@  -save-temps=obj
 	@$(OBJDUMP) -D $@ > $(@:.o=.asm)
-	@echo CC 	$@
+	@echo CC 	$(notdir $@)
 #########################
 #########################
 else ifeq ($(DUAL_BOOT_FLAG),1)
@@ -413,33 +421,40 @@ else #Windows or other commands
 	@echo Copyright (c)2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
 	@echo **********************************************************************************
 endif
-idep_file1 =$(@:1.i=1.d)
+# idep_file1 =$(@:1.i=1.d)
 odep_file1 =$(@:1.o=1.d)
-idep_file2 =$(@:2.i=2.d)
+# idep_file2 =$(@:2.i=2.d)
 odep_file2 =$(@:2.o=2.d)
-$(ASM_OBJS_BOOT1): %1.o: %.S $(HEADERS)
-	@$(CC) $(CFLAGS1) -Wp,-MD,$(odep_file1) -c -o $@ $<
-	@$(OBJDUMP) -D $@ > $(@:.o=.asm)
-	@echo CC  	$(subst $(shell pwd)/,,$@)
-$(C_OBJS_BOOT1): %1.o: %1.s $(HEADERS)
-	@$(CC) $(CFLAGS1)  -c $< -o $@ 
-	@echo CC  	$(subst $(shell pwd)/,,$@)
-$(C_SBJS_BOOT1): %1.s: %1.i  $(HEADERS)
-	@$(CC) $(CFLAGS1)   -S $< -o $@
-$(C_IBJS_BOOT1): %1.i: %.c $(HEADERS)
-	@$(CC) $(CFLAGS1) -include sys/cdefs.h -Wp,-MD,$(idep_file1) -E $< -o $@
 
-$(ASM_OBJS_BOOT2): %2.o: %.S $(HEADERS)
-	@$(CC) $(CFLAGS2) -Wp,-MD,$(odep_file2) -c -o $@ $<
+$(C_OBJS_BOOT1): %1.o: %.c $(HEADERS)
+	@$(CC) $(CFLAGS) $(CINCLUDES) -include sys/cdefs.h -save-temps=obj -Wp,-MD,$(odep_file1) -c $< -o $@ 
+	@echo CC    $(notdir $@) 
+$(ASM_OBJS_BOOT1): %1.o: %.S $(HEADERS)
+	@$(CC) $(CFLAGS1) -Wp,-MD,$(odep_file1) -c -o $@ $< -save-temps=obj 
 	@$(OBJDUMP) -D $@ > $(@:.o=.asm)
 	@echo CC  	$(subst $(shell pwd)/,,$@)
-$(C_OBJS_BOOT2): %2.o: %2.s $(HEADERS)
-	@$(CC) $(CFLAGS2)  -c $< -o $@ 
+# $(C_OBJS_BOOT1): %1.o: %1.s $(HEADERS)
+# 	@$(CC) $(CFLAGS1)  -c $< -o $@ 
+# 	@echo CC  	$(subst $(shell pwd)/,,$@)
+# $(C_SBJS_BOOT1): %1.s: %1.i  $(HEADERS)
+# 	@$(CC) $(CFLAGS1)   -S $< -o $@
+# $(C_IBJS_BOOT1): %1.i: %.c $(HEADERS)
+# 	@$(CC) $(CFLAGS1) -include sys/cdefs.h -Wp,-MD,$(idep_file1) -E $< -o $@
+
+$(C_OBJS_BOOT2): %2.o: %.c $(HEADERS)
+	@$(CC) $(CFLAGS) $(CINCLUDES) -include sys/cdefs.h -save-temps=obj -Wp,-MD,$(odep_file2) -c $< -o $@ 
+	@echo CC    $(notdir $@) 
+$(ASM_OBJS_BOOT2): %2.o: %.S $(HEADERS)
+	@$(CC) $(CFLAGS2) -Wp,-MD,$(odep_file2) -c -o $@ $< -save-temps=obj
+	@$(OBJDUMP) -D $@ > $(@:.o=.asm)
 	@echo CC  	$(subst $(shell pwd)/,,$@)
-$(C_SBJS_BOOT2): %2.s: %2.i  $(HEADERS)
-	@$(CC) $(CFLAGS2)   -S $< -o $@
-$(C_IBJS_BOOT2): %2.i: %.c $(HEADERS)
-	@$(CC) $(CFLAGS2) -include sys/cdefs.h -Wp,-MD,$(idep_file2) -E $< -o $@
+# $(C_OBJS_BOOT2): %2.o: %2.s $(HEADERS)
+# 	@$(CC) $(CFLAGS2)  -c $< -o $@ 
+# 	@echo CC  	$(subst $(shell pwd)/,,$@)
+# $(C_SBJS_BOOT2): %2.s: %2.i  $(HEADERS)
+# 	@$(CC) $(CFLAGS2)   -S $< -o $@
+# $(C_IBJS_BOOT2): %2.i: %.c $(HEADERS)
+# 	@$(CC) $(CFLAGS2) -include sys/cdefs.h -Wp,-MD,$(idep_file2) -E $< -o $@
 endif
 #########################
 .PHONY: clean
