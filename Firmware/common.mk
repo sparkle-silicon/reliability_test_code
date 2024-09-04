@@ -318,7 +318,7 @@ CFLAGS += -mabi=$(RISCV_ABI)
 CFLAGS += -mcmodel=medlow 
 CFLAGS += -ffunction-sections -fdata-sections -fno-common
 CFLAGS += -D$(DOWNLOAD)
-ifeq ($(SAVF_TEMPS_FILE),1) 
+ifeq ($(SAVE_TEMPS_FILE),1) 
 CFLAGS += -save-temps=obj
 endif
 # CFLAGS += -save-temps#保存中間
