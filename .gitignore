@@ -12,9 +12,10 @@
 **/*.json
 #过程文件
 **/*.[iods]
+**/*.res
 #防止部分系统大小写不区分
-!**/START.S
-!**/ENTRY.S
+!**/start.S
+!**/entry.S
 
 #工程目标
 **/*.elf

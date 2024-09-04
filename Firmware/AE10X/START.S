@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-07-22 10:08:02
+ * @LastEditTime: 2024-09-04 12:40:14
  * @Description: 
  * 
  * 
@@ -39,7 +39,7 @@ vector_base:
 #if (defined(TEST101)||defined(AE101)||defined(AE102))
     .word  PMC2_IBF_HANDLER//17
     .word  PMC2_OBE_HANDLER//18
-#elif defined(AE103)
+#elif defined(AE103)||defined(GLE01)
     .word  WU42_HANDLER//17
     .word  RTC_HANDLER//18
 #endif
@@ -164,7 +164,7 @@ __scatterload_shareram://将SRAM的空间清零
 	addi a0, a0, 4
 	bltu a0, a1, 1b
  #if 1//将FLASH中ROM的内容拷贝到SRAM（FPGA 中将ROM看作可写的RAN空间）中
-#if defined(AE103)&&(!defined(DUBLE_FIRMWARE2))   
+#if (defined(AE103)||defined(GLE01))&&(!defined(DUBLE_FIRMWARE2))   
 __scatterload_rom:
 2:
 	la a0, 0xE0000//384k-416k作为rom代码段

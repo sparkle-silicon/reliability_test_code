@@ -1,18 +1,31 @@
-TARGET ?= ec_main.elf			# elf file name ec_main
+
+OS ?= $(shell uname)
+ifeq ($(OS),Linux)
+BUILD_DATE := $(shell date +'%y%m%d')#'%Y%m%d'
+BUILD_TIME := $(shell date +'%H%M%S')
+SHELL_TYPES := $(shell echo $$0)
+else #Windows_NT
+BUILD_DATE := $(shell powershell Get-Date -Format '%y%m%d')#'%Y%m%d'
+BUILD_TIME := $(shell powershell Get-Date -Format '%H%M%S')
+SHELL_TYPES := $(SHELL)
+endif
+PROGRAM ?= ec_main#project Object name
+PROGRAM_FILE ?= $(PROGRAM)_$(BUILD_DATE)$(BUILD_TIME).elf
+TARGET ?= $(PROGRAM_FILE)
+
 # See LICENSE for license details.
-DOWNLOAD ?= crypto					#download flash
+DOWNLOAD ?= flash					#download flash
+RISCV_ARCH?=rv32ec
+RISCV_ABI?=ilp32e
+
 SIZE:=riscv-nuclei-elf-size
 CC:=riscv-nuclei-elf-gcc 
 OBJDUMP:=riscv-nuclei-elf-objdump 
-RISCV_ARCH?=rv32ec
-RISCV_ABI?=ilp32e
-OS ?= $(shell uname)
+
 ENV_DIR = $(AE10X_DIR)/ENV
 ifeq ($(DUAL_BOOT_FLAG),0)
 ifeq ($(DOWNLOAD),flash) 
 LINKER_SCRIPT := $(ENV_DIR)/link_flash.lds
-else ifeq ($(DOWNLOAD),crypto)
-LINKER_SCRIPT := $(ENV_DIR)/link_crypto.lds
 else ifeq ($(DOWNLOAD),ilm) 
 LINKER_SCRIPT := $(ENV_DIR)/link_ilm.lds
 endif
@@ -31,8 +44,8 @@ include $(AE10X_DIR)/Makefile
 include $(KERNEL_DIR)/Makefile
 include $(CUSTOM_DIR)/Makefile
 include $(TEST_DIR)/Makefile
-TARGET_BOOT1 = ec_main_1.elf
-TARGET_BOOT2 = ec_main_2.elf
+TARGET_BOOT1 = $(PROGRAM)_1_$(BUILD_DATE)$(BUILD_TIME).elf
+TARGET_BOOT2 = $(PROGRAM)_2_$(BUILD_DATE)$(BUILD_TIME).elf
 C_SRCS_BOOT	 += $(AE10X_DIR)/AE_INIT.c
 C_SRCS_BOOT1 += $(AE10X_DIR)/AE_INIT.c
 C_SRCS_BOOT2 += $(AE10X_DIR)/AE_INIT.c
@@ -305,6 +318,9 @@ CFLAGS += -mabi=$(RISCV_ABI)
 CFLAGS += -mcmodel=medlow 
 CFLAGS += -ffunction-sections -fdata-sections -fno-common
 CFLAGS += -D$(DOWNLOAD)
+ifeq ($(SAVF_TEMPS_FILE),1) 
+CFLAGS += -save-temps=obj
+endif
 # CFLAGS += -save-temps#保存中間
 # $(C_OBJS): %.o: %.c $(HEADERS)
 # 	@$(CC) $(CFLAGS) -include sys/cdefs.h -Wp,-MD,$(idep_file) -E $< -o $@
@@ -339,9 +355,12 @@ CFLAGS2 += $(CFLAGS)
 ifneq ($(dep_files),)
   include $(dep_files)
 endif
-LDFLAGS += -Wl,-Map=ec_main.map
 LDFLAGS1 += $(LDFLAGS)
 LDFLAGS2 += $(LDFLAGS)
+
+LDFLAGS += -Wl,-Map=$(PROGRAM).map
+LDFLAGS1 += -Wl,-Map=$(PROGRAM)_1.map
+LDFLAGS2 += -Wl,-Map=$(PROGRAM)_2.map
 .PHONY: Target
 #########################
 ifeq ($(DUAL_BOOT_FLAG),0)
@@ -375,10 +394,10 @@ odep_file =$(@:.o=.d)
 # $(C_IBJS): %.i: %.c $(HEADERS)
 # 	@$(CC) $(CFLAGS) -include sys/cdefs.h -Wp,-MD,$(idep_file) -E $< -o $@
 $(C_OBJS): %.o: %.c $(HEADERS)
-	@$(CC) $(CFLAGS) $(CINCLUDES) -include sys/cdefs.h -save-temps=obj -Wp,-MD,$(odep_file) -c $< -o $@ 
+	@$(CC) $(CFLAGS) $(CINCLUDES) -include sys/cdefs.h -Wp,-MD,$(odep_file) -c $< -o $@ 
 	@echo CC    $(notdir $@) 
 $(ASM_OBJS): %.o: %.S $(HEADERS)
-	@$(CC) $(CFLAGS) -Wp,-MD,$(odep_file) -c $< -o $@  -save-temps=obj
+	@$(CC) $(CFLAGS) -Wp,-MD,$(odep_file) -c $< -o $@
 	@$(OBJDUMP) -D $@ > $(@:.o=.asm)
 	@echo CC 	$(notdir $@)
 #########################
@@ -427,10 +446,10 @@ odep_file1 =$(@:1.o=1.d)
 odep_file2 =$(@:2.o=2.d)
 
 $(C_OBJS_BOOT1): %1.o: %.c $(HEADERS)
-	@$(CC) $(CFLAGS) $(CINCLUDES) -include sys/cdefs.h -save-temps=obj -Wp,-MD,$(odep_file1) -c $< -o $@ 
+	@$(CC) $(CFLAGS1) $(CINCLUDES) -include sys/cdefs.h -Wp,-MD,$(odep_file1) -c $< -o $@ 
 	@echo CC    $(notdir $@) 
 $(ASM_OBJS_BOOT1): %1.o: %.S $(HEADERS)
-	@$(CC) $(CFLAGS1) -Wp,-MD,$(odep_file1) -c -o $@ $< -save-temps=obj 
+	@$(CC) $(CFLAGS1) -Wp,-MD,$(odep_file1) -c -o $@ $<
 	@$(OBJDUMP) -D $@ > $(@:.o=.asm)
 	@echo CC  	$(subst $(shell pwd)/,,$@)
 # $(C_OBJS_BOOT1): %1.o: %1.s $(HEADERS)
@@ -442,10 +461,10 @@ $(ASM_OBJS_BOOT1): %1.o: %.S $(HEADERS)
 # 	@$(CC) $(CFLAGS1) -include sys/cdefs.h -Wp,-MD,$(idep_file1) -E $< -o $@
 
 $(C_OBJS_BOOT2): %2.o: %.c $(HEADERS)
-	@$(CC) $(CFLAGS) $(CINCLUDES) -include sys/cdefs.h -save-temps=obj -Wp,-MD,$(odep_file2) -c $< -o $@ 
+	@$(CC) $(CFLAGS2) $(CINCLUDES) -include sys/cdefs.h  -Wp,-MD,$(odep_file2) -c $< -o $@ 
 	@echo CC    $(notdir $@) 
 $(ASM_OBJS_BOOT2): %2.o: %.S $(HEADERS)
-	@$(CC) $(CFLAGS2) -Wp,-MD,$(odep_file2) -c -o $@ $< -save-temps=obj
+	@$(CC) $(CFLAGS2) -Wp,-MD,$(odep_file2) -c -o $@ $<
 	@$(OBJDUMP) -D $@ > $(@:.o=.asm)
 	@echo CC  	$(subst $(shell pwd)/,,$@)
 # $(C_OBJS_BOOT2): %2.o: %2.s $(HEADERS)

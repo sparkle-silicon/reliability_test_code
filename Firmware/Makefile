@@ -1,6 +1,7 @@
 #############################################################
 # Configuration
 #############################################################
+# SHELL := $(shell which bash)
 OS ?= $(shell uname)
 ifeq ($(OS),Linux)
 BUILD_DATE := $(shell date +'%y%m%d')#'%Y%m%d'
@@ -11,11 +12,30 @@ BUILD_DATE := $(shell powershell Get-Date -Format '%y%m%d')#'%Y%m%d'
 BUILD_TIME := $(shell powershell Get-Date -Format '%H%M%S')
 SHELL_TYPES := $(SHELL)
 endif
+CHIP?=GLE01 # x替换当前芯片型号
+VERSION ?= 0.0.0# 定义版本号
+
+PROGRAM ?= ec_main#project Object name
+PROGRAM_FILE ?= $(PROGRAM)_$(BUILD_DATE)$(BUILD_TIME).elf
+
+
+
+DUAL_BOOT_FLAG?=0#双启动开关
+SAVF_TEMPS_FILE ?= 0#保留编译文件
+USER_RISCV_LIBC_A?=0#0 USER_AE10X_LIBC_A 1 USER_RISCV_LIBC_A
+
+PUBLIC_KEY?=5 # 公钥选择
+
 ifeq ($(findstring /sh,$(SHELL_TYPES)),/sh)
 SHELL_TYPE := $(shell readlink -f $(SHELL_TYPES))
 else 
 SHELL_TYPE := $(SHELL_TYPES)
 endif
+
+
+
+
+
 # default the program is downloaded to ilm
 DOWNLOAD ?= flash
 RISCV_ARCH?=rv32ec#按照RISC-V架构命名规则，以下指令子集的组合可表示为RV32EC
@@ -23,16 +43,6 @@ RISCV_ARCH?=rv32ec#按照RISC-V架构命名规则，以下指令子集的组合�
 #E：支持16个通用寄存器
 #C：支持编码长度为16位的压缩指令，提高代码密度
 RISCV_ABI?=ilp32e#int long pointer 都是32bit,不使用硬件浮点数,支持rv32e
-DUAL_BOOT_FLAG?=0#双启动开关
-CHIP?=AE103 # x替换当前芯片型号
-GLE01_SWITCH?=1 #芯片型号为GLE01时，设置为1、型号为AE103，设置为0
-PUBLIC_KEY?=5 # 公钥
-USER_RISCV_LIBC_A?=0#0 USER_AE10X_LIBC_A 1 USER_RISCV_LIBC_A
-VERSION ?= 0.0.0# 定义版本号
-
-PROGRAM ?= ec_main#project Object name
-PROGRAM_FILE ?= $(PROGRAM)_$(BUILD_DATE)$(BUILD_TIME).elf
-
 # Default target
 # Pointers to various important tools in the toolchain.
 RISCV_GCC     := riscv-nuclei-elf-gcc
@@ -66,15 +76,16 @@ export TOPDIR KERNEL_DIR AE10X_DIR CUSTOM_DIR HARDWARE_DIR TEST_DIR ENV_DIR CFLA
 #编译
 #############################################################
 PROGRAM_ELF = $(TOPDIR)/$(PROGRAM_FILE)
-PROGRAM_BOOT1 ?= ec_main_1
-PROGRAM_BOOT2 ?= ec_main_2
-PROGRAM_FILE_BOOT1 ?=$(PROGRAM_BOOT1).elf
-PROGRAM_FILE_BOOT2 ?= $(PROGRAM_BOOT2).elf
+PROGRAM_BOOT1 ?= $(PROGRAM)_1
+PROGRAM_BOOT2 ?= $(PROGRAM)_2
+PROGRAM_FILE_BOOT1 ?=$(PROGRAM_BOOT1)_$(BUILD_DATE)$(BUILD_TIME).elf
+PROGRAM_FILE_BOOT2 ?= $(PROGRAM_BOOT2)_$(BUILD_DATE)$(BUILD_TIME).elf
 PROGRAM_ELF_BOOT1 = $(TOPDIR)/$(PROGRAM_FILE_BOOT1)
 PROGRAM_ELF_BOOT2 = $(TOPDIR)/$(PROGRAM_FILE_BOOT2)
 DD_ELF_BOOT:= if=/dev/zero ibs=4k count=64 | tr "\000" "\377"
-DD_ELF_BOOT1:= if=./ec_main_1.bin  of=$(PROGRAM).bin seek=0   conv=notrunc
-DD_ELF_BOOT2:= if=./ec_main_2.bin  of=$(PROGRAM).bin seek=512 conv=notrunc
+DD_ELF_BOOT1:= if=./$(PROGRAM_BOOT1).bin  of=$(PROGRAM).bin seek=0   conv=notrunc
+DD_ELF_BOOT2:= if=./$(PROGRAM_BOOT2).bin  of=$(PROGRAM).bin seek=256 conv=notrunc
+
 compile: software 
 ifeq ($(OS),Linux) #Linux
 #	@gcc ./TOOLS/SMx/SM2.c -D$(CHIP) -I/usr/include/openssl/ $(CINCLUDE) -L /usr/lib/x86_64-linux-gnu/ -lcrypto  -o sm2 #-D_DEBUG
@@ -102,7 +113,7 @@ software: copyright_notice
 
 	@echo SHELL = $(SHELL_TYPE)
 	@echo make -f $(TOPDIR)/common.mk
-	@$(MAKE) -f $(TOPDIR)/common.mk --no-print-directory  GLE01_SWITCH=$(GLE01_SWITCH) CHIP=$(CHIP) USER_RISCV_LIBC_A=$(USER_RISCV_LIBC_A)   DOWNLOAD=$(DOWNLOAD)   DUAL_BOOT_FLAG=$(DUAL_BOOT_FLAG) TARGET=$(PROGRAM_FILE)  VERSION=$(VERSION)
+	@$(MAKE) -f $(TOPDIR)/common.mk --no-print-directory CHIP=$(CHIP) USER_RISCV_LIBC_A=$(USER_RISCV_LIBC_A)  DOWNLOAD=$(DOWNLOAD) SAVF_TEMPS_FILE=$(SAVF_TEMPS_FILE) DUAL_BOOT_FLAG=$(DUAL_BOOT_FLAG)  PROGRAM=$(PROGRAM) TARGET=$(PROGRAM_FILE)
 
 ifeq ($(DUAL_BOOT_FLAG),0)
 #riscv-nuclei-elf-objdump -m riscv:rv32 -D -b binary *.bin > *.dump
@@ -123,17 +134,17 @@ ifeq ($(DUAL_BOOT_FLAG),0)
 	@echo READELF $(PROGRAM).readelf
 else ifeq ($(DUAL_BOOT_FLAG),1)#Dual start
 	@$(RISCV_OBJDUMP) -D $(PROGRAM_ELF_BOOT1) > $(PROGRAM_BOOT1).dump
-	@echo OBJDUMP $(PROGRAM_ELF_BOOT1).dump
+	@echo OBJDUMP $(PROGRAM_BOOT1).dump
 	@$(RISCV_OBJCOPY) $(PROGRAM_ELF_BOOT1) -O verilog $(PROGRAM_BOOT1).verilog
-	@echo OBJCOPY $(PROGRAM_ELF_BOOT1).verilog
+	@echo OBJCOPY $(PROGRAM_BOOT1).verilog
 	@$(RISCV_OBJCOPY) -O binary $(PROGRAM_ELF_BOOT1) $(PROGRAM_BOOT1).bin
-	@echo OBJCOPY $(PROGRAM_ELF_BOOT1).bin
+	@echo OBJCOPY $(PROGRAM_BOOT1).bin
 	@$(RISCV_OBJDUMP) -D $(PROGRAM_ELF_BOOT2) > $(PROGRAM_BOOT2).dump
-	@echo OBJDUMP $(PROGRAM_ELF_BOOT2).dump
+	@echo OBJDUMP $(PROGRAM_BOOT2).dump
 	@$(RISCV_OBJCOPY) $(PROGRAM_ELF_BOOT2) -O verilog $(PROGRAM_BOOT2).verilog
-	@echo OBJCOPY $(PROGRAM_ELF_BOOT2).verilog
+	@echo OBJCOPY $(PROGRAM_BOOT2).verilog
 	@$(RISCV_OBJCOPY) -O binary $(PROGRAM_ELF_BOOT2) $(PROGRAM_BOOT2).bin
-	@echo OBJCOPY $(PROGRAM_ELF_BOOT2).bin
+	@echo OBJCOPY $(PROGRAM_BOOT2).bin
 	@$(DD) $(DD_ELF_BOOT)>$(PROGRAM).bin
 	@$(DD) $(DD_ELF_BOOT1)
 	@$(DD) $(DD_ELF_BOOT2)
@@ -169,17 +180,18 @@ ifeq ($(OS),Linux) #Linux
 	@rm -rf ../$(release_dir)/TOOLS/AUTO ../$(release_dir)/TOOLS/drive ../$(release_dir)/TOOLS/ROM
 	@rm -rf ../$(release_dir)/.v* ../$(release_dir)/.s*  ../$(release_dir)/.c* ../$(release_dir)/.g* ../$(release_dir)/.p* 
 else #Windows or other commands
-	@xcopy .\* ..\%release_dir% /s /e
-	@del /q /f /s ../%release_dir%/AE10X/*.c
-	@del /q /f /s ../%release_dir%/AE10X/*.S
-	@del /q /f /s ../%release_dir%/HARDWARE
-	@del /q /f /s ../%release_dir%/TEST
-	@del /q /f /s ../%release_dir%/%release_dir%.sh
-	@del /q /f /s ../%release_dir%/rom.sh
-	@del /q /f /s ../%release_dir%/TOOLS/AUTO
-	@del /q /f /s ../%release_dir%/TOOLS/drive
-	@del /q /f /s ../%release_dir%/TOOLS/ROM
-	@del /q /f /s ../%release_dir%/**/.* 
+	@if not exist ..\$(release_dir) mkdir ..\$(release_dir)
+	@xcopy **\* ..\$(release_dir) /s /e /i /y
+	@del /q /f /s ..\$(release_dir)\AE10X\*.c
+	@del /q /f /s ..\$(release_dir)\AE10X\*.S
+	@del /q /f /s ..\$(release_dir)\HARDWARE
+	@del /q /f /s ..\$(release_dir)\TEST
+	@del /q /f /s ..\$(release_dir)\$(release_dir).sh
+	@del /q /f /s ..\$(release_dir)\rom.sh
+	@del /q /f /s ..\$(release_dir)\TOOLS\AUTO
+	@del /q /f /s ..\$(release_dir)\TOOLS\drive
+	@del /q /f /s ..\$(release_dir)\TOOLS\ROM
+	@del /q /f /s ..\$(release_dir)\**\.* 
 endif
 ##############################################################
 #############################################################
@@ -258,8 +270,11 @@ ifeq ($(OS),Linux) #Linux
 	@rm -f $(shell find -name "*.d")
 	@rm -f $(shell find -name "*.i")
 	@rm -f $(shell find -name "*.s")
-	@rm -f $(shell find -name "*.tags")
 	@echo RM -F *.[IODS]
+	@rm -f $(shell find -name "*.res")
+	@echo RM -F *.RES
+	@rm -f $(shell find -name "*.tags")
+	@echo RM -F *.TAGS
 	@rm -f $(shell find -name "*.asm")
 	@echo RM -F *.ASM
 else #Windows or other commands
@@ -275,6 +290,7 @@ else #Windows or other commands
 	@del /q /f /s  *.d
 	@del /q /f /s  *.i
 	@del /q /f /s  *_*.s
+	@del /q /f /s  *.res
 	@del /q /f /s  *.asm
 endif
-	
+		
