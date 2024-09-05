@@ -21,7 +21,7 @@ PROGRAM_FILE ?= $(PROGRAM)_$(BUILD_DATE)$(BUILD_TIME).elf
 
 
 DUAL_BOOT_FLAG?=0#双启动开关
-SAVF_TEMPS_FILE ?= 0#保留编译文件
+SAVE_TEMPS_FILE ?= 0#保留编译文件
 USER_RISCV_LIBC_A?=0#0 USER_AE10X_LIBC_A 1 USER_RISCV_LIBC_A
 
 PUBLIC_KEY?=5 # 公钥选择
@@ -113,7 +113,7 @@ software: copyright_notice
 
 	@echo SHELL = $(SHELL_TYPE)
 	@echo make -f $(TOPDIR)/common.mk
-	@$(MAKE) -f $(TOPDIR)/common.mk --no-print-directory CHIP=$(CHIP) USER_RISCV_LIBC_A=$(USER_RISCV_LIBC_A)  DOWNLOAD=$(DOWNLOAD) SAVF_TEMPS_FILE=$(SAVF_TEMPS_FILE) DUAL_BOOT_FLAG=$(DUAL_BOOT_FLAG)  PROGRAM=$(PROGRAM) TARGET=$(PROGRAM_FILE)
+	@$(MAKE) -f $(TOPDIR)/common.mk --no-print-directory CHIP=$(CHIP) USER_RISCV_LIBC_A=$(USER_RISCV_LIBC_A)  DOWNLOAD=$(DOWNLOAD) SAVE_TEMPS_FILE=$(SAVE_TEMPS_FILE) DUAL_BOOT_FLAG=$(DUAL_BOOT_FLAG)  PROGRAM=$(PROGRAM) TARGET=$(PROGRAM_FILE)
 
 ifeq ($(DUAL_BOOT_FLAG),0)
 #riscv-nuclei-elf-objdump -m riscv:rv32 -D -b binary *.bin > *.dump
