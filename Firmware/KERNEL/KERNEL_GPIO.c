@@ -445,15 +445,32 @@ void sysctl_iomux_disable_uartb()
 //      none
 //
 //*****************************************************************************
-void sysctl_iomux_ps2_0()
+#define PS2PIN_SEL 1
+BYTE sysctl_iomux_ps2_0()
 {
+	#if PS2PIN_SEL
 	sysctl_iomux_config(GPIOB, 8, 1);
 	sysctl_iomux_config(GPIOB, 9, 1);
+	return 0x1;
+	#else //如果PS2_0选用该引脚需注意 PS2_1引脚只能使用GPIOB12,13 
+	sysctl_iomux_config(GPIOB, 10, 1);
+	sysctl_iomux_config(GPIOB, 11, 1);
+	return 0x2;
+	#endif
 }
-void sysctl_iomux_ps2_1()
+BYTE sysctl_iomux_ps2_1()
 {
+	#if 1
 	sysctl_iomux_config(GPIOB, 12, 1);
 	sysctl_iomux_config(GPIOB, 13, 1);
+	return 0x4;
+	#else
+	#if PS2PIN_SEL
+	sysctl_iomux_config(GPIOB, 10, 3);
+	sysctl_iomux_config(GPIOB, 11, 3);
+	return 0x8;
+	#endif
+	#endif
 }
 //*****************************************************************************
 //

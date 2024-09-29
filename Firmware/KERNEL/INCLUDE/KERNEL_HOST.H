@@ -22,11 +22,14 @@
 /*-----------------------------------------------------------------------------
  * KBC_STA标志位
  *---------------------------------------------------------------------------*/
-#define KBC_OBF                   0x00
-#define KBC_IBF                   0x01
-#define KBC_GPF                   0x02
-#define KBC_CMD                   0x03
-#define PS2_DataType              0x05
+#define KBC_OBF                   0x00 //Output Buffer Full
+#define KBC_IBF                   0x01 //Input Buffer Full
+#define KBC_GPF                   0x02 //System Flag
+#define KBC_CMD                   0x03 //Command or Data
+#define KBC_KL                    0x04 //May be "keyboard lock" (more likely unused on modern systems)
+#define KBC_SAOBF                 0x05 //May be "receive time-out" or "second PS/2 port output buffer full"
+#define KBC_TOE                   0x06 //Timeout error
+#define KBC_PE                    0x07 //Parity error
 /*-----------------------------------------------------------------------------
  * KBC_CTL标志位
  *---------------------------------------------------------------------------*/

@@ -340,20 +340,6 @@
 #define NUM_OF_GPIOD 7
 #define NUM_OF_GPIOE 24
 /************GPIO Register define***************/
-#define GPIO_DR_HIGH 				HEX00
-#define GPIO_DR_LOW					HEX01
-#define GPIO_DDR_IN					HEX00
-#define GPIO_DDR_OUT				HEX01
-#define GPIO_INTEN					HEX01
-#define GPIO_INTMASK_EN				HEX01
-#define GPIO_INTMASK_DISEN			HEX00
-#define	GPIO_INTTYPE_LEVEL_EDGE		HEX01
-#define GPIO_INTTYPE_LEVLE_ELEC		HEX00
-#define GPIO_INT_POLARITY_HIGH_UP	HEX01
-#define GPIO_INT_POLARITY_LOW_DOWN	HEX00
-#define GPIO_EOI_CLEAR				HEX01
-#define	GPIO_LS_SYNC_EN				HEX01
-#define	GPIO_LS_SYNC_DISEN			HEX00
 struct GPIOPinState
 {
 	BYTE default_state_idx;	// default state is mux_state[default_state_idx]
@@ -377,8 +363,8 @@ extern void sysctl_iomux_disable_uart3(void);
 extern void sysctl_iomux_disable_uarta(void);
 extern void sysctl_iomux_disable_uartb(void);
 
-extern void sysctl_iomux_ps2_0(void);
-extern void sysctl_iomux_ps2_1(void);
+extern BYTE sysctl_iomux_ps2_0(void);
+extern BYTE sysctl_iomux_ps2_1(void);
 extern void sysctl_iomux_spim(void);
 extern void sysctl_iomux_spim_cs(void);
 extern void sysctl_iomux_pwm0(void);

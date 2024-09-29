@@ -23,7 +23,7 @@
 /****************************************************************************
  * 平台选择
  *****************************************************************************/
-#define LongXin 0 // 由于龙芯平台SCI有效时间为15ms，如果为龙芯平台需要把该宏打开
+#define SCI_POLLING_CONTROL 0 // 由于龙芯平台SCI有效时间为15ms，如果为龙芯平台需要把该宏打开
 
 // GLE01主系统相关控制宏
 #define GLE01 1                      // GLE01打开关闭
@@ -84,7 +84,10 @@
 
 // driver
 #define SUPPORT_ANX7447 0 // ANX7447 PD CHIP
-
+//battery charge
+#define SUPPORT_BATTERY_CHARGE 0
+// PS2 device scan
+#define SUPPROT_PS2DEV_SCAN 0
 // 风扇控制
 #define SUPPORT_FAN1 0 // 风扇控制
 #define SUPPORT_FAN2 0
@@ -145,7 +148,7 @@
 #define ACPI_SCI_Response 0
 
 #define KBD_8_n_SWITCH 18 // n:8*n
-#define KBD_SN1211        // kbd demo code if nos's run sn1211 please undef
+//#define KBD_SN1211        // kbd demo code if nos's run sn1211 please undef
 #if (KBD_8_n_SWITCH == 16)
 #define KBD_8_16
 #elif (KBD_8_n_SWITCH == 17)

@@ -402,169 +402,82 @@ BYTE Reboot_Variable(void)
 //-------------------------------------------------------------------------------------
 const sPowerSEQ PowerSequence_S5S0[] =
 {
-    // 函数指针         延时      指示信息
-    { 0x0000,           0,          0,}, // Dummy step always in the top of tabel
-    { S5S0_EXAMPLE_1,   5,          0,},
-    { S5S0_EXAMPLE_2,   10,         0,},
-    { S5S0_EXAMPLE_3,   5,          0,},
-    { S5S0_EXAMPLE_4,   10,         0,},
-    { S5S0_EXAMPLE_5,   0,          1,},
-    { LD_PNP_Config,    0,          2,},
-    { PS2_Init,         0,          2 },
-    { S5_S0_Variable,   0,          2,}, // always in the end of tabel
+    // 函数指针                     延时      指示信息
+    { 0x0000,                       0,          0,}, // Dummy step always in the top of tabel
+    { S5S0_EXAMPLE_1,               5,          0,},
+    { S5S0_EXAMPLE_2,               10,         0,},
+    { S5S0_EXAMPLE_3,               5,          0,},
+    { S5S0_EXAMPLE_4,               10,         0,},
+    { S5S0_EXAMPLE_5,               0,          1,},
+    { LD_PNP_Config,                0,          2,},
+    { S5_S0_Variable,               0,          2,}, // always in the end of tabel
 };
 //-------------------------------------------------------------------------------------
 //  Do S0 -> S5 power sequnce
 //-------------------------------------------------------------------------------------
 const sPowerSEQ PowerSequence_S0S5[] =
 {
-    {
-        0x0000,
-        0,
-        0,
-    }, // Dummy step always in the top of tabel
-    {
-        S0S5_EXAMPLE_1,
-        0,
-        0,
-    },
-    {
-        S0S5_EXAMPLE_2,
-        0,
-        0,
-    },
-    {
-        S0S5_EXAMPLE_3,
-        0,
-        0,
-    },
-    {
-        S0_S5_Variable,
-        0,
-        0,
-    }, // always in the end of tabel
+    // 函数指针                     延时      指示信息
+    {0x0000,                        0,          0,}, // Dummy step always in the top of tabel
+    {S0S5_EXAMPLE_1,                0,          0,},
+    {S0S5_EXAMPLE_2,                0,          0,},
+    {S0S5_EXAMPLE_3,                0,          0,},
+    {S0_S5_Variable,                0,          0,}, // always in the end of tabel
 };
 //-------------------------------------------------------------------------------------
 //  Do S4 -> S0 power sequnce
 //-------------------------------------------------------------------------------------
 const sPowerSEQ PowerSequence_S4S0[] =
 {
-    {
-        0x0000,
-        0,
-        0,
-    }, // Dummy step always in the top of tabel
-    {
-        S4S0_EXAMPLE_1,
-        0,
-        0,
-    },
-    {
-        S4S0_EXAMPLE_2,
-        0,
-        0,
-    },
-    {S4_S0_Variable, 0, 0}, // always in the end of tabel
+    // 函数指针                     延时      指示信息
+    {0x0000,                        0,          0,}, // Dummy step always in the top of tabel
+    {S4S0_EXAMPLE_1,                5,          0,},
+    {S4S0_EXAMPLE_2,                0,          0,},
+    {S4_S0_Variable,                0,          0,}, // always in the end of tabel
 };
 //-------------------------------------------------------------------------------------
 //  Do S0 -> S4 power sequnce
 //-------------------------------------------------------------------------------------
 const sPowerSEQ PowerSequence_S0S4[] =
 {
-    {
-        0x0000,
-        0,
-        0,
-    }, // Dummy step always in the top of tabel
-    {
-        S0S4_EXAMPLE_1,
-        0,
-        0,
-    },
-    {
-        S0S4_EXAMPLE_2,
-        0,
-        0,
-    },
-    {S0_S4_Variable, 0, 0}, // always in the end of tabel
+    // 函数指针                     延时      指示信息
+    {0x0000,                        0,          0,}, // Dummy step always in the top of tabel
+    {S0S4_EXAMPLE_1,                5,          0,},
+    {S0S4_EXAMPLE_2,                0,          0,},
+    {S0_S4_Variable,                0,          0,}, // always in the end of tabel
 };
 //-------------------------------------------------------------------------------------
 //  Do S3 -> S0 power sequnce
 //-------------------------------------------------------------------------------------
 const sPowerSEQ PowerSequence_S3S0[] =
 {
-    {
-        0x0000,
-        0,
-        0,
-    }, // Dummy step always in the top of tabel
-    {
-        S3S0_EXAMPLE_1,
-        0,
-        0,
-    },
-    {
-        S3S0_EXAMPLE_2,
-        0,
-        0,
-    },
-    {
-        S3_S0_Variable,
-        0,
-        0,
-    }, // always in the end of tabel
+    // 函数指针                     延时      指示信息
+    {0x0000,                        0,          0,}, // Dummy step always in the top of tabel
+    {S3S0_EXAMPLE_1,                5,          0,},
+    {S3S0_EXAMPLE_2,                0,          0,},
+    {S3_S0_Variable,                0,          0,}, // always in the end of tabel
 };
 //-------------------------------------------------------------------------------------
 //  Do S0 -> S3 power sequnce
 //-------------------------------------------------------------------------------------
 const sPowerSEQ PowerSequence_S0S3[] =
 {
-    {
-        0x0000,
-        0,
-        0,
-    }, // Dummy step always in the top of tabel
-    {
-        S0S3_EXAMPLE_1,
-        0,
-        0,
-    },
-    {
-        S0S3_EXAMPLE_2,
-        0,
-        0,
-    },
-    {
-        S0_S3_Variable,
-        0,
-        0,
-    }, // always in the end of tabel
+    // 函数指针                     延时      指示信息
+    {0x0000,                        0,          0,}, // Dummy step always in the top of tabel
+    {S0S3_EXAMPLE_1,                5,          0,},
+    {S0S3_EXAMPLE_2,                0,          0,},
+    {S0_S3_Variable,                0,          0,}, // always in the end of tabel
 };
 //-------------------------------------------------------------------------------------
 //  Do Reboot power sequnce
 //-------------------------------------------------------------------------------------
 const sPowerSEQ PowerSequence_Reboot[] =
 {
-    {
-        0x0000,
-        0,
-        0,
-    }, // Dummy step always in the top of tabel
-    {
-        Reboot_EXAMPLE_1,
-        0,
-        0,
-    },
-    {
-        Reboot_EXAMPLE_2,
-        0,
-        0,
-    },
-    {
-        Reboot_Variable,
-        0,
-        0,
-    }, // always in the end of tabel
+    // 函数指针                     延时      指示信息
+    {0x0000,                        0,          0,}, // Dummy step always in the top of tabel
+    {Reboot_EXAMPLE_1,              0,          0,},
+    {Reboot_EXAMPLE_2,              5,          0,},
+    {Reboot_Variable,               0,          0,}, // always in the end of tabel
 };
 //----------------------------------------------------------------------------
 //

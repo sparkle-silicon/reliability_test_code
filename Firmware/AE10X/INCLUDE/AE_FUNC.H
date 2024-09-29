@@ -138,6 +138,59 @@
 #define H2E_EN 0x00000004
 #define ICTL_EN 0x00000002
 #define TMR0_EN 0x00000001
+//-----------------------------------------------------------------------------
+// SYSCTL_RST0 寄存器位定义
+//-----------------------------------------------------------------------------
+#define PS2M_RST      (1UL << 31) // PS2M模块复位控制
+#define KBC_RST       (1UL << 29) // KBC模块复位控制
+#define PMC5_RST      (1UL << 28) // PMC5模块复位控制
+#define PMC4_RST      (1UL << 27) // PMC4模块复位控制
+#define PMC3_RST      (1UL << 26) // PMC3模块复位控制
+#define PMC2_RST      (1UL << 25) // PMC2模块复位控制
+#define PMC1_RST      (1UL << 24) // PMC1模块复位控制
+#define SHM_RST       (1UL << 23) // SHMEM模块复位控制
+#define SWUC_RST      (1UL << 22) // SWUC模块复位控制
+#define BRAM_RST      (1UL << 21) // BRAM模块复位控制
+#define GPIO_RST      (1UL << 20) // GPIO模块复位控制
+#define SMB0_RST      (1UL << 19) // SMBUS0模块复位控制
+#define SMB1_RST      (1UL << 18) // SMBUS1模块复位控制
+#define SMB2_RST      (1UL << 17) // SMBUS2模块复位控制
+#define SMB3_RST      (1UL << 16) // SMBUS3模块复位控制
+#define WDT_RST       (1UL << 15) // WDT模块复位控制
+#define PP_RST        (1UL << 14) // 并口模块复位控制
+#define LPC_SRST      (1UL << 13) // LPC模块复位控制
+#define ADC_RST       (1UL << 12) // ADC模块复位控制
+#define PWM_RST       (1UL << 11) // PWM模块复位控制
+#define UARTA_RST     (1UL << 10) // UARTA模块复位控制
+#define UARTB_RST     (1UL << 9)  // UARTB模块复位控制
+#define UART0_RST     (1UL << 8)  // UART0模块复位控制
+#define UART1_RST     (1UL << 7)  // UART1模块复位控制
+#define UART2_RST     (1UL << 6)  // UART2模块复位控制
+#define UART3_RST     (1UL << 5)  // UART3模块复位控制
+#define CAN0_RST      (1UL << 4)  // CAN0模块复位控制
+#define CAN1_RST      (1UL << 3)  // CAN1模块复位控制
+#define CAN2_RST      (1UL << 2)  // CAN2模块复位控制
+#define CAN3_RST      (1UL << 1)  // CAN3模块复位控制
+#define SPIM_RST      (1UL << 0)  // SPIM模块复位控制
+//-----------------------------------------------------------------------------
+// SYSCTL_RST1 寄存器位定义
+//-----------------------------------------------------------------------------
+#define HRSTLD_EN          (1UL << 20)     // Host硬复位逻辑设备使能控制
+#define HRSTPNP_EN         (1UL << 19)     // Host硬复位PNP寄存器使能控制
+#define LPCRST_EN          (1UL << 18)     // LPCRST#引脚硬复位host域控制使能
+#define CHIP_RST           (1UL << 16)     // 全芯片的复位控制
+#define SYSCTL_RST         (1UL << 14)     // SYSCTL模块复位控制
+#define PNP_SRST           (1UL << 10)     // PNP模块软复位控制
+#define LD_SRST            (1UL << 9)      // 逻辑设备的软复位控制
+#define SPIF_RST           (1UL << 8)      // SPIF模块复位控制
+#define H2E_RST            (1UL << 7)      // H2E模块复位控制
+#define ICTL_RST           (1UL << 6)      // 中断控制模块复位控制
+#define TMR0_RST           (1UL << 5)      // TIMER0模块复位控制
+#define TMR1_RST           (1UL << 4)      // TIMER1模块复位控制
+#define TMR2_RST           (1UL << 3)      // TIMER2模块复位控制
+#define TMR3_RST           (1UL << 2)      // TIMER3模块复位控制
+#define KBS_RST            (1UL << 1)      // KBS模块复位控制
+#define PS2K_RST           (1UL << 0)      // PS2K模块复位控制
 void enable_mcycle_minstret();
 void disable_mcycle_minstret();
 void core_wfe();

@@ -585,8 +585,11 @@ void __interrupt SECTION(".interrupt.UART0_HANDLER") UART0_HANDLER(void)
 /* Debugger Function Entry */
 #if ENABLE_DEBUGGER_SUPPORT
 #if DEBUGGER_OUTPUT_SWITCH == 0
-#if DEBUGGER_UART_CHANNEL == 0
-	Debugger_Cmd_IRQ(DEBUGGER_UART_REG(UART_RBR_OFFSET));
+#if DEBUG_UART_SWITCH == 0
+	char temp = UART0_RX;
+	Uart_buffer[Uart_Rx_index++] = temp;
+	Uart_Rx_index %= UART_BUFFER_SIZE;
+	Debugger_Cmd_IRQ(temp);
 #endif
 #endif
 #endif
@@ -641,8 +644,11 @@ void __interrupt SECTION(".interrupt.UARTA_HANDLER") UARTA_HANDLER(void)
 /* Debugger Function Entry */
 #if ENABLE_DEBUGGER_SUPPORT
 #if DEBUGGER_OUTPUT_SWITCH == 0
-#if DEBUGGER_UART_CHANNEL == 4
-	Debugger_Cmd_IRQ(DEBUGGER_UART_REG(UART_RBR_OFFSET));
+#if DEBUG_UART_SWITCH == 4
+	char temp = UARTA_RX;
+	Uart_buffer[Uart_Rx_index++] = temp;
+	Uart_Rx_index %= UART_BUFFER_SIZE;
+	Debugger_Cmd_IRQ(temp);
 #endif
 #endif
 #endif
@@ -702,8 +708,11 @@ void __interrupt SECTION(".interrupt.UARTB_HANDLER") UARTB_HANDLER(void)
 /* Debugger Function Entry */
 #if ENABLE_DEBUGGER_SUPPORT
 #if DEBUGGER_OUTPUT_SWITCH == 0
-#if DEBUGGER_UART_CHANNEL == 5
-	Debugger_Cmd_IRQ(DEBUGGER_UART_REG(UART_RBR_OFFSET));
+#if DEBUG_UART_SWITCH == 5
+	char temp = UARTB_RX;
+	Uart_buffer[Uart_Rx_index++] = temp;
+	Uart_Rx_index %= UART_BUFFER_SIZE;
+	Debugger_Cmd_IRQ(temp);
 #endif
 #endif
 #endif

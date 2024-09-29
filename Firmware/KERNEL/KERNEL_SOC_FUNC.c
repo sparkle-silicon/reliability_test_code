@@ -629,8 +629,6 @@ void __weak SECTION(".init.module") Module_init(void)
 	kbc_pmc_init();
 	// 9.Initialize  The KBS
 	kbs_init();
-	// 10.Initialize The PS2
-	ps2_init();
 #if (defined(AE102))
 	// 11.Initialize The PPort
 	pport_init();

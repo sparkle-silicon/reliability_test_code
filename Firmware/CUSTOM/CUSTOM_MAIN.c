@@ -16,6 +16,7 @@
 #include "CUSTOM_MAIN.H"
 #include "CUSTOM_EVENT.H"
 #include "CUSTOM_TEMPERATURE.H"
+#include "CUSTOM_BATTERY.H"
 #include "CUSTOM_POWER.H"
 #include "CUSTOM_PMC1.H"
 #include "CUSTOM_LED.H"
@@ -38,7 +39,7 @@ void __weak Hook_1msEvent(BYTE EventId)
     Event_Center(EventId);    // Polling system event
     Sys_PowerState_Control(); // System Power Control
     // KBD_ListeningEvent();
-#if LongXin
+#if SCI_POLLING_CONTROL
     SCI_Send();
 #endif
 }
@@ -64,6 +65,12 @@ void __weak Hook_10msEventB(void)
 {
 #if SUPPORT_ANX7447
     ANX_HOOK_10ms();
+#endif
+#if SUPPORT_BATTERY_CHARGE
+    BatChgControlCenter();
+#endif
+#if SUPPROT_PS2DEV_SCAN
+    InitAndIdentifyPS2();
 #endif
 }
 //-----------------------------------------------------------------------------
@@ -200,10 +207,14 @@ void __weak Hook_1secEventC(void) // update new rpm
         //  }
     }
 
-#if SUPPORT_FAN1 || SUPPORT_FAN2
-    // FAN_LEV(FAN1_PWM_CHANNEL_SWITCH);
-    //  FAN_Dynamic(FAN2_PWM_CHANNEL_SWITCH);
-    //  FAN_PID(FAN1_PWM_CHANNEL_SWITCH);
+#if FAN_Dynamic_Adj    
+    FAN_Dynamic(3);
+#endif
+#if FAN_LEV_Adj
+    FAN_LEV(3);
+#endif
+#if FAN_PID_Adj
+    FAN_PID(3);
 #endif
 }
 //-----------------------------------------------------------------------------

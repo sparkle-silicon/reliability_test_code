@@ -360,15 +360,13 @@ void DEBUGER_putchar(char ch)
 #if ENABLE_DEBUGGER_SUPPORT
 #if (DEBUGGER_OUTPUT_SWITCH == 0)
 #if DEBUG_UART_SWITCH < 6
-    while(!(DEBUGGER_UART_REG(UART_LSR_OFFSET) & 0x60))
-        ;
+    while(!(REG8(DEBUGGER_UART + UART_LSR_OFFSET) & 0x60));
     /*FIFO check*/
-    DEBUGGER_UART_REG(UART_THR_OFFSET) = ch; // send by uart
+    REG8(DEBUGGER_UART + UART_THR_OFFSET) = ch; // send by uart
 #endif
 #elif (DEBUGGER_OUTPUT_SWITCH == 1)
 #elif (DEBUGGER_OUTPUT_SWITCH == 2)
-    while(PMC3_STR & 0x1)
-        ;
+    while(PMC3_STR & 0x1);
     PMC3_DOR = ch;
 #endif
 #endif

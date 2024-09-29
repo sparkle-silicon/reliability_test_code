@@ -140,6 +140,43 @@ BYTE CPU_Int_Type_Read(BYTE type)
     return -1;
   }
 }
+BYTE CPU_Int_Polarity_Read(BYTE type)//0为低，1为高
+{
+  uint32_t value2, value1;
+  value1 = (read_csr(0xBD2) & (0x1 << type));
+  value2 = (read_csr(0xBD3) & (0x1 << type));
+  if(value1 != 0)
+  {
+    return 1;
+  }
+  else
+  {
+    if(value2 == 0)
+    {
+      return 1;
+    }
+    else
+    {
+      return 0;
+    }
+  }
+
+}
+
+BYTE CPU_Int_Polarity_LOW(BYTE type)
+{
+  uint32_t value1;
+  value1 = read_csr(0xBD3);
+  write_csr(0xBD3, (value1 |= (0x1 << type)));
+  return 0;
+}
+BYTE CPU_Int_Polarity_HIGH(BYTE type)
+{
+  uint32_t value1;
+  value1 = read_csr(0xBD2);
+  write_csr(0xBD3, (value1 &= ~(0x1 << type)));
+  return 0;
+}
 WEAK DWORD SECTION(".interrupt.handle_trap") handle_trap(uintptr_t mcause, uintptr_t sp)
 {
   return kernel_trap(mcause, sp);

@@ -198,28 +198,6 @@ const BYTE KB_S3WakeUP_Tables[][8] = {
 void Do_HotKey_FnF1(BYTE event)
 {
     UNUSED_VAR(event);
-#ifdef KBD_8_16  
-
-    if(event == MAKE_EVENT)
-    {
-        KBS_Buffer_Input(0xE0); /* Buffer E0h prefix */
-        KBS_Buffer_Input(0x3F); /* Buffer base code */
-                                //			ECQEvent(Sleep_Event, SCIMode_Normal);
-    }
-    else
-    {
-        if(event == BREAK_EVENT)
-        {
-            KBS_Buffer_Input(0xE0); /* Buffer E0h prefix */
-            KBS_Buffer_Input(0xF0); /* Buffer base code */
-            KBS_Buffer_Input(0x3F); /* Buffer base code */
-        }
-    }
-//		if ( event == MAKE_EVENT )
-//		{
-//			Oem_TriggerS0S3();
-//		}
-#endif
 }
 //----------------------------------------------------------------------------
 // The function of hotkey Fn + F2
@@ -234,23 +212,6 @@ void Do_HotKey_FnF2(BYTE event)
 void Do_HotKey_FnF3(BYTE event)
 {
     UNUSED_VAR(event);
-#ifdef KBD_8_16  
-
-    if(event == MAKE_EVENT)
-    {
-        KBS_Buffer_Input(0xE0); /* Buffer E0h prefix */
-        KBS_Buffer_Input(0x23); /* Buffer base code */
-    }
-    else
-    {
-        if(event == BREAK_EVENT)
-        {
-            KBS_Buffer_Input(0xE0); /* Buffer E0h prefix */
-            KBS_Buffer_Input(0xF0); /* Buffer base code */
-            KBS_Buffer_Input(0x23); /* Buffer base code */
-        }
-    }
-#endif
 }
 //----------------------------------------------------------------------------
 // The function of hotkey Fn + F4
@@ -258,38 +219,6 @@ void Do_HotKey_FnF3(BYTE event)
 void Do_HotKey_FnF4(BYTE event)
 {
     UNUSED_VAR(event);
-//		if ( event == MAKE_EVENT )
-//		{
-//		    	KBS_Buffer_Input(0xE0);	/* Buffer E0h prefix */
-//		    	KBS_Buffer_Input(0x08);	/* Buffer base code */
-//		 }
-//		else
-//		{
-//			if ( event == BREAK_EVENT )
-//			{
-//	    			KBS_Buffer_Input(0xE0);	/* Buffer E0h prefix */
-//	    			KBS_Buffer_Input(0xF0);	/* Buffer base code */
-//	    			KBS_Buffer_Input(0x08);	/* Buffer base code */
-//			 }
-//		}
-//			if ( event == MAKE_EVENT )
-//		{
-//		    	KBS_Buffer_Input(0xE0);	/* Buffer E0h prefix */
-//		    	KBS_Buffer_Input(0x1F);	/* Buffer base code */ //WIN
-//
-//					KBS_Buffer_Input(0x04);	/* Buffer base code */  //F3
-//		 }
-//		else
-//		{
-//
-//
-//					KBS_Buffer_Input(0xF0);	/* Buffer base code */
-//	    		KBS_Buffer_Input(0x04);	/* Buffer base code */
-//
-//					KBS_Buffer_Input(0xE0);	/* Buffer E0h prefix */
-//					KBS_Buffer_Input(0xF0);	/* Buffer base code */
-//					KBS_Buffer_Input(0x1F);	/* Buffer base code */
-//		}
 }
 //----------------------------------------------------------------------------
 // The function of hotkey Fn + F5
@@ -297,23 +226,6 @@ void Do_HotKey_FnF4(BYTE event)
 void Do_HotKey_FnF5(BYTE event)
 {
     UNUSED_VAR(event);
-#ifdef KBD_8_16  
-
-    if(event == MAKE_EVENT)
-    {
-        KBS_Buffer_Input(0xE0); /* Buffer E0h prefix */
-        KBS_Buffer_Input(0x32); /* Buffer base code */
-    }
-    else
-    {
-        if(event == BREAK_EVENT)
-        {
-            KBS_Buffer_Input(0xE0); /* Buffer E0h prefix */
-            KBS_Buffer_Input(0xF0); /* Buffer base code */
-            KBS_Buffer_Input(0x32); /* Buffer base code */
-        }
-    }
-#endif
 }
 //----------------------------------------------------------------------------
 // The function of hotkey Fn + F6
@@ -321,23 +233,6 @@ void Do_HotKey_FnF5(BYTE event)
 void Do_HotKey_FnF6(BYTE event)
 {
     UNUSED_VAR(event);
-#ifdef KBD_8_16  
-
-    if(event == MAKE_EVENT)
-    {
-        KBS_Buffer_Input(0xE0); /* Buffer E0h prefix */
-        KBS_Buffer_Input(0x21); /* Buffer base code */
-    }
-    else
-    {
-        if(event == BREAK_EVENT)
-        {
-            KBS_Buffer_Input(0xE0); /* Buffer E0h prefix */
-            KBS_Buffer_Input(0xF0); /* Buffer base code */
-            KBS_Buffer_Input(0x21); /* Buffer base code */
-        }
-    }
-#endif
 }
 //----------------------------------------------------------------------------
 // The function of hotkey Fn + F7
@@ -345,39 +240,6 @@ void Do_HotKey_FnF6(BYTE event)
 void Do_HotKey_FnF7(BYTE event)
 {
     UNUSED_VAR(event);
-#ifdef KBD_8_16  
-    // Increase brightness
-    //		if(BrgLevel < MAX_LEVEL-1)
-    //		{
-    //			if(event == MAKE_EVENT)
-    //			{
-    //					BrgLevel++;
-    //					KBS_Buffer_Input(0xE0);	/* Buffer E0h prefix */
-    //					KBS_Buffer_Input(0x02);	/* Buffer base code */
-    //		//				ECQEvent(Bright_Inc_Event,SCIMode_Normal);
-    //			}
-    //		}
-    //		if ( event == BREAK_EVENT )
-    //		{
-    //					KBS_Buffer_Input(0xE0);	/* Buffer E0h prefix */
-    //					KBS_Buffer_Input(0xF0);	/* Buffer E0h prefix */
-    //					KBS_Buffer_Input(0x02);	/* Buffer base code */
-    //		}
-    if(event == MAKE_EVENT)
-    {
-        KBS_Buffer_Input(0xE0); /* Buffer E0h prefix */
-        KBS_Buffer_Input(0x02); /* Buffer base code */
-    }
-    else
-    {
-        if(event == BREAK_EVENT)
-        {
-            KBS_Buffer_Input(0xE0); /* Buffer E0h prefix */
-            KBS_Buffer_Input(0xF0); /* Buffer E0h prefix */
-            KBS_Buffer_Input(0x02); /* Buffer base code */
-        }
-    }
-#endif
 }
 //----------------------------------------------------------------------------
 // The function of hotkey Fn + F8
@@ -385,39 +247,6 @@ void Do_HotKey_FnF7(BYTE event)
 void Do_HotKey_FnF8(BYTE event)
 {
     UNUSED_VAR(event);
-#ifdef KBD_8_16  
-    // Decrease brightness
-    //	if(BrgLevel > 0)
-    //	{
-    //		if(event == MAKE_EVENT)
-    //		{
-    //				BrgLevel--;
-    //				KBS_Buffer_Input(0xE0);	/* Buffer E0h prefix */
-    //				KBS_Buffer_Input(0x01);	/* Buffer base code */
-    //	//					ECQEvent(Bright_Dec_Event,SCIMode_Normal);
-    //		}
-    //	}
-    //	if ( event == BREAK_EVENT )
-    //	{
-    //				KBS_Buffer_Input(0xE0);	/* Buffer E0h prefix */
-    //				KBS_Buffer_Input(0xF0);	/* Buffer E0h prefix */
-    //				KBS_Buffer_Input(0x01);	/* Buffer base code */
-    //	}
-    if(event == MAKE_EVENT)
-    {
-        KBS_Buffer_Input(0xE0); /* Buffer E0h prefix */
-        KBS_Buffer_Input(0x01); /* Buffer base code */
-    }
-    else
-    {
-        if(event == BREAK_EVENT)
-        {
-            KBS_Buffer_Input(0xE0); /* Buffer E0h prefix */
-            KBS_Buffer_Input(0xF0); /* Buffer E0h prefix */
-            KBS_Buffer_Input(0x01); /* Buffer base code */
-        }
-    }
-#endif
 }
 //----------------------------------------------------------------------------
 // The function of hotkey Fn + F9
@@ -434,33 +263,6 @@ void Do_HotKey_FnF9(BYTE event)
 void Do_HotKey_FnF10(BYTE event)
 {
     UNUSED_VAR(event);
-#ifdef KBD_8_16  
-    // if(SystemIsS0 )
-    {
-        if(event == MAKE_EVENT)
-        {
-            if(IS_MASK_SET(GPIO2_DR0, BIT(4)))
-            {
-                BACKLIGHT_L();
-            }
-            else
-            {
-                BACKLIGHT_H();
-            }
-            // Buffer_Key(0xE0);	/* Buffer E0h prefix */
-            // Buffer_Key(0x09);	/* Buffer base code */
-        }
-        else
-        {
-            if(event == BREAK_EVENT)
-            {
-// Buffer_Key(0xE0);	/* Buffer E0h prefix */
-// Buffer_Key(0xF0);	/* Buffer E0h prefix */
-// Buffer_Key(0x09);	/* Buffer base code */
-            }
-        }
-    }
-#endif
 }
 //----------------------------------------------------------------------------
 // The function of hotkey Fn + F11
@@ -468,8 +270,6 @@ void Do_HotKey_FnF10(BYTE event)
 void Do_HotKey_FnF11(BYTE event)
 {
     UNUSED_VAR(event);
-#ifdef KBD_8_16  
-#endif
 }
 //----------------------------------------------------------------------------
 // The function of hotkey Fn + F12
@@ -477,8 +277,6 @@ void Do_HotKey_FnF11(BYTE event)
 void Do_HotKey_FnF12(BYTE event)
 {
     UNUSED_VAR(event);
-#ifdef KBD_8_16  
-#endif
 }
 //----------------------------------------------------------------------------
 // The function of hotkey Fn + ESC
@@ -486,8 +284,6 @@ void Do_HotKey_FnF12(BYTE event)
 void Do_HotKey_FnESC(BYTE event)
 {
     UNUSED_VAR(event);
-#ifdef KBD_8_16  
-#endif
 }
 //----------------------------------------------------------------------------
 // The function of hotkey Fn + up arrow

@@ -47,14 +47,15 @@
 #define SMS_WxAAS_16SIZE    0x00
 #define SMFSR_EC_IE     HEX08
 #define SMFSR_EC_IR     HEX02
+#define PNPCNST_SETEN   BIT(27)
 extern void SMS_Init(VBYTE windows, VBYTE baseaddr, VBYTE aas);
 extern void SMF_Init(void);
 extern void SHAREMEM_PNP(void);
 extern void SRAM_WRITE(VDWORD offset, VBYTE data);
 extern BYTE SRAM_READ(VDWORD offset);
 extern void SHAREMEMORY_INIT(void);
-void SMSEC_Int_Enable(BYTE type);
-void SMSEC_Int_Disable(BYTE type);
-void SMSHOST_Int_Enable(BYTE type);
-void SMSHOST_Int_Disable(BYTE type);
+extern void SMSEC_Int_Enable(BYTE type);
+extern void SMSEC_Int_Disable(BYTE type);
+extern void SMSHOST_Int_Enable(BYTE type);
+extern void SMSHOST_Int_Disable(BYTE type);
 #endif

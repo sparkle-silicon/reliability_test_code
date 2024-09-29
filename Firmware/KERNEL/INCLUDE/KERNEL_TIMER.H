@@ -84,12 +84,10 @@
 #define my_write8(base, addr, val) *(volatile u8 *)(base + addr) = val
 #define my_readl(base, addr) *(volatile u8 *)(base + addr)
 /************TIMER Register define************/
-#define TIMER_TCR_MASK_EN       HEX04
-#define TIMER_TCR_MASK_DISEN    HEX00
-#define TIMER_TCR_MODE_SIGLE    HEX02
-#define TIMER_TCR_MODE_CYCLE    HEX00
-#define TIMER_TCR_EN            HEX01
-#define TIMER_TCR_DISEN         HEX00
+#define TIMER_MASK_EN       HEX04
+#define TIMER_MODE_SIGLE    HEX02
+#define TIMER_EN            HEX01
+#define TIMER_INT           HEX01
 
 extern int TIMER_Disable(u8 index);
 extern int TIMER_Init(u8 index, u32 load_count, u8 loop_enable, u8 int_mask);

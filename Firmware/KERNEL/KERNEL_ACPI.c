@@ -187,11 +187,11 @@ int CheckBurstMode(void)
 {
     WORD BurstLoopOut;
     BurstLoopOut = T_Burst_Loop;
-    while((PMC1_STR & 0x02) == 0x00)//检查一定时间内IBF是否置位
+    while((PMC1_STR & IBF1) == 0x00)//检查一定时间内IBF是否置位
     {
         BurstLoopOut--;
         // if( TF1 || (BurstLoopOut==0) )  // Time-Out	//FIXME xia
-        if(TIMER3_TCR & 0x1 || (BurstLoopOut == 0)) // Time-Out 退出突发模式
+        if(TIMER3_TCR & TIMER_EN || (BurstLoopOut == 0)) // Time-Out 退出突发模式
         {
             CLEAR_FLAG(PMC1_STR, BURST);
         #if ACPI_SCI_Response
@@ -262,7 +262,7 @@ void SCI_Response(BYTE sci_count)
 {
     if(IS_MASK_CLEAR(SYSTEM_MISC1, ACPI_OS))
         return;
-#if LongXin
+#if SCI_POLLING_CONTROL
     SCI_Count = 15;
     SCI_Response_Flag += sci_count;
 #else
