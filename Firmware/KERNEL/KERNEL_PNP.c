@@ -21,20 +21,13 @@
  //-----------------------------------------------------------------------------
 void Config_PNP_Access_Request(void)
 {
-	int  rdata;
-	unsigned long timeout = 2500;
+	unsigned long timeout = PNP_Timeout;
 	// send access request and read ready
-	PNP_CONFIG = 0x2e2f0002;
+	PNP_CONFIG = EFIR_2E | EFDR_2F | E2PNP_REQ;
 	// judge access request clear or not
-	/*rdata = REG32(regaddr);
-	while((rdata & 0x00000001) != 1)
-	{
-		rdata = REG32(regaddr);
-	}*/
 	do
 	{
-		rdata = PNP_CONFIG;
-		if((rdata & 0x00000001) == 1)
+		if((PNP_CONFIG & E2PNP_RDY) == 1)
 			break; /* OK */
 		udelay(1000);
 		timeout--;
@@ -48,21 +41,13 @@ void Config_PNP_Access_Request(void)
 //-----------------------------------------------------------------------------
 void Config_PNP_Access_Release(void)
 {
-	int regaddr, rdata;
-	unsigned long timeout = 1000;
+	unsigned long timeout = PNP_Timeout;
 	// clear access request
-	regaddr = PNP_CONFIG_ADDR;
-	REG32(regaddr) = 0x2e2f0000;
+	PNP_CONFIG = EFIR_2E | EFDR_2F;
 	// judge access request clear or not
-	/*rdata=REG32(regaddr);
-	while((rdata & 0x00000001) != 0)
-	{
-	   rdata = REG32(regaddr);
-	}*/
 	do
 	{
-		rdata = REG32(regaddr);
-		if((rdata & 0x00000001) == 0)
+		if((PNP_CONFIG & E2PNP_RDY) == 0)
 			break; /* OK */
 		udelay(1000);
 		timeout--;
@@ -80,22 +65,15 @@ void Config_PNP_Write(BYTE idx, BYTE ldn, BYTE data)
 {
 	int wdata, rdata;
 	int e2pnp_reg_wc;
-	unsigned long timeout = 1000;
+	unsigned long timeout = PNP_Timeout;
 	// send write request and write data
-	wdata = ((idx << 24) | (ldn << 16) | (1 << 8) | data);
+	wdata = ((idx << 24) | (ldn << 16) | E2PNP_WriteREQ | data);
 	PNP_CTRL1 = wdata;
 	// judge wirte done
-	/*rdata=REG32(regaddr);
-	e2pnp_reg_wc = (rdata & 0x00000400);
-	while(!e2pnp_reg_wc)
-	{
-		 rdata=REG32(regaddr);
-		 e2pnp_reg_wc = (rdata & 0x00000400);
-	}*/
 	do
 	{
 		rdata = PNP_CTRL1;
-		e2pnp_reg_wc = (rdata & 0x00000400);
+		e2pnp_reg_wc = (rdata & E2PNP_WC);
 		if(e2pnp_reg_wc != 0)
 			break; /* OK */
 		udelay(1000);
@@ -105,7 +83,7 @@ void Config_PNP_Write(BYTE idx, BYTE ldn, BYTE data)
 	if(timeout == 0)
 		dprint("pnp write done timeout\n");
 	// clear write requeset
-	PNP_CTRL1 &= 0xfffffeff;
+	PNP_CTRL1 &= ~E2PNP_WriteREQ;
 }
 //-----------------------------------------------------------------------------
 // PNP Config read
@@ -116,22 +94,15 @@ void Config_PNP_Read(BYTE idx, BYTE ldn)
 {
 	int wdata, rdata, pnpdata;
 	int e2pnp_reg_rc;
-	unsigned long timeout, timeout1 = 1000;
+	unsigned long timeout, timeout1 = PNP_Timeout;
 	// send read request
-	wdata = ((idx << 24) | (ldn << 16) | (1 << 9));
+	wdata = ((idx << 24) | (ldn << 16) | E2PNP_ReadREQ);
 	PNP_CTRL1 = wdata;
 	// read data
-	/*rdata=REG32(regaddr);
-	e2pnp_reg_rc = (rdata & 0x00000800);
-	while(!e2pnp_reg_rc)
-	{
-		 rdata=REG32(regaddr);
-		 e2pnp_reg_rc = (rdata & 0x00000800);
-	}*/
 	do
 	{
 		rdata = PNP_CTRL1;
-		e2pnp_reg_rc = (rdata & 0x00000800);
+		e2pnp_reg_rc = (rdata & E2PNP_RC);
 		if(e2pnp_reg_rc != 0)
 			break; /* OK */
 		udelay(1000);
@@ -145,13 +116,7 @@ void Config_PNP_Read(BYTE idx, BYTE ldn)
 	pnpdata = rdata & 0x000000ff;
 	dprint("idx= %#x, ldn=%#x, read value %#x\n", idx, ldn, pnpdata);
 	// clear
-	PNP_CTRL1 &= 0xfffffdff;
-	// judge finish
-	/*rdata=REG32(regaddr);
-	while(((rdata & 0x00000f00) >> 8) != 0xc)
-	{
-	   rdata=REG32(regaddr);
-	}*/
+	PNP_CTRL1 &= ~E2PNP_ReadREQ;
 	do
 	{
 		rdata = PNP_CTRL1;
@@ -217,14 +182,14 @@ BYTE Sio_PNP_Table[] =
 	/*LD:MOUSE*/
 	0x07,0x05,0x05, // select ld mouse
 	0x70,0x05,0x0c, // select serirq num:12
-	0x71,0x05,0x01, // set serirq level/edge
+	0x71,0x05,0x03, // set serirq level/edge
 	0x30,0x05,0x01, // enable ld
 	/*LD:KEYBOARD*/
 	0x07,0x06,0x06, // select ld mouse
 	0x61,0x06,0x60, // config io port 60
 	0x63,0x06,0x64, // config io port 64
 	0x70,0x06,0x01, // select serirq num:1
-	0x71,0x06,0x01, // set serirq level/edge
+	0x71,0x06,0x03, // set serirq level/edge
 	0x30,0x06,0x01, // enable ld
 #if !(KBC_PNP_ONLY_SWITCH)
 	/*LD:PM1*/
@@ -232,15 +197,31 @@ BYTE Sio_PNP_Table[] =
 	0x61,0x11,0x62, // config io port 62
 	0x63,0x11,0x66, // config io port 66
 	0x70,0x11,0x05, // select serirq num:5
-	0x71,0x11,0x01, // set serirq level/edge
+	0x71,0x11,0x03, // set serirq level/edge
 	0x30,0x11,0x01, // enable ld
 	/*LD:PM2*/
 	0x07,0x12,0x12, // select ld mouse
 	0x61,0x12,0x68, // config io port 68
 	0x63,0x12,0x6c, // config io port 6c
 	0x70,0x12,0x09, // select serirq num:9
-	0x71,0x12,0x01, // set serirq level/edge
+	0x71,0x12,0x03, // set serirq level/edge
 	0x30,0x12,0x01, // enable ld
+#endif
+#if SUPPORT_SHAREMEM_PNP
+	/*LD:ShareMem*/
+	0x07,0xf,0xf, // select sharemem
+	//config firmware cycle 
+	0xf0,0xf,0xfe,
+	0xf1,0xf,0x00,
+	0xf2,0xf,0x00,
+	0xf4,0xf,0xf0,
+	0xf5,0xf,0x00,
+	0xf6,0xf,0x00,
+	//Config SRAM offset map
+	0x60,0xf,0x00,
+	0x61,0xf,0x00,
+	0xfa,0xf,0x00,	//config HOST Semaphore address
+	0x30,0xf,0x01, 	// enable ld
 #endif
 #if 0
 	/*LD:PMC3*/
@@ -402,6 +383,7 @@ void ShareMem_PNP_Config(void)
 	h2e_MoudleClock_EN;
 	sram_MoudleClock_EN;
 	SYSCTL_HDEVEN |= HOST_SMFI_EN;
+	SYSCTL_SPCTL0 |= PNPCNST_SETEN; //enable pnp const register//PNPKEY, PNPPORT, VENDORID, CHIPVER 的设置使
 	SHAREMEMORY_INIT();
 }
 //-----------------------------------------------------------------------------
@@ -409,11 +391,11 @@ void ShareMem_PNP_Config(void)
 //-----------------------------------------------------------------------------
 BYTE LD_PNP_Config(void)
 {
-#if SUPPORT_LD_PNP	
-	LogicalDevice_PNP_Config();
-#endif
 #if SUPPORT_SHAREMEM_PNP
 	ShareMem_PNP_Config();
+#endif
+#if SUPPORT_LD_PNP	
+	LogicalDevice_PNP_Config();
 #endif
 	return 0;
 }

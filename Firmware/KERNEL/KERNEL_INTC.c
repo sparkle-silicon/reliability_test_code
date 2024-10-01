@@ -21,6 +21,7 @@
 #include "AE_COMMAND.H"
 #include "CUSTOM_POWER.H"
 extern unsigned char iicFeedback, iic_flag, iic_int_flag;
+extern char Uart_buffer[UART_BUFFER_SIZE]; // An array of data transferred by the debugger
 /************weak声明************/
 void intr0_gpio_a0(void) __weak;
 void intr0_gpio_a1(void) __weak;
@@ -1454,8 +1455,11 @@ void intr1_uart1(void)
 #endif
 #if ENABLE_DEBUGGER_SUPPORT
 #if DEBUGGER_OUTPUT_SWITCH == 0
-#if DEBUGGER_UART_CHANNEL == 1
-	Debugger_Cmd_IRQ(DEBUGGER_UART_REG(UART_RBR_OFFSET));
+#if DEBUG_UART_SWITCH == 1
+	char temp = UART1_RX;
+	Uart_buffer[Uart_Rx_index++] = temp;
+	Uart_Rx_index %= UART_BUFFER_SIZE;
+	Debugger_Cmd_IRQ(temp);
 #endif
 #endif
 #endif

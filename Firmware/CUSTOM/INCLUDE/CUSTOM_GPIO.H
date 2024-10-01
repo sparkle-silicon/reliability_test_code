@@ -298,7 +298,8 @@
 #define Read_PWR_SW()		IS_MASK_CLEAR(GPIO1_EXT0,BIT(4))
 #define Read_BC_ACOK()		IS_MASK_SET(GPIO0_EXT0,BIT(6))
 #define Read_BATT_PRS_1()			IS_MASK_CLEAR(GPIO1_DR3,BIT(5))
-
+#define CE_ON()		  
+#define CE_OFF()
  /*-----------------------------------------------------------------------------
   * GPIO引脚输出高低定义
   *---------------------------------------------------------------------------*/

@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2023-11-03 11:16:42
+ * @LastEditTime: 2024-06-03 17:10:23
  * @Description: Event support
  *
  *
@@ -17,6 +17,7 @@
 #include "CUSTOM_GPIO.H"
 #include "KERNEL_MEMORY.H"
 #include "CUSTOM_POWER.H"
+#include "CUSTOM_BATTERY.H"
 //-----------------------------------------------------------------------------
 // no change function
 //-----------------------------------------------------------------------------
@@ -76,7 +77,7 @@ void PSWOverrided(void)
 			PSW_COUNTER -= 1;	  // PSW_COUNTER count down
 			if(PSW_COUNTER == 0) // time out
 			{
-				// Oem_TriggerS0S5(SC_4SEC);
+				Custom_S0_S5_Trigger(SC_4SEC);
 			}
 		}
 	}
@@ -84,13 +85,20 @@ void PSWOverrided(void)
 //-----------------------------------------------------------------------------
 // battery 1 in function
 //-----------------------------------------------------------------------------
-void Battery1In(void)
-{}
+void BatteryIn(void)
+{
+	BAT_FailCause = 0x00;
+	SetBATCtrlStep(BAT_Step_ID);
+}
 //-----------------------------------------------------------------------------
 // battery 1 out function
 //-----------------------------------------------------------------------------
-void Battery1Out(void)
-{}
+void BatteryOut(void)
+{
+	BAT_FailCause = 0x00;
+	BAT_Var_Clear();
+	SetBATCtrlStep(BAT_Step_Out);
+}
 // ----------------------------------------------------------------------------
 // Device insert/remove debounce routine.
 // input:   Count_id
@@ -99,7 +107,7 @@ const struct sEvent Event_Table[] =
 {
 	{&CTRL_FLAG1, pwrbtn_press, &DEBOUNCE_CONT0, T_PSW_DEBOUNCE, PSWPressed, PSWReleased, PSWOverrided},
 	{&CTRL_FLAG1, adapter_in, &DEBOUNCE_CONT1, T_AC_DEBOUNCE, AdapterIn, AdapterOut, NullEvent},
-	{&CTRL_FLAG1, bat_in, &DEBOUNCE_CONT2, T_BAT_DEBOUNCE, Battery1In, Battery1Out, NullEvent},
+	{&CTRL_FLAG1, bat_in, &DEBOUNCE_CONT2, T_BAT_DEBOUNCE, BatteryIn, BatteryOut, NullEvent},
 	{&EVENT_FLAG1, DummyFlag, &DEBOUNCE_CONT3, T_EXTEVT_DEBOUNCE, NullEvent, NullEvent, NullEvent},
 	{&EVENT_FLAG1, DummyFlag, &DEBOUNCE_CONT4, T_EXTEVT_DEBOUNCE, NullEvent, NullEvent, NullEvent},
 	{&EVENT_FLAG1, DummyFlag, &DEBOUNCE_CONT5, T_EXTEVT_DEBOUNCE, NullEvent, NullEvent, NullEvent},

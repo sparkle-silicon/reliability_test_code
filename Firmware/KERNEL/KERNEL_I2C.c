@@ -398,7 +398,7 @@ void I2c_Master_Write_Byte(BYTE data, BYTE reg, WORD i2c_channel)
 	{
 		I2c_Writeb(data, I2C_DATA_CMD_OFFSET, i2c_channel);
 		SMB_Temp_Data = data;
-		I2c_Writeb(I2C_WRITE, I2C_DATA_CMD_RWDIR, i2c_channel);
+		I2c_Writeb(I2C_WRITE|I2C_STOP, I2C_DATA_CMD_RWDIR, i2c_channel);
 	}
 	I2c_Check_MST_ACTIVITY(i2c_channel);
 }

@@ -543,6 +543,9 @@ int __weak main(void)
 
 	// printf("mirror success\n");
 
+	while (C2EINFO7 != 0xa55a)
+		; // 等待子系统初始化完毕
+
 	//  3. jump loop
 	main_loop();
 	return 0;

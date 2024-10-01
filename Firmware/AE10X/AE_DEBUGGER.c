@@ -21,28 +21,37 @@
  // Include all header file
 #include "AE_DEBUGGER.H"
 #include "KERNEL_KBS.H"
+#include "CUSTOM_POWER.H"
+#include "KERNEL_GPIO.H"
 #if ENABLE_DEBUGGER_SUPPORT
 //*****************************************************************************
 //
 // global variables for Debugger api
 //
 //*****************************************************************************
-char Debugger_Data[256] = { 0 }; // An array of data transferred by the debugger
-WORD Intr_num[256] = { 0 };	   // Interrupts count array
-char Debugger_Cmd[256] = { 0 };  // An array of data transferred by the debugger
-u8 buf[7];				   // Used to record register addresses and values when reading or writing registers
-static struct KBD_Event kbd_event = { {0}, -1, 0 };
-char KBC_PMC_Event[256] = { 0 }; // An array of records for KBC/PMC data
+char Debugger_Data[DEBUGGER_BUFF_SIZE] = { 0 }; // An array of data transferred by the debugger
+WORD Intr_num[DEBUGGER_BUFF_SIZE] = { 0 };	   // Interrupts count array
+char Debugger_Cmd[DEBUGGER_BUFF_SIZE] = { 0 };  // An array of data transferred by the debugger
+short buf[7];				   // Used to record register addresses and values when reading or writing registers
+static struct KBD_Event kbd_event = { {0}, 0, 0 };
+char KBC_PMC_Event[DEBUGGER_BUFF_SIZE] = { 0 }; // An array of records for KBC/PMC data
 unsigned char iicFeedback = 0, iic_flag = 0, iic_int_flag = 0;
 WORD iic_count, pos = 0;
+/*The debugger scans interface variables*/
+const char Handshake_data[] = { 0x99,0x99,0x99,0x99 }; // Debugger handshake data
+const char Handshake_length = sizeof(Handshake_data);
+const char Version_data[] = { 0x5A,'E','C','1','0','1' }; //0x5A and version data
+const char Version_length = sizeof(Version_data);
+BYTE  Handshake_cunt = 0;
+static char Handshake_Flag = 0;
+char Uart_buffer[UART_BUFFER_SIZE] = { 0 }; // An array of data transferred by the debugger
 //*****************************************************************************
 //
 // local variables for Debugger api
 //
 //*****************************************************************************
 BYTE Debuger_Cmd_Data = 0x0;		 // Debugger CMD data
-char KBC_PMC_Pending[3][256] = { 0 };	 // KBC/PMC record value Pending array
-char KBC_PMC_Pending_Out[256] = { 0 }; // get KBC/PMC Pending out array
+char KBC_PMC_Pending[3][DEBUGGER_BUFF_SIZE] = { 0 };	 // KBC/PMC record value Pending array
 int KBC_PMC_PendingRXCount = 0;		 // KBC/PMC Pending in index
 int KBC_PMC_PendingTXCount = 0;		 // KBC/PMC Pending out index
 BYTE dbg_int_buf[3];				 // Debugger interrupt function instruction array
@@ -64,22 +73,66 @@ BYTE dbg_int_buf[3];				 // Debugger interrupt function instruction array
 //*****************************************************************************
 void KBC_PMC_DataPending(char *KBC_PMC_PendingData)
 {
-	dprint("KBC_PMC_PendingRXCount is %#x \n", KBC_PMC_PendingRXCount);
-	if(KBC_PMC_PendingRXCount >= 3)
+	if(KBC_PMC_PendingRXCount >= KBC_PMC_PendingTXCount)
 	{
-		return;
+		if(((KBC_PMC_PendingRXCount - KBC_PMC_PendingTXCount) >= 2) && (KBC_PMC_Pending_Num >= 256))
+		{
+			dprint("KBC_PMC_Pending error\n");
+			return;
+		}
 	}
-	dprint("pending in data = %#x and %#x", KBC_PMC_PendingData[2], KBC_PMC_PendingData[3]);
-	for(int i = 0; i < 256; ++i)
+	else
 	{
-		KBC_PMC_Pending[KBC_PMC_PendingRXCount][i] = KBC_PMC_PendingData[i]; // Dumps the currently stored array to the pending array
+		if(((KBC_PMC_PendingTXCount - KBC_PMC_PendingRXCount) == 1) && (KBC_PMC_Pending_Num >= 256))
+		{
+			dprint("KBC_PMC_Pending error\n");
+			return;
+		}
 	}
-	dprint("pending store data = %#x and %#x", KBC_PMC_Pending[KBC_PMC_PendingRXCount][2], KBC_PMC_Pending[KBC_PMC_PendingRXCount][3]);
-	for(int i = 0; i < 256; ++i)
+
+	KBC_PMC_Pending[KBC_PMC_PendingRXCount][KBC_PMC_Pending_Num] = KBC_PMC_PendingData[0]; // record direction and channel
+	KBC_PMC_Pending_Num++;
+	if(KBC_PMC_PendingRXCount >= KBC_PMC_PendingTXCount)
 	{
-		KBC_PMC_PendingData[i] = 0; // clear array
+		if(((KBC_PMC_PendingRXCount - KBC_PMC_PendingTXCount) >= 2) && (KBC_PMC_Pending_Num >= 256))
+		{
+			dprint("KBC_PMC_Pending error\n");
+			return;
+		}
 	}
-	KBC_PMC_PendingRXCount++;
+	else
+	{
+		if(((KBC_PMC_PendingTXCount - KBC_PMC_PendingRXCount) == 1) && (KBC_PMC_Pending_Num >= 256))
+		{
+			dprint("KBC_PMC_Pending error\n");
+			return;
+		}
+	}
+	KBC_PMC_Pending[KBC_PMC_PendingRXCount][KBC_PMC_Pending_Num] = KBC_PMC_PendingData[1]; // record value
+	KBC_PMC_Pending_Num++;
+	if(KBC_PMC_PendingRXCount >= KBC_PMC_PendingTXCount)
+	{
+		if(((KBC_PMC_PendingRXCount - KBC_PMC_PendingTXCount) >= 2) && (KBC_PMC_Pending_Num >= 256))
+		{
+			dprint("KBC_PMC_Pending error\n");
+			return;
+		}
+	}
+	else
+	{
+		if(((KBC_PMC_PendingTXCount - KBC_PMC_PendingRXCount) == 1) && (KBC_PMC_Pending_Num >= 256))
+		{
+			dprint("KBC_PMC_Pending error\n");
+			return;
+		}
+	}
+
+	if(KBC_PMC_Pending_Num >= 256)
+	{
+		KBC_PMC_PendingRXCount = (KBC_PMC_PendingRXCount + 1) % 3;
+		KBC_PMC_Pending_Num = 0;
+	}
+
 }
 //*****************************************************************************
 //
@@ -94,19 +147,51 @@ void KBC_PMC_DataPending(char *KBC_PMC_PendingData)
 //*****************************************************************************
 void GetKBC_PMC_PendingData(void)
 {
-	for(int i = 0; i < 256; ++i)
+	if(KBC_PMC_Event_Num != 0)
 	{
-		KBC_PMC_Pending_Out[i] = KBC_PMC_Pending[KBC_PMC_PendingTXCount][i]; // Dumps the currently pending array to the output array
-		KBC_PMC_Pending[KBC_PMC_PendingTXCount][i] = 0;						 // Clear the original pending array
+		if(KBC_PMC_Event_Num >= PMC_KBC_SendCnt)
+		{
+			buf[3] = PMC_KBC_SendCnt - 1;
+			KBC_PMC_Event_Num = KBC_PMC_Event_Num - PMC_KBC_SendCnt;
+		}
+		else
+		{
+			buf[3] = KBC_PMC_Event_Num - 1;
+			KBC_PMC_Event_Num = 0;
+		}
+		for(short i = 0; i < (buf[3] + 1); i++)
+		{
+			Debugger_Data[i] = KBC_PMC_Event[i]; // get value
+		}
+		if(KBC_PMC_Event_Num != 0)
+		{
+			for(short i = 0; i < KBC_PMC_Event_Num; i++)
+			{
+				KBC_PMC_Event[i] = KBC_PMC_Event[i + (buf[3] + 1)];
+			}
+		}
+		else
+		{
+			if(KBC_PMC_PendingRXCount != KBC_PMC_PendingTXCount)
+			{
+				for(short i = 0; i < 256; i++)
+				{
+					KBC_PMC_Event[i] = KBC_PMC_Pending[KBC_PMC_PendingTXCount][i]; // Dumps the currently pending array to the output array
+				}
+				KBC_PMC_Event_Num = 256;
+				KBC_PMC_PendingTXCount = (KBC_PMC_PendingTXCount + 1) % 3;
+			}
+			else
+			{
+				for(short i = 0; i < KBC_PMC_Pending_Num; i++)
+				{
+					KBC_PMC_Event[i] = KBC_PMC_Pending[KBC_PMC_PendingTXCount][i]; // Dumps the currently pending array to the output array
+				}
+				KBC_PMC_Event_Num = KBC_PMC_Pending_Num;
+				KBC_PMC_Pending_Num = 0;
+			}
+		}
 	}
-	KBC_PMC_PendingTXCount++;
-	if(KBC_PMC_PendingTXCount >= KBC_PMC_PendingRXCount) // If output all of pendind's data
-	{
-		KBC_PMC_PendingTXCount = 0;
-		KBC_PMC_PendingRXCount = 0;
-	}
-	dprint("GetKBC_PMC_PendingData \n");
-	dprint("pending in data = %#x and %#x", KBC_PMC_Pending_Out[2], KBC_PMC_Pending_Out[3]);
 }
 //*****************************************************************************
 //
@@ -123,20 +208,26 @@ BYTE Debugger_KBD_Record(BYTE value)
 {
 	if(F_Service_KBL)
 	{
-		if(kbd_event.tail == kbd_event.head)
+		if(KBD_Overflag == 1)
 		{
 			dprint("kbd buffer is overflow!");
 			return 1;
 		}
-		dprint("kdb_event.tail: %x\n", kbd_event.tail);
+		// dprint("kdb_event.tail: %x\n", kbd_event.tail);
 		kbd_event.data[kbd_event.tail++] = value;
-		dprint("kdb_event write: %x\n", kbd_event.data[kbd_event.tail - 1]);
+		// dprint("kdb_event write: %x\n", kbd_event.data[kbd_event.tail - 1]);
 		if(kbd_event.tail == KBD_BUFF_SIZE)
 		{
 			kbd_event.tail = 0;
 		}
+		if(kbd_event.tail == kbd_event.head)
+		{
+
+			KBD_Overflag = 1;
+			return 1;
+		}
 	}
-	Event_Num = 1;
+
 	return 0;
 }
 //*****************************************************************************
@@ -156,6 +247,7 @@ BYTE Debugger_KBD_Record(BYTE value)
 //		0xDD--Set to slave so can read data
 //		0xAA--KBD read request
 //		0xBB--cancel KBD read request
+//		0xCC--Record KBC PMC data
 //		0xE0--Reset chip
 //		0xB0--Switching keyboard Codes
 //		0x75--Firmware update
@@ -166,30 +258,32 @@ void Deubgger_Cmd_Parsing(BYTE data)
 	if((!Buf_flag) && (data == READ_REQUEST || data == WRITE_REQUEST || data == GET_DEBUG_TEMP ||
 		data == KBD_READ_REQUEST || data == CANCEL_KBD_READ_REQUEST || data == RECOARD_KBC_PMC_DATA ||
 		data == STOP_RECOARD_KBC_PMC_DATA || data == RESET_CHIP_USE_WATCHDOG || data == SLAVE_READ_DATA ||
-		data == SWITCH_KEYBOARD_CODE || data == FIRMWARE_UPDATE || data == INTERRUPT_FUNCTION))
+		data == SWITCH_KEYBOARD_CODE || data == FIRMWARE_UPDATE || data == INTERRUPT_FUNCTION || data == HANDSHAKE_REQUEST))
 	{
+	#if DEBUGGER_DEBUG
 		assert_print("cmd:%#x", data);
+	#endif
 		switch(data)
 		{
 			case GET_DEBUG_TEMP:
 				Slave_flag = 0;
 				if(DEBUGGER_OUTPUT_SWITCH == 1)
 					I2C0_INTR_MASK &= ~(1 << 2);
-				DEBUGER_putchar(GET_DEBUG_TEMP);
 				break;
 			case SLAVE_READ_DATA:
 				Slave_flag = 1;
-				DEBUGER_putchar(SLAVE_READ_DATA);
 				break;
 			case KBD_READ_REQUEST:
+			#if DEBUGGER_DEBUG
 				assert_print();
+			#endif
 				F_Service_KBL = 1;
-				DEBUGER_putchar(KBD_READ_REQUEST);
-				Event_Num = 0;
+				KBD_Overflag = 0;
 				break;
 			case CANCEL_KBD_READ_REQUEST:
+			#if DEBUGGER_DEBUG
 				assert_print();
-				DEBUGER_putchar(CANCEL_KBD_READ_REQUEST);
+			#endif
 				F_Service_KBL = 0;
 				if(DEBUGGER_OUTPUT_SWITCH == 1)
 				{
@@ -198,48 +292,43 @@ void Deubgger_Cmd_Parsing(BYTE data)
 				}
 				break;
 			case RECOARD_KBC_PMC_DATA:
+			#if DEBUGGER_DEBUG
 				assert_print();
+			#endif
 				KBC_PMC_Flag = 1;
-				DEBUGER_putchar(RECOARD_KBC_PMC_DATA);
-				for(int i = 0; i < 256; i++)
+				for(int i = 0; i < DEBUGGER_BUFF_SIZE; i++)
 					KBC_PMC_Event[i] = 0; // clear
 				KBC_PMC_Event_Num = 0;
+				KBC_PMC_Pending_Num = 0;
 				break;
 			case STOP_RECOARD_KBC_PMC_DATA:
+			#if DEBUGGER_DEBUG
 				assert_print();
-				DEBUGER_putchar(STOP_RECOARD_KBC_PMC_DATA);
+			#endif
 				KBC_PMC_Flag = 0;
 				break;
 			case RESET_CHIP_USE_WATCHDOG: // reset chip
+			#if DEBUGGER_DEBUG
 				assert_print();
-				DEBUGER_putchar(RESET_CHIP_USE_WATCHDOG);
-				ResetChipFlag = 1;
-				dprint("Chip will be reset!!!\n");
+			#endif
+				WDT_Init(0, 0);
 				break;
 			case SWITCH_KEYBOARD_CODE: // change keyboard code type
+			#if DEBUGGER_DEBUG
 				assert_print();
-				DEBUGER_putchar(SWITCH_KEYBOARD_CODE);
-				if(1 == Host_Flag_XLATE_PC)
-				{
-					Host_Flag_XLATE_PC = 0;
-					dprint("Keyboard change to 2 \n");
-				}
-				else
-				{
-					Host_Flag_XLATE_PC = 1;
-					dprint("Keyboard change to 1 \n");
-				}
+			#endif
+				Host_Flag_XLATE_PC = !Host_Flag_XLATE_PC;
 				break;
 			case FIRMWARE_UPDATE:
 				update_reg_ptr = (VDWORD)DEBUGGER_UART;
-				while(Debugger_Cmd[F_Service_Debugger_Cmd - 1] != 0x0a)//0xa是换行符的十六进制
+				while(Debugger_Cmd[F_Service_Debugger_Cmd - 1] != '\n')//0xa是换行符的十六进制
 				{
 					if(Debugger_Cmd[F_Service_Debugger_Cmd - 1] == '-')
 						if(Debugger_Cmd[F_Service_Debugger_Cmd] == 'c' || Debugger_Cmd[F_Service_Debugger_Cmd] == 'C')
 						{
 							uart_updata_flag |= 2;
 						}
-					if(Debugger_Cmd[F_Service_Debugger_Cmd - 1] == 0xEE)
+					if(Debugger_Cmd[F_Service_Debugger_Cmd - 1] == (char)0xEE)
 					{
 						F_Service_Debugger_Cmd = F_Service_Debugger_Cnt = 0;
 						return;
@@ -249,35 +338,52 @@ void Deubgger_Cmd_Parsing(BYTE data)
 				UPDATE_IER = 0; // 关闭中断
 				uart_updata_flag |= 0x1;
 				Flash_Update_Function();
+			case HANDSHAKE_REQUEST:
+				Buf_num = 0;
+				Buf_flag = 1;
+				Debug_Temp = data;
+				Debug_Timeout_Count = 0xffffffff;
 				break;
 			default:
+			#if DEBUGGER_DEBUG
 				assert_print();
+			#endif
 				int_buf_index = 0;
 				Buf_num = 0;
 				Buf_flag = 1;
 				Debug_Temp = data;
 				return;
 		}
+		if(data != HANDSHAKE_REQUEST)
+			DEBUGER_putchar(data);
 	}
 	if(Buf_flag)
 	{
-		assert_print("data:%#x", data);
+	#if DEBUGGER_DEBUG
+		assert_print("data:0x%x", data);
+	#endif
 		switch(Debug_Temp)
 		{
 			case READ_REQUEST:
+			#if DEBUGGER_DEBUG
 				assert_print();
+			#endif
 				buf[Buf_num] = data; // store received addr
 				Buf_num++;
 				if(Buf_num == 4) // received addr finished
 				{
 					Buf_flag = 0; // clear flag
 					Debug_Temp = 0;
-					assert_print("buf[3]:%c", buf[3]);
+				#if DEBUGGER_DEBUG
+					assert_print("buf[3]:%d", buf[3]);
+				#endif
 					DEBUGGER_DATA(); // enable DEBUGGER_DATA function in main loop
 				}
 				break;
 			case WRITE_REQUEST:
+			#if DEBUGGER_DEBUG
 				assert_print("Write_Request");
+			#endif
 				buf[Buf_num] = data;
 				Buf_num++;
 				if(Buf_num == 7)
@@ -288,7 +394,9 @@ void Deubgger_Cmd_Parsing(BYTE data)
 				}
 				break;
 			case INTERRUPT_FUNCTION:
+			#if DEBUGGER_DEBUG
 				assert_print();
+			#endif
 				dbg_int_buf[int_buf_index] = data;
 				int_buf_index++;
 				if(int_buf_index == 3)
@@ -297,6 +405,19 @@ void Deubgger_Cmd_Parsing(BYTE data)
 					Buf_flag = 0; // clear flag
 					Debug_Temp = 0;
 					DEBUGGER_Int(); // enable DEBUGGER_Int function in main loop
+				}
+				break;
+			case HANDSHAKE_REQUEST:
+			#if DEBUGGER_DEBUG
+				assert_print();
+			#endif
+				if(Debugger_Handshake(data))// handshake success
+				{
+					Buf_flag = 0; // clear flag
+					Debug_Temp = 0;
+				}
+				else
+				{
 				}
 				break;
 			default:
@@ -312,16 +433,20 @@ void Debugger_Cmd_IRQ(BYTE debug_data)
 	}
 	if(F_Service_Debugger_Cmd >= 0xff)
 	{
+	#if DEBUGGER_DEBUG
 		assert_print("warring %#x", F_Service_Debugger_Cmd);
-
+	#endif
 		return;
 	}
 	else
 	{
-		printf("F_Service_Debugger_Cmd:0x%x Debug_data:0x%x", F_Service_Debugger_Cmd, debug_data);
+	#if DEBUGGER_DEBUG
+		dprint("F_Service_Debugger_Cmd:0x%x data:0x%x\n", F_Service_Debugger_Cmd, debug_data);
+	#endif
 		Debugger_Cmd[F_Service_Debugger_Cmd++] = debug_data;
 		F_Service_Debugger = 1;
-		I2C0_INTR_MASK &= ~(0x1 << 2); // 屏蔽接收中断
+		if(DEBUGGER_OUTPUT_SWITCH == 1)
+			I2C0_INTR_MASK &= ~(0x1 << 2); // 屏蔽接收中断
 	}
 }
 //*****************************************************************************
@@ -342,7 +467,9 @@ void Debugger_I2c_Req(WORD baseaddr)
 	Slave_flag = 1; // set slave
 	if(iic_flag == 1)
 	{ // if the feedback datas have been sent
-		assert_print();
+		// #if DEBUGGER_DEBUG
+		//assert_print();
+		//#endif
 		volatile BYTE int_status = I2c_Readb(I2C_INTR_MASK_OFFSET, baseaddr);
 		int_status = (int_status | I2C_INTR_TX_EMPTY) & (~I2C_INTR_RD_REQ);
 		// enable the tx_empty irqc and mask the req irqc to star transmit datas
@@ -351,39 +478,28 @@ void Debugger_I2c_Req(WORD baseaddr)
 	}
 	else
 	{
-		assert_print("iicFeedback %#x", iicFeedback);
+		// assert_print("iicFeedback %#x", iicFeedback);
 		switch(iicFeedback)
 		{
 			case 0:
-				// assert_print();
 				//  return "fe dd" mean the master read while slave does not recive any command
 				I2c_Slave_Write_Byte(0xFE, baseaddr);
 				I2c_Slave_Write_Byte(0xDD, baseaddr);
-				break;
+				return;
 			case 1:
 			{
 				// return two byte data to indicate master the "255 +1" datas need to be read
 				I2c_Slave_Write_Byte(0x01, baseaddr);
 				I2c_Slave_Write_Byte(buf[3], baseaddr);
-				iic_count = 0; // the number of datas have send by iic
-				Num_flag = 0;
-				iic_flag = 1;
+				iic_count = Num_flag = 0; // clear the count num// the number of datas have send by iic
 			}
 			break;
-			case 2:
-			{ // int mode
-				// return two byte data to indicate master the "0 +1" datas need to be read
-				I2c_Slave_Write_Byte(0x00, baseaddr);
-				I2c_Slave_Write_Byte(0x01, baseaddr);
-				iic_flag = 1;
-			}
-			break;
+			case 2:// int mode 
 			case 3:
 			{
 				// return two byte data to indicate master the "0 +1" datas need to be read
 				I2c_Slave_Write_Byte(0x00, baseaddr);
 				I2c_Slave_Write_Byte(0x01, baseaddr);
-				iic_flag = 1;
 			}
 			break;
 			case 4:
@@ -391,14 +507,14 @@ void Debugger_I2c_Req(WORD baseaddr)
 				F_Service_KBL = 0; // stop the kbd record until the datas have been sent
 				I2c_Slave_Write_Byte(0x00, baseaddr);
 				I2c_Slave_Write_Byte(pos, baseaddr);
-				iic_flag = 1;
-				iic_count = 0;
-				Num_flag = 0; // clear the count num
+				iic_count = Num_flag = 0; // clear the count num// the number of datas have send by iic
 			}
 			break;
 			default:
 				return;
 		}
+		iic_flag = 1;
+
 	}
 }
 //*****************************************************************************
@@ -416,7 +532,7 @@ void Debugger_I2c_Req(WORD baseaddr)
 //*****************************************************************************
 void Debugger_I2c_Send(WORD baseaddr)
 {
-	assert_print("iicFeedback %#x", iicFeedback);
+	// assert_print("iicFeedback %#x", iicFeedback);
 	// int data;
 	char wdata[16];
 	volatile BYTE int_status;
@@ -559,9 +675,11 @@ void DEBUGGER_DATA(void) // Debugger Function read
 	uint32_t temp4;
 	/* Addr sequence transformation */
 	data_base = (buf[0] << 16) | (buf[1] << 8) | buf[2];
+#if DEBUGGER_DEBUG
 	assert_print("data_base:%#x", data_base);
-	/* Register length conversion */
-	if(data_base >= 0x10000 && data_base <= 0xBFFFF) // Different addr part has different lenth
+#endif
+/* Register length conversion */
+	if(data_base >= 0x30000 && data_base <= 0x30FFF) // Different addr part has different lenth
 	{
 		length = 4;
 	}
@@ -574,11 +692,13 @@ void DEBUGGER_DATA(void) // Debugger Function read
 	{
 		length = 1; // lyx debug --spi need to read as 1 byte
 	}
+#if DEBUGGER_DEBUG
 	assert_print("length:%#x", length);
-	/* Cumulative number of interrupts */
+#endif
+/* Cumulative number of interrupts */
 	if(data_base == 0x10000) // this addr will get int num
 	{
-		for(int i = 0; i < 256; i++)
+		for(int i = 0; i < DEBUGGER_BUFF_SIZE; i++)
 		{
 			Debugger_Data[i] = Intr_num[i];
 		}
@@ -596,24 +716,46 @@ void DEBUGGER_DATA(void) // Debugger Function read
 	/* KBC/PMC value */
 	else if(data_base == 0x10002) // this addr will get kbc/pmc value
 	{
-		if(KBC_PMC_PendingRXCount > 0) // get pending data if has
+		if(((KBC_PMC_PendingRXCount != KBC_PMC_PendingTXCount)) || (KBC_PMC_Pending_Num > 0)) // get pending data if has
 		{
 			GetKBC_PMC_PendingData();
-			for(int i = 0; i < 256; i++)
-			{
-				Debugger_Data[i] = KBC_PMC_Pending_Out[i];
-				KBC_PMC_Pending_Out[i] = 0;
-			}
 		}
 		else // pending no data
 		{
-			for(int i = 0; i < 256; i++)
+			if(KBC_PMC_Event_Num == 0)//如果没有捕捉到PMC/KBC数据则回复两个字节0xff
 			{
-				Debugger_Data[i] = KBC_PMC_Event[i]; // get value
-				KBC_PMC_Event[i] = 0;				 // clear
+				buf[3] = 1;
+				Debugger_Data[0] = 0xff;
+				Debugger_Data[1] = 0xff;
+			}
+			else
+			{
+				if(KBC_PMC_Event_Num >= PMC_KBC_SendCnt)
+				{
+					buf[3] = PMC_KBC_SendCnt - 1;
+					KBC_PMC_Event_Num = KBC_PMC_Event_Num - PMC_KBC_SendCnt;
+				}
+				else
+				{
+					buf[3] = KBC_PMC_Event_Num - 1;
+					KBC_PMC_Event_Num = 0;
+				}
+				for(short i = 0; i < (buf[3] + 1); i++)
+				{
+					Debugger_Data[i] = KBC_PMC_Event[i]; // get value
+				}
+				if(KBC_PMC_Event_Num != 0)
+				{
+					for(short i = 0; i < KBC_PMC_Event_Num; i++)
+					{
+						KBC_PMC_Event[i] = KBC_PMC_Event[i + (buf[3] + 1)];
+					}
+				}
 			}
 		}
-		KBC_PMC_Event_Num = 0; // 256 count
+	#if DEBUGGER_DEBUG
+		printf("PendingRXCount:0x%x PendingTXCount:0x%x Pending_Num:0x%x Event_Num:0x%x\n", KBC_PMC_PendingRXCount, KBC_PMC_PendingTXCount, KBC_PMC_Pending_Num, KBC_PMC_Event_Num);
+	#endif
 	}
 	/* read value form addr */
 	else
@@ -649,7 +791,7 @@ void DEBUGGER_DATA(void) // Debugger Function read
 				}
 				break;
 			default:
-				for(int i = 0; i < 256; i++)
+				for(int i = 0; i < DEBUGGER_BUFF_SIZE; i++)
 				{
 					Debugger_Data[i] = i;
 				}
@@ -670,26 +812,23 @@ void Debugger_Send_KBD(void)
 {
 	if(!F_Service_KBL)
 		return;
-	if((kbd_event.head + 1) == kbd_event.tail)//没有数据
-		return;
-	if(pos >= 256)
+	if(kbd_event.head == kbd_event.tail)//没有数据
 		return;
 	pos = 0;
-	//assert_print("iicFeedback %#x", iicFeedback);
-	while((((kbd_event.head + 1) % KBD_BUFF_SIZE) != kbd_event.tail))
+	//assert_print("iicFeedback 0x%x", iicFeedback);
+	while((((kbd_event.head) % KBD_BUFF_SIZE) != kbd_event.tail))
 	{
 		iicFeedback = 0; // disable the iic feedback
-		kbd_event.head++;//初始值为-1
-		Debugger_Data[pos++] = kbd_event.data[kbd_event.head];
-		dprint("kbd_event.head:%x data:0x%x\n", kbd_event.head, kbd_event.data[kbd_event.head]);
+		Debugger_Data[pos++] = kbd_event.data[kbd_event.head++];
 		if(kbd_event.head == KBD_BUFF_SIZE)
 		{
 			kbd_event.head = 0;
 		}
 		iicFeedback = 4; // enable the kbc send
-		assert_print();
+		//assert_print();
 	}
-	//assert_print("iicFeedback %#x", iicFeedback);
+	KBD_Overflag = 0;
+	//assert_print("iicFeedback 0x%x", iicFeedback);
 #if (DEBUGGER_OUTPUT_SWITCH == 0)
 	for(int i = 0; i < pos; i++)
 	{
@@ -716,12 +855,16 @@ void DEBUGGER_Change(void)
 	int length = 0;
 	/* Addr sequence transformation */
 	data_base = (buf[0] << 16) | (buf[1] << 8) | buf[2];
-	/* Register length conversion */
-	if(data_base >= 0x10000 && data_base <= 0x1FFFF)
+	/* Register write protection */
+	if(data_base >= 0x32000 || (data_base >= 0x30C00 && data_base <= 0x30FFF) ||
+	(data_base >= 0x28000 && data_base <= 0x2FFFF) || (data_base >= 0x7C00 && data_base <= 0x1FFFF)
+	|| (data_base >= 0x4400 && data_base <= 0x47FF) || data_base <= 0xFFF)
 	{
-		length = 4;
+		DEBUGER_putchar(0xee);
+		return;
 	}
-	else if(data_base >= 0x28000 && data_base <= 0x30FFF)
+	/* Register length conversion */
+	if(data_base >= 0x30000 && data_base <= 0x30FFF)
 	{
 		length = 4;
 	}
@@ -733,10 +876,6 @@ void DEBUGGER_Change(void)
 	{
 		length = 4;
 	}
-	else if(data_base >= 0x31000 && data_base <= 0x31FFF)
-	{
-		length = 1;
-	}
 	else if(data_base >= 0x4800 && data_base <= 0x4FFF)
 	{
 		length = 2;
@@ -745,19 +884,47 @@ void DEBUGGER_Change(void)
 	{
 		length = 1;
 	}
-	assert_print("data_base:%#x  length:%#x", data_base, length);
-	/* write value to addr */
+#if DEBUGGER_DEBUG
+	assert_print("data_base:0x%x  length:0x%x", data_base, length);
+#endif
+/* write value to addr */
 	switch(length)
 	{
 		case 1:
+		#if DEBUGGER_DEBUG
+			printf("vaule:0x%x\n", (buf[6]));
+		#endif
 			*((uint8_t *)(data_base)) = buf[6];
 			break;
 		case 2:
-			*((uint16_t *)(data_base)) = (buf[6] | (buf[5] << 8));
+		#if DEBUGGER_DEBUG
+			printf("vaule:0x%x\n", (buf[6] | (buf[5] << 8)));
+		#endif
+			if(data_base % 2 != 0)//2字节访问防止访问到奇数地址
+			{
+				*((uint16_t *)(data_base - 1)) = ((*((uint16_t *)(data_base - 1)) & 0xff) | (buf[6] << 8));
+			}
+			else
+			{
+				*((uint16_t *)(data_base)) = (buf[6] | (buf[5] << 8));
+			}
 			break;
 		case 4:
-			assert_print("vaule:%#x", (buf[6] | (buf[5] << 8) | (buf[4] << 16) | (buf[3] << 24)));
-			*((uint32_t *)(data_base)) = (buf[6] | (buf[5] << 8) | (buf[4] << 16) | (buf[3] << 24));
+		#if DEBUGGER_DEBUG
+			printf("vaule:0x%x\n", (buf[6] | (buf[5] << 8) | (buf[4] << 16) | (buf[3] << 24)));
+		#endif
+			if(data_base % 4 != 0)//4字节访问防止访问到奇数地址
+			{
+				int Correct_address = data_base - (data_base % 4);
+				uint32_t temp_data = (*((uint32_t *)(Correct_address)));
+				uint32_t mask = 0xFF << ((data_base % 4) * 8);
+				temp_data &= ~mask;  // 清除指定字节
+				(*((uint32_t *)(Correct_address))) = (temp_data | (buf[6] << ((data_base % 4) * 8)));
+			}
+			else
+			{
+				*((uint32_t *)(data_base)) = (buf[6] | (buf[5] << 8) | (buf[4] << 16) | (buf[3] << 24));
+			}
 			break;
 	}
 #if (DEBUGGER_OUTPUT_SWITCH == 1)
@@ -803,10 +970,16 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				CPU_Int_Type_Level(index);
 				break;
 			case 0x8:
-				CPU_Int_Enable_Read(index);
+				value = CPU_Int_Enable_Read(index);
+				read_flag = 1;
 				break;
 			case 0xA:
-				CPU_Int_Type_Read(index);
+				value = CPU_Int_Type_Read(index);
+				read_flag = 1;
+				break;
+			case 0xB:
+				value = CPU_Int_Polarity_Read(index);
+				read_flag = 1;
 				break;
 			default:
 				illegal_operation = 1;
@@ -836,18 +1009,38 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(dbg_int_buf[0] == 0x4)
+	if(dbg_int_buf[0] == 0x4)//LPC_RST中断
 	{
 		switch(dbg_int_buf[1])
 		{
-			case 0x2:
-				Spif_Int_Mask;
+			case 0x0:
+				CPU_Int_Enable(4);
 				break;
-			case 0x3:
-				Spif_Int_Unmask;
+			case 0x1:
+				CPU_Int_Disable(4);
 				break;
-			case 0x9:
-				value = Spif_Int_Mask_Read;
+			case 0x4:
+				CPU_Int_Type_Edge(4);
+				break;
+			case 0x5:
+				CPU_Int_Type_Level(4);
+				break;
+			case 0x6:
+				CPU_Int_Polarity_HIGH(4);
+				break;
+			case 0x7:
+				CPU_Int_Polarity_LOW(4);
+				break;
+			case 0x8:
+				value = CPU_Int_Enable_Read(4);
+				read_flag = 1;
+				break;
+			case 0xA:
+				value = CPU_Int_Type_Read(4);
+				read_flag = 1;
+				break;
+			case 0xB:
+				value = CPU_Int_Polarity_Read(4);
 				read_flag = 1;
 				break;
 			default:
@@ -860,27 +1053,17 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 		switch(dbg_int_buf[1])
 		{
 			case 0x0:
-				GPIOB0_7_Int_Enable(4);
+				PWRSW_Config(0, 0);//enable
 				break;
 			case 0x1:
-				GPIOB0_7_Int_Disable(4);
-				break;
-			case 0x2:
-				GPIOB0_7_Int_Mask(4);
-				break;
-			case 0x3:
-				GPIOB0_7_Int_Unmask(4);
+				SYSCTL_PWRSWCSR &= ~0x1; //disable
 				break;
 			case 0x8:
-				value = GPIOB0_7_Int_Enable_Read(4);
-				read_flag = 1;
-				break;
-			case 0x9:
-				value = GPIOB0_7_Int_Mask_Read(4);
-				read_flag = 1;
-				break;
-			case 0xC:
-				value = GPIOB0_7_Int_Status(4);
+				value = 0;
+				if(((SYSCTL_PWRSWCSR & 0x1) != 0) && ((SYSCTL_PWRSWCSR & 0x10) == 0))
+				{
+					value = 1;
+				}
 				read_flag = 1;
 				break;
 			default:
@@ -893,13 +1076,16 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 		switch(dbg_int_buf[1])
 		{
 			case 0x0:
-				Ps2_Mouse_Int_Enable;
+				PS2_PORT0_CR = CCMD_WRITE;
+				PS2_PORT0_OBUF |= 0x2;
 				break;
 			case 0x1:
-				Ps2_Mouse_Int_Disable;
+				PS2_PORT0_CR = CCMD_WRITE;
+				PS2_PORT0_OBUF &= ~0x2;
 				break;
 			case 0x8:
-				value = Ps2_Mouse_Int_Enable_Read;
+				PS2_PORT0_CR = CCMD_READ;
+				value = (PS2_PORT0_IBUF & 0x2);
 				read_flag = 1;
 				break;
 			default:
@@ -1006,10 +1192,22 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(dbg_int_buf[0] == 0x13)
+	if(dbg_int_buf[0] == 0x13)//修改
 	{
 		switch(dbg_int_buf[1])
 		{
+			case 0x0:
+				WDT_Init(0x1, 0xa);
+				break;
+			case 0x1:
+				WDT_CR &= ~0x1;
+				break;
+			case 0x2:
+				break;
+			case 0x8:
+				value = (WDT_CR & 0x1);
+				read_flag = 1;
+				break;
 			case 0xC:
 				value = Wdt_Int_Status;
 				read_flag = 1;
@@ -1019,7 +1217,7 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(dbg_int_buf[0] == 0x14)
+	if(dbg_int_buf[0] == 0x14)//修改
 	{
 		switch(dbg_int_buf[1])
 		{
@@ -1089,7 +1287,7 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(dbg_int_buf[0] == 0x18)
+	if(dbg_int_buf[0] == 0x18)//修改
 	{
 		switch(dbg_int_buf[1])
 		{
@@ -1098,6 +1296,8 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 			case 0x1:
 				SMSEC_Int_Disable(dbg_int_buf[1]);
+				break;
+			case 0x8:
 				break;
 			default:
 				illegal_operation = 1;
@@ -1108,12 +1308,12 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 	{
 		switch(dbg_int_buf[1])
 		{
-			case 0x0:
-				SMSHOST_Int_Enable(dbg_int_buf[1]);
-				break;
-			case 0x1:
-				SMSHOST_Int_Disable(dbg_int_buf[1]);
-				break;
+			// case 0x0:
+			// 	SMSHOST_Int_Enable(dbg_int_buf[1]);
+			// 	break;
+			// case 0x1:
+			// 	SMSHOST_Int_Disable(dbg_int_buf[1]);
+			// 	break;
 			default:
 				illegal_operation = 1;
 				break;
@@ -1148,23 +1348,53 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 		switch(dbg_int_buf[1])
 		{
 			case 0x0:
-				Int_Control0_Enable(dbg_int_buf[2]);
+				ICTL0_INTEN0 = 0xff; ICTL0_INTEN1 = 0xff;
+				ICTL0_INTEN2 = 0xff; ICTL0_INTEN3 = 0xff;
+				ICTL0_INTEN4 = 0xff; ICTL0_INTEN5 = 0xff;
+				ICTL0_INTEN6 = 0xff; ICTL0_INTEN7 = 0x7;
 				break;
 			case 0x1:
-				Int_Control0_Disable(dbg_int_buf[2]);
+				ICTL0_INTEN0 = 0x00; ICTL0_INTEN1 = 0x00;
+				ICTL0_INTEN2 = 0x00; ICTL0_INTEN3 = 0x00;
+				ICTL0_INTEN4 = 0x00; ICTL0_INTEN5 = 0x00;
+				ICTL0_INTEN6 = 0x00; ICTL0_INTEN7 = 0x00;
 				break;
 			case 0x2:
-				Int_Control0_Mask(dbg_int_buf[2]);
+				ICTL0_INTMASK0 = 0xff; ICTL0_INTMASK1 = 0xff;
+				ICTL0_INTMASK2 = 0xff; ICTL0_INTMASK3 = 0xff;
+				ICTL0_INTMASK4 = 0xff; ICTL0_INTMASK5 = 0xff;
+				ICTL0_INTMASK6 = 0xff; ICTL0_INTMASK7 = 0xff;
 				break;
 			case 0x3:
-				Int_Control0_Unmask(dbg_int_buf[2]);
+				ICTL0_INTMASK0 = 0x00; ICTL0_INTMASK1 = 0x00;
+				ICTL0_INTMASK2 = 0x00; ICTL0_INTMASK3 = 0x00;
+				ICTL0_INTMASK4 = 0x00; ICTL0_INTMASK5 = 0x00;
+				ICTL0_INTMASK6 = 0x00; ICTL0_INTMASK7 = 0xf8;
 				break;
 			case 0x8:
-				value = Int_Control0_Enable_Read(dbg_int_buf[2]);
+				if(ICTL0_INTEN0 == 0xff && ICTL0_INTEN1 == 0xff && ICTL0_INTEN2 == 0xff
+				&& ICTL0_INTEN3 == 0xff && ICTL0_INTEN4 == 0xff && ICTL0_INTEN5 == 0xff
+				&& ICTL0_INTEN6 == 0xff && ((ICTL0_INTEN7 & 0x7) == 0x7))
+				{
+					value = 1;
+				}
+				else
+				{
+					value = 0;
+				}
 				read_flag = 1;
 				break;
-			case 0x9:
-				value = Int_Control0_Mask_Read(dbg_int_buf[2]);
+			case 0x9://是否屏蔽中断
+				if(ICTL0_INTMASK0 == 0xff && ICTL0_INTMASK1 == 0xff && ICTL0_INTMASK2 == 0xff
+				&& ICTL0_INTMASK3 == 0xff && ICTL0_INTMASK4 == 0xff && ICTL0_INTMASK5 == 0xff
+				&& ICTL0_INTMASK6 == 0xff && ((ICTL0_INTMASK7 & 0x7) == 0x7))
+				{
+					value = 1;
+				}
+				else
+				{
+					value = 0;
+				}
 				read_flag = 1;
 				break;
 			case 0xC:
@@ -1181,23 +1411,53 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 		switch(dbg_int_buf[1])
 		{
 			case 0x0:
-				Int_Control1_Enable(dbg_int_buf[2]);
+				ICTL1_INTEN0 = 0xff; ICTL1_INTEN1 = 0xff;
+				ICTL1_INTEN2 = 0xff; ICTL1_INTEN3 = 0xff;
+				ICTL1_INTEN4 = 0xff; ICTL1_INTEN5 = 0xff;
+				ICTL1_INTEN6 = 0xff; ICTL1_INTEN7 = 0xff;
 				break;
 			case 0x1:
-				Int_Control1_Disable(dbg_int_buf[2]);
+				ICTL1_INTEN0 = 0x00; ICTL1_INTEN1 = 0x00;
+				ICTL1_INTEN2 = 0x00; ICTL1_INTEN3 = 0x00;
+				ICTL1_INTEN4 = 0x00; ICTL1_INTEN5 = 0x00;
+				ICTL1_INTEN6 = 0x00; ICTL1_INTEN7 = 0x00;
 				break;
 			case 0x2:
-				Int_Control1_Mask(dbg_int_buf[2]);
+				ICTL1_INTMASK0 = 0xff; ICTL1_INTMASK1 = 0xff;
+				ICTL1_INTMASK2 = 0xff; ICTL1_INTMASK3 = 0xff;
+				ICTL1_INTMASK4 = 0xff; ICTL1_INTMASK5 = 0xff;
+				ICTL1_INTMASK6 = 0xff; ICTL1_INTMASK7 = 0xff;
 				break;
 			case 0x3:
-				Int_Control1_Unmask(dbg_int_buf[2]);
+				ICTL1_INTMASK0 = 0x00; ICTL1_INTMASK1 = 0x00;
+				ICTL1_INTMASK2 = 0x00; ICTL1_INTMASK3 = 0x00;
+				ICTL1_INTMASK4 = 0x00; ICTL1_INTMASK5 = 0x00;
+				ICTL1_INTMASK6 = 0x00; ICTL1_INTMASK7 = 0x00;
 				break;
-			case 0x8:
-				value = Int_Control1_Enable_Read(dbg_int_buf[2]);
+			case 0x8://是否使能
+				if(ICTL1_INTEN0 == 0xff && ICTL1_INTEN1 == 0xff && ICTL1_INTEN2 == 0xff
+				&& ICTL1_INTEN3 == 0xff && ICTL1_INTEN4 == 0xff && ICTL1_INTEN5 == 0xff
+				&& ICTL1_INTEN6 == 0xff && ((ICTL1_INTEN7 & 0x7) == 0x7))
+				{
+					value = 1;
+				}
+				else
+				{
+					value = 0;
+				}
 				read_flag = 1;
 				break;
 			case 0x9:
-				value = Int_Control1_Mask_Read(dbg_int_buf[2]);
+				if(ICTL1_INTMASK0 == 0xff && ICTL1_INTMASK1 == 0xff && ICTL1_INTMASK2 == 0xff
+				&& ICTL1_INTMASK3 == 0xff && ICTL1_INTMASK4 == 0xff && ICTL1_INTMASK5 == 0xff
+				&& ICTL1_INTMASK6 == 0xff && ((ICTL1_INTMASK7 & 0x7) == 0x7))
+				{
+					value = 1;
+				}
+				else
+				{
+					value = 0;
+				}
 				read_flag = 1;
 				break;
 			case 0xC:
@@ -1977,13 +2237,16 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 		switch(dbg_int_buf[1])
 		{
 			case 0x0:
-				Ps2_KBD_Int_Enable;
+				PS2_PORT1_CR = CCMD_WRITE;
+				PS2_PORT1_OBUF |= 0x1;
 				break;
 			case 0x1:
-				Ps2_KBD_Int_Disable;
+				PS2_PORT1_CR = CCMD_WRITE;
+				PS2_PORT1_OBUF &= ~0x1;
 				break;
 			case 0x8:
-				value = Ps2_KBD_Int_Enable_Read;
+				PS2_PORT1_CR = 0x20;
+				value = (PS2_PORT1_IBUF & 0x1);
 				read_flag = 1;
 				break;
 			default:
@@ -2015,18 +2278,18 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(dbg_int_buf[0] == 0x8B)
+	if(dbg_int_buf[0] == 0x8B)//修改
 	{
 		switch(dbg_int_buf[1])
 		{
 			case 0x2:
-				Spim_Int_Mask(dbg_int_buf[2]);
+				Spim_Int_Mask(4);//接收满中断
 				break;
 			case 0x3:
-				Spim_Int_Unmask(dbg_int_buf[2]);
+				Spim_Int_Unmask(4);
 				break;
 			case 0x9:
-				value = Spim_Int_Mask_Read(dbg_int_buf[2]);
+				value = Spim_Int_Mask_Read(4);
 				read_flag = 1;
 				break;
 			case 0xC:
@@ -2038,23 +2301,23 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(dbg_int_buf[0] >= 0x8C && dbg_int_buf[0] <= 0x8F)
+	if(dbg_int_buf[0] >= 0x8C && dbg_int_buf[0] <= 0x8F)//修改
 	{
 		int index = dbg_int_buf[0] - 0x8C;
 		switch(dbg_int_buf[1])
 		{
 			case 0x2:
-				I2c_Int_Mask(index, dbg_int_buf[2]);
+				I2c_Int_Mask(index, 2);//接收满
 				break;
 			case 0x3:
-				I2c_Int_Unmask(index, dbg_int_buf[2]);
+				I2c_Int_Unmask(index, 2);//接收满
 				break;
 			case 0x9:
-				value = I2c_Int_Mask_Read(index, dbg_int_buf[2]);
+				value = I2c_Int_Mask_Read(index, 2);//接收满
 				read_flag = 1;
 				break;
 			case 0xC:
-				value = I2c_Int_Status(index, dbg_int_buf[2]);
+				value = I2c_Int_Status(index, 2);//接收满
 				read_flag = 1;
 				break;
 			default:
@@ -2062,40 +2325,29 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(dbg_int_buf[0] >= 0x90 && dbg_int_buf[0] <= 0x93)
+	if(dbg_int_buf[0] >= 0x90 && dbg_int_buf[0] <= 0x93)//修改
 	{
+	#if (defined(AE102) || defined(TEST103))
+		int index = dbg_int_buf[0] - 0x90;
+	#endif
 		switch(dbg_int_buf[1])
 		{
+		#if (defined(AE102) || defined(TEST103))
 			case 0x0:
-			#if TEXT
-			#if (defined(AE102) || defined(AE103))
 				Can_Int_Enable(index, dbg_int_buf[2]);
-			#endif
-			#endif	
 				break;
 			case 0x1:
-			#if TEXT	
-			#if (defined(AE102) || defined(AE103))
 				Can_Int_Disable(index, dbg_int_buf[2]);
-			#endif
-			#endif	
 				break;
 			case 0x8:
-			#if TEXT	
-			#if (defined(AE102) || defined(AE103))
 				value = Can_Int_Enable_Read(index, dbg_int_buf[2]);
 				read_flag = 1;
-			#endif
-			#endif	
 				break;
 			case 0xC:
-			#if TEXT	
-			#if (defined(AE102) || defined(AE103))
 				value = Can_Int_Status(index, dbg_int_buf[2]);
 				read_flag = 1;
-			#endif
-			#endif	
 				break;
+			#endif
 			default:
 				illegal_operation = 1;
 				break;
@@ -2178,7 +2430,9 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 	{
 		if(1 == read_flag)
 		{
-			dprint("send back read value \n");
+		#if DEBUGGER_DEBUG
+			dprint("send back read value:0x%x \n", value);
+		#endif
 			if(value != 0)
 			{
 			#if (DEBUGGER_OUTPUT_SWITCH == 1)
@@ -2212,7 +2466,7 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 			iic_int_flag = 3;
 		#else
 					/* Output from UART */
-			dprint("send back 0x11 \n");
+			// dprint("send back 0x11 \n");
 			DEBUGER_putchar(0x11);
 		#endif
 			return;
@@ -2225,7 +2479,7 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 		iic_int_flag = 4;
 	#else
 			/* Output from UART */
-		dprint("send back 0xDD \n");
+		// dprint("send back 0xDD \n");
 		DEBUGER_putchar(0xDD);
 	#endif
 		return;
@@ -2236,7 +2490,7 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 //  The Debugger Function for record KBC or PMC
 //
 //  parameter :
-//		direction :  0-input;1-output
+//		direction :  0-input from host;1-output to host
 //		channel :  0-KBC;1-PMC1;2-PMC2;3-PMC3;4-PMC4
 //      value : value need to be record
 //
@@ -2250,11 +2504,13 @@ BYTE Debugger_KBC_PMC_Record(BYTE direction, BYTE channel, BYTE value)
 	{
 		/*first  0-input;1-output*/
 		/*second 0-KBC;1-PMC1;2-PMC2;3-PMC3;4-PMC4*/
-		if(KBC_PMC_Event_Num == 256)
+		if((KBC_PMC_Event_Num >= 256) || (KBC_PMC_Pending_Num > 0) || (KBC_PMC_PendingRXCount != KBC_PMC_PendingTXCount))
 		{
-			KBC_PMC_Event_Num = 0; // clear index
-			// the entire array will be stored in the pending array
-			KBC_PMC_DataPending(KBC_PMC_Event);
+			char KBC_PMC_Tempdata[2] = { 0 };
+			KBC_PMC_Tempdata[0] = (direction) << 4 | (channel); // record direction and channel
+			KBC_PMC_Tempdata[1] = value; // record value
+			KBC_PMC_DataPending(KBC_PMC_Tempdata);
+			return 0;
 		}
 		KBC_PMC_Event[KBC_PMC_Event_Num] = (direction) << 4 | (channel); // record direction and channel
 		KBC_PMC_Event_Num++;
@@ -2370,10 +2626,10 @@ void I2c_Disconnect(void)
 //	note :
 //		Send Addr to Slave and Read Data Back
 //*****************************************************************************
-void Debugger_Master_Read(u8 buf[], DWORD baseaddr)
+void Debugger_Master_Read(short buf[], DWORD baseaddr)
 {
 	int i, j;
-	int data[256];
+	int data[DEBUGGER_BUFF_SIZE];
 	if(0 == I2c_Check_TFE(baseaddr))
 	{
 		REG16(REG_ADDR(baseaddr, I2C_DATA_CMD_OFFSET)) = 0x55 | I2C_WRITE;
@@ -2440,7 +2696,7 @@ void Debugger_Master_Read(u8 buf[], DWORD baseaddr)
 //	note :
 //		Send Addr and Data to Slave
 //*****************************************************************************
-void Debugger_Master_Write(u8 buf[], DWORD baseaddr)
+void Debugger_Master_Write(short buf[], DWORD baseaddr)
 {
 	int get_data;
 	int i;
@@ -2489,7 +2745,7 @@ void Debugger_Master_Retrans(BYTE debuger)
 	return;
 #endif
 	Debuger_Cmd_Data = debuger & 0xff;
-	dprint("uartdata = %#x\n", Debuger_Cmd_Data);
+	// dprint("uartdata = %#x\n", Debuger_Cmd_Data);
 	if((!Buf_Flag) && (Debuger_Cmd_Data == 0x55 || Debuger_Cmd_Data == 0xff || Debuger_Cmd_Data == 0xDD || Debuger_Cmd_Data == 0x88 || Debuger_Cmd_Data == 0xAA || Debuger_Cmd_Data == 0xBB))
 	{
 		switch(Debuger_Cmd_Data)
@@ -2551,6 +2807,75 @@ void Debugger_Master_Retrans(BYTE debuger)
 				break;
 		}
 	}
+}
+
+
+char Check_Debugger_Data(const char *buffer, short write_index)
+{
+	// 在缓冲区中查找匹配的数据串
+	for(short i = 0; i < UART_BUFFER_SIZE; ++i)
+	{
+		char matched = 1;
+		for(unsigned char j = 0; j < Handshake_length; ++j)
+		{
+			short index = (write_index - Handshake_length + j + UART_BUFFER_SIZE + i) % UART_BUFFER_SIZE;
+			if(buffer[index] != Handshake_data[j])
+			{
+				matched = 0;
+				break;
+			}
+		}
+		if(matched)
+		{
+			return 1; // 找到匹配的数据串
+		}
+	}
+	return 0; // 未找到匹配的数据串
+}
+
+
+
+char Debugger_Handshake(BYTE data)
+{
+	if(Handshake_Flag == 0)
+	{
+		if(Check_Debugger_Data(Uart_buffer, Uart_Rx_index))
+		{
+			DEBUGER_putchar(0xA5);//第二次握手
+
+			//清除整个Uart_buffer和fifo
+			for(unsigned char i = 0; i < UART_BUFFER_SIZE; i++)
+			{
+				REG8(DEBUGGER_UART + UART_THR_OFFSET);
+				Uart_buffer[i] = 0;
+			}
+			//发送0x5A 以及版本号
+			for(unsigned char i = 4; i > 0; i--) // 第三次握手
+			{
+				DEBUGER_putchar(((SYSCTL_IDVER >> (8 * (i - 1))) & 0xff));
+			}
+			Handshake_Flag = 1;
+		}
+		else//失败
+		{
+			Handshake_cunt++;
+			if(Handshake_cunt >= 36)//失败次数超过36次
+			{
+
+			}
+			return -1;
+		}
+	}
+	if(Handshake_Flag != 0)
+	{
+		if(data == 0xA5)//第四次握手
+		{
+			dprint("Debugger handshake success!\n");
+			Handshake_Flag = 0;
+			return 1;
+		}
+	}
+	return 0;
 }
 #endif
 #endif

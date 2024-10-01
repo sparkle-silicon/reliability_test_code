@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-07-08 09:53:28
+ * @LastEditTime: 2024-08-13 17:04:43
  * @Description:
  *
  *
@@ -20,9 +20,7 @@
 #include "AE_CONFIG.H"
 #include "AE_UPDATE.H"
 #include "KERNEL_INCLUDE.H"
-#if TEST
-#include "HARDWARE_CAN.H"
-#endif
+#define PMC_KBC_SendCnt 256
 //  The Debugger Function Uart Entrance
 #define READ_REQUEST 0x55			   //		0x55--read request
 #define WRITE_REQUEST 0xFF			   //		0xff--write request
@@ -34,13 +32,26 @@
 #define SWITCH_KEYBOARD_CODE 0xB0	   //		0xB0--Switching keyboard Codes
 #define FIRMWARE_UPDATE 0x75		   //		0x75--Firmware update
 #define INTERRUPT_FUNCTION 0x11		   //		0x11--Interrupt function block
-#define RECOARD_KBC_PMC_DATA 0xCC	   //      0xCC--Recoard KBC/PMC data
-#define STOP_RECOARD_KBC_PMC_DATA 0xEE //      0xEE--Stop recording KBC/PMC data
+#define RECOARD_KBC_PMC_DATA 0xCC		//      	0xCC--Recoard KBC/PMC data
+#define STOP_RECOARD_KBC_PMC_DATA 0xEE	//      	0xEE--Stop recording KBC/PMC data
+#define HANDSHAKE_REQUEST 0x99			// 		0x99--Handshake request
+#define DISCONNECTION_REQUEST 0x66		// 		0x66--no used DEBUGGER FUNCTION
+
+
+/*****************************************************************************
+ *Debugger Sequence flag definition
+ ****************************************************************************/
+#define D_PowerOn 			0x01
+#define D_HibernateWakeup 	0x02
+#define D_SleepWakeup 		0x03
+#define D_Sleep 			0x04
+#define D_Hibernate			0x05
+#define D_Shutdown 			0x06
+#define D_Reboot			0x07
 /*****************************************************************************
  *Debugger Macro definition
  ****************************************************************************/
 #define DEBUGGER_OUTPUT_SWITCH 0				// 0: uart  1: i2c  2: LCP
-#define DEBUGGER_UART_CHANNEL DEBUG_UART_SWITCH // select UART channel as debugger (0/1/2/3/4/5/-1)
 ////!!!!!!!!!!
 // attention! iic_debugger must use the smbus0
 //  the "DEBUGGER_I2C_CHANNEL" is just switch the channel mapping instead of initialization
@@ -48,33 +59,20 @@
 ////!!!!!!!!!!
 #if ENABLE_DEBUGGER_SUPPORT
 /* Debugger Slave or Master channel */
-#if (DEBUGGER_UART_CHANNEL == 0)
-#define DEBUGGER_UART0_CHANNEL 1 // debugger uart channel
+#if (DEBUG_UART_SWITCH == 0)
 #define DEBUGGER_UART UART0_BASE_ADDR
-#define DEBUGGER_UART_REG UART0_REG
-#elif (DEBUGGER_UART_CHANNEL == 1)
-#define DEBUGGER_UART1_CHANNEL 1
+#elif (DEBUG_UART_SWITCH == 1)
 #define DEBUGGER_UART UART1_BASE_ADDR
-#define DEBUGGER_UART_REG UART1_REG
-// #elif (DEBUGGER_UART_CHANNEL == 2)
-// #define DEBUGGER_UART2_CHANNEL 1
+// #elif (DEBUG_UART_SWITCH == 2)
 // #define DEBUGGER_UART UART2_BASE_ADDR
-// #define DEBUGGER_UART_REG UART2_REG
-// #elif (DEBUGGER_UART_CHANNEL == 3)
-// #define DEBUGGER_UART3_CHANNEL 1
+// #elif (DEBUG_UART_SWITCH == 3)
 // #define DEBUGGER_UART UART3_BASE_ADDR
-// #define DEBUGGER_UART_REG UART3_REG
-#elif (DEBUGGER_UART_CHANNEL == 4)
-#define DEBUGGER_UARTA_CHANNEL 1
+#elif (DEBUG_UART_SWITCH == 4)
 #define DEBUGGER_UART UARTA_BASE_ADDR
-#define DEBUGGER_UART_REG UARTA_REG
-#elif (DEBUGGER_UART_CHANNEL == 5)
-#define DEBUGGER_UARTB_CHANNEL 1
+#elif (DEBUG_UART_SWITCH == 5)
 #define DEBUGGER_UART UARTB_BASE_ADDR
-#define DEBUGGER_UART_REG UARTB_REG
 #else
 #define DEBUGGER_UART NULL
-#define DEBUGGER_UART_REG(offset) 0
 #endif
 #if ENABLE_DEBUGGER_SUPPORT // Macros that enable the entire debugger function
 #if (DEBUG_UART_SWITCH == PRINTF_UART_SWITCH || DEBUG_UART_SWITCH == COMMAND_UART_SWITCH)
@@ -83,7 +81,10 @@
 #endif
 #endif
 #endif
-#define KBD_BUFF_SIZE 256
+#define DEBUGGER_BUFF_SIZE 256
+/*uart buffer size*/
+#define UART_BUFFER_SIZE 64
+#define KBD_BUFF_SIZE DEBUGGER_BUFF_SIZE
 struct KBD_Event
 {
 	BYTE data[KBD_BUFF_SIZE];
@@ -93,11 +94,15 @@ struct KBD_Event
 //*****************************************************************************
 // extern variable
 //*****************************************************************************
+extern BYTE Debugger_KBC_PMC_Record(BYTE direction, BYTE channel, BYTE value);
+extern BYTE Debugger_KBD_Record(BYTE value);
+extern BYTE Debuger_Cmd_Data; // Debugger CMD data
+extern WORD Intr_num[];
 extern char Debugger_Data[];
 extern char Debugger_Cmd[];
-extern u8 buf[];
+extern short buf[];
 extern char KBC_PMC_Event[];
-extern WORD Intr_num[];
+
 extern void Deubgger_Cmd_Parsing(BYTE data);
 extern void Debugger_Cmd_IRQ(BYTE debuge_data);
 extern void Debugger_I2c_Req(WORD baseaddr);
@@ -105,12 +110,11 @@ extern void Debugger_I2c_Send(WORD baseaddr);
 extern void DEBUGGER_DATA(void); // Debugger Function read
 extern void DEBUGGER_Change(void);
 extern void KBC_PMC_DataPending(char *KBC_PMC_PendingData);
-extern BYTE Debugger_KBC_PMC_Record(BYTE direction, BYTE channel, BYTE value);
-extern BYTE Debugger_KBD_Record(BYTE value);
 extern void Debugger_Send_KBD(void);
 extern void DEBUGGER_Int(void);
 extern void DEBUGER_putchar(char ch);
-extern BYTE Debuger_Cmd_Data; // Debugger CMD data
+
+char Debugger_Handshake(BYTE data);
 #endif
 extern WORD Intr_num[];
 #endif

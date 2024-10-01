@@ -55,8 +55,8 @@ void SMF_Init(void)
 void SHAREMEM_PNP(void)
 {
    //Enable SMFI
-  SYSCTL_HDEVEN |= 0x00400000; // host SMFI logic device pnp enable
-  SYSCTL_SPCTL0 |= 0x08000000; //enable pnp const register//PNPKEY, PNPPORT, VENDORID, CHIPVER 的设置使
+  SYSCTL_HDEVEN |= HOST_SMFI_EN; // host SMFI logic device pnp enable
+  SYSCTL_SPCTL0 |= PNPCNST_SETEN; //enable pnp const register//PNPKEY, PNPPORT, VENDORID, CHIPVER 的设置使
   Config_PNP_Access_Request();
   //Config SMFI
   Config_PNP_Write(0x23, 0x01, 0x01);
@@ -99,15 +99,14 @@ void SHAREMEMORY_INIT(void)
   SMS_Init(2, 0x80, SMS_WxAAS_1024SIZE | SMS_WxAAS_NWPE | SMS_WxAAS_NRPE);
   SMS_Init(3, 0xC0, SMS_WxAAS_1024SIZE | SMS_WxAAS_NWPE | SMS_WxAAS_NRPE);
   SMF_Init();
-  SHAREMEM_PNP();
 }
 void SMSEC_Int_Enable(BYTE type)
 {
-  SMS_ECSIE |= (0x1 << type);
+  SMF_SR |= (0x1 << type);
 }
 void SMSEC_Int_Disable(BYTE type)
 {
-  SMS_ECSIE &= ~(0x1 << type);
+  SMF_SR &= ~(0x1 << type);
 }
 void SMSHOST_Int_Enable(BYTE type)
 {

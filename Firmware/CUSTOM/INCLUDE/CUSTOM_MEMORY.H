@@ -67,34 +67,37 @@
 
 #endif
 // for battery
-#define BATTERY1_RSOC REG8(ECSPACE_BASE_ADDR + 0x10)   // Battery 1 battery_remain_percent
-#define BATTERY1_FCAP_L REG8(ECSPACE_BASE_ADDR + 0x11) // Battery 1 battery_charge
-#define BATTERY1_FCAP_H REG8(ECSPACE_BASE_ADDR + 0x12)
-#define BATTERY1_RMCAP_L REG8(ECSPACE_BASE_ADDR + 0x13) // Battery 1 battery_remain
-#define BATTERY1_RMCAP_H REG8(ECSPACE_BASE_ADDR + 0x14)
-#define BATTERY1_TEMP_L REG8(ECSPACE_BASE_ADDR + 0x15) // Battery 1 battery_temp
-#define BATTERY1_TEMP_H REG8(ECSPACE_BASE_ADDR + 0x16)
-#define BATTERY1_VOL_L REG8(ECSPACE_BASE_ADDR + 0x17) // Battery 1 battery_voltage
-#define BATTERY1_VOL_H REG8(ECSPACE_BASE_ADDR + 0x18)
-#define BATTERY1_CURRENT_L REG8(ECSPACE_BASE_ADDR + 0x19) // Battery 1 battery_current
-#define BATTERY1_CURRENT_H REG8(ECSPACE_BASE_ADDR + 0x1A)
-#define BATTERY1_ACURRENT_L REG8(ECSPACE_BASE_ADDR + 0x1B) // Battery 1 AverageCurrent
-#define BATTERY1_ACURRENT_H REG8(ECSPACE_BASE_ADDR + 0x1C)
-#define BATTERY1_DCAP_L REG8(ECSPACE_BASE_ADDR + 0x1D) // Battery 1 battery_design_charge
-#define BATTERY1_DCAP_H REG8(ECSPACE_BASE_ADDR + 0x1E)
-#define BATTERY1_DVOL_L REG8(ECSPACE_BASE_ADDR + 0x1F) // Battery 1 battery_design_voltage
-#define BATTERY1_DVOL_H REG8(ECSPACE_BASE_ADDR + 0x20)
-#define BATTERY1_STATUS REG8(ECSPACE_BASE_ADDR + 0x21) // Battery 1  battery_status
-#define BATTERY1_SN_L REG8(ECSPACE_BASE_ADDR + 0x22)   // Battery SerialNumber
-#define BATTERY1_SN_H REG8(ECSPACE_BASE_ADDR + 0x23)
-#define BATTERY1_CCURRENT_L REG8(ECSPACE_BASE_ADDR + 0x24) // Battery 1 charge current L
-#define BATTERY1_CCURRENT_H REG8(ECSPACE_BASE_ADDR + 0x25) // Battery 1 charge current H
-#define BATTERY1_CVOLTAGE_L REG8(ECSPACE_BASE_ADDR + 0x26) // Battery 1 charge voltage L
-#define BATTERY1_CVOLTAGE_H REG8(ECSPACE_BASE_ADDR + 0x27) // Battery 1 charge voltage H
-#define BATTERY1_MODE_L REG8(ECSPACE_BASE_ADDR + 0x28)     // Battery 1 mode L
-#define BATTERY1_MODE_H REG8(ECSPACE_BASE_ADDR + 0x29)     // Battery 1 mode H
-#define BATTERY1_ALARM REG8(ECSPACE_BASE_ADDR + 0x2A)      // Battery 1 alarm
-#define BT1_STATUS1 REG8(ECSPACE_BASE_ADDR + 0x2B)      // Battery 1 status
+// for battery
+#define BATTERY_RSOC REG8(ECSPACE_BASE_ADDR + 0x10)   // Battery  battery_remain_percent
+#define BATTERY_FCAP_L REG8(ECSPACE_BASE_ADDR + 0x11) // Battery  battery_charge
+#define BATTERY_FCAP_H REG8(ECSPACE_BASE_ADDR + 0x12)
+#define BATTERY_RMCAP_L REG8(ECSPACE_BASE_ADDR + 0x13) // Battery  battery_remain
+#define BATTERY_RMCAP_H REG8(ECSPACE_BASE_ADDR + 0x14)
+#define BATTERY_TEMP_L REG8(ECSPACE_BASE_ADDR + 0x15) // Battery  battery_temp
+#define BATTERY_TEMP_H REG8(ECSPACE_BASE_ADDR + 0x16)
+#define BATTERY_VOL_L REG8(ECSPACE_BASE_ADDR + 0x17) // Battery  battery_voltage
+#define BATTERY_VOL_H REG8(ECSPACE_BASE_ADDR + 0x18)
+#define BATTERY_CURRENT_L REG8(ECSPACE_BASE_ADDR + 0x19) // Battery  battery_current
+#define BATTERY_CURRENT_H REG8(ECSPACE_BASE_ADDR + 0x1A)
+#define BATTERY_ACURRENT_L REG8(ECSPACE_BASE_ADDR + 0x1B) // Battery  AverageCurrent
+#define BATTERY_ACURRENT_H REG8(ECSPACE_BASE_ADDR + 0x1C)
+#define BATTERY_DCAP_L REG8(ECSPACE_BASE_ADDR + 0x1D) // Battery  battery_design_charge
+#define BATTERY_DCAP_H REG8(ECSPACE_BASE_ADDR + 0x1E)
+#define BATTERY_DVOL_L REG8(ECSPACE_BASE_ADDR + 0x1F) // Battery  battery_design_voltage
+#define BATTERY_DVOL_H REG8(ECSPACE_BASE_ADDR + 0x20)
+#define BATTERY_STATUS REG8(ECSPACE_BASE_ADDR + 0x21) // Battery   battery_status
+#define BATTERY_SN_L REG8(ECSPACE_BASE_ADDR + 0x22)   // Battery SerialNumber
+#define BATTERY_SN_H REG8(ECSPACE_BASE_ADDR + 0x23)
+#define BATTERY_CCURRENT_L REG8(ECSPACE_BASE_ADDR + 0x24) // Battery  charge current L
+#define BATTERY_CCURRENT_H REG8(ECSPACE_BASE_ADDR + 0x25) // Battery  charge current H
+#define BATTERY_CVOLTAGE_L REG8(ECSPACE_BASE_ADDR + 0x26) // Battery  charge voltage L
+#define BATTERY_CVOLTAGE_H REG8(ECSPACE_BASE_ADDR + 0x27) // Battery  charge voltage H
+#define BATTERY_MODE_L REG8(ECSPACE_BASE_ADDR + 0x28)     // Battery  mode L
+#define BATTERY_MODE_H REG8(ECSPACE_BASE_ADDR + 0x29)     // Battery  mode H
+#define BATTERY_ALARM REG8(ECSPACE_BASE_ADDR + 0x2A)      // Battery  alarm
+#define BATTERY_STATUS1 REG8(ECSPACE_BASE_ADDR + 0x2B)      // Battery  status
+#define BATTERY_STATUS2 REG8(ECSPACE_BASE_ADDR + 0x2C)      // Battery  status
+#define BATTERY_STATUS3 REG8(ECSPACE_BASE_ADDR + 0x2D)      // Battery  status
 // for bright
 #define BRIGHT_LEVEL_CTRL REG8(ECSPACE_BASE_ADDR + 0x30) // Brightness  level
 #define BRIGHT_LEVEL REG8(ECSPACE_BASE_ADDR + 0x31)      // Brightness current level
@@ -171,7 +174,7 @@
 #define xUCSI_DS_MGI (REG8(ECSPACE_BASE_ADDR + 0xD0))
 #define xUCSI_DS_MGO (REG8(ECSPACE_BASE_ADDR + 0xE0))
 //ERR_CMD_UNSUCCESS_DUE_TO_DEAD_BATTERY
-// #define xEC_Bt1RSOC (BATTERY1_CURRENT_L|(BATTERY1_CURRENT_H<<8))
+// #define xEC_Bt1RSOC BATTERY_RSOC
 
 #else
 #define xUCSI_DS_VERSION REG8(ECSPACE_BASE_ADDR + 0x70) 

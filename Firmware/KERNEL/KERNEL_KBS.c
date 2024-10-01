@@ -285,7 +285,7 @@ void Service_KBS(void)
         dprint("KBS CLOCK NOT ENABLE\n");
         return;
     #endif
-        if(((KB_Scan_Flag == 0) || ((Host_Flag & 0x10) != 0)))
+        if(((KB_Scan_Flag == 0) || ((Host_Flag & PS2_PORT1_KEY_EN) != 0)))
         {
         }
         else

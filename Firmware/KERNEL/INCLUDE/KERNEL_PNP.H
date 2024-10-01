@@ -19,6 +19,17 @@
 #include "AE_REG.H"
 #include "AE_CONFIG.H"
 #include "KERNEL_MEMORY.H"
+
+#define PNP_Timeout 5000
+/*--------------------PNP bit definition-----------------*/
+#define E2PNP_RDY       0x1
+#define E2PNP_REQ       0x2
+#define EFIR_2E         0x2e000000
+#define EFDR_2F         0x002f0000
+#define E2PNP_ReadREQ   0x00000200 
+#define E2PNP_WriteREQ  0x00000100
+#define E2PNP_RC        0x00000800 //读完成
+#define E2PNP_WC        0x00000400 //写完成
 /*--------------------PNP Register Address definition-----------------*/
 #define PNP_CHIPID_VER_OFFSET HEX04
 #define PNP_LD_EN_OFFSET HEX08
@@ -72,8 +83,6 @@ extern void Config_PNP_Access_Release(void);
 extern void Config_PNP_Write(BYTE idx, BYTE ldn, BYTE data);
 extern void Config_PNP_Read(BYTE idx, BYTE ldn);
 extern void Clear_Logical_Device_Default_IRQ_Num(void);
-extern void Config_KBC_PNP_Only(void);
-extern void Config_All_Logical_Device_PNP(void);
 extern void LogicalDevice_PNP_Config(void);
 extern BYTE LD_PNP_Config(void);
 extern void ShareMem_PNP_Config(void);

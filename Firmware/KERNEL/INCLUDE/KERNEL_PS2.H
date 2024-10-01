@@ -19,8 +19,19 @@
 #include "AE_REG.H"
 #include "AE_CONFIG.H"
 #define PS2_WaitTime 3000
-#define CCMD_MOUSE_ENABLE 0xA8 /* Enable mouse interface */
-#define CCMD_KBD_ENABLE 0xAE   /* Enable KBD interface */
+//-----------------------------------------------------------------------------
+// PS2 CMD WORD
+//-----------------------------------------------------------------------------
+#define CCMD_MOUSE_DISABLE 0xA7 /* Disable mouse interface */
+#define CCMD_MOUSE_ENABLE 0xA8  /* Enable mouse interface */
+#define CCMD_KBD_DISABLE 0xAD   /* Disable KBD interface */
+#define CCMD_KBD_ENABLE 0xAE    /* Enable KBD interface */
+#define CCMD_READ 0x20          /* Read command */
+#define CCMD_WRITE 0x60         /* Write command */
+#define CCMD_SELFTEST_AA 0xAA      /* Self-test command */
+#define CCMD_SELFTEST_AB 0xAB      /* Self-test command */
+#define CCMD_RESET 0xFF         /* Reset command */
+
 #define KBD_STAT_GTO 0x40      /* General receive/xmit timeout */
 #define KBD_STAT_PERR 0x80     /* Parity error */
 #define KBD_TIMEOUT 1000       /* Timeout in ms for keyboard command acknowledge */
@@ -31,14 +42,6 @@
 #define PS2_STR_IBF 0x1
 #define PS2_IRQ_MS_EN (1 << 1)
 #define PS2_IRQ_MS_DIS (0 << 1)
-// Int set
-#define Ps2_Mouse_Int_Enable (PS2_PORT0_CR |= (0x1 << 1))
-#define Ps2_Mouse_Int_Disable (PS2_PORT0_CR &= ~(0x1 << 1))
-#define Ps2_KBD_Int_Enable (PS2_PORT0_CR |= (0x1 << 0))
-#define Ps2_KBD_Int_Disable (PS2_PORT0_CR &= ~(0x1 << 0))
-// Int read
-#define Ps2_Mouse_Int_Enable_Read ((PS2_PORT0_CR & (0x1 << 1)) != 0)
-#define Ps2_KBD_Int_Enable_Read ((PS2_PORT0_CR & (0x1 << 0)) != 0)
 //-----------------------------------------------------------------------------
 // PS2 Interface Debug
 //-----------------------------------------------------------------------------
@@ -117,22 +120,17 @@
 extern VBYTE PS2_PortN_Data[];
 extern VBYTE *KBDataPending;
 extern VBYTE *MSDataPending;
-extern void Send_Cmd_To_PS2_Mouse(BYTE PortNum);
-extern void Send_Data_To_PS2(BYTE PortNum, BYTE PortData);
-extern int Send_Aux_Data_To_Host(BYTE auxdata);
 extern BYTE Handle_Kbd_Event(BYTE channel);
 extern BYTE Handle_Mouse_Event(BYTE channel);
-extern void Open_Aux(BYTE channel);
-extern void Open_Kbd(BYTE channel);
-extern void Mouse_Write_Output_W(char data); // zb 10.26 add
-extern void Kbd_Write_Output_W(char data);   // zb 10.26 add
-extern BYTE Mouse_Read_Status(void);         // zb 10.26 add
-extern BYTE Mouse_Read_Input(void);          // zb 10.26 add
-extern BYTE Kbd_Read_Input(void);            // zb 10.26 add
-extern void Mouse_Write_Cmd(char cmd);       // zb 10.26 add
+extern BYTE PS2_DevScan(void);
+
 extern void MS_Data_Suspend(BYTE nPending);  // zb 11.8 add
+extern void Send_Cmd_To_PS2_Mouse(BYTE PortNum);
+extern void Send_Data_To_PS2(BYTE PortNum, BYTE PortData);
+extern void Open_Aux(BYTE channel);
 extern void Service_Send_PS2(void);
-extern BYTE PS2_Init(void);
+extern void InitAndIdentifyPS2(void);
+extern int Send_Aux_Data_To_Host(BYTE auxdata);
 extern int AE10x_PS2_Init(void);
 extern char Disable_Aux_Data_Reporting(BYTE channel);
 //-----------------------------------------------------------------------------

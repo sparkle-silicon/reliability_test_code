@@ -179,7 +179,7 @@ void PS2_PortN_Write_Output_W(char data, BYTE channel)
 void PS2_PortN_Write_Cmd(char cmd, BYTE channel)
 {
 	PS2_PortN_Wait(channel);
-	PS2_PortN_Write_Command(0x60, channel); /* 0x60 */
+	PS2_PortN_Write_Command(CCMD_WRITE, channel); /* 0x60 */
 	PS2_PortN_Wait(channel);
 	PS2_PortN_Write_Output(cmd, channel);
 }
@@ -190,7 +190,7 @@ void PS2_PortN_Write_Cmd(char cmd, BYTE channel)
 static void PS2_PortN_Write_Ack(char val, BYTE channel)
 {
 	PS2_PortN_Wait(channel);
-	PS2_PortN_Write_Command(0x60, channel);
+	PS2_PortN_Write_Command(CCMD_WRITE, channel);
 	PS2_PortN_Wait(channel);
 	PS2_PortN_Write_Output(val, channel);
 	ps2_portn_reply_expected++;
@@ -377,10 +377,10 @@ void PS2_Main_Device_Confirm(void)
  * ------------------------------------------------------------------------- */
 int PS2_PortN_Selftest(BYTE channel)
 {
-	PS2_PortN_Write_Command_W(0xAA, channel);
+	PS2_PortN_Write_Command_W(CCMD_SELFTEST_AA, channel);
 	if(PS2_PortN_Wait_For_Input(channel) != 0x55)
 		return 1;
-	PS2_PortN_Write_Command_W(0xAB, channel);
+	PS2_PortN_Write_Command_W(CCMD_SELFTEST_AB, channel);
 	if(PS2_PortN_Wait_For_Input(channel) != 0x00)
 		return 1;
 	return 0;
@@ -583,9 +583,9 @@ char Disable_Aux_Data_Reporting(BYTE channel)
 int AE10x_PS2_Init(void)
 {
 	/*enable ps2 channel 0/1 device for scan ps2 channel*/
-	PS2_PortN_Write_Command_W(0x60, 0);
+	PS2_PortN_Write_Command_W(CCMD_WRITE, 0);
 	PS2_PortN_Write_Output_W(0x30, 0);
-	PS2_PortN_Write_Command_W(0x60, 1);
+	PS2_PortN_Write_Command_W(CCMD_WRITE, 1);
 	PS2_PortN_Write_Output_W(0x30, 1);
 	// KBD_SCAN ps2 device
 	PS2_Channel_Device_Scan();
@@ -599,18 +599,18 @@ int AE10x_PS2_Init(void)
 	}
 #endif
 // all ps2 port selftest
-	PS2_All_Port_Selftest();
+	//PS2_All_Port_Selftest();
 	/*disable ps2 channel 0/1 after scan ps2 channel*/
-	PS2_PortN_Write_Command_W(0x60, 0);
+	PS2_PortN_Write_Command_W(CCMD_WRITE, 0);
 	PS2_PortN_Write_Output_W(0x0, 0);
-	PS2_PortN_Write_Command_W(0x60, 1);
+	PS2_PortN_Write_Command_W(CCMD_WRITE, 1);
 	PS2_PortN_Write_Output_W(0x0, 1);
 	return 0;
 }
 /* ----------------------------------------------------------------------------
  * FUNCTION: PS2 Device Init Interface
  * ------------------------------------------------------------------------- */
-BYTE PS2_Init(void)
+BYTE PS2_DevScan(void)
 {
 #if 0
 	PowerChange_Var_Clear();
@@ -767,7 +767,7 @@ int Send_Aux_Data_To_Host(BYTE auxdata)
 	}
 #endif
 	KBC_STA &= 0x0f;
-	SET_BIT(KBC_STA, PS2_DataType);//ps2数据标志位
+	SET_BIT(KBC_STA, KBC_SAOBF);//ps2数据标志位
 	if(Host_Flag_INTR_AUX)
 	{
 		SET_BIT(KBC_CTL, KBC_OBFMIE);
@@ -1064,6 +1064,98 @@ void Service_Send_PS2(void)
 		}
 	}
 #endif
+}
+
+BYTE PS2_PinSelect(void)
+{
+	BYTE PinSelect = 0;
+	PinSelect|=sysctl_iomux_ps2_0();
+	PinSelect|=sysctl_iomux_ps2_1();
+	switch(PinSelect)
+	{
+		case 0x1:
+		 	return (IS_GPIOB8(HIGH) && IS_GPIOB9(HIGH));
+		case 0x2:
+			return (IS_GPIOB10(HIGH) && IS_GPIOB11(HIGH));
+		case 0x4:
+			return (IS_GPIOB12(HIGH) && IS_GPIOB13(HIGH));
+		case 0x8:
+			return (IS_GPIOB10(HIGH) && IS_GPIOB11(HIGH));
+		case 0x5:
+			return ((IS_GPIOB8(HIGH) && IS_GPIOB9(HIGH)) || (IS_GPIOB12(HIGH) && IS_GPIOB13(HIGH)));
+		case 0x9:
+			return ((IS_GPIOB8(HIGH) && IS_GPIOB9(HIGH)) || (IS_GPIOB10(HIGH) && IS_GPIOB11(HIGH)));
+		case 0x6:
+			return ((IS_GPIOB10(HIGH) && IS_GPIOB11(HIGH)) || (IS_GPIOB12(HIGH) && IS_GPIOB13(HIGH)));
+		default:
+			return 0;
+	}
+}
+
+void InitAndIdentifyPS2(void)
+{
+	static WORD _10MS_Cunt = 0;
+	static DWORD Temp_SYSCTLPIO2 = 0;
+	static BYTE Temp_flag = 0;
+	if(MS_Main_CHN == 0 && KB_Main_CHN == 0)
+	{
+		if(Temp_flag==0)
+		{
+			Temp_SYSCTLPIO2 = SYSCTL_PIO2_CFG;
+			Temp_flag = 1;
+		}
+		if(PS2_PinSelect())
+		{
+			_10MS_Cunt++;
+			if(_10MS_Cunt >= 10)
+			{
+				//PS2 RESET
+				SYSCTL_RST0 |= (PS2M_RST);
+				SYSCTL_RST1 |= PS2K_RST;
+				SYSCTL_RST0 &= ~(PS2M_RST);
+				SYSCTL_RST1 &= ~(PS2K_RST);
+				//PS2 INIT
+				ps2_init();
+				PS2_DevScan();
+				Write_KCCB(Host_Flag);
+				if(MS_Main_CHN == 0)
+				{
+					SYSCTL_PIO2_CFG = Temp_SYSCTLPIO2;
+					switch(KB_Main_CHN)
+					{
+						case 1:
+							sysctl_iomux_ps2_0();
+							break;
+						case 2:
+							sysctl_iomux_ps2_1();
+							break;
+						default:
+							break;
+					}
+				}
+				else if(KB_Main_CHN == 0)
+				{
+					SYSCTL_PIO2_CFG = Temp_SYSCTLPIO2;
+					switch(MS_Main_CHN)
+					{
+						case 1:
+							sysctl_iomux_ps2_0();
+							break;
+						case 2:
+							sysctl_iomux_ps2_1();
+							break;
+						default:
+							break;
+					}
+				}
+				_10MS_Cunt = 0;
+			}
+		}
+		else
+		{
+			_10MS_Cunt = 0;
+		}
+	}
 }
 /*-----------------------------------------------------------------------------
  * End

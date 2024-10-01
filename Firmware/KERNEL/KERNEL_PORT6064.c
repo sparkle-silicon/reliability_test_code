@@ -90,7 +90,7 @@ static void Command_D3(void)
     if(Set_Port60_Data_Handle())
     {
         Host_Flag_DISAB_AUX = 0; // Enable aux device (mouse)
-        Host_Flag &= 0xdf;
+        Host_Flag &= ~PS2_PORT2_AUX_EN;
         Mouse_Data_To_Host(KBHIData);
     }
 }
@@ -402,7 +402,7 @@ BYTE Set_Port60_Data_Handle(void)
 void Write_KCCB(BYTE NewKCCB)
 {
     Host_Flag = NewKCCB; // Write the data.
-    if(Host_Flag & 0x1)
+    if(Host_Flag & PS2_PORT1_INT_EN)
     {
         Host_Flag_INTR_KEY = 1; // Enable keyboard interrupt.
     }
@@ -410,7 +410,7 @@ void Write_KCCB(BYTE NewKCCB)
     {
         Host_Flag_INTR_KEY = 0; // Disable keyboard interrupt.
     }
-    if(Host_Flag & 0x2)
+    if(Host_Flag & PS2_PORT2_INT_EN)
     {
         Host_Flag_INTR_AUX = 1; // Enable aux interrupt.
     }
@@ -418,7 +418,7 @@ void Write_KCCB(BYTE NewKCCB)
     {
         Host_Flag_INTR_AUX = 0; // Disable aux interrupt.
     }
-    if(Host_Flag & 0x4)
+    if(Host_Flag & SYS_FLAG)
     {
         Host_Flag_SYS_FLAG = 1;
     }
@@ -426,7 +426,7 @@ void Write_KCCB(BYTE NewKCCB)
     {
         Host_Flag_SYS_FLAG = 0;
     }
-    if(Host_Flag & 0x10)
+    if(Host_Flag & PS2_PORT1_KEY_EN)
     {
         Host_Flag_DISAB_KEY = 1;
     }
@@ -434,7 +434,7 @@ void Write_KCCB(BYTE NewKCCB)
     {
         Host_Flag_DISAB_KEY = 0;
     }
-    if(Host_Flag & 0x20)
+    if(Host_Flag & PS2_PORT2_AUX_EN)
     {
         Host_Flag_DISAB_AUX = 1;
     }
@@ -442,7 +442,7 @@ void Write_KCCB(BYTE NewKCCB)
     {
         Host_Flag_DISAB_AUX = 0;
     }
-    if(Host_Flag & 0x40)
+    if(Host_Flag & PS2_PORT1_TRANS_EN)
     {
         Host_Flag_XLATE_PC = 1;
     }
@@ -453,13 +453,13 @@ void Write_KCCB(BYTE NewKCCB)
     /*update Host_Flag to PS2 mouse CR register*/
     if(MS_Main_CHN == 1)
     {
-        PS2_PORT0_CR = 0x60;
-        PS2_PORT0_OBUF = ((Host_Flag ^ (0x1 << 5)));
+        PS2_PORT0_CR = CCMD_WRITE;
+        PS2_PORT0_OBUF = ((Host_Flag ^ PS2_PORT2_AUX_EN));
     }
     else if(MS_Main_CHN == 2)
     {
-        PS2_PORT1_CR = 0x60;
-        PS2_PORT1_OBUF = ((Host_Flag ^ (0x1 << 5)));
+        PS2_PORT1_CR = CCMD_WRITE;
+        PS2_PORT1_OBUF = ((Host_Flag ^ PS2_PORT2_AUX_EN));
     }
     else
     {
@@ -467,13 +467,13 @@ void Write_KCCB(BYTE NewKCCB)
     /*update Host_Flag to PS2 keyboard CR register*/
     if(KB_Main_CHN == 1)
     {
-        PS2_PORT0_CR = 0x60;
-        PS2_PORT0_OBUF = ((Host_Flag ^ (0x1 << 4)));
+        PS2_PORT0_CR = CCMD_WRITE;
+        PS2_PORT0_OBUF = ((Host_Flag ^ PS2_PORT1_KEY_EN));
     }
     else if(KB_Main_CHN == 2)
     {
-        PS2_PORT1_CR = 0x60;
-        PS2_PORT1_OBUF = ((Host_Flag ^ (0x1 << 4)));
+        PS2_PORT1_CR = CCMD_WRITE;
+        PS2_PORT1_OBUF = ((Host_Flag ^ PS2_PORT1_KEY_EN));
     }
     else
     {
@@ -775,11 +775,11 @@ static void Command_A6(void)
 void Command_A7(void)
 {
     Host_Flag_DISAB_AUX = 1; // Disable auxiliary device (mouse)
-    Host_Flag |= 0x20;
+    Host_Flag |= PS2_PORT2_AUX_EN;
     if(MS_Main_CHN == 1)
-        PS2_PORT0_CR = 0xA7;
+        PS2_PORT0_CR = CCMD_MOUSE_DISABLE;
     else if(MS_Main_CHN == 2)
-        PS2_PORT1_CR = 0xA7;
+        PS2_PORT1_CR = CCMD_MOUSE_DISABLE;
 }
 //-----------------------------------------------------------------------------
 // Handle command A8 - Enable Auxiliary Device Interface
@@ -787,11 +787,11 @@ void Command_A7(void)
 void Command_A8(void)
 {
     Host_Flag_DISAB_AUX = 0; // Enable aux device (mouse)
-    Host_Flag &= 0xdf;
+    Host_Flag &= ~PS2_PORT2_AUX_EN;
     if(MS_Main_CHN == 1)
-        PS2_PORT0_CR = 0xA8;
+        PS2_PORT0_CR = CCMD_MOUSE_ENABLE;
     else if(MS_Main_CHN == 2)
-        PS2_PORT1_CR = 0xA8;
+        PS2_PORT1_CR = CCMD_MOUSE_ENABLE;
 }
 //-----------------------------------------------------------------------------
 // Handle command A9 - Test Aux Device Interface
@@ -828,12 +828,12 @@ static void Command_AC(void)
 void Command_AD(void)
 {
     Host_Flag_DISAB_KEY = 1; // Disable auxiliary keyboard.
-    Host_Flag |= 0x10;
+    Host_Flag |= PS2_PORT1_KEY_EN;
     KB_Scan_Flag = 0;
     if(KB_Main_CHN == 1)
-        PS2_PORT0_CR = 0xAD;
+        PS2_PORT0_CR = CCMD_KBD_DISABLE;
     else if(KB_Main_CHN == 2)
-        PS2_PORT1_CR = 0xAD;
+        PS2_PORT1_CR = CCMD_KBD_DISABLE;
 }
 //-----------------------------------------------------------------------------
 // Handle command AE - Enable Keyboard Interface
@@ -841,12 +841,12 @@ void Command_AD(void)
 void Command_AE(void)
 {
     Host_Flag_DISAB_KEY = 0; // Enable auxiliary keyboard.
-    Host_Flag &= 0xef;
+    Host_Flag &= ~PS2_PORT1_KEY_EN;
     KB_Scan_Flag = 1;
     if(KB_Main_CHN == 1)
-        PS2_PORT0_CR = 0xAE;
+        PS2_PORT0_CR = CCMD_KBD_ENABLE;
     else if(KB_Main_CHN == 2)
-        PS2_PORT1_CR = 0xAE;
+        PS2_PORT1_CR = CCMD_KBD_ENABLE;
 }
 void A20GATE_ON(void)
 {}
@@ -1166,10 +1166,10 @@ void KBC_Variable_Clear(void)
     Host_Flag_INTR_AUX = 1;
     Host_Flag_SYS_FLAG = 0;
     KBD_CLear_Buffer();
-    SYSCTL_RST0 |= 0xa0000000;
-    SYSCTL_RST0 &= ~(0xa0000000); //KBC/PS2M Controller RESET
-    SYSCTL_RST1 |= 0x1;
-    SYSCTL_RST1 &= ~(0x1);  //PS2K Controller RESET
+    SYSCTL_RST0 |= (PS2M_RST | KBC_RST);
+    SYSCTL_RST0 &= ~(PS2M_RST | KBC_RST); //KBC/PS2M Controller RESET
+    SYSCTL_RST1 |= PS2K_RST;
+    SYSCTL_RST1 &= ~(PS2K_RST);  //PS2K Controller RESET
     SET_BIT(KBC_CTL, KBC_IBFIE);   //set KBC IBF enable
 }
 //-----------------------------------------------------------------------------

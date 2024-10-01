@@ -167,7 +167,7 @@ static BYTE Send_To_Host(BYTE data_word, BYTE break_prefix_flag)
  * ------------------------------------------------------------------------- */
 BYTE Send_KB_Data_To_Host(BYTE nKBData)
 {
-    if(IS_SET(KBC_STA, 0) || IS_SET(KBC_STA, 1))
+    if(IS_SET(KBC_STA, KBC_OBF) || IS_SET(KBC_STA, KBC_IBF))
     {
         KBC_Data_Suspend(nKBData);
         return 0x0;
@@ -256,10 +256,11 @@ void Service_Send(void)
  * ------------------------------------------------------------------------- */
 void Transmit_Data_To_Host(BYTE data_byte)
 {
-    irqc_disable_interrupt(6);
+    irqc_disable_interrupt(IRQC_INT_DEVICE_PS2_0);
+    ICTL1_INTMASK5|=0x40;//disable ps2 irq
     //KBC_STA &= 0x0f;
-    SET_BIT(KBC_STA, 4);
-    CLEAR_BIT(KBC_STA, PS2_DataType);
+    SET_BIT(KBC_STA, KBC_KL);
+    CLEAR_BIT(KBC_STA, KBC_SAOBF);
     if(Host_Flag_INTR_KEY)
     {
         SET_BIT(KBC_CTL, KBC_OBFKIE);
@@ -281,7 +282,8 @@ void Transmit_Data_To_Host(BYTE data_byte)
     Debugger_KBC_PMC_Record(1, 0, data_byte);
     Debugger_KBD_Record(data_byte);
 #endif
-    irqc_enable_interrupt(6);
+    irqc_enable_interrupt(IRQC_INT_DEVICE_PS2_0);
+    ICTL1_INTMASK5&=~0x40;//enable ps2 irq
 }
 void KBC_Data_Suspend(BYTE nPending)
 {
@@ -320,7 +322,7 @@ BYTE Release_KBC_Data_Suspend(void)
 void Mouse_Data_To_Host(BYTE data_byte)
 {
     KBC_STA &= 0x0F;
-    SET_BIT(KBC_STA, PS2_DataType);
+    SET_BIT(KBC_STA, KBC_SAOBF);
     if(Host_Flag_INTR_AUX)
     {
         SET_BIT(KBC_CTL, KBC_OBFMIE);
