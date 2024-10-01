@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-05-31 17:25:26
+ * @LastEditTime: 2024-09-19 10:05:22
  * @Description:
  *
  *
@@ -1138,7 +1138,7 @@ void send_source_capability(void)
     context[port_id].pd_src_pdo_cnt = 1;
     send_pd_msg(TYPE_CMD_SRC_CAP_1, (u8 *)&context[port_id].pd_src_pdo,
                 4, SOP_TYPE);
-    ucsi_debug("Resend 1.5A source caps byte 3 is %.bx.\n",
+    ucsi_debug("Resend 1.5A source caps byte 3 is %#x.\n",
                context[port_id].pd_src_pdo[3]);
 }
 
@@ -1170,7 +1170,7 @@ void send_sink_capability(void)
             PDO_FIXED_HIGH_BYTE_DUAL_ROLE;
         else;                   //default is no drp, no dual role
     }
-    ucsi_debug("Resend 1.5A sink caps, sink caps byte 3 is %.bx.\n",
+    ucsi_debug("Resend 1.5A sink caps, sink caps byte 3 is %#x.\n",
                context[port_id].pd_snk_pdo[3]);
     context[port_id].pd_snk_pdo_cnt = 2;
     send_pd_msg(TYPE_PWR_SNK_CAP, (u8 *)&context[port_id].pd_snk_pdo,
@@ -1373,7 +1373,7 @@ static u8 Recv_PD_Commands_Default_Callback()
 
                 context[port_id].csc.csc.BatteryChargingStatus = 1;
             }
-            ucsi_debug("cur:%x, vol:%x, power:%x rdo :%lx, rdo length(%.bx)\n",
+            ucsi_debug("cur:%x, vol:%x, power:%x rdo :%lx, rdo length(%#x)\n",
                        (u16)context[port_id].anx_current_in_50ma,
                        (u16)context[port_id].anx_voltage_in_100mv,
                        context[port_id].anx_power,
@@ -1479,7 +1479,7 @@ static u8 Recv_PD_Commands_Default_Callback()
             if((context[port_id].anx_vbus_status == 1) &&
                     (recvd_msg_buf()[3] & _BIT2) && supply_1500ma_flag == 0)
                 Send_mismatch_source_caps();
-            ucsi_debug("RDO : %lx, vbus(%.bx), supply_flag(%.bx).\n",
+            ucsi_debug("RDO : %lx, vbus(%#x), supply_flag(%#x).\n",
                        context[port_id].ucsi_partner_rdo,
                        context[port_id].anx_vbus_status, supply_1500ma_flag);
         #endif
@@ -2378,7 +2378,7 @@ void send_initialized_setting()
             break;
         case 55:
             context[port_id].anx_initial_status++;
-            ucsi_debug("power on 550ms, data operation mode is %.bx.\n",
+            ucsi_debug("power on 550ms, data operation mode is %#x.\n",
                        context[port_id].data_operation_mode_uom);
         #if 1
             if((context[port_id].data_operation_mode_uom == 0) ||
@@ -2403,7 +2403,7 @@ void send_initialized_setting()
             break;
         case 56:
             context[port_id].anx_initial_status++;
-            ucsi_debug("power on 560ms, power operation mode is %.bx.\n",
+            ucsi_debug("power on 560ms, power operation mode is %#x.\n",
                        context[port_id].power_operation_mode_pdm);
             if((context[port_id].power_operation_mode_pdm == 0) ||
                     (context[port_id].power_operation_mode_pdm & PW_DRP))
@@ -2448,18 +2448,18 @@ static void drp_toggle_enable()
     if(context[port_id].data_operation_mode_uom & OP_DFP)
     {
         anx_write_reg(context[port_id].anx_addr1, TCPC_ROLE_CONTROL, 0x5);   //CC with  Rp + 1.5A
-        ucsi_debug("set tcpc role as Rp(0x5), reg 0xaa(%.bx)\n", ANX7447_c);
+        ucsi_debug("set tcpc role as Rp(0x5), reg 0xaa(%#x)\n", ANX7447_c);
     }
     else if(context[port_id].data_operation_mode_uom & OP_UFP)
     {
         anx_write_reg(context[port_id].anx_addr1, TCPC_ROLE_CONTROL, 0xA);   //CC with  RD
-        ucsi_debug("set tcpc role as Rd(0xa), reg 0xaa(%.bx)\n", ANX7447_c);
+        ucsi_debug("set tcpc role as Rd(0xa), reg 0xaa(%#x)\n", ANX7447_c);
     }
     else
     {
         anx_write_reg(context[port_id].anx_addr1, ANALOG_CTRL_10, 0x80);
         anx_write_reg(context[port_id].anx_addr1, TCPC_ROLE_CONTROL, 0x4A);  //CC with  RD
-        ucsi_debug("set tcpc role as Rd + DRP en(0x4A), %.bx chip\n", ANX7447_c);
+        ucsi_debug("set tcpc role as Rd + DRP en(0x4A), %#x chip\n", ANX7447_c);
         if(ANX7447_c >= 0xAC && ANX7447_c != 0xFF)
         {
             anx_write_reg(context[port_id].anx_addr1, TCPC_COMMAND, 0x99);   //DRP en
@@ -2599,7 +2599,7 @@ void chip_power_on(u8 port)
 {
     anx_read_reg(context[port].anx_addr1, TCPC_COMMAND);
     RamDebug(0xE0 | port);
-    ucsi_debug("power on port %.bx.\n", port);
+    ucsi_debug("power on port %#x.\n", port);
 }
 
 void chip_power_down(u8 port)
@@ -2733,7 +2733,7 @@ void anx_dead_battery_checking_1()
                         }
                     }
                 }
-                ucsi_debug("voltage : %.bx, current : %.bx.\n",
+                ucsi_debug("voltage : %#x, current : %#x.\n",
                            context[ANX7447_i].anx_voltage_in_100mv,
                            context[ANX7447_i].anx_current_in_50ma);
             }
@@ -2755,7 +2755,7 @@ static u8 anx_check_uom()
     }
 
     RamDebug(0x40 | role);
-    ucsi_debug("check uom port(%.bx) role(%.bx), need role(%.bx)\n",
+    ucsi_debug("check uom port(%#x) role(%#x), need role(%#x)\n",
                port_id, role, context[port_id].data_operation_mode_uom);
 
     if(context[port_id].data_operation_mode_uom == OP_DRP)
@@ -2764,7 +2764,7 @@ static u8 anx_check_uom()
     if(context[port_id].data_operation_mode_uom & role)
         return 0;
 
-    ucsi_debug("port(%.bx) force power of, role(%.bx), need role(%.bx)\n",
+    ucsi_debug("port(%#x) force power of, role(%#x), need role(%#x)\n",
                port_id, role, context[port_id].data_operation_mode_uom);
 
     chip_power_down(port_id);
@@ -2816,7 +2816,7 @@ void anx_alert_message_isr()
             PDPort1MainVersion = ANX7447_j;
             PDPort1SubVersion = ANX7447_k;
         }
-        ucsi_debug("port(%.bx) power on, ocm v%bx.%bx.%bx.\n",
+        ucsi_debug("port(%#x) power on, ocm v%bx.%bx.%bx.\n",
                    port_id, (ANX7447_j >> 4) & 0xf, ANX7447_j & 0xf, ANX7447_k);
 
     #if UCSI_SET_UOM_SUPPORT
@@ -2857,7 +2857,7 @@ void anx_alert_message_isr()
     if(intr_alert_1 & INTR_INTP_POW_OFF)
     {
         chip_power_down(port_id);
-        ucsi_debug("port(%.bx) power off, alert0(%.bx), alert1(%.bx).\n",
+        ucsi_debug("port(%#x) power off, alert0(%#x), alert1(%#x).\n",
                    port_id, intr_alert_0, intr_alert_1);
         context[port_id].anx_power_status = 0;
         anx_initial_context(port_id);
