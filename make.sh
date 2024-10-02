@@ -3,7 +3,7 @@
  # @Author: daweslinyu daowes.ly@qq.com
  # @Date: 2024-05-31 14:37:40
  # @LastEditors: daweslinyu daowes.ly@qq.com
- # @LastEditTime: 2024-10-02 15:51:24
+ # @LastEditTime: 2024-10-02 16:02:13
  # @FilePath: /SPK32AE103/Firmware/make.sh
  # @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 ### 
@@ -35,7 +35,7 @@ cd ROM
 make compile -j4 DOWNLOAD=rom
 cp ./rom.bin ../
 cd ..
-sleep 2
+# sleep 2
 
 dd if=/dev/zero ibs=512k count=1 | tr "\000" "\377">main.bin
 dd if=ec_main.bin  of=main.bin bs=1k seek=0   conv=notrunc
