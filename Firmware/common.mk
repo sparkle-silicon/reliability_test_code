@@ -26,6 +26,8 @@ ENV_DIR = $(AE10X_DIR)/ENV
 ifeq ($(DUAL_BOOT_FLAG),0)
 ifeq ($(DOWNLOAD),flash) 
 LINKER_SCRIPT := $(ENV_DIR)/link_flash.lds
+else ifeq ($(DOWNLOAD),crypto) 
+LINKER_SCRIPT := $(ENV_DIR)/link_crypto.lds
 else ifeq ($(DOWNLOAD),ilm) 
 LINKER_SCRIPT := $(ENV_DIR)/link_ilm.lds
 endif

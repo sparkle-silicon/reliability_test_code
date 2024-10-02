@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-01-26 16:02:47
+ * @LastEditTime: 2024-10-02 11:45:21
  * @Description: Custom function support
  *
  *
@@ -77,26 +77,21 @@ void __weak Hook_10msEventB(void)
 // Oem 50ms Events/Hook Here
 //-----------------------------------------------------------------------------
 void __weak Hook_50msEventA(void)
-{
-}
+{}
 //-----------------------------------------------------------------------------
 void __weak Hook_50msEventB(void)
-{
-}
+{}
 //-----------------------------------------------------------------------------
 void __weak Hook_50msEventC(void)
-{
-}
+{}
 //-----------------------------------------------------------------------------
 // Oem 100ms Events/Hook Here
 //-----------------------------------------------------------------------------
 void __weak Hook_100msEventA(void)
-{
-}
+{}
 //-----------------------------------------------------------------------------
 void __weak Hook_100msEventB(void)
-{
-}
+{}
 //-----------------------------------------------------------------------------
 void __weak Hook_100msEventC(void)
 {
@@ -106,12 +101,10 @@ void __weak Hook_100msEventC(void)
 // Oem 500ms Events/Hook Here
 //-----------------------------------------------------------------------------
 void __weak Hook_500msEventA(void)
-{
-}
+{}
 //-----------------------------------------------------------------------------
 void __weak Hook_500msEventB(void)
-{
-}
+{}
 //-----------------------------------------------------------------------------
 void __weak Hook_500msEventC(void)
 {
@@ -128,10 +121,10 @@ void __weak Hook_1secEventA(void) // get all temp
 #if (I2C_MODULE_EN && SUPPORT_I2C_TEMPERATURE)
     get_temperature(2);
 #endif
-    printf("C2EINT:%x,C2EINFO0:%x,C2EINFO1:%x\n", C2EINT, C2EINFO0, C2EINFO1);
+    // printf("C2EINT:%x,C2EINFO0:%x,C2EINFO1:%x\n", C2EINT, C2EINFO0, C2EINFO1);
 
 #if (GLE01 == 1)
-    if (*((VBYTE *)(0x203B9)) == 1)
+    if(*((VBYTE *)(0x203B9)) == 1)
     {
         // printf("0x203B9:%x\n", *((VBYTE *)(0x203B9)));
         *((VBYTE *)(0x203B9)) = 0;
@@ -150,7 +143,7 @@ void __weak Hook_1secEventB(void) // get fan rpm
 {
 #if SUPPORT_FAN1 || SUPPORT_FAN2
     DWORD Polling0 = TACH_Get_Polling(0);
-    if (Polling0 != -1)
+    if(Polling0 != -1)
     {
         TACH0_Speed = (DWORD)6000000 / Polling0;
         dprint("FAN2 RPM is %u\n", TACH0_Speed);
@@ -165,7 +158,7 @@ extern void ADC_Cont_Sample_Init(uint8_t channelx, u_int8_t ADC_Databuffer_chann
 void __weak Hook_1secEventC(void) // update new rpm
 {
     RunTimeStamp++;
-    if (RunTimeStamp % 10 == 0)
+    if(RunTimeStamp % 10 == 0)
     {
         // 连续
         //  if(adc_cnt < 0)
@@ -227,10 +220,10 @@ void __weak Hook_1minEvent(void)
 
 #if SUPPORT_8042DEBUG_OUTPUT
     MinuteCnt++;
-    if (MinuteCnt >= 2)
+    if(MinuteCnt >= 2)
     {
         MinuteCnt = 0;
-        for (int i = 0; i <= Debug_Num; i++)
+        for(int i = 0; i <= Debug_Num; i++)
         {
             dprint("Cnt:%d,Data:%x\n", i, Debug_8042[Debug_Num]);
             Debug_8042[Debug_Num] = 0;
@@ -247,15 +240,14 @@ void __weak Hook_1minEvent(void)
 //
 //-----------------------------------------------------------------------------
 void Service_WaitPS2_Handle(void)
-{
-}
+{}
 /* ----------------------------------------------------------------------------
  * FUNCTION: Service_LPCRST
  * LPC RESET
  * ------------------------------------------------------------------------- */
 void Service_LPCRST(void)
 {
-    if (F_Service_LPCRST == 1)
+    if(F_Service_LPCRST == 1)
     {
         F_Service_LPCRST = 0;
         A20GATE_ON(); // FIXME xia
