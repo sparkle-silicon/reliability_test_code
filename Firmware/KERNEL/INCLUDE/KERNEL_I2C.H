@@ -58,22 +58,22 @@
 #endif
 /*API register define*/
 //all registers are 8 bits width
-#define I2C_REGADDR     0x5
-#define I2C_DATA_CMD_RWDIR  0x11
-#define I2C_RAW_INTR_STAT_H 0x35
-#define I2C_COMP_PARAM_1    0xf4
-#define I2C_TXFLR   0x74
-#define I2C_TX_ABRT_SOURCE_H    0x81
-#define I2C_CON_MASTER		0x1
-#define I2C_CON_SPEED_STD		0x2
-#define I2C_CON_SPEED_FAST		0x4
-#define I2C_CON_SPEED_HIGH      0x6 	
+#define I2C_REGADDR     			0x5
+#define I2C_DATA_CMD_RWDIR  		0x11
+#define I2C_RAW_INTR_STAT_H 		0x35
+#define I2C_COMP_PARAM_1   		 	0xf4
+#define I2C_TXFLR   				0x74
+#define I2C_TX_ABRT_SOURCE_H    	0x81
+#define I2C_CON_MASTER				0x1
+#define I2C_CON_SPEED_STD			0x2
+#define I2C_CON_SPEED_FAST			0x4
+#define I2C_CON_SPEED_HIGH      	0x6 	
 #define I2C_CON_10BITADDR_MASTER	0x10
-#define I2C_CON_10BITADDR_SLAVE	0x8
-#define I2C_CON_RESTART_EN		0x20
+#define I2C_CON_10BITADDR_SLAVE		0x8
+#define I2C_CON_RESTART_EN			0x20
 #define I2C_CON_SLAVE_DISABLE		0x40
 #define I2C_REGADDR_7BIT	0x00
-#define I2C_REGADDR_10BIT	BIT4
+#define I2C_REGADDR_10BIT	0x10
 #define I2C_INTR_RX_UNDER	0x01
 #define I2C_INTR_RX_OVER	0x02
 #define I2C_INTR_RX_FULL	0x04
@@ -97,17 +97,18 @@
 #define I2C_STATUS_RFF		0x10
 #define I2C_MST_ACTIVITY	0x20
 #define I2C_SLV_ACTIVITY	0x40
-#define I2C_RAW_STATUS_STOP_DET	(1<<9)
-#define I2C_ERR_TX_ABRT	(1<<6)
+#define I2C_RAW_STATUS_STOP_DET	0x200
+#define I2C_ERR_TX_ABRT		0x40 
 /*
  *  * status codes
  *   */
-#define STATUS_IDLE			0x0
+#define STATUS_IDLE					0x0
 #define STATUS_WRITE_IN_PROGRESS	0x1
 #define STATUS_READ_IN_PROGRESS		0x2
 #define TIMEOUT			20 /* ms */
 #define TX_EMPTY	0x10
 #define RX_FULL		0x4
+#define ACTIVITY    0x1
 /*
  *  * hardware abort codes from the I2C_TX_ABRT_SOURCE register
  *   *
@@ -124,7 +125,7 @@
 #define ABRT_SBYTE_NORSTRT	9
 #define ABRT_10B_RD_NORSTRT	10
 #define ABRT_MASTER_DIS		11
-#define ARB_LOST		12
+#define ARB_LOST			12
 #define I2C_TX_ABRT_7B_ADDR_NOACK	(1UL << ABRT_7B_ADDR_NOACK)
 #define I2C_TX_ABRT_10ADDR1_NOACK	(1UL << ABRT_10ADDR1_NOACK)
 #define I2C_TX_ABRT_10ADDR2_NOACK	(1UL << ABRT_10ADDR2_NOACK)
@@ -144,6 +145,7 @@
 //#define I2C_BASE	I2C_CTRL_ADDR            
 #define TAR_GC_OR_START_START	0x400
 #define TAR_SPECAIL_START	0x800
+#define I2C_STOP_DET        0x2
 /*****************************************/
 #define SS_MIN_SCL_HIGH		4000
 #define	SS_MIN_SCL_LOW		4700
@@ -169,11 +171,15 @@
 // extern functions
 //*****************************************************************************
 extern WORD I2c_Channel_Baseaddr(WORD i2c_channel_num);
+extern BYTE  I2c_Int_Mask(BYTE  channel, BYTE  type);
+extern BYTE  I2c_Int_Unmask(BYTE  channel, BYTE  type);
+extern BYTE  I2c_Int_Mask_Read(BYTE  channel, BYTE  type);
+extern BYTE  I2c_Int_Status(BYTE  channel, BYTE  type);
+extern BYTE I2c_Master_Read_Byte(BYTE reg, WORD i2c_channel);
+extern BYTE I2cM_Read_Byte(BYTE i2c_addr, BYTE reg, WORD i2c_channel);
+
+extern int i2c_dw_read_clear_intrbits(WORD baseaddr);
 extern char I2c_Readb(WORD regoffset, WORD i2c_channel);
-extern void I2c_Writeb(BYTE value, WORD regoffset, WORD i2c_channel);
-extern void I2c_Write16bit(WORD value, WORD regoffset, WORD i2c_channel);
-void I2c_Mux_set(BYTE modle);
-extern void I2c_Master_Set_Tar(WORD TAR, WORD BIT, WORD i2c_channel);
 extern char I2c_Check_TXE(WORD i2c_channel);
 extern char I2c_Check_RXF(WORD i2c_channel);
 extern char I2c_Check_TFE(WORD i2c_channel);
@@ -181,33 +187,26 @@ extern char I2c_Check_TFNF(WORD i2c_channel);
 extern char I2c_Check_RFNE(WORD i2c_channel);
 extern char I2c_Check_Stop_Det(WORD i2c_channel);
 extern char I2c_Check_Active(WORD i2c_channel);
+extern char I2c_Slave_Read_Byte(WORD i2c_channel);
+
+extern void I2c_Writeb(BYTE value, WORD regoffset, WORD i2c_channel);
+extern void I2c_Write16bit(WORD value, WORD regoffset, WORD i2c_channel);
+extern void I2c_Mux_set(BYTE modle);
+extern void I2c_Master_Set_Tar(WORD TAR, WORD BIT, WORD i2c_channel);
 extern void I2c_Master_Write_Byte(BYTE data, BYTE reg, WORD i2c_channel);
-extern BYTE I2c_Master_Read_Byte(BYTE reg, WORD i2c_channel);
 extern void I2c_Master_Write_Word(BYTE *data, BYTE reg, WORD i2c_channel);
 extern void I2c_Master_Read_Word(BYTE *data, BYTE reg, WORD i2c_channel);
 extern void I2c_Master_Write_Block(BYTE *data, BYTE lenth, BYTE reg, WORD i2c_channel);
 extern void I2c_Master_Read_Block(BYTE *data, BYTE lenth, BYTE reg, WORD i2c_channel);
 extern void I2cM_Write_Byte(BYTE i2c_addr, BYTE reg, BYTE data, WORD i2c_channel);
-extern BYTE I2cM_Read_Byte(BYTE i2c_addr, BYTE reg, WORD i2c_channel);
 extern void I2cM_Write_Word(BYTE i2c_addr, BYTE *data, BYTE reg, WORD i2c_channel);
 extern void I2cM_Read_Word(BYTE i2c_addr, BYTE *data, BYTE reg, WORD i2c_channel);
 extern void I2cM_Write_Block(BYTE i2c_addr, BYTE *data, BYTE length, BYTE reg, WORD i2c_channel);
 extern void I2cM_Read_Block(BYTE i2c_addr, BYTE *data, BYTE length, BYTE reg, WORD i2c_channel);
 extern void I2c_Slave_Write_Byte(char data, WORD i2c_channel);
-extern char I2c_Slave_Read_Byte(WORD i2c_channel);
 extern void I2c_Slave_Write_Block(char *data, BYTE  length, WORD i2c_channel);
-DWORD I2c_Scl_Hcnt(DWORD ic_clk, DWORD tSYMBOL, DWORD tf, int cond, int offset);
-DWORD I2c_Scl_Lcnt(DWORD  ic_clk, DWORD tLOW, DWORD tf, int offset);
-void I2c_Master_Controller_Init(WORD i2c_channel, DWORD speed, BYTE spklen);
-void I2c_Slave_Init(WORD i2c_channel, DWORD speed, BYTE spklen);
+extern void I2c_Master_Controller_Init(WORD i2c_channel, DWORD speed, BYTE spklen);
+extern void I2c_Slave_Init(WORD i2c_channel, DWORD speed, BYTE spklen);
 extern void I2c_Channel_Init(BYTE channel, DWORD speed, BYTE role, BYTE addr, BYTE spklen);
-BYTE  I2c_Int_Mask(BYTE  channel, BYTE  type);
-BYTE  I2c_Int_Unmask(BYTE  channel, BYTE  type);
-BYTE  I2c_Int_Mask_Read(BYTE  channel, BYTE  type);
-BYTE  I2c_Int_Status(BYTE  channel, BYTE  type);
-int i2c_dw_read_clear_intrbits(WORD baseaddr);
-void i2c_dw_read(WORD baseaddr);
-void i2c_dw_xfer_msg(WORD baseaddr);
-void i2c_dw_req(WORD baseaddr);
-void i2c_dw_tx_abrt(WORD baseaddr);
+extern void i2c_dw_tx_abrt(WORD baseaddr);
 #endif

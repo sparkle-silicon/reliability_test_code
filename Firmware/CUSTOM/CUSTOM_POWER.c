@@ -26,9 +26,9 @@ void PowerSequence_Record_To_Array(char group, BYTE pin, BYTE level, WORD delay)
 {
     PowSeq_Record_Cnt++;
     // Record GPIO Group informae_tion
-    if(group >= 0x0 && group <= 0x5)
+    if(group > 0x0 && group <= 0x5)
     {
-        PowSeq_Record[PowerSequence_Step].pin_group = group - 1;
+        PowSeq_Record[Debugger_PowerSequence_Step].pin_group = group - 1;
     }
     else
     {
@@ -37,7 +37,7 @@ void PowerSequence_Record_To_Array(char group, BYTE pin, BYTE level, WORD delay)
     // Record GPIO Pin Information
     if(pin >= 0x0 && pin <= 0x1F)
     {
-        PowSeq_Record[PowerSequence_Step].pin_location = pin;
+        PowSeq_Record[Debugger_PowerSequence_Step].pin_location = pin;
     }
     else
     {
@@ -46,19 +46,23 @@ void PowerSequence_Record_To_Array(char group, BYTE pin, BYTE level, WORD delay)
     // Record GPIO Output Level Information
     if(level == 0)
     {
-        PowSeq_Record[PowerSequence_Step].pin_level = 0x0;
+        PowSeq_Record[Debugger_PowerSequence_Step].pin_level = 0x0;
     }
     else if(level == 1)
     {
-        PowSeq_Record[PowerSequence_Step].pin_level = 0x1;
+        PowSeq_Record[Debugger_PowerSequence_Step].pin_level = 0x1;
     }
     else
     {
         dprint("gpio level input error\n");
     }
+    if((IsGpioOut(group, pin)) == 0)
+    {
+        PowSeq_Record[Debugger_PowerSequence_Step].pin_level = ReadGPIOLevel(group, pin);
+    }
     // Record GPIO Delay Information
-    PowSeq_Record[PowerSequence_Step].pin_delay = delay;
-    // printf("PowerSequence_Record_To_Array\n");
+    PowSeq_Record[Debugger_PowerSequence_Step].pin_delay = delay;
+    Debugger_PowerSequence_Step++;
 }
 /*******************************************************/
 // 将时序记录信息拷贝到SRAM中，以便调试器读取该信息
@@ -92,12 +96,17 @@ void Copy_Power_Sequence_Record_To_Sram(VBYTE Record_Flag)
         case 6:
             *((VBYTE *)(SRAM_BASE_ADDR)) = 0x6;
             break;
+        case 7:
+            *((VBYTE *)(SRAM_BASE_ADDR)) = 0x7;
+            break;
         default:
             *((VBYTE *)(0x31000)) = 0x0;
             break;
     }
     /*Record PowerSequence Count to 0x31001 */
     *((VBYTE *)(0x31001)) = PowSeq_Record_Cnt;
+    PowSeq_Record_Cnt = 0;
+    Debugger_PowerSequence_Step = 1;
     /*Copy PowerSequence information to Sram*/
     length_record = sizeof(PowSeq_Record);
     memcpy(PowSeq_Mem_Ptr, PowSeq_Record, length_record);
@@ -148,7 +157,7 @@ BYTE S5S0_EXAMPLE_1(void)
 {
     /*仅为示例时序，需根据实际需求进行修改*/
     // This is S5S0 power sequence 1
-    printf("s5->s0 start\n");
+    printf("S5->S0\n");
     ALW_ON();                                       // 操作GPIO的时序函数需要按照后缀为_ON、_OFF、_H、_L的格式来编写，以便调试器识别
     PowerSequence_Record_To_Array(GPIOA, 7, 1, 5); // record ALW_ON for debugger
     return 0;
@@ -189,7 +198,7 @@ BYTE S5S0_EXAMPLE_5(void)
 BYTE S0S5_EXAMPLE_1(void)
 {
     // This is S5S0_EXAMPLE 1
-    printf("s0->s5\n");
+    printf("S0->S5\n");
     S3OK_L();
     PowerSequence_Record_To_Array(GPIOA, 4, 0, 0); // record HOT_LED_L for debugger
     return 0;
@@ -214,11 +223,14 @@ BYTE S0S5_EXAMPLE_3(void)
 BYTE S4S0_EXAMPLE_1(void)
 {
     // This is S5S0_EXAMPLE 1
+    dprint("S4->S0\n");
+    GPIOB6(HIGH);
     return 0;
 }
 BYTE S4S0_EXAMPLE_2(void)
 {
     // This is S5S0_EXAMPLE 2
+    GPIOB6(LOW);
     return 0;
 }
 //-----------------------------------------------------------------------------
@@ -227,11 +239,14 @@ BYTE S4S0_EXAMPLE_2(void)
 BYTE S0S4_EXAMPLE_1(void)
 {
     // This is S5S0_EXAMPLE 1
+    dprint("S0->S4\n");
+    GPIOB6(LOW);
     return 0;
 }
 BYTE S0S4_EXAMPLE_2(void)
 {
     // This is S5S0_EXAMPLE 2
+    GPIOB6(HIGH);
     return 0;
 }
 //-----------------------------------------------------------------------------
@@ -240,11 +255,14 @@ BYTE S0S4_EXAMPLE_2(void)
 BYTE S3S0_EXAMPLE_1(void)
 {
     // This is S5S0_EXAMPLE 1
+    dprint("S3->S0\n");
+    GPIOC6(HIGH);
     return 0;
 }
 BYTE S3S0_EXAMPLE_2(void)
 {
     // This is S5S0_EXAMPLE 2
+    GPIOC6(LOW);
     return 0;
 }
 //-----------------------------------------------------------------------------
@@ -253,11 +271,14 @@ BYTE S3S0_EXAMPLE_2(void)
 BYTE S0S3_EXAMPLE_1(void)
 {
     // This is S5S0_EXAMPLE 1
+    dprint("S0->S3\n");
+    GPIOC6(LOW);
     return 0;
 }
 BYTE S0S3_EXAMPLE_2(void)
 {
     // This is S5S0_EXAMPLE 2
+    GPIOC6(HIGH);
     return 0;
 }
 //-----------------------------------------------------------------------------
@@ -266,6 +287,8 @@ BYTE S0S3_EXAMPLE_2(void)
 BYTE Reboot_EXAMPLE_1(void)
 {
     // This is REBOOT_EXAMPLE 1
+    dprint("Reboot start\n");
+    GPIOA30(HIGH);
     return 0;
 }
 BYTE Reboot_EXAMPLE_2(void)
@@ -280,7 +303,7 @@ void Custom_Reboot_Var(void)
 {
     PowerState_Monitor_Index = 0x00;
     PowerChange_Var_Clear();
-    KBS_KSDC1R |= (~0x5F);
+    KBS_KSDC1R |= (KBS_KSDC1R_EN | KBS_KSDC1R_INT_EN);//keep KBS enable and interrupt enable
     if(Set_AutoON_AfterUpdate() == TRUE)
     {
     }
@@ -302,7 +325,7 @@ void Reboot_Var(void)
 void Custom_SX_S0_Var(void)
 {
     PowerState_Monitor_Index = 0x00;
-    KBS_KSDC1R |= (~0x5F);
+    KBS_KSDC1R |= (KBS_KSDC1R_EN | KBS_KSDC1R_INT_EN);//keep KBS enable and interrupt enable
 }
 //-----------------------------------------------------------------------------
 //  The variable of Sx -> S0
@@ -321,7 +344,7 @@ void Custom_S0_SX_Var(void)
     PowerState_Monitor_Index = 0x00;
 #if (ENABLE_S3_KEYBOARD_INTR&ENABLE_S5_KEYBOARD_INTR)  //如果需要支持S3/S5状态下，按键唤醒，则不关闭KBS扫描和使能
 #else
-    KBS_KSDC1R &= 0x5F;
+    KBS_KSDC1R &= ~KBS_KSDC1R_EN;//关闭KBS扫描
 #endif
     PowerChange_Var_Clear();
 }
@@ -393,6 +416,77 @@ BYTE Reboot_Variable(void)
 {
     System_PowerState = SYSTEM_S5;  //此处仅为重启示例代码，需要根据具体主板时序来修改相关时序及状态
     Reboot_Var();
+    return 0;
+}
+//-----------------------------------------------------------------------------
+// Provide power on timing information for the debugger
+//-----------------------------------------------------------------------------
+BYTE GetS5S0_PowerOnSequenceInfo(void)
+{
+    PowerSequence_Record_To_Array(GPIOA, 7, 1, 5); // record Info for debugger
+    PowerSequence_Record_To_Array(GPIOA, 7, 0, 10);
+    PowerSequence_Record_To_Array(GPIOA, 31, 1, 5);
+    PowerSequence_Record_To_Array(GPIOA, 31, 0, 10);
+    return 0;
+}
+
+//-----------------------------------------------------------------------------
+// Provide power on timing information for the debugger
+//-----------------------------------------------------------------------------
+BYTE GetS0S5_PowerOnSequenceInfo(void)
+{
+    PowerSequence_Record_To_Array(GPIOA, 4, 0, 0); // record Info for debugger
+    PowerSequence_Record_To_Array(GPIOA, 7, 1, 0);
+    PowerSequence_Record_To_Array(GPIOA, 10, 1, 0);
+    return 0;
+}
+//-----------------------------------------------------------------------------
+// Provide power on timing information for the debugger
+//-----------------------------------------------------------------------------
+BYTE GetS4S0_PowerOnSequenceInfo(void)
+{
+    PowerSequence_Record_To_Array(GPIOB, 6, 1, 5);
+    PowerSequence_Record_To_Array(GPIOB, 6, 0, 0);
+    return 0;
+}
+//-----------------------------------------------------------------------------
+// Provide power on timing information for the debugger
+//-----------------------------------------------------------------------------
+BYTE GetS0S4_PowerOnSequenceInfo(void)
+{
+    PowerSequence_Record_To_Array(GPIOB, 6, 0, 5);
+    PowerSequence_Record_To_Array(GPIOB, 6, 1, 0);
+    return 0;
+}
+//-----------------------------------------------------------------------------
+// Provide power on timing information for the debugger
+//-----------------------------------------------------------------------------
+BYTE GetS3S0_PowerOnSequenceInfo(void)
+{
+    PowerSequence_Record_To_Array(GPIOC, 6, 1, 5);
+    PowerSequence_Record_To_Array(GPIOC, 6, 0, 0);
+    return 0;
+}
+//-----------------------------------------------------------------------------
+// Provide power on timing information for the debugger
+//-----------------------------------------------------------------------------
+BYTE GetS0S3_PowerOnSequenceInfo(void)
+{
+    PowerSequence_Record_To_Array(GPIOC, 6, 0, 5);
+    PowerSequence_Record_To_Array(GPIOC, 6, 1, 0);
+    return 0;
+}
+//-----------------------------------------------------------------------------
+// Provide power on timing information for the debugger
+//-----------------------------------------------------------------------------
+BYTE Getreboot_PowerOnSequenceInfo(void)
+{
+    PowerSequence_Record_To_Array(GPIOA, 30, 1, 0);
+    PowerSequence_Record_To_Array(GPIOA, 30, 0, 5);
+    PowerSequence_Record_To_Array(GPIOA, 30, 1, 0);
+    PowerSequence_Record_To_Array(GPIOA, 29, 1, 0);
+    PowerSequence_Record_To_Array(GPIOA, 29, 0, 5);
+    PowerSequence_Record_To_Array(GPIOA, 29, 1, 0);
     return 0;
 }
 //-------------------------------------------------------------------------------------
@@ -603,7 +697,7 @@ void Custom_S5S0_Sequence(void)
         }
     }
 #if ENABLE_DEBUGGER_SUPPORT
-    PowSeq_Record_Flag = 1;
+    PowSeq_Record_Flag = D_PowerOn;
     if(PowerSequence_Step == ((sizeof(PowerSequence_S5S0) / sizeof(sPowerSEQ))))
     {
         Copy_Power_Sequence_Record_To_Sram(PowSeq_Record_Flag);
@@ -682,7 +776,7 @@ void Custom_S4S0_Sequence(void)
         }
     }
 #if ENABLE_DEBUGGER_SUPPORT
-    PowSeq_Record_Flag = 2;
+    PowSeq_Record_Flag = D_HibernateWakeup;
     if(PowerSequence_Step == (sizeof(PowerSequence_S4S0) / sizeof(sPowerSEQ)))
     {
         Copy_Power_Sequence_Record_To_Sram(PowSeq_Record_Flag);
@@ -761,7 +855,7 @@ void Custom_S3S0_Sequence(void)
         }
     }
 #if ENABLE_DEBUGGER_SUPPORT
-    PowSeq_Record_Flag = 3;
+    PowSeq_Record_Flag = D_SleepWakeup;
     if(PowerSequence_Step == (sizeof(PowerSequence_S3S0) / sizeof(sPowerSEQ)))
     {
         Copy_Power_Sequence_Record_To_Sram(PowSeq_Record_Flag);
@@ -954,7 +1048,7 @@ void Custom_Reboot_Trigger(BYTE cause)
     memset(PowSeq_Record, 0xff, 40 * sizeof(sPowSeq_Pin_Record));
 #endif
     ShutDnCause = cause; // setup shutdown case
-    System_PowerState = SYSTEM_S0_S5;
+    System_PowerState = SYSTEM_REBOOT;
     PowerSequence_Step = 1;
     PowerSequence_Delay = 0x00;
 }
@@ -1048,7 +1142,7 @@ void Custom_S0S3_Sequence(void)
         }
     }
 #if ENABLE_DEBUGGER_SUPPORT
-    PowSeq_Record_Flag = 4;
+    PowSeq_Record_Flag = D_Sleep;
     if(PowerSequence_Step == (sizeof(PowerSequence_S0S3) / sizeof(sPowerSEQ)))
     {
         Copy_Power_Sequence_Record_To_Sram(PowSeq_Record_Flag);
@@ -1127,7 +1221,7 @@ void Custom_S0S4_Sequence(void)
         }
     }
 #if ENABLE_DEBUGGER_SUPPORT
-    PowSeq_Record_Flag = 5;
+    PowSeq_Record_Flag = D_Hibernate;
     if(PowerSequence_Step == (sizeof(PowerSequence_S0S4) / sizeof(sPowerSEQ)))
     {
         Copy_Power_Sequence_Record_To_Sram(PowSeq_Record_Flag);
@@ -1206,7 +1300,7 @@ void Custom_S0S5_Sequence(void)
         }
     }
 #if ENABLE_DEBUGGER_SUPPORT
-    PowSeq_Record_Flag = 6;
+    PowSeq_Record_Flag = D_Shutdown;
     if(PowerSequence_Step == ((sizeof(PowerSequence_S0S5) / sizeof(sPowerSEQ))))
     {
         Copy_Power_Sequence_Record_To_Sram(PowSeq_Record_Flag);
@@ -1282,7 +1376,7 @@ void Custom_Reboot_Sequence(void)
         }
     }
 #if ENABLE_DEBUGGER_SUPPORT
-    PowSeq_Record_Flag = 7;
+    PowSeq_Record_Flag = D_Reboot;
     if(PowerSequence_Step == ((sizeof(PowerSequence_Reboot) / sizeof(sPowerSEQ))))
     {
         Copy_Power_Sequence_Record_To_Sram(PowSeq_Record_Flag);
@@ -1388,10 +1482,10 @@ void Sys_PowerState_Control(void)
             //dprint("Custom_S0S5_Sequence\n");
             Custom_S0S5_Sequence();
             break;
-        // case SYSTEM_Reboot:
-        //     //dprint("Custom_Reboot_Sequence\n");
-        //     Custom_Reset_Sequence();
-        //     break;
+        case SYSTEM_REBOOT:
+            //dprint("Custom_Reboot_Sequence\n");
+            Custom_Reboot_Sequence();
+            break;
         case SYSTEM_EC_WDTRST:
             // InternalWDTNow();
             break;

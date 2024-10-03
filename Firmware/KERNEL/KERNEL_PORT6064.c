@@ -63,13 +63,16 @@ void Command_90(void)
         {
             // Scan_PS2_Device();
         }
-        KBC_STA = 0x24; // set error bit and AUX bit, source bits is 00
+        KBC_STA = KBC_STA_GPF | KBC_STA_SAOBF; // set error bit and AUX bit, source bits is 00
         if(Host_Flag_INTR_AUX) // If AUX IRQ bit of command is present
         {
             SET_BIT(KBC_CTL, KBC_OBFMIE); // Enable IRQ
         }
         vDelayXms(5);   // Emulate transmission delay times
         KBC_MOB = 0xFC; // timeout error
+    #if ENABLE_DEBUGGER_SUPPORT
+        Debugger_KBC_PMC_Record(1, 0, 0xFC);
+    #endif
     }
 }
 BYTE Set_Port60_Multi_Data_Handle(void)
@@ -253,7 +256,7 @@ void KB_Cmd_Handle(BYTE nKB60DAT)
         int kb_timeout = WaitKBCIdle;
         if(ack != 0)
         {
-            while(IS_SET(KBC_STA, 0) && kb_timeout > 0)
+            while(IS_SET(KBC_STA, KBC_OBF) && kb_timeout > 0)
             {
                 kb_timeout--;
             }
@@ -265,7 +268,7 @@ void KB_Cmd_Handle(BYTE nKB60DAT)
             Transmit_Data_To_Host(ack);
             if(ack1 != 0x00)
             {
-                while(IS_SET(KBC_STA, 0) && (kb_timeout > 0))
+                while(IS_SET(KBC_STA, KBC_OBF) && (kb_timeout > 0))
                 {
                     kb_timeout--;
                 }
@@ -278,7 +281,7 @@ void KB_Cmd_Handle(BYTE nKB60DAT)
             }
             if(ack2 != 0x00)
             {
-                while(IS_SET(KBC_STA, 0) && kb_timeout > 0)
+                while(IS_SET(KBC_STA, KBC_OBF) && kb_timeout > 0)
                 {
                     kb_timeout--;
                 }
@@ -330,7 +333,7 @@ BYTE Loop_Wait_Get_Port60_Data(void)
     iLOOP = WaitKBDataDelay;
     do
     {
-        if(IS_SET(KBC_STA, 1))
+        if(IS_SET(KBC_STA, KBC_IBF))
         {
             if(KBC_STA & KBC_STA_A2)
             {
@@ -339,6 +342,10 @@ BYTE Loop_Wait_Get_Port60_Data(void)
             else
             {
                 KBHIData = KBC_IB;
+            #if ENABLE_DEBUGGER_SUPPORT
+            /* Debugger record */
+                Debugger_KBC_PMC_Record(0, 0, KBHIData);
+            #endif
                 return 0x01;
             }
         }
@@ -525,9 +532,12 @@ void Command_40_7F(void) // Command_40_7F: Write KBC RAM Control Bytes
 #endif
     if(KBHICmd == 0x60)
     {
-        while(!(KBC_STA & 0x2))
-            ;
+        while(!(KBC_STA & KBC_STA_IBF));
         KBHIData = KBC_IB;
+    #if ENABLE_DEBUGGER_SUPPORT
+    /* Debugger record */
+        Debugger_KBC_PMC_Record(0, 0, KBHIData);
+    #endif
     #if SUPPORT_8042DEBUG_OUTPUT
         Write_Debug_Data_To_Sram(KBHIData);
     #endif

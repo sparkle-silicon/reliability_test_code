@@ -995,7 +995,7 @@ void PMC2_Cmd_DC(void)
 #if (defined(AE101) || defined(AE102))
     dprint("SIO ECU Start\n");
     Disable_Interrupt_Main_Switch();
-    Smf_Ptr = Load_Func_To_Dram(EC_IO_Update, 0x800);
+    Smf_Ptr = Load_Smfi_To_Dram(EC_IO_Update, 0x800);
     (*Smf_Ptr)(); // Do Function at malloc address
 #elif defined(AE103)
     printf("ecu\n");

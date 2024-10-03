@@ -60,7 +60,7 @@ int TIMER_Init(u8 index, u32 load_count, u8 loop_enable, u8 int_mask)
  */
 int TIMER_Disable(u8 index)
 {
-	TIMER_REG(0x14 * index + TIMER0_TCR_OFFSET) &= 0xfe;
+	TIMER_REG(0x14 * index + TIMER0_TCR_OFFSET) &= ~TIMER_EN;
 	return TIMER_REG(0x14 * index + TIMER0_TCR_OFFSET);
 }
 /**
@@ -72,7 +72,7 @@ int TIMER_Disable(u8 index)
  */
 void TIMER_Enable(u8 index)
 {
-	TIMER_REG(0x14 * index + TIMER0_TCR_OFFSET) |= 0x01;
+	TIMER_REG(0x14 * index + TIMER0_TCR_OFFSET) |= TIMER_EN;
 }
 /**
  * @brief timer定时中断屏蔽
@@ -86,11 +86,11 @@ void TIMER_Int_Mask(u8 index, u8 int_mask)
 {
 	if(int_mask == 0)
 	{
-		TIMER_REG(0x14 * index + TIMER0_TCR_OFFSET) &= (~BIT2);
+		TIMER_REG(0x14 * index + TIMER0_TCR_OFFSET) &= (~TIMER_MASK_EN);
 	}
 	else
 	{
-		TIMER_REG(0x14 * index + TIMER0_TCR_OFFSET) |= BIT2;
+		TIMER_REG(0x14 * index + TIMER0_TCR_OFFSET) |= TIMER_MASK_EN;
 	}
 }
 void InternalWDTNow(void)
@@ -98,8 +98,7 @@ void InternalWDTNow(void)
 	// reserved
 	WDT_Init(0, 0);
 	// WDT reset chip
-	while(1)
-		;
+	while(1);
 }
 /**
  * @brief timer定时中断使能
@@ -113,16 +112,16 @@ BYTE Timer_Int_Enable(BYTE channel)
 	switch(channel)
 	{
 		case TIMER0:
-			TIMER0_TCR &= ~(0x1 << 2);
+			TIMER0_TCR &= ~TIMER_MASK_EN;
 			return 0;
 		case TIMER1:
-			TIMER1_TCR &= ~(0x1 << 2);
+			TIMER1_TCR &= ~TIMER_MASK_EN;
 			return 0;
 		case TIMER2:
-			TIMER2_TCR &= ~(0x1 << 2);
+			TIMER2_TCR &= ~TIMER_MASK_EN;
 			return 0;
 		case TIMER3:
-			TIMER3_TCR &= ~(0x1 << 2);
+			TIMER3_TCR &= ~TIMER_MASK_EN;
 			return 0;
 		default:
 			return -1;
@@ -140,16 +139,16 @@ BYTE Timer_Int_Disable(BYTE channel)
 	switch(channel)
 	{
 		case TIMER0:
-			TIMER0_TCR |= (0x1 << 2);
+			TIMER0_TCR |= TIMER_MASK_EN;
 			return 0;
 		case TIMER1:
-			TIMER1_TCR |= (0x1 << 2);
+			TIMER1_TCR |= TIMER_MASK_EN;
 			return 0;
 		case TIMER2:
-			TIMER2_TCR |= (0x1 << 2);
+			TIMER2_TCR |= TIMER_MASK_EN;
 			return 0;
 		case TIMER3:
-			TIMER3_TCR |= (0x1 << 2);
+			TIMER3_TCR |= TIMER_MASK_EN;
 			return 0;
 		default:
 			return -1;
@@ -167,13 +166,13 @@ BYTE Timer_Int_Enable_Read(BYTE channel)
 	switch(channel)
 	{
 		case TIMER0:
-			return ((TIMER0_TCR & (0x1 << 2)) == 0);
+			return ((TIMER0_TCR & TIMER_MASK_EN) == 0);
 		case TIMER1:
-			return ((TIMER1_TCR & (0x1 << 2)) == 0);
+			return ((TIMER1_TCR & TIMER_MASK_EN) == 0);
 		case TIMER2:
-			return ((TIMER2_TCR & (0x1 << 2)) == 0);
+			return ((TIMER2_TCR & TIMER_MASK_EN) == 0);
 		case TIMER3:
-			return ((TIMER3_TCR & (0x1 << 2)) == 0);
+			return ((TIMER3_TCR & TIMER_MASK_EN) == 0);
 		default:
 			return -1;
 	}
@@ -190,13 +189,13 @@ BYTE Timer_Int_Status(BYTE channel)
 	switch(channel)
 	{
 		case TIMER0:
-			return ((TIMER0_TIS & (0x1 << 0)) != 0);
+			return ((TIMER0_TIS & TIMER_INT) != 0);
 		case TIMER1:
-			return ((TIMER1_TIS & (0x1 << 0)) != 0);
+			return ((TIMER1_TIS & TIMER_INT) != 0);
 		case TIMER2:
-			return ((TIMER2_TIS & (0x1 << 0)) != 0);
+			return ((TIMER2_TIS & TIMER_INT) != 0);
 		case TIMER3:
-			return ((TIMER3_TIS & (0x1 << 0)) != 0);
+			return ((TIMER3_TIS & TIMER_INT) != 0);
 		default:
 			return -1;
 	}
@@ -210,8 +209,7 @@ void vDelayXms(WORD bMS)
 	for(; bMS != 0; bMS--)
 	{
 		TIMER_Init(TIMER1, TIMER1_1ms, 0x0, 0x1);
-		while((TIMER_TRIS & BIT(TIMER1)) == 0)
-			;
+		while((TIMER_TRIS & BIT(TIMER1)) == 0);
 		TIMER1_TEOI;
 		TIMER_Disable(TIMER1);
 	}
@@ -219,12 +217,11 @@ void vDelayXms(WORD bMS)
 //----------------------------------------------------------------------------
 // Delay Xus function
 //----------------------------------------------------------------------------
-void vDelayXus(BYTE bUS)
+void vDelayXus(DWORD bUS)
 {
 	TIMER_Disable(TIMER3);
 	TIMER_Init(TIMER3, TIMER3_1us * bUS, 0x0, 0x1);
-	while((TIMER_TRIS & BIT(TIMER3)) == 0)
-		;
+	while((TIMER_TRIS & BIT(TIMER3)) == 0);
 	TIMER3_TEOI;
 	TIMER_Disable(TIMER3);
 }
@@ -234,7 +231,6 @@ void wait_seconds(size_t n)
 	// Don't start measuruing until we see an mtime tick
 	enable_mcycle_minstret(); // 打开定时器
 	start_mtime = mtime_lo();
-	while((mtime_lo() - start_mtime) <= (n * TIMER_FREQ))
-		;
+	while((mtime_lo() - start_mtime) <= (n * TIMER_FREQ));
 	disable_mcycle_minstret(); // 关闭定时器
 }

@@ -94,6 +94,9 @@ void PMC4_Cmd_14(void)
 void PMC4_Cmd_15(void)
 {
     PMC4_DOR = 0;
+#if ENABLE_DEBUGGER_SUPPORT
+    Debugger_KBC_PMC_Record(1, 4, 0);
+#endif
 }
 //----------------------------------------------------------------------------
 void PMC4_Cmd_16(void)
@@ -111,6 +114,9 @@ void PMC4_Cmd_19(void)
 void PMC4_Cmd_1A(void)
 {
     PMC4_DOR = 0;
+#if ENABLE_DEBUGGER_SUPPORT
+    Debugger_KBC_PMC_Record(1, 4, 0);
+#endif
 }
 //----------------------------------------------------------------------------
 void PMC4_Cmd_1B(void)
@@ -138,6 +144,9 @@ void PMC4_Cmd_20(void)
 void PMC4_Cmd_21(void)
 {
     PMC4_DOR = 0;
+#if ENABLE_DEBUGGER_SUPPORT
+    Debugger_KBC_PMC_Record(1, 4, 0);
+#endif
 }
 //----------------------------------------------------------------------------
 void PMC4_Cmd_22(void)
@@ -216,37 +225,58 @@ void PMC4_Cmd_33(void)
     if(Set_PortPM4_Data_Handle()) // Get PM4Data
     {
         PMC4_DOR = 0x00;
+    #if ENABLE_DEBUGGER_SUPPORT
+        Debugger_KBC_PMC_Record(1, 4, 0);
+    #endif
     }
 }
 //----------------------------------------------------------------------------
 void PMC4_Cmd_34(void)
 {
     PMC4_DOR = 0x00;
+#if ENABLE_DEBUGGER_SUPPORT
+    Debugger_KBC_PMC_Record(1, 4, 0);
+#endif
 }
 //----------------------------------------------------------------------------
 void PMC4_Cmd_35(void)
 {
     PMC4_DOR = 0x00;
+#if ENABLE_DEBUGGER_SUPPORT
+    Debugger_KBC_PMC_Record(1, 4, 0);
+#endif
 }
 //----------------------------------------------------------------------------
 void PMC4_Cmd_36(void)
 {
     PMC4_DOR = CTRL_FLAG1;
+#if ENABLE_DEBUGGER_SUPPORT
+    Debugger_KBC_PMC_Record(1, 4, CTRL_FLAG1);
+#endif
 }
 //----------------------------------------------------------------------------
 void PMC4_Cmd_37(void)
 {
     PMC4_DOR = 0x00;
+#if ENABLE_DEBUGGER_SUPPORT
+    Debugger_KBC_PMC_Record(1, 4, 0);
+#endif
 }
 //----------------------------------------------------------------------------
 void PMC4_Cmd_38(void)
 {
     PMC4_DOR = 0x00;
+#if ENABLE_DEBUGGER_SUPPORT
+    Debugger_KBC_PMC_Record(1, 4, 0);
+#endif
 }
 //----------------------------------------------------------------------------
 void PMC4_Cmd_39(void)
 {
     PMC4_DOR = 0x00;
+#if ENABLE_DEBUGGER_SUPPORT
+    Debugger_KBC_PMC_Record(1, 4, 0);
+#endif
 }
 //----------------------------------------------------------------------------
 void PMC4_Cmd_3A(void)
@@ -1378,10 +1408,10 @@ void Service_PCI5_Main(void)
     if(PMC4_STR & C_D4)
     {
         PM4Cmd = PMC4_DIR;
-        #if ENABLE_DEBUGGER_SUPPORT
-        /* Debugger record */
+    #if ENABLE_DEBUGGER_SUPPORT
+    /* Debugger record */
         Debugger_KBC_PMC_Record(0, 4, PM4Cmd);
-        #endif
+    #endif
         dprint("PM4Cmd is %#x\n", PM4Cmd);
     #if !(LPC_WAY_OPTION_SWITCH)
         PMC4_CTL |= IBF_INT_ENABLE;
@@ -1392,10 +1422,10 @@ void Service_PCI5_Main(void)
     else
     {
         PM4Data = PMC4_DIR;
-        #if ENABLE_DEBUGGER_SUPPORT
-        /* Debugger record */
+    #if ENABLE_DEBUGGER_SUPPORT
+    /* Debugger record */
         Debugger_KBC_PMC_Record(0, 4, PM4Data);
-        #endif
+    #endif
         PM4Step = 0;
     #if !(LPC_WAY_OPTION_SWITCH)
         PMC4_CTL |= IBF_INT_ENABLE;

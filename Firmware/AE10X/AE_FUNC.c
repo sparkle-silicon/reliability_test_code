@@ -219,7 +219,7 @@ void GLE01_RomCode_Transport(void)
 {
   Disable_Interrupt_Main_Switch();
   GLE01_RomCode_Transport_FlashToIRAM0();
-  // GLE01_RomCode_Ptr = Load_Func_To_Dram(GLE01_RomCode_Transport_FlashToIRAM0, 0x200);
+  // GLE01_RomCode_Ptr = Load_Smfi_To_Dram(GLE01_RomCode_Transport_FlashToIRAM0, 0x200);
   // (*GLE01_RomCode_Ptr)(); // Do Function at malloc address
   Enable_Interrupt_Main_Switch();
   dprint("GLE01 ROMCODE Transport Flash to IRAM0\n");
@@ -244,7 +244,7 @@ void ALIGNED(4) Vtable_Tansport_FlashToIVT(void)
 void Vtable_Tansport(void)
 {
   Disable_Interrupt_Main_Switch();
-  IVT_Ptr = Load_Func_To_Dram(Vtable_Tansport_FlashToIVT, 0x200);
+  IVT_Ptr = Load_Smfi_To_Dram(Vtable_Tansport_FlashToIVT, 0x200);
   (*IVT_Ptr)(); // Do Function at malloc address
   Enable_Interrupt_Main_Switch();
   // free(IVT_Ptr);

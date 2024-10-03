@@ -758,6 +758,9 @@ BYTE OEM_Get_Port62_Data(void)
             else
             {
                 PM1Data = PMC1_DIR; // Load data
+                #if ENABLE_DEBUGGER_SUPPORT
+                Debugger_KBC_PMC_Record(0, 1, PM1Data);
+                #endif
                 return 0x01;
             }
         }

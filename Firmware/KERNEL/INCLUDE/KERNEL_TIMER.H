@@ -98,5 +98,5 @@ extern BYTE Timer_Int_Enable_Read(BYTE channel);
 extern BYTE Timer_Int_Status(BYTE channel);
 extern void udelay(DWORD delay);
 extern void vDelayXms(WORD bMS);
-extern void vDelayXus(BYTE bUS);
+extern void vDelayXus(DWORD bUS);
 #endif

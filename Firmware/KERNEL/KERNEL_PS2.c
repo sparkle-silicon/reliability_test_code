@@ -106,7 +106,7 @@ static int PS2_PortN_Read_Data(BYTE channel)
 	BYTE status;
 	val = -1;
 	status = PS2_PortN_Read_Status(channel);
-	if(status & 0x1)
+	if(status & PS2_STR_IBF)
 	{
 		val = PS2_PortN_Read_Input(channel);
 		dprint("PS2_PORT%x_Read_Data %x \n", channel, val);
@@ -135,7 +135,7 @@ static int PS2_PortN_Wait_For_Input(BYTE channel)
 	return val;
 }
 //----------------------------------------------------------------------------
-// FUNCTION: PS2_PortN_Wait_For_Input
+// FUNCTION: PS2_PortN_Wait_For_output
 //
 //----------------------------------------------------------------------------
 static int PS2_PortN_Wait(BYTE channel)
@@ -144,7 +144,7 @@ static int PS2_PortN_Wait(BYTE channel)
 	do
 	{
 		BYTE status = PS2_PortN_Read_Status(channel);
-		if(!(status & 0x2))
+		if(!(status & PS2_STR_OBF))
 			return 0; /* OK */
 		udelay(1000);
 		timeout--;
@@ -179,7 +179,7 @@ void PS2_PortN_Write_Output_W(char data, BYTE channel)
 void PS2_PortN_Write_Cmd(char cmd, BYTE channel)
 {
 	PS2_PortN_Wait(channel);
-	PS2_PortN_Write_Command(CCMD_WRITE, channel); /* 0x60 */
+	PS2_PortN_Write_Command(CCMD_WRITE, channel); /* CCMD_WRITE */
 	PS2_PortN_Wait(channel);
 	PS2_PortN_Write_Output(cmd, channel);
 }
@@ -411,7 +411,7 @@ void Send_ResetCmd_To_MS_WaitACK(BYTE PortNum)
 	if(PortNum == 0) // 发送Cmd之前屏蔽中断，以防中断中断中被调用，导致嵌套
 		irqc_disable_interrupt(IRQC_INT_DEVICE_PS2_CH0);
 	else if(PortNum == 1)
-		*((VBYTE *)(0x1406)) &= (~(0x1 << 4));
+		ICTL1_INTMASK5 |=0x40;
 	PS2_PortN_Write_Output_W(0xFF, PortNum);
 	TIMER_Disable(0x0);
 	TIMER_Init(0x0, TIMER0_1s, 0x0, 0x1);
@@ -423,7 +423,7 @@ void Send_ResetCmd_To_MS_WaitACK(BYTE PortNum)
 			ack = PS2_PortN_Read_Input(PortNum);
 		}
 	}
-	while((((*(VBYTE *)(0x18a8)) & 0x1) != 0x1) && (ack != 0x0)); // waitting for overflow flag
+	while(((TIMER_TRIS & 0x1) != 0x1) && (ack != 0x0)); // waitting for overflow flag
 	TIMER_Disable(0x0);
 	if(PortNum == 0) // 等到取出ACK后再重新使能中断
 	{
@@ -431,7 +431,7 @@ void Send_ResetCmd_To_MS_WaitACK(BYTE PortNum)
 	}
 	else if(PortNum == 1)
 	{
-		*((VBYTE *)(0x1406)) |= (0x1 << 4);
+		ICTL1_INTMASK5&=~0x40;
 	}
 }
 /* ----------------------------------------------------------------------------
@@ -686,7 +686,7 @@ BYTE Handle_Mouse_Event(BYTE channel)
 	DWORD work = 10000;
 	BYTE scancode;
 	dprint("handle status %#x \n", status);
-	while((--work > 0) && status & 0x1)
+	while((--work > 0) && status & PS2_STR_IBF)
 	{
 		scancode = PS2_PortN_Read_Input(channel);
 		if(!(status & (KBD_STAT_GTO | KBD_STAT_PERR)))
@@ -709,7 +709,7 @@ BYTE Handle_Kbd_Event(BYTE channel)
 	DWORD work = 10000;
 	BYTE scancode;
 	dprint("handle status %#x \n", status);
-	while((--work > 0) && status & 0x1)
+	while((--work > 0) && status & PS2_STR_IBF)
 	{
 		scancode = PS2_PortN_Read_Input(channel);
 		if(!(status & (KBD_STAT_GTO | KBD_STAT_PERR)))
@@ -815,16 +815,39 @@ void MS_Data_Suspend(BYTE nPending)
 		}
 		if(MS_Main_CHN == 1)
 		{
-
-			GPIO1_DR1 &= 0xFE;	  // GPB8 输出低
-			GPIO1_DDR1 |= 0x1;	  // GPB8 配置为GPIO输出模式
-			sysctl_iomux_config(GPIOB, 8, 0); // GPB8 配置为GPIO模式
+			if(sysctl_iomux_ps2_0()==0x1)
+			{
+				GPIO1_DR1 &= 0xFE;	  // GPB8 输出低
+				GPIO1_DDR1 |= 0x1;	  // GPB8 配置为GPIO输出模式
+				sysctl_iomux_config(GPIOB, 8, 0); // GPB8 配置为GPIO模式
+			}
+			else if(sysctl_iomux_ps2_0()==0x2)
+			{
+				GPIO1_DR1 &= 0xFB;    //GPIOB10 输出低
+				GPIO1_DDR1 |= 0x04;
+				sysctl_iomux_config(GPIOB, 10, 0); // GPB10 配置为GPIO模式
+			}
+			else if(sysctl_iomux_ps2_0()==0x4)
+			{
+				GPIOB27(LOW);
+				GPIO1_DDR3|=0x08;
+				sysctl_iomux_config(GPIOB, 27, 0); // GPB27 配置为GPIO模式
+			}
 		}
 		else if(MS_Main_CHN == 2)
 		{
-			*((VBYTE *)(0x2C01)) &= 0xEF;	  // GPB12 输出低
-			*((VBYTE *)(0x2C05)) |= 0x10;	  // GPB12 配置为GPIO输出模式
-			sysctl_iomux_config(GPIOB, 12, 0); // GPB12 配置为GPIO模式
+			if(sysctl_iomux_ps2_1()==0x10)
+			{
+				GPIO1_DR1 &= 0xEF;	  // GPB12 输出低
+				GPIO1_DDR1 |= 0x10;	  // GPB12 配置为GPIO输出模式
+				sysctl_iomux_config(GPIOB, 12, 0); // GPB12 配置为GPIO模式
+			}
+			else if(sysctl_iomux_ps2_1()==0x20)
+			{
+				GPIO1_DR1 &= 0xFB;    //GPIOB10 输出低
+				GPIO1_DDR1 |= 0x04;
+				sysctl_iomux_config(GPIOB, 10, 0); // GPB10 配置为GPIO模式
+			}
 		}
 	}
 	if(MSPendingRXCount >= 6)
@@ -989,16 +1012,16 @@ void Service_Send_PS2(void)
 		else if(MS_Main_CHN == 2)
 		{
 		#if (defined(AE103))
-			if((*((VBYTE *)(0x1405))) & 0x40)
+			if(ICTL1_INTEN5 & 0x40)
 			{
 				PS2_Int_Record |= 0x2;
-				*((VBYTE *)(0x1405)) &= (~(0x1 << 6));
+				ICTL1_INTEN5 &= (~(0x1 << 6));
 			}
 		#elif (defined(AE101) || defined(AE102))
-			if((*((VBYTE *)(0x1405))) & 0x10)
+			if(ICTL1_INTEN5 & INT1_PS2_1)
 			{
 				PS2_Int_Record |= 0x2;
-				*((VBYTE *)(0x1405)) &= (~(0x1 << 4));
+				ICTL1_INTEN5 &= (~INT1_PS2_1);//失能PS2中断
 			}
 		#endif
 		}
@@ -1011,18 +1034,18 @@ void Service_Send_PS2(void)
 				MSDataPending[i] = 0;
 			}
 		}
-		if(IS_SET(KBC_STA, 0)) // 此时KBC OBF是1，则拉低PS2 CLK，抑制PS2数据发出
+		if(IS_SET(KBC_STA, KBC_OBF)) // 此时KBC OBF是1，则拉低PS2 CLK，抑制PS2数据发出
 		{
 		}
 		else
 		{
 			if(MS_Main_CHN == 1)
 			{
-				sysctl_iomux_config(GPIOB, 8, 1); // GPB8 配置为PS2 CLK线
+				sysctl_iomux_ps2_0(); // 配置为PS2 CLK线
 			}
 			else if(MS_Main_CHN == 2)
 			{
-				sysctl_iomux_config(GPIOB, 12, 1); // GPB12 配置为PS2 CLK线
+				sysctl_iomux_ps2_1(); // 配置为PS2 CLK线
 			}
 			MSCmdAck = Release_MS_Data_Suspend();
 			Send_Aux_Data_To_Host(MSCmdAck);
@@ -1037,15 +1060,15 @@ void Service_Send_PS2(void)
 		{
 			PS2_Int_Record &= (~(0x1 << 1));
 		#if (defined(AE103))
-			*((VBYTE *)(0x1405)) |= (0x1 << 6);
+			ICTL1_INTEN5 |= (0x1 << 6);
 		#elif (defined(AE101) || defined(AE102))
-			*((VBYTE *)(0x1405)) |= (0x1 << 4);
+			ICTL1_INTEN5 |= INT1_PS2_1;
 		#endif
 		}
 	}
 	else
 	{
-		if(IS_MASK_CLEAR(KBC_STA, BIT0))
+		if(IS_MASK_CLEAR(KBC_STA, KBC_STA_OBF))
 		{
 			MSPendingRXCount = 0;
 			for(BYTE i = 0; i < 8; i++)
@@ -1055,11 +1078,11 @@ void Service_Send_PS2(void)
 			}
 			if(MS_Main_CHN == 1)
 			{
-				sysctl_iomux_config(GPIOB, 8, 1); // GPB8 配置为PS2 CLK线
+				sysctl_iomux_ps2_0(); //  配置回PS2 CLK线
 			}
 			else if(MS_Main_CHN == 2)
 			{
-				sysctl_iomux_config(GPIOB, 12, 1); // GPB12 配置为PS2 CLK线
+				sysctl_iomux_ps2_1(); // 配置回PS2 CLK线
 			}
 		}
 	}
@@ -1078,15 +1101,21 @@ BYTE PS2_PinSelect(void)
 		case 0x2:
 			return (IS_GPIOB10(HIGH) && IS_GPIOB11(HIGH));
 		case 0x4:
+			return (IS_GPIOB27(HIGH) && IS_GPIOB28(HIGH));
+		case 0x10:
 			return (IS_GPIOB12(HIGH) && IS_GPIOB13(HIGH));
-		case 0x8:
-			return (IS_GPIOB10(HIGH) && IS_GPIOB11(HIGH));
-		case 0x5:
+		case 0x11:
 			return ((IS_GPIOB8(HIGH) && IS_GPIOB9(HIGH)) || (IS_GPIOB12(HIGH) && IS_GPIOB13(HIGH)));
-		case 0x9:
-			return ((IS_GPIOB8(HIGH) && IS_GPIOB9(HIGH)) || (IS_GPIOB10(HIGH) && IS_GPIOB11(HIGH)));
-		case 0x6:
+		case 0x12:
 			return ((IS_GPIOB10(HIGH) && IS_GPIOB11(HIGH)) || (IS_GPIOB12(HIGH) && IS_GPIOB13(HIGH)));
+		case 0x14:
+			return ((IS_GPIOB27(HIGH) && IS_GPIOB28(HIGH)) || (IS_GPIOB12(HIGH) && IS_GPIOB13(HIGH)));
+		case 0x20:
+			return (IS_GPIOB10(HIGH) && IS_GPIOB11(HIGH));
+		case 0x21:
+			return ((IS_GPIOB8(HIGH) && IS_GPIOB9(HIGH)) || (IS_GPIOB10(HIGH) && IS_GPIOB11(HIGH)));
+		case 0x24:
+			return ((IS_GPIOB27(HIGH) && IS_GPIOB28(HIGH)) || (IS_GPIOB10(HIGH) && IS_GPIOB11(HIGH)));
 		default:
 			return 0;
 	}

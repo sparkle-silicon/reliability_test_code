@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-02-07 12:46:44
+ * @LastEditTime: 2024-05-31 16:14:01
  * @Description:
  *
  *
@@ -312,26 +312,6 @@
 #define GPIOD HEX04
 #define GPIOE HEX05
 #endif
-#if (defined(AE101)||defined(AE102))
-#define GPIOA HEX01
-#define GPIOB HEX02
-#define GPIOC HEX03
-#define GPIOD HEX04
-#define GPIOE HEX05
-#endif
-#ifdef TEST101
-#define GPIOA HEX01
-#define GPIOB HEX02
-#define GPIOC HEX03
-#define GPIOD HEX04
-#define GPIOE HEX05
-#define GPIOF HEX06
-#define GPIOG HEX07
-#define GPIOH HEX08
-#define GPIOI HEX09
-#define GPIOJ HEX0A
-#define GPIOM HEX0B
-#endif
 #define ENABLE      HEX01
 #define DISABLE     HEX00
 #define NUM_OF_GPIOA 32
@@ -407,19 +387,16 @@ extern void sysctl_iomux_pport(void);
 extern void sysctl_iomux_lpc(void);
 extern void sysctl_iomux_peci(void);
 
-void sysctl_iomux_config(DWORD port, DWORD io, unsigned port_type);
-extern void GPIO_Output_Ctrl(BYTE pin_index, BYTE pin_output_mode);
-extern BYTE GPIO_Input_Status_Get(BYTE pin_index);
-extern void GPIO_Mode_Ctrl(BYTE pin_index, BYTE pin_dir_mode);
-extern void GPIO_Pullup_Ctrl(BYTE pin_index, BYTE pin_pullup_mode);
-BYTE  GPIO_Pullup_Config(BYTE  GPIO, BYTE  Num);
-void sysctl_mod_reset_finish(DWORD module);
-void sysctl_mod_reset_start(DWORD module);
-void sysctl_mod_enable(DWORD module);
-void sysctl_mod_disable(DWORD module);
+extern BYTE  GPIO_Pullup_Config(BYTE  GPIO, BYTE  Num);
+extern char IsGpioOut(DWORD port, DWORD io);
 extern int GPIO_Config(int GPIO, int gpio_no, int mode, int op_val, int int_lv, int pol);
-void GPIO_Input_EN(int GPIO, int gpio_no, char sw);
-void GPIOAutoTest(void);
-char JUDGE_MODE_IOMUX(DWORD port, DWORD io);
+extern void sysctl_iomux_config(DWORD port, DWORD io, unsigned port_type);
+extern void sysctl_mod_reset_finish(DWORD module);
+extern void sysctl_mod_reset_start(DWORD module);
+extern void sysctl_mod_enable(DWORD module);
+extern void sysctl_mod_disable(DWORD module);
+extern void GPIO_Input_EN(int GPIO, int gpio_no, char sw);
+extern char GPIOAutoTest(void);
+char ReadGPIOLevel(BYTE port, BYTE pin);
 #include "CUSTOM_GPIO.H"
 #endif /* _NUCLEI_GPIO_H */

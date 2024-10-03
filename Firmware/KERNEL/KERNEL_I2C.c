@@ -345,8 +345,7 @@ char I2c_Check_RFNE(WORD i2c_channel)
 char I2c_Check_Stop_Det(WORD i2c_channel)
 {
 	DWORD loop = I2CTimeOut;
-	while(!(I2c_Readb(I2C_RAW_INTR_STAT_H, i2c_channel) & 0x2))
-		;
+	while(!(I2c_Readb(I2C_RAW_INTR_STAT_H, i2c_channel) & I2C_STOP_DET))
 	{
 		--loop;
 		if(0 == loop)
@@ -360,10 +359,20 @@ char I2c_Check_Stop_Det(WORD i2c_channel)
 	return 0;
 }
 
+
+//*****************************************************************************
+//  Check if the SMBUS bus is active
+//
+//  parameter :
+//      i2c_channel : I2C channel number or baseaddr
+//
+//  return :
+//      none
+//*****************************************************************************
 char I2c_Check_Active(WORD i2c_channel)
 {
 	DWORD loop = I2CTimeOut;
-	while(I2c_Readb(I2C_STATUS_OFFSET, i2c_channel) & BIT5)
+	while(I2c_Readb(I2C_STATUS_OFFSET, i2c_channel) & ACTIVITY)
 	{
 		--loop;
 		if(0 == loop)
@@ -398,7 +407,7 @@ void I2c_Master_Write_Byte(BYTE data, BYTE reg, WORD i2c_channel)
 	{
 		I2c_Writeb(data, I2C_DATA_CMD_OFFSET, i2c_channel);
 		SMB_Temp_Data = data;
-		I2c_Writeb(I2C_WRITE|I2C_STOP, I2C_DATA_CMD_RWDIR, i2c_channel);
+		I2c_Writeb(I2C_WRITE | I2C_STOP, I2C_DATA_CMD_RWDIR, i2c_channel);
 	}
 	I2c_Check_MST_ACTIVITY(i2c_channel);
 }
@@ -672,7 +681,7 @@ void I2c_Master_Read_Block(BYTE *data, BYTE length, BYTE reg, WORD i2c_channel)
 		if(0 == I2c_Check_RFNE(i2c_channel))
 		{
 			*(data + loop) = I2c_Readb(I2C_DATA_CMD_OFFSET, i2c_channel) & 0xFF;
-			dprint("loop = %d, data = %#x \n", loop, *(data + loop));
+			// dprint("loop = %d, data = %#x \n", loop, *(data + loop));
 		}
 		loop++;
 	}
@@ -681,7 +690,7 @@ void I2c_Master_Read_Block(BYTE *data, BYTE length, BYTE reg, WORD i2c_channel)
 	if(0 == I2c_Check_RFNE(i2c_channel))
 	{
 		*(data + loop) = I2c_Readb(I2C_DATA_CMD_OFFSET, i2c_channel) & 0xFF;
-		dprint("loop = %d, data = %#x \n", loop, *(data + loop));
+		//dprint("loop = %d, data = %#x \n", loop, *(data + loop));
 	}
 	I2c_Check_MST_ACTIVITY(i2c_channel);
 }
@@ -762,12 +771,14 @@ void I2c_Slave_Write_Block(char *data, BYTE length, WORD i2c_channel)
 	length--;
 	/*write data*/
 	while(loop <= length)
+	{
 		if(0 == I2c_Check_TFE(i2c_channel))
 		{
 			I2c_Writeb(*(data + loop), I2C_DATA_CMD_OFFSET, i2c_channel);
 			I2c_Writeb(I2C_WRITE, I2C_DATA_CMD_RWDIR, i2c_channel);
 			loop++;
 		}
+	}
 }
 
 //*****************************************************************************
@@ -784,7 +795,7 @@ void I2c_Master_Controller_Init(WORD i2c_channel, DWORD speed, BYTE spklen)
 	short hcnt, lcnt;
 	char ic_con;
 	/*Disable*/
-	I2c_Writeb(0, I2C_ENABLE_OFFSET, i2c_channel);
+	I2c_Writeb(DISABLE, I2C_ENABLE_OFFSET, i2c_channel);
 	ic_con = I2c_Readb(I2C_CON_OFFSET, i2c_channel);
 	hcnt = (((HIGHT_CHIP_CLOCK / speed + 1) / 2 * 1) - 9 - spklen); // PCLK/(SMBUS_HZ/2(H or L) /USER_FREQ)
 	lcnt = (((HIGHT_CHIP_CLOCK / speed + 1) / 2 * 1) - 3); // PCLK/(SMBUS_HZ/2(H or L) /USER_FREQ)
@@ -825,7 +836,7 @@ void I2c_Master_Controller_Init(WORD i2c_channel, DWORD speed, BYTE spklen)
 	/* Mask Interrupt */
 	I2c_Writeb(I2C_INTR_TX_ABRT, I2C_INTR_MASK_OFFSET, i2c_channel);
 	/* Enable */
-	I2c_Writeb(1, I2C_ENABLE_OFFSET, i2c_channel);
+	I2c_Writeb(ENABLE, I2C_ENABLE_OFFSET, i2c_channel);
 }
 
 //*****************************************************************************
@@ -843,7 +854,7 @@ void I2c_Slave_Init(WORD i2c_channel, DWORD speed, BYTE spklen)
 	char ic_con;
 	// register WORD baseaddr = I2c_Channel_Baseaddr(i2c_channel);
 	/*Disable*/
-	I2c_Writeb(0, I2C_ENABLE_OFFSET, i2c_channel);
+	I2c_Writeb(DISABLE, I2C_ENABLE_OFFSET, i2c_channel);
 	ic_con = I2c_Readb(I2C_CON_OFFSET, i2c_channel);
 	/* SET HCNT & LCNT*/
 	hcnt = (((HIGHT_CHIP_CLOCK / speed + 1) / 2 * 1) - 9 - spklen); // PCLK/(SMBUS_HZ/2(H or L) /USER_FREQ)
@@ -885,7 +896,7 @@ void I2c_Slave_Init(WORD i2c_channel, DWORD speed, BYTE spklen)
 	/* Mask Interrupt */
 	I2c_Writeb(I2C_INTR_RD_REQ | I2C_INTR_TX_ABRT, I2C_INTR_MASK_OFFSET, i2c_channel);
 	/* Enable */
-	I2c_Writeb(1, I2C_ENABLE_OFFSET, i2c_channel);
+	I2c_Writeb(ENABLE, I2C_ENABLE_OFFSET, i2c_channel);
 }
 
 //*****************************************************************************

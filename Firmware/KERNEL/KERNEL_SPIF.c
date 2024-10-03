@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-09-05 18:15:53
+ * @LastEditTime: 2024-09-05 18:01:10
  * @Description: This file is used for SPI Flash Interface
  *
  *
@@ -20,7 +20,7 @@
 FUNCT_PTR_V_V Smf_Ptr;
 FUNCT_PTR_V_V GLE01_RomCode_Ptr;
 FUNCT_PTR_V_V IVT_Ptr;
-FUNCT_PTR_V_D_BP Spif_Ptr;
+FUNCT_PTR_V_D_BP_L Spif_Ptr;
 FUNCT_PTR_V_D_BP ECU_Ptr;
 BYTE Write_buff[256] = { 0, 1, 2, 3, 4, 5, 6 };
 // char Write_buff[256]="flash string test!\n";
@@ -40,50 +40,45 @@ void SPIF_READ_ID(void)
 #if (!SPIF_CLOCK_EN)
    return;
 #endif
-   while(!(SPIF_READY & 0x1))
-      ;
+   while(!(SPIF_READY & SPIF_RDY));
    SPIF_DBYTE = 0x2;
-   while(!(SPIF_READY & 0x1))
-      ;
-   SPIF_FIFO_TOP = 0x90;
-   while(!(SPIF_READY & 0x1))
-      ;
+   while(!(SPIF_READY & SPIF_RDY));
+   SPIF_FIFO_TOP = FLASH_ID_CMD;
+   while(!(SPIF_READY & SPIF_RDY));
    dprint("read flash id is %#x\n", SPIF_FIFO_TOP);
 }
 /**
- * @brief SPIF页写入
+ * @brief 写入flash操作
  *
  * @param addr          要进行页写入的地址
- * @param write_buff    传入一个256字节数组，数组中的内容是要页写入的值
+ * @param write_buff    传入一个数组，数组中的内容是要页写入的值
+ * @param length        要写入的字节数，必须小于或等于页的大小(256字节)。
  *
+ * @note
+ * - 该函数建议不要直接使用，在RunSPIF_WriteFromRAM函数中调用
  * @return
  */
-ALIGNED(4)
-void SPIF_Write(DWORD addr, BYTEP write_buff)
+ALIGNED(4) void SPIF_Write(DWORD addr, BYTEP write_buff, WORD length)
 {
 #if (!SPIF_CLOCK_EN)
    return;
 #endif
    DWORD i, j, write_data = 0;
-   uint32_t temp_addrs = ((addr & 0xFF) << 24) + ((addr & 0xFF00) << 8) + ((addr & 0xFF0000) >> 8); // 设置地址
+   uint32_t temp_addrs = ((addr & 0xFF) << 24) + ((addr & 0xFF00) << 8) + ((addr & 0xFF0000) >> 8);//设置地址
    BYTE temp_status = 0;
    PRINTF_TX = 'a';
-   while(!(SPIF_READY & 0x1))
-      ;
-   SPIF_FIFO_TOP = temp_addrs + 0x20; // Sector Erase
-   while(!(SPIF_READY & 0x1))
-      ;
-   while(SPIF_STATUS & 0x1)
-      ;
-   while(!(SPIF_READY & 0x1))
-      ;
+   while(!(SPIF_READY & SPIF_RDY));
+   SPIF_FIFO_TOP = temp_addrs + FLASH_SECT_ERASE_CMD;   //Sector Erase
+   while(!(SPIF_READY & SPIF_RDY));
+   while(SPIF_STATUS & SPIF_Write_Status);
+   while(!(SPIF_READY & SPIF_RDY));
    PRINTF_TX = 'b';
-   // 写
-   SPIF_DBYTE = 0xff; // 准备写256字节
-   while(!(SPIF_READY & 0x1))
-      ;
-   SPIF_FIFO_TOP = (temp_addrs + 0x2); // Page Program
-   for(i = 0; i < 64; i++)
+   length = (length + 3) & ~3;
+   //写
+   SPIF_DBYTE = length - 1;                 //准备写256字节
+   while(!(SPIF_READY & SPIF_RDY));
+   SPIF_FIFO_TOP = (temp_addrs + FLASH_PAGE_PROGRAM_CMD);  //Page Program
+   for(i = 0; i < (length / 4); i++)
    {
       j = i * 4;
       write_data = write_buff[j] | (write_buff[j + 1] << 8) | (write_buff[j + 2] << 16) | (write_buff[j + 3] << 24);
@@ -94,34 +89,40 @@ void SPIF_Write(DWORD addr, BYTEP write_buff)
       }
       SPIF_FIFO_TOP = write_data;
    }
-   while(!(SPIF_READY & 0x1))
-      ;
-   while(SPIF_STATUS & 0x1)
-      ;
-   while(!(SPIF_READY & 0x1))
-      ;
+   while(!(SPIF_READY & SPIF_RDY));
+   while(SPIF_STATUS & SPIF_Write_Status);
+   while(!(SPIF_READY & SPIF_RDY));
    PRINTF_TX = 'c';
-   while(!(SPIF_READY & 0x1))
-      ;
+   while(!(SPIF_READY & SPIF_RDY));
 }
-/*函数有待调整*/
-ALIGNED(4)
-void SPIF_Read(DWORD addr, BYTEP read_buff)
+
+/**
+ * @brief 读取flash操作。
+ *
+ * @param addr          要进行页写入的起始地址，必须对齐到页大小的边界。
+ * @param read_buff    传入一个数组，数组中的内容是要页写入的值。
+ * @param length        要读取的字节数，必须小于或等于页的大小(256字节)。
+ *
+ * @return
+ *
+ * @note
+ * - 该函数建议不要直接使用，在RunSPIF_ReadFromRAM函数中调用
+ */
+ALIGNED(4) void SPIF_Read(DWORD addr, BYTEP read_buff, WORD length)
 {
 #if (!SPIF_CLOCK_EN)
    return;
 #endif
-   uint32_t temp_addrs = ((addr & 0xFF) << 24) + ((addr & 0xFF00) << 8) + ((addr & 0xFF0000) >> 8); // 设置地址
+   uint32_t temp_addrs = ((addr & 0xFF) << 24) + ((addr & 0xFF00) << 8) + ((addr & 0xFF0000) >> 8);//设置地址
    int i, j = 0;
    BYTE temp_status = 0;
    uint32_t temp_data[64];
-   while(!(SPIF_READY & 0x1))
-      ;
-   SPIF_DBYTE = 0xff;
-   while(!(SPIF_READY & 0x1))
-      ;
-   SPIF_FIFO_TOP = (temp_addrs + 0x3);
-   for(j = 0; j < 64; j++)
+   length = (length + 3) & ~3;
+   while(!(SPIF_READY & SPIF_RDY));
+   SPIF_DBYTE = length - 1;
+   while(!(SPIF_READY & SPIF_RDY));
+   SPIF_FIFO_TOP = (temp_addrs + FLASH_READ_CMD);
+   for(j = 0; j < (length / 4); j++)
    {
       i = j * 4;
       temp_status = SPIF_FIFO_CNT;
@@ -135,12 +136,9 @@ void SPIF_Read(DWORD addr, BYTEP read_buff)
       read_buff[i + 2] = (temp_data[j] & 0xff0000) >> 16;
       read_buff[i + 3] = (temp_data[j] & 0xff000000) >> 24;
    }
-   while(!(SPIF_READY & 0x1))
-      ;
-   while(SPIF_STATUS & 0x1)
-      ;
-   while(!(SPIF_READY & 0x1))
-      ;
+   while(!(SPIF_READY & SPIF_RDY));
+   while(SPIF_STATUS & SPIF_Write_Status);
+   while(!(SPIF_READY & SPIF_RDY));
    PRINTF_TX = 'd';
 }
 void Smfi_Ram_Code(void)
@@ -181,17 +179,15 @@ void Smfi_Ram_Code(void)
          {
             temp_status = SPIF_READY;
          }
-         // fla_if_write(FLA_FIFO_TOP_ADDR, 0x00c80020);
+            //fla_if_write(FLA_FIFO_TOP_ADDR, 0x00c80020);
          SPIF_FIFO_TOP = Smfi_Write_Addr;
-         while(!(SPIF_READY & 0x1))
-            ;
+         while(!(SPIF_READY & SPIF_RDY));
          temp_status = SPIF_STATUS;
          while(temp_status & 0x1)
          {
             temp_status = SPIF_STATUS;
          }
-         while(!(SPIF_READY & 0x1))
-            ;
+         while(!(SPIF_READY & SPIF_RDY));
          PRINTF_TX = 'b';
       }
       break;
@@ -379,12 +375,12 @@ void Smfi_Ram_Code(void)
    PRINTF_TX = 'g';
    // main();
 }
-FUNCT_PTR_V_D_BP Load_Fla_If_To_Ram(FUNCT_PTR_V_D_BP funcpoint, const int malloc_size)
+FUNCT_PTR_V_D_BP_L Load_Fla_If_To_Ram(FUNCT_PTR_V_D_BP_L funcpoint, const int malloc_size)
 {
    int i;
-   FUNCT_PTR_V_D_BP Smft_Ptr;
+   FUNCT_PTR_V_D_BP_L Smft_Ptr;
    Smft_Ptr = malloc(malloc_size);
-   printf("Smft_Ptr:0x%p\n", Smft_Ptr);
+   dprint("Smft_Ptr:0x%p\n", Smft_Ptr);
    if(!Smft_Ptr)
    {
       dprint("attention! malloc failed!\n");
@@ -449,7 +445,7 @@ void Dram_Read(void)
       dprint("Read DRAM data is %#x\n", data);
    }
 }
-FUNCT_PTR_V_V Load_Func_To_Dram(FUNCT_PTR_V_V func, const int malloc_size)
+FUNCT_PTR_V_V Load_Smfi_To_Dram(FUNCT_PTR_V_V func, const int malloc_size)
 {
    int i;
    VDWORD malloc_cnt = 0;
@@ -471,8 +467,6 @@ FUNCT_PTR_V_V Load_Func_To_Dram(FUNCT_PTR_V_V func, const int malloc_size)
    }
    for(i = 0; i < malloc_cnt; i++)
    {
-      // dprint("3047c:%x,3042c:%x\n", SYSCTL_PIO4_UDCFG, SYSCTL_RST1);
-      // dprint("TXP:%x,TXPD:%x,TCP:%x,TCPD:%x\n", Tmp_XPntr, *Tmp_XPntr, Tmp_code_pointer, *Tmp_code_pointer);
       *Tmp_XPntr = *Tmp_code_pointer;
       Tmp_XPntr++;
       Tmp_code_pointer++;
@@ -481,44 +475,49 @@ FUNCT_PTR_V_V Load_Func_To_Dram(FUNCT_PTR_V_V func, const int malloc_size)
    return func_ptr;
 }
 /**
- * @brief 先把SPIF页写入函数搬入内存中，在内存执行
+ * @brief 写入flash操作
  *
  * @param addr          要进行页写入的地址
- * @param write_buff    传入一个256字节数组，数组中的内容是要页写入的值
+ * @param write_buff    传入一个数组，数组中的内容是要页写入的值
+ * @param length        要写入的字节数，必须小于或等于页的大小(256字节)。
  *
  * @return
  */
-void RunSPIF_WriteFromRAM(DWORD addr, BYTEP write_buff)
+void RunSPIF_WriteFromRAM(DWORD addr, BYTEP write_buff, WORD lentgh)
 {
    Disable_Interrupt_Main_Switch();                  // Disable All Interrupt
    WDT_REG(0x4) = 0xffff;                            // 设置最长延时
    WDT_CRR = 0x76;                                   // 重启计数器
    Spif_Ptr = Load_Fla_If_To_Ram(SPIF_Write, 0x600); // Load Fla_If Code to DRAM
-   (*Spif_Ptr)(addr, write_buff);                    // Do Function at 0x21000,this 0x21000 just for test,maybe cause some problem
+   (*Spif_Ptr)(addr, write_buff, lentgh);                    // Do Function at 0x21000,this 0x21000 just for test,maybe cause some problem
    Enable_Interrupt_Main_Switch();
    free(Spif_Ptr);  // 释放通过 malloc 分配的内存空间
    Spif_Ptr = NULL; // 将指针设置为 NULL，以避免悬空指针问题
 }
 /**
- * @brief 先把SPIF页读出函数搬入内存中，在内存执行
+ * @brief 读取flash操作。
  *
- * @param addr          要进行页写入的地址
- * @param read_buff    传入一个256字节数组，数组中的内容是要页读出的值
+ * @param addr          要进行页写入的起始地址，必须对齐到页大小的边界。
+ * @param read_buff    传入一个数组，数组中的内容是要页写入的值。
+ * @param length        要读取的字节数，必须小于或等于页的大小(256字节)。
  *
  * @return
+ *
+ * @note
+ * - 该函数建议不要直接使用，在RunSPIF_ReadFromRAM函数中调用
  */
-void RunSPIF_ReadFromRAM(DWORD addr, BYTEP read_buff)
+void RunSPIF_ReadFromRAM(DWORD addr, BYTEP read_buff, WORD lentgh)
 {
-   Disable_Interrupt_Main_Switch();                 // Disable All Interrupt
-   WDT_REG(0x4) = 0xffff;                           // 设置最长延时
-   WDT_CRR = 0x76;                                  // 重启计数器
+   Disable_Interrupt_Main_Switch();                  // Disable All Interrupt
+   WDT_REG(0x4) = 0xffff;                            // 设置最长延时
+   WDT_CRR = 0x76;                                   // 重启计数器
    Spif_Ptr = Load_Fla_If_To_Ram(SPIF_Read, 0x800); // Load Fla_If Code to DRAM
-   (*Spif_Ptr)(addr, read_buff);                    // Do Function at 0x21000,this 0x21000 just for test,maybe cause some problem
+   (*Spif_Ptr)(addr, read_buff, lentgh);                     // Do Function at 0x21000,this 0x21000 just for test,maybe cause some problem
    Enable_Interrupt_Main_Switch();
    free(Spif_Ptr);  // 释放通过 malloc 分配的内存空间
    Spif_Ptr = NULL; // 将指针设置为 NULL，以避免悬空指针问题
-   for(short i = 0; i < 256; i++)
+   for(short i = 0; i < lentgh; i++)
    {
-      printf("Read_buff:%#x\n", read_buff[i]);
+      printf("Read_buff:%d\n", read_buff[i]);
    }
 }

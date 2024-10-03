@@ -46,6 +46,7 @@ void SECTION(".init.mem") Specific_Mem_init(void)
                 KBDataPending[i] = 0;
                 MSDataPending[i] = 0;
         }
+        Debugger_PowerSequence_Step = 1;
         KBPendingTXCount = 0;
         KBPendingRXCount = 0;
         TP_ACK_CUNT = 0;

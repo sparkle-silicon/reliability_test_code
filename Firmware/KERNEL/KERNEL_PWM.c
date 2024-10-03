@@ -228,9 +228,9 @@ void  PWM_CLOCK_Init(void)
 {
 	/*prescale select*/
 #if ((PWM_TCLK_PRESCALE==480)||(PWM_TCLK_PRESCALE==0))
-	PWM_CTRL &= ~0x1;
+	PWM_CTRL &= PRESCALE_480;
 #elif ((PWM_TCLK_PRESCALE==4)||(PWM_TCLK_PRESCALE==1))
-	PWM_CTRL |= 0x1;
+	PWM_CTRL |= PRESCALE_4;
 #else
 	assert_print("prescale error\n");
 	return;
