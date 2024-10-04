@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-10-01 16:39:14
+ * @LastEditTime: 2024-10-02 16:06:40
  * @Description:
  *
  *
@@ -537,14 +537,14 @@ int __weak main(void)
 #if ((GLE01 == 1) && (FLASH_TO_IRAM0 == 1))
 	GLE01_RomCode_Transport();
 	E2CINFO7 = 0x5aa5;
-	// while (C2EINFO7 != 0xa55a)
+	// while(C2EINFO7 != 0xa55a)
 	// 	; // 等待子系统初始化完毕
 #endif
 
 	// printf("mirror success\n");
 
-	// while (C2EINFO7 != 0xa55a)
-	// 	; // 等待子系统初始化完毕
+	while(C2EINFO7 != 0xa55a)
+		; // 等待子系统初始化完毕
 
 	//  3. jump loop
 	main_loop();

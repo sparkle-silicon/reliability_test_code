@@ -3,7 +3,7 @@
  # @Author: daweslinyu daowes.ly@qq.com
  # @Date: 2024-05-31 14:37:40
  # @LastEditors: daweslinyu daowes.ly@qq.com
- # @LastEditTime: 2024-10-02 16:02:13
+ # @LastEditTime: 2024-10-04 11:04:47
  # @FilePath: /SPK32AE103/Firmware/make.sh
  # @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 ### 
@@ -13,7 +13,7 @@ folder2="/mnt/hgfs/Share"
 folder3="/mnt/hgfs/share"
 binname="./main.bin"
 # clear
-
+rm -rf ./*.bin ./*.tags #删除
 cd Firmware
 # make clean -j4
 make compile -j4 DOWNLOAD=crypto #flash
