@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-03-12 11:30:45
+ * @LastEditTime: 2024-05-31 16:08:56
  * @Description:
  *
  *
@@ -445,32 +445,39 @@ void sysctl_iomux_disable_uartb()
 //      none
 //
 //*****************************************************************************
-#define PS2PIN_SEL 1
+#define PS20_PIN_SEL 1
+#define PS21_PIN_SEL 1
 BYTE sysctl_iomux_ps2_0()
 {
-	#if PS2PIN_SEL
+	#if PS20_PIN_SEL==1
 	sysctl_iomux_config(GPIOB, 8, 1);
 	sysctl_iomux_config(GPIOB, 9, 1);
 	return 0x1;
-	#else //如果PS2_0选用该引脚需注意 PS2_1引脚只能使用GPIOB12,13 
+	#elif PS20_PIN_SEL==2 //如果PS2_0选用该引脚需注意 PS2_1引脚只能使用GPIOB12,13 
 	sysctl_iomux_config(GPIOB, 10, 1);
 	sysctl_iomux_config(GPIOB, 11, 1);
 	return 0x2;
+	#elif PS20_PIN_SEL==3
+	sysctl_iomux_config(GPIOB, 27, 1);
+	sysctl_iomux_config(GPIOB, 28, 1);
+	return 0x4;
 	#endif
+	return 0x0;
 }
 BYTE sysctl_iomux_ps2_1()
 {
-	#if 1
+	#if PS21_PIN_SEL==1
 	sysctl_iomux_config(GPIOB, 12, 1);
 	sysctl_iomux_config(GPIOB, 13, 1);
-	return 0x4;
-	#else
-	#if PS2PIN_SEL
+	return 0x10;
+	#elif PS21_PIN_SEL==2
+	#if PS20_PIN_SEL!=2
 	sysctl_iomux_config(GPIOB, 10, 3);
 	sysctl_iomux_config(GPIOB, 11, 3);
-	return 0x8;
+	return 0x20;
 	#endif
 	#endif
+	return 0x0;
 }
 //*****************************************************************************
 //
@@ -1423,7 +1430,7 @@ void GPIO_1V8(int GPIO, int gpio_no, char sw)
 }
 #endif
 
-void GPIOAutoTest(void)//102
+char GPIOAutoTest(void)//102
 {
 	BYTE gpa0, gpa1, gpa2, gpa3;
 	BYTE gpb0, gpb1, gpb2, gpb3;
@@ -1436,6 +1443,14 @@ void GPIOAutoTest(void)//102
 	BYTE gpd0z, gpd1z, gpd2z;
 
 	static char flag = 1;
+	if(flag)
+	{
+		flag = 0;
+	}
+	else
+	{
+		flag = 1;
+	}
 	for(int i = 0; i < 32; i++)
 	{
 		if(i != 24 && i != 25)//uart0
@@ -1479,6 +1494,7 @@ void GPIOAutoTest(void)//102
 	gpd2 = GPIO3_EXT2;
 	if(flag)
 	{
+		gpa3 |= 0x3;//uart0
 		gpb3 |= 0xf8;//只有低三位有效
 		gpc1 |= 0xc0;//没有高两位
 		gpc2 |= 0x80;//没有最高位
@@ -1506,10 +1522,12 @@ void GPIOAutoTest(void)//102
 		if((gpa0z + gpa1z + gpa2z + gpa3z + gpb0z + gpb1z + gpb2z + gpb3z + gpc0z + gpc1z + gpc2z + gpd0z + gpd1z + gpd2z))
 		{
 			printf("Self-test failed\n");
+			return -1;
 		}
 		else
 		{
 			printf("Self-test successful\n");
+			return 1;
 		}
 	}
 	else
@@ -1527,27 +1545,20 @@ void GPIOAutoTest(void)//102
 		if((gpa0 + gpa1 + gpa2 + gpa3 + gpb0 + gpb1 + gpb2 + gpb3 + gpc0 + gpc1 + gpc2 + gpd0 + gpd1 + gpd2))
 		{
 			printf("Self-test failed\n");
+			return -1;
 		}
 		else
 		{
 			printf("Self-test successful\n");
+			return 1;
 		}
-	}
-
-	if(flag)
-	{
-		flag = 0;
-	}
-	else
-	{
-		flag = 1;
 	}
 }
 
 /*
 判断传入的pin脚是否是输出状态，是否复用为GPIO模式，如果确定为输出状态，并且复用为GPIO模式，则返回1，反之则是0
 */
-char JUDGE_MODE_IOMUX(DWORD port, DWORD io)
+char IsGpioOut(DWORD port, DWORD io)
 {
 	DWORD addr;
 	DWORD cfg_val;
@@ -1560,18 +1571,20 @@ char JUDGE_MODE_IOMUX(DWORD port, DWORD io)
 			cfg_val &= ~(3 << (io * 2));
 			if(cfg_val == *(DWORDP)addr)
 			{
-				//dprint("port: %d,io: %d\n", port, io);
+				//assert_print("port: %d,io: %d\n", port, io);
 				if(port == 1)
 				{
 					cfg_val = GPIOA_REG((GPIO_INPUT_EN + (io / 8)));
 					cfg_val |= (VBYTE)((0x1) << (io % 8));
 					if(cfg_val == GPIOA_REG((GPIO_INPUT_EN + (io / 8))))
 					{
-						return 1;//dprint("is output\n");
+						//assert_print("is output\n");
+						return 1;
 					}
 					else
 					{
-						return 0;//dprint("not is output\n");
+						//assert_print("not is output\n");
+						return 0;
 					}
 				}
 				else if(port == 2)
@@ -1580,11 +1593,13 @@ char JUDGE_MODE_IOMUX(DWORD port, DWORD io)
 					cfg_val |= (VBYTE)((0x1) << (io % 8));
 					if(cfg_val == GPIOB_REG((GPIO_INPUT_EN + (io / 8))))
 					{
-						return 1; //dprint("is output\n");
+						//assert_print("is output\n");
+						return 1;
 					}
 					else
 					{
-						return 0; //dprint("not is output\n");
+						//assert_print("not is output\n");
+						return 0;
 					}
 				}
 				else
@@ -1593,38 +1608,42 @@ char JUDGE_MODE_IOMUX(DWORD port, DWORD io)
 					cfg_val |= (VBYTE)((0x1) << (io % 8));
 					if(cfg_val == GPIOC_REG((GPIO_INPUT_EN + (io / 8))))
 					{
-						return 1; //dprint("is output\n");
+						//assert_print("is output\n");
+						return 1;
 					}
 					else
 					{
-						return 0; //dprint("not is output\n");
+						//assert_print("not is output\n");
+						return 0;
 					}
 				}
 			}
 			else
 			{
-				return 0; //dprint("pin is not GPIO\n");
+				//assert_print("pin is not GPIO\n");
+				return 0;
 			}
 		}
 		else if(io <= 31)
 		{
 			cfg_val = *(DWORDP)(addr + 0x4);
-			io = (io - 16);
 			cfg_val &= ~(3 << (io * 2));
 			if(cfg_val == *(DWORDP)(addr + 0x4))
 			{
-				//dprint("port: %d,io: %d\n", port, io);
+				//assert_print("port: %d,io: %d\n", port, io);
 				if(port == 1)
 				{
 					cfg_val = GPIOA_REG((GPIO_INPUT_EN + (io / 8)));
 					cfg_val |= (VBYTE)((0x1) << (io % 8));
 					if(cfg_val == GPIOA_REG((GPIO_INPUT_EN + (io / 8))))
 					{
-						return 1; //dprint("is output\n");
+						//assert_print("is output\n");
+						return 1;
 					}
 					else
 					{
-						return 0; //dprint("not is output\n");
+						//assert_print("not is output\n");
+						return 0;
 					}
 				}
 				else if(port == 2)
@@ -1633,11 +1652,13 @@ char JUDGE_MODE_IOMUX(DWORD port, DWORD io)
 					cfg_val |= (VBYTE)((0x1) << (io % 8));
 					if(cfg_val == GPIOB_REG((GPIO_INPUT_EN + (io / 8))))
 					{
-						return 1; //dprint("is output\n");
+						//assert_print("is output\n");
+						return 1;
 					}
 					else
 					{
-						return 0; //dprint("not is output\n");
+						//assert_print("not is output\n");
+						return 0;
 					}
 				}
 				else
@@ -1646,22 +1667,26 @@ char JUDGE_MODE_IOMUX(DWORD port, DWORD io)
 					cfg_val |= (VBYTE)((0x1) << (io % 8));
 					if(cfg_val == GPIOC_REG((GPIO_INPUT_EN + (io / 8))))
 					{
-						return 1;  //dprint("is output\n");
+						//assert_print("is output\n");
+						return 1;
 					}
 					else
 					{
-						return 0;  //dprint("not is output\n");
+						//assert_print("not is output\n");
+						return 0;
 					}
 				}
 			}
 			else
 			{
-				return 0;  //dprint("pin is not GPIO\n");
+				//assert_print("pin is not GPIO\n");
+				return 0;
 			}
 		}
 		else
 		{
-			return 0; //dprint("GPIO  number input error\n");
+			//dprint("GPIO  number input error\n");
+			return 0;
 		}
 	}
 	else
@@ -1673,20 +1698,24 @@ char JUDGE_MODE_IOMUX(DWORD port, DWORD io)
 			cfg_val &= ~(3 << (io * 2));
 			if(cfg_val == *(DWORDP)addr)
 			{
-				//dprint("port: %d,io: %d\n", port, io);
-				cfg_val = GPIOC_REG((0x10));
-				if(cfg_val == GPIOC_REG((0x10)))
+				//assert_print("port: %d,io: %d\n", port, io);
+				cfg_val = GPIOD_REG((0x10));
+				cfg_val |= ((0x1) << (io % 8));
+				if(cfg_val == GPIOD_REG((0x10)))
 				{
-					return 1; //dprint("is output\n");
+					//assert_print("is output\n");
+					return 1;
 				}
 				else
 				{
-					return 0;  //dprint("not is output\n");
+					//assert_print("not is output\n");
+					return 0;
 				}
 			}
 			else
 			{
-				return 0; //dprint("pin is not GPIO\n");
+				//assert_print("pin is not GPIO\n");
+				return 0;
 			}
 		}
 		else if(port == 5)
@@ -1696,21 +1725,24 @@ char JUDGE_MODE_IOMUX(DWORD port, DWORD io)
 			cfg_val &= ~(3 << 14);
 			if(cfg_val == *(DWORDP)addr)
 			{
-				//dprint("port: %d,io: %d\n", port, io);
+				//assert_print("port: %d,io: %d\n", port, io);
 				cfg_val = GPIOE_REG((GPIO_INPUT_EN + (io / 8)));
 				cfg_val |= ((0x1) << (io % 8));
 				if(cfg_val == GPIOE_REG((GPIO_INPUT_EN + (io / 8))))
 				{
-					return 1;  //dprint("is output\n");
+					//assert_print("is output\n");
+					return 1;
 				}
 				else
 				{
-					return 0; //dprint("is not output\n");
+					//assert_print("is not output\n");
+					return 0;
 				}
 			}
 			else
 			{
-				return 0;  //dprint("pin is not GPIO\n");
+				//assert_print("pin is not GPIO\n");
+				return 0;
 			}
 		#endif
 		#if (defined AE103)
@@ -1737,8 +1769,81 @@ char JUDGE_MODE_IOMUX(DWORD port, DWORD io)
 		}
 		else
 		{
-			return 0; //dprint("GPIO group number input error\n");
+			dprint("GPIO group number input error\n");
+			return 0;
 		}
 	}
-	// #endif
+
+}
+/**
+ * @brief       读取GPIO引脚电平值
+ *
+ * @param       port  引脚所在的GPIO组
+ * @param       pin   引脚号
+ *
+ * @return      引脚电平值（0或1）
+ */
+char ReadGPIOLevel(BYTE port, BYTE pin)
+{
+	volatile unsigned char *portBase;
+	unsigned char pinValue = 0;
+	if(port < 3)
+	{
+		portBase = (volatile unsigned char *)(GPIO0_BASE_ADDR + 0x50 + (port - 1) * 0x400 + (pin / 8));
+		// 读取引脚的电平值
+		pinValue = *portBase & (0x1 << (pin % 8));
+		// 返回引脚电平值（0或1）
+		return (pinValue != 0) ? 1 : 0;
+	}
+	else if(port == 3)
+	{
+	#if (defined AE102 || defined AE101)
+		if(pin > 13)
+		{
+			printf("GPIO  number input error\n");
+			return -1;
+		}
+	#endif
+		portBase = (volatile unsigned char *)(GPIO0_BASE_ADDR + 0x50 + (port - 1) * 0x400 + (pin / 8));
+		// 读取引脚的电平值
+		pinValue = *portBase & (0x1 << (pin % 8));
+		// 返回引脚电平值（0或1）
+		return (pinValue != 0) ? 1 : 0;
+	}
+	else if(port == 4)
+	{
+	#if (defined AE102 || defined AE101)
+		if(pin > 6)
+		{
+			printf("GPIO  number input error\n");
+			return -1;
+		}
+	#endif
+		portBase = (volatile unsigned char *)(GPIO2_BASE_ADDR + 0x54);
+		// 读取引脚的电平值
+		pinValue = *portBase & (0x1 << (pin % 8));
+		// 返回引脚电平值（0或1）
+		return (pinValue != 0) ? 1 : 0;
+
+	}
+	else if(port == 5)
+	{
+	#if (defined AE102 || defined AE101)
+		if(pin > 23)
+		{
+			printf("GPIO  number input error\n");
+			return -1;
+		}
+	#endif
+		portBase = (volatile unsigned char *)(GPIO3_BASE_ADDR + 0x50 + (pin / 8));
+		// 读取引脚的电平值
+		pinValue = *portBase & (0x1 << (pin % 8));
+		// 返回引脚电平值（0或1）
+		return (pinValue != 0) ? 1 : 0;
+	}
+	else
+	{
+		printf("GPIO group number input error\n");
+		return -1;
+	}
 }

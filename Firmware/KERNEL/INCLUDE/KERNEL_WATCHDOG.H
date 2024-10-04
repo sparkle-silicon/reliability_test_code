@@ -18,7 +18,7 @@
 #include "AE_GLOBAL.H"
 #include "AE_REG.H"
 #include "AE_CONFIG.H"
-// #define WDT_STAT    (*(volatile u8 *) 0x3C10)
+#define WDT_ISR  0x01
 #define Wdt_Int_Status ((WDT_STAT & (0x1 << 0)) != 0)
 #define Wdt_Int_Status ((WDT_STAT & (0x1 << 0)) != 0)
 #define WDT_CRR_CRR 0x76;

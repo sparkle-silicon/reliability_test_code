@@ -98,7 +98,7 @@ void SPI_Init(BYTE dly, BYTE cpol, BYTE cpha, BYTE lsb, BYTE dssp, BYTE cpsr)
 uint8_t SPI_Send_Byte(uint8_t send_data)
 {
     SPI_Timeout = 100000;
-    while(!((SPIM_SR) & 0x2)) // 等待发送fifo空
+    while(!((SPIM_SR)&SPI_TFE)) // 等待发送fifo空
     {
         SPI_Timeout--;
         if(SPI_Timeout == 0)
@@ -109,7 +109,7 @@ uint8_t SPI_Send_Byte(uint8_t send_data)
     }
     SPIM_DA0 = send_data; // 发送数据
     SPI_Timeout = 100000;
-    while(!((SPIM_SR) & 0x4)) // 等待接收fifo不空
+    while(!((SPIM_SR)&SPI_RFNE)) // 等待接收fifo不空
     {
         SPI_Timeout--;
         if(SPI_Timeout == 0)
@@ -248,7 +248,6 @@ uint8_t SPI_Busy(uint8_t cs_select)
 {
     FLASH_SR = 0;
     FLASH_SR = SPI_Send_Cmd(CMD_READ_STATUS1, cs_select);
-    dprint("spi flash status is %#x\n", FLASH_SR);
     return (FLASH_SR & 0x1);
 }
 /**
@@ -362,8 +361,7 @@ void SPI_Chip_Erase(uint8_t cs_select)
     // send chip erase cmd
     SPI_Send_Byte(CMD_CHIP_ERASE);
     SPI_Flash_CS_High(cs_select);
-    while(SPI_Busy(cs_select))
-        ;
+    while(SPI_Busy(cs_select));
     dprint("chip erase completed!\n");
 }
 /**
@@ -393,8 +391,7 @@ void SPI_Page_Program(uint32_t write_addr, uint32_t byte_num, uint8_t *byte_data
         byte_data++;
     }
     SPI_Flash_CS_High(cs_select);
-    while(SPI_Busy(cs_select))
-        ;
+    while(SPI_Busy(cs_select));
     dprint("chip page program completed!\n");
 }
 /**
@@ -407,8 +404,7 @@ void SPI_Page_Program(uint32_t write_addr, uint32_t byte_num, uint8_t *byte_data
 void SPI_Flash_Reset(uint8_t cs_select)
 {
     dprint("spi flash reset start!\n");
-    while(SPI_Busy(cs_select) | SPI_Suspend(cs_select))
-        ;
+    while(SPI_Busy(cs_select) | SPI_Suspend(cs_select));
     SPI_Send_Cmd(0x66, cs_select);
     SPI_Send_Cmd(0x99, cs_select);
     dprint("spi flash reset finish!\n");
@@ -442,7 +438,6 @@ void SPI_Flash_Test(void)
     uint8_t read_buff[256] = { 0 };
     uint8_t write_buff[256] = { 0x1, 0x2, 0x3, 0x4, 0x5, 0x6 };
     /**************CSN0***************/
-    // SPI_Chip_Erase(0);
     SPI_Block_Erase(0x0, 0);
     SPI_Send_Cmd_Addr(read_buff, 0, 256, 0);
     for(i = 0; i < 256; i++)
@@ -455,9 +450,7 @@ void SPI_Flash_Test(void)
     {
         dprint("read data buff is %#x\n", read_buff[i]);
     }
-    /**************CSN0***************/
     /**************CSN1***************/
-    // SPI_Chip_Erase(1);
     /*SPI_Block_Erase(0x0, 1);
     SPI_Send_Cmd_Addr(read_buff, 0, 256, 1);
     for(i=0;i<256;i++)

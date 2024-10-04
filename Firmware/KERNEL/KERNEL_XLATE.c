@@ -269,13 +269,6 @@ void Particular_Code(BYTE code_byte, BYTE event)
         }
         else
         {
-        #if ENABLE_DEBUGGER_SUPPORT
-            DEBUGER_putchar(0x70);
-            DEBUGER_putchar(0x61);
-            DEBUGER_putchar(0x75);
-            DEBUGER_putchar(0x73);
-            DEBUGER_putchar(0x65);
-        #endif
         }
     }
 }

@@ -23,7 +23,7 @@
  */
 void WDT_Clear_IRQ(void)
 {
-	if(WDT_STAT & 0x01)
+	if(WDT_STAT & WDT_ISR)
 	{
 		/*Clear interruption*/
 		WDT_EOI;
@@ -39,7 +39,7 @@ void WDT_FeedDog(void)
 {
 WDT_ReFeed:
 	WDT_CRR = WDT_CRR_CRR; // 喂狗
-	if(WDT_STAT & 0x01)   // 判断如果没清除中断则出现异常，手动清除后喂狗
+	if(WDT_STAT & WDT_ISR)   // 判断如果没清除中断则出现异常，手动清除后喂狗
 	{
 		/*Clear interruption*/
 		WDT_EOI;

@@ -29,19 +29,14 @@ void BRAM_Config(void)
 #endif
 // Enable BRAM logic device
 #if (SYSCTL_CLOCK_EN)
-  SYSCTL_HDEVEN |= 0x00040000;
+  SYSCTL_HDEVEN |= HBRAM_EN;      //host侧BRAM使能
 #endif
   // Enable BRAM
   Config_PNP_Write(0x23, 0x01, 0x01);
-  vDelayXms(5);
   Config_PNP_Write(0x07, 0x10, 0x10);
-  vDelayXms(5);
   Config_PNP_Write(0x60, 0x10, 0x00);
-  vDelayXms(5);
   Config_PNP_Write(0x61, 0x10, 0x60);
-  vDelayXms(5);
   Config_PNP_Write(0x30, 0x10, 0x01);
-  vDelayXms(5);
 }
 /**
  * @brief 在EC端进行BRAM地址写操作
@@ -55,7 +50,7 @@ void BRAM_Config(void)
 void BRAM_EC_Write(void)
 {
   int i;
-  for (i = 0; i < 48; i++)
+  for(i = 0; i < 48; i++)
   {
     *((volatile uint8_t *)(BRAM_BASE_ADDR + i)) = 0xec;
     vDelayXms(1);
@@ -74,10 +69,9 @@ void BRAM_EC_Write(void)
 void BRAM_EC_Read(void)
 {
   uint8_t i;
-  for (i = 0; i <= 0x2F; i++)
+  for(i = 0; i <= 0x2F; i++)
   {
     BRAM_ReadBuff[i] = *((volatile uint8_t *)(BRAM_BASE_ADDR + i));
-    // vDelayXms(1);
     dprint("bram data is %#x\n", BRAM_ReadBuff[i]);
   }
   dprint("bram data read end!\n");

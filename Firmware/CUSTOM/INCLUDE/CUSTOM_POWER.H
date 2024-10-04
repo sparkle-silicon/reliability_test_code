@@ -34,6 +34,7 @@
 #define SYSTEM_S0_S3 0x03
 #define SYSTEM_S0_S4 0x04
 #define SYSTEM_S0_S5 0x05
+#define SYSTEM_REBOOT 0xAA
 #define SYSTEM_EC_WDTRST 0xFF
 //-----------------------------------------------------------------------------
 // Shutdown cause

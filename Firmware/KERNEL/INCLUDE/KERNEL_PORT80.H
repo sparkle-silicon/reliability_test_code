@@ -19,6 +19,8 @@
 #include "AE_REG.H"
 #include "AE_CONFIG.H"
 #include "KERNEL_PNP.H"
+#define P80LR_EN BIT(24)
+#define P80L_EN  BIT(25)
 //函数声明
 void Port80_Bram_PNP_Config(void);
 #endif

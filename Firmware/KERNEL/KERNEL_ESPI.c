@@ -2533,6 +2533,100 @@ void __weak Service_eSPI(void)
         }
     }
 }
+#if 0
+eSPI_OOB_WriteRootKet_MESSAGE1 eRPMC_WriteRootKey_m1;
+eSPI_OOB_WriteRootKet_MESSAGE2 eRPMC_WriteRootKey_m2;
+eSPI_OOB_WriteRootKet_RESPONSE eRPMC_WriteRootKey_data;
+eSPI_OOB_UpdateHMACKey eRPMC_UpdateHMACKey;
+eSPI_OOB_UpdateHMACKey_RESPONSE eRPMC_UpdateHMACKey_data;
+eSPI_OOB_IncrementCounter eRPMC_IncrementCounter;
+eSPI_OOB_IncrementCounter_RESPONSE eRPMC_IncrementCounter_data;
+eSPI_OOB_RequestCounter eRPMC_RequestCounter;
+eSPI_OOB_RequestCounter_RESPONSE eRPMC_RequestCounter_data;
+eSPI_OOB_ReadParameters eRPMC_ReadParameters;
+eSPI_OOB_ReadParameters_RESPONSE eRPMC_ReadParameters_data;
+/*-----------------------------------------------------------------------------
+ * @subroutine - OOB_Get_WriteRootKey
+ * @function - OOB_Get_WriteRootKey
+ * @Upstream - Service_OOB_Message
+ * @input    - None
+ * @return   - None
+ * @note     - None
+ */
+void OOB_Get_WriteRootKey(void)
+{
+    OOB_Table_Pntr = (BYTE *)&eRPMC_WriteRootKey_m1;
+    Tmp_XPntr = (BYTE *)&eRPMC_WriteRootKey_data;
+    xOOB_PacketMaxLength = 16;
+    Process_eSPI_OOB_Message();
+}
+
+/*-----------------------------------------------------------------------------
+ * @subroutine - OOB_Get_UpdateHMACKey
+ * @function - OOB_Get_UpdateHMACKey
+ * @Upstream - Service_OOB_Message
+ * @input    - None
+ * @return   - None
+ * @note     - None
+ */
+void OOB_Get_UpdateHMACKey(void)
+{
+    OOB_Table_Pntr = (BYTE *)&eRPMC_UpdateHMACKey;
+    Tmp_XPntr = (BYTE *)&eRPMC_UpdateHMACKey_data;
+    xOOB_PacketMaxLength = 16;
+    Process_eSPI_OOB_Message();
+}
+
+/*-----------------------------------------------------------------------------
+ * @subroutine - OOB_Get_IncrementCounter
+ * @function - OOB_Get_IncrementCounter
+ * @Upstream - Service_OOB_Message
+ * @input    - None
+ * @return   - None
+ * @note     - None
+ */
+void OOB_Get_IncrementCounter(void)
+{
+    OOB_Table_Pntr = (BYTE *)&eRPMC_IncrementCounter;
+    Tmp_XPntr = (BYTE *)&eRPMC_IncrementCounter_data;
+    xOOB_PacketMaxLength = 16;
+    Process_eSPI_OOB_Message();
+}
+
+/*-----------------------------------------------------------------------------
+ * @subroutine - OOB_Get_RequestCounter
+ * @function - OOB_Get_RequestCounter
+ * @Upstream - Service_OOB_Message
+ * @input    - None
+ * @return   - None
+ * @note     - None
+ */
+void OOB_Get_RequestCounter(void)
+{
+    OOB_Table_Pntr = (BYTE *)&eRPMC_RequestCounter;
+    Tmp_XPntr = (BYTE *)&eRPMC_RequestCounter_data;
+    xOOB_PacketMaxLength = 16;
+    Process_eSPI_OOB_Message();
+}
+
+/*-----------------------------------------------------------------------------
+ * @subroutine - OOB_Get_ReadParameters
+ * @function - OOB_Get_ReadParameters
+ * @Upstream - Service_OOB_Message
+ * @input    - None
+ * @return   - None
+ * @note     - None
+ */
+void OOB_Get_ReadParameters(void)
+{
+    OOB_Table_Pntr = (BYTE *)&eRPMC_ReadParameters;
+    Tmp_XPntr = (BYTE *)&eRPMC_ReadParameters_data;
+    xOOB_PacketMaxLength = 16;
+    Process_eSPI_OOB_Message();
+}
+
+#endif
+/****************************** OOB eRPMC Code *******************************/
 
 //-----------------------------------------------------------------------------
 #endif // SUPPORT_OOB_SERVICE_MODULE

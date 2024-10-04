@@ -30,7 +30,10 @@
 #define KBC_STA_IBF                             HEX02
 #define KBC_STA_GPF                             HEX04
 #define KBC_STA_A2                              HEX08
-#define KBC_STA_STS                             0xF0
+#define KBC_STA_KL                              HEX10 //May be "keyboard lock" (more likely unused on modern systems)
+#define KBC_STA_SAOBF                           HEX20 //May be "receive time-out" or "second PS/2 port output buffer full"
+#define KBC_STA_TOE                             HEX40 //Timeout error
+#define KBC_STA_PE                              HEX80 //Parity error
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #define KBC_Int_Enable(type)	    (KBC_CTL |= (0x1<<(type)))
 #define KBC_Int_Disable(type)	    (KBC_CTL &= ~(0x1<<(type)))

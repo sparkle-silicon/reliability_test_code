@@ -24,23 +24,16 @@ void SWUC_PNP_Config(void)
 	return;
 #endif
 	// HOST LogicaL Device Enable
-	SYSCTL_HDEVEN |= 0x00001001;
+	SYSCTL_HDEVEN |= (HOST_UARTA_EN | HOST_WUC_EN);
 	Config_PNP_Access_Request();
 	// PNP Default Config
 	Config_PNP_Write(0x23, 0x01, 0x01);
-	vDelayXms(5);
 	Config_PNP_Write(0x07, 0x04, 0x04);
-	vDelayXms(5);
 	Config_PNP_Write(0x60, 0x04, 0x00);
-	vDelayXms(5);
 	Config_PNP_Write(0x61, 0x04, 0x00);
-	vDelayXms(5);
 	Config_PNP_Write(0x70, 0x04, 0x0f);
-	vDelayXms(5);
 	Config_PNP_Write(0x71, 0x04, 0x01);
-	vDelayXms(5);
 	Config_PNP_Write(0x30, 0x04, 0x01);
-	vDelayXms(5);
 	Config_PNP_Access_Release();
 	dprint("SWUC PNP Config finish!\n");
 }
@@ -54,7 +47,7 @@ void SWUC_PNP_Config(void)
  */
 void SWUC_EventIRQ_Config(BYTE irq_type, BYTE sw)
 {
-	if (sw == DISABLE)
+	if(sw == DISABLE)
 	{
 		SWUHEIE &= (~irq_type);
 	}
@@ -77,7 +70,7 @@ void SWUC_RING_Config(void)
 // 软件唤醒
 void SWUC_SW_WakeUp_Config(uint8_t hsecm_ec)
 {
-	if (hsecm_ec == 0)
+	if(hsecm_ec == 0)
 	{
 		SWUCTL1 &= 0xdf;
 	}
@@ -104,7 +97,7 @@ void SWUC_G20_Config(void)
 }
 void SWUC_Int_Enable(BYTE type)
 {
-	if (type <= 0x7)
+	if(type <= 0x7)
 	{
 		SWUHEIE |= (0x1 << type);
 	}
@@ -123,7 +116,7 @@ void SWUC_Int_Enable(BYTE type)
  */
 void SWUC_ACPIIRQ_Config(BYTE irq_type, BYTE sw)
 {
-	if (sw == DISABLE)
+	if(sw == DISABLE)
 	{
 		SWUIE &= (~irq_type);
 	}
@@ -134,7 +127,7 @@ void SWUC_ACPIIRQ_Config(BYTE irq_type, BYTE sw)
 }
 void SWUC_Int_Disable(BYTE type)
 {
-	if (type <= 0x7)
+	if(type <= 0x7)
 	{
 		SWUHEIE &= ~(0x1 << type);
 	}
@@ -145,7 +138,7 @@ void SWUC_Int_Disable(BYTE type)
 }
 BYTE SWUC_Int_Enable_Read(BYTE type)
 {
-	if (type <= 0x7)
+	if(type <= 0x7)
 	{
 		return ((SWUHEIE & (0x1 << type)) != 0);
 	}
@@ -159,7 +152,7 @@ BYTE SWUC_Int_Enable_Read(BYTE type)
 void SWUC_UART_Test(void)
 {
 	// LogicaLDevice Enable
-	SYSCTL_HDEVEN |= 0x00001001;
+	SYSCTL_HDEVEN |= (HOST_UARTA_EN | HOST_WUC_EN);
 	Config_PNP_Access_Request();
 	// PNP Default Config
 	Config_PNP_Write(0x23, 0x01, 0x01);
@@ -256,20 +249,20 @@ void SWUC_SMI_Init(void)
 void SWUC_KBRST_Init(uint8_t mode)
 {
 	SWUC_KBRST_Config(); // set GPB6 KBRST
-	if (mode == 1)
+	if(mode == 1)
 	{
 		KBC_KOB &= 0xfe;   // set KBCHIKDOR bit0 0
 		(SWUCTL1) |= 0x80; // set krstga20r 1
 	}
-	else if (mode == 2)
+	else if(mode == 2)
 	{
 		sysctl_iomux_config(GPIOB, 6, 1); // set GPE6 lpc_pd
 		SWUCTL3 |= 0x2;					  // set lpcpf_ec 1
 	}
-	else if (mode == 3)
+	else if(mode == 3)
 	{
 		sysctl_iomux_config(GPIOA, 14, 2);
-		for (BYTE i = 0; i < 20; i++)
+		for(BYTE i = 0; i < 20; i++)
 		{
 			SWUCTL1 &= 0xfe; // set hrst_ec 0
 			vDelayXms(5);
@@ -288,10 +281,10 @@ void SWUC_KBRST_Init(uint8_t mode)
 void SWUC_GA20_Init(uint8_t mode)
 {
 	SWUC_G20_Config(); // set GPIOA20
-	if (mode == 1)
+	if(mode == 1)
 	{
 		KBC_KOB &= 0xfd; // set KBCHIKDOR bit1 0
-		for (BYTE i = 0; i < 20; i++)
+		for(BYTE i = 0; i < 20; i++)
 		{
 			(SWUCTL1) &= 0x7f; // set krstga20r 0
 			vDelayXms(5);

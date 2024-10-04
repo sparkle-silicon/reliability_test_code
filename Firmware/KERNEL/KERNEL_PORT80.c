@@ -15,33 +15,28 @@
  */
 #include "KERNEL_PORT80.H"
 #include "KERNEL_TIMER.H"
+#define P80_TO_BRAM_SWITCH 1
 //-----------------------------------------------------------------------------
 // Port 80 with BRAM Output, PNP config
 //-----------------------------------------------------------------------------
 void Port80_Bram_PNP_Config(void)
 {
 #if P80_TO_BRAM_SWITCH
-	PNP_LD_EN |= 0x00240000; //enable BRAM and Port80 logic device
-	PNP_CTRL0 |= (0x02000000);
-	PNP_CTRL0 &= (~0x01000000);
+	PNP_LD_EN |= HOST_BRAM_EN | HOST_P80_EN; //enable BRAM and Port80 logic device
+	PNP_CTRL0 |= P80L_EN;
+	PNP_CTRL0 &= (~P80LR_EN);
 	//Set Bram & Port80 Config
 	Config_PNP_Write(0x23, 0x01, 0x01);
-	vDelayXms(5);
 	Config_PNP_Write(0x07, 0x10, 0x10);
-	vDelayXms(5);
 	Config_PNP_Write(0x60, 0x10, 0x00);
-	vDelayXms(5);
 	Config_PNP_Write(0x61, 0x10, 0x70);
-	vDelayXms(5);
 	Config_PNP_Write(0xf0, 0x10, 0x00);     //Disable Host access Bram 0x10-0x1F 0x20-0x2F
-	vDelayXms(5);
 	Config_PNP_Write(0x30, 0x10, 0x01);
-	vDelayXms(5);
 #else
 //pnp config
-	PNP_LD_EN |= 0x00200000; //enable Port80 logic device
+	PNP_LD_EN |= HOST_P80_EN; //enable Port80 logic device
 	//Port80 latch to GPIO
-	PNP_CTRL0 |= 0x01000000;
+	PNP_CTRL0 |= P80LR_EN;
 	//select GPE0 & GPE7 to hlat & llat
 	sysctl_iomux_config(GPIOB, 0, 1); //select hlat
 	sysctl_iomux_config(GPIOB, 7, 1); //select llat

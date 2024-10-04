@@ -313,7 +313,7 @@ typedef void (*FUNCT_PTR_V_B)(BYTE);
 typedef void (*FUNCT_PTR_V_B_B)(BYTE, BYTE);
 typedef void (*FUNCT_PTR_V_D_BP)(DWORD, BYTEP);
 typedef void (*FUNCT_PTR_B_D_D)(BYTE, DWORD, DWORD);
-
+typedef void (*FUNCT_PTR_V_D_BP_L)(DWORD, BYTE *, WORD);
 // kbs typedef
 typedef struct _A2_TABLE
 {

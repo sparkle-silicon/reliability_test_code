@@ -2327,27 +2327,8 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 	}
 	if(dbg_int_buf[0] >= 0x90 && dbg_int_buf[0] <= 0x93)//修改
 	{
-	#if (defined(AE102) || defined(TEST103))
-		int index = dbg_int_buf[0] - 0x90;
-	#endif
 		switch(dbg_int_buf[1])
 		{
-		#if (defined(AE102) || defined(TEST103))
-			case 0x0:
-				Can_Int_Enable(index, dbg_int_buf[2]);
-				break;
-			case 0x1:
-				Can_Int_Disable(index, dbg_int_buf[2]);
-				break;
-			case 0x8:
-				value = Can_Int_Enable_Read(index, dbg_int_buf[2]);
-				read_flag = 1;
-				break;
-			case 0xC:
-				value = Can_Int_Status(index, dbg_int_buf[2]);
-				read_flag = 1;
-				break;
-			#endif
 			default:
 				illegal_operation = 1;
 				break;

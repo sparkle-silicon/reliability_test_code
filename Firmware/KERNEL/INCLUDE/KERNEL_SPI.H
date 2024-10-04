@@ -53,7 +53,13 @@
 #define SPIF_CTL_TWO        HEX00
 #define SPIF_SUSPEND_EN     HEX01
 #define SPIF_SUSPEND_DISEN  HEX00
-/************中断屏蔽宏***************/
+/* SPI 状态寄存器位定 */
+#define SPI_BSY      HEX10 // SPI-M busy标志位，0x0 表示空闲，0x1 表示传输中
+#define SPI_RFF      HEX08 // 接收FIFO满标志位，0x0 表示不满，0x1 表示满
+#define SPI_RFNE     HEX04 // 接收FIFO不空标志位，0x0 表示为空，0x1 表示不为空
+#define SPI_TFE      HEX02 // 发送FIFO空标志位，0x0 表示不空，0x1 表示为空
+#define SPI_TFNF     HEX01 // 发送FIFO不满标志位，0x0 表示满，0x1 表示未满
+
 extern BYTE SPI_Write_Buff[256];
 extern void SPI_Init(BYTE dly, BYTE cpol, BYTE cpha, BYTE lsb, BYTE dssp, BYTE cpsr);
 extern void SPI_IRQ_Config(uint8_t irq_mask, uint8_t sw);

@@ -38,68 +38,68 @@ const thermal ThermalTalbe1[] =//24.576M		4			0		255			0~255	24.094k//推荐，�
 	}, // Level 0 //-35~-128°C//100% 
 	{
 		0,
-		((TEMP_MAX - TEMP_SETPOINT + 5) / 10 * 0 + TEMP_SETPOINT),
+		((TEMP_MAX - TEMP_LEV + 5) / 10 * 0 + TEMP_LEV),
 		-40,
 		((FAN0_MAX_DCR + 5) / 10 * 0 + FAN0_MIN_DCR),
 	}, // Level 1 //-40~20°C//start:0% 
 	{
 		4,
-		((TEMP_MAX - TEMP_SETPOINT + 5) / 10 * 1 + TEMP_SETPOINT),
-		((TEMP_MAX - TEMP_SETPOINT + 5) / 10 * 0 + TEMP_SETPOINT - (TEMP_MAX - TEMP_SETPOINT + 10) / 20),
+		((TEMP_MAX - TEMP_LEV + 5) / 10 * 1 + TEMP_LEV),
+		((TEMP_MAX - TEMP_LEV + 5) / 10 * 0 + TEMP_LEV - (TEMP_MAX - TEMP_LEV + 10) / 20),
 		((FAN0_MAX_DCR + 5) / 10 * 1 + FAN0_MIN_DCR),//start:10% MAX:10%+28/FAN0_MAX_DCR
 	}, // Level 2 //18~25°C
 	{
 		4,
-		((TEMP_MAX - TEMP_SETPOINT + 5) / 10 * 2 + TEMP_SETPOINT),
-		((TEMP_MAX - TEMP_SETPOINT + 5) / 10 * 1 + TEMP_SETPOINT - (TEMP_MAX - TEMP_SETPOINT + 10) / 20),
+		((TEMP_MAX - TEMP_LEV + 5) / 10 * 2 + TEMP_LEV),
+		((TEMP_MAX - TEMP_LEV + 5) / 10 * 1 + TEMP_LEV - (TEMP_MAX - TEMP_LEV + 10) / 20),
 		((FAN0_MAX_DCR + 5) / 10 * 2 + FAN0_MIN_DCR),//start:20% MAX:20%+28/FAN0_MAX_DCR
 	}, // Level 3 //23~30°C
 	{
 		5,
-		((TEMP_MAX - TEMP_SETPOINT + 5) / 10 * 3 + TEMP_SETPOINT),
-		((TEMP_MAX - TEMP_SETPOINT + 5) / 10 * 2 + TEMP_SETPOINT - (TEMP_MAX - TEMP_SETPOINT + 10) / 20),
+		((TEMP_MAX - TEMP_LEV + 5) / 10 * 3 + TEMP_LEV),
+		((TEMP_MAX - TEMP_LEV + 5) / 10 * 2 + TEMP_LEV - (TEMP_MAX - TEMP_LEV + 10) / 20),
 		((FAN0_MAX_DCR + 5) / 10 * 3 + FAN0_MIN_DCR),//start:30% MAX:30%+35/FAN0_MAX_DCR
 	}, // Level 4 //28~35°C
 	{
 		5,
-		((TEMP_MAX - TEMP_SETPOINT + 5) / 10 * 4 + TEMP_SETPOINT),
-		((TEMP_MAX - TEMP_SETPOINT + 5) / 10 * 3 + TEMP_SETPOINT - (TEMP_MAX - TEMP_SETPOINT + 10) / 20),
+		((TEMP_MAX - TEMP_LEV + 5) / 10 * 4 + TEMP_LEV),
+		((TEMP_MAX - TEMP_LEV + 5) / 10 * 3 + TEMP_LEV - (TEMP_MAX - TEMP_LEV + 10) / 20),
 		((FAN0_MAX_DCR + 5) / 10 * 4 + FAN0_MIN_DCR),//start:40% MAX:40%+35/FAN0_MAX_DCR
 	}, // Level 5 //33~40°C
 	{
 		6,
-		((TEMP_MAX - TEMP_SETPOINT + 5) / 10 * 5 + TEMP_SETPOINT),
-		((TEMP_MAX - TEMP_SETPOINT + 5) / 10 * 4 + TEMP_SETPOINT - (TEMP_MAX - TEMP_SETPOINT + 10) / 20),
+		((TEMP_MAX - TEMP_LEV + 5) / 10 * 5 + TEMP_LEV),
+		((TEMP_MAX - TEMP_LEV + 5) / 10 * 4 + TEMP_LEV - (TEMP_MAX - TEMP_LEV + 10) / 20),
 		((FAN0_MAX_DCR + 5) / 10 * 5 + FAN0_MIN_DCR),//start:50% MAX:65%+42/FAN0_MAX_DCR
 	}, // Level 6 //38~45°C
 	{
 		7,
-		((TEMP_MAX - TEMP_SETPOINT + 5) / 10 * 6 + TEMP_SETPOINT),
-		((TEMP_MAX - TEMP_SETPOINT + 5) / 10 * 5 + TEMP_SETPOINT - (TEMP_MAX - TEMP_SETPOINT + 10) / 20),
+		((TEMP_MAX - TEMP_LEV + 5) / 10 * 6 + TEMP_LEV),
+		((TEMP_MAX - TEMP_LEV + 5) / 10 * 5 + TEMP_LEV - (TEMP_MAX - TEMP_LEV + 10) / 20),
 		((FAN0_MAX_DCR + 10) / 20 * 13 + FAN0_MIN_DCR),//start:65% MAX:80%+49/FAN0_MAX_DCR
 	}, // Level 7 //43~50°C
 	{
 		6,
-		((TEMP_MAX - TEMP_SETPOINT + 5) / 10 * 7 + TEMP_SETPOINT),
-		((TEMP_MAX - TEMP_SETPOINT + 5) / 10 * 6 + TEMP_SETPOINT - (TEMP_MAX - TEMP_SETPOINT + 10) / 20),
+		((TEMP_MAX - TEMP_LEV + 5) / 10 * 7 + TEMP_LEV),
+		((TEMP_MAX - TEMP_LEV + 5) / 10 * 6 + TEMP_LEV - (TEMP_MAX - TEMP_LEV + 10) / 20),
 		((FAN0_MAX_DCR + 10) / 20 * 16 + FAN0_MIN_DCR),//start:80% MAX:100%
 	}, // Level 8 //48~55°C
 	{
 		3,
-		((TEMP_MAX - TEMP_SETPOINT + 5) / 10 * 8 + TEMP_SETPOINT),
-		((TEMP_MAX - TEMP_SETPOINT + 5) / 10 * 7 + TEMP_SETPOINT - (TEMP_MAX - TEMP_SETPOINT + 10) / 20),
+		((TEMP_MAX - TEMP_LEV + 5) / 10 * 8 + TEMP_LEV),
+		((TEMP_MAX - TEMP_LEV + 5) / 10 * 7 + TEMP_LEV - (TEMP_MAX - TEMP_LEV + 10) / 20),
 		((FAN0_MAX_DCR + 10) / 20 * 19 + FAN0_MIN_DCR),//start:95% MAX:100%
 	}, // Level 9//53~60°C
 	{
 		0,
-		((TEMP_MAX - TEMP_SETPOINT + 5) / 10 * 9 + TEMP_SETPOINT),
-		((TEMP_MAX - TEMP_SETPOINT + 5) / 10 * 8 + TEMP_SETPOINT - (TEMP_MAX - TEMP_SETPOINT + 10) / 20),
+		((TEMP_MAX - TEMP_LEV + 5) / 10 * 9 + TEMP_LEV),
+		((TEMP_MAX - TEMP_LEV + 5) / 10 * 8 + TEMP_LEV - (TEMP_MAX - TEMP_LEV + 10) / 20),
 		FAN0_MAX_DCR,//start:100% MAX:100%
 	}, // Level 10//58~65°C//最高温度，一直使用最大转速
 	{
 		0,
 		127,
-		((TEMP_MAX - TEMP_SETPOINT + 5) / 10 * 9 + TEMP_SETPOINT - (TEMP_MAX - TEMP_SETPOINT + 10) / 20),
+		((TEMP_MAX - TEMP_LEV + 5) / 10 * 9 + TEMP_LEV - (TEMP_MAX - TEMP_LEV + 10) / 20),
 		FAN0_MAX_DCR,//start:100% MAX:100%
 	}, // Level 11//保护性代码
 };
@@ -328,11 +328,11 @@ BYTE FAN_Dynamic(BYTE channel)//动态算法,需自行调整参数
 	}
 	else if(temp > TEMP_SETPOINT)
 	{
-		step = (temp >> 3);
+		step = (temp >> 4);
 		if(temp >= last_temp)//升温
 		{
 			//调节后转速 = (当前转速 +（当前温度 – 上次温度+1）* 转速调节系数)
-			char tmp = (temp - last_temp) * step + (step >> 2);
+			char tmp = (temp - last_temp + 1) * step + (step >> 4);
 			if(FAN0_MAX_DCR - dcr >= tmp)
 				dcr = dcr + tmp;
 			else dcr = FAN0_MAX_DCR;
@@ -384,8 +384,9 @@ BYTE FAN_Dynamic(BYTE channel)//动态算法,需自行调整参数
 BYTE FAN_PID(BYTE channel)//PID算法预留，需自行调整参数
 {
 	channel &= 0x7;
-	static s8 intergral = 0;//累计误差
-	static s8 last_tmp = 0;//上次误差
+	static s16 tmp = 0;
+	static s16 intergral = 0;//累计误差
+	static s16 last_tmp = 0;//上次误差
 	/*1.获取温度*/
 	s8 temp = ReadTemp();
 	last_dcr = ReadLastDCR(channel);
@@ -400,22 +401,25 @@ BYTE FAN_PID(BYTE channel)//PID算法预留，需自行调整参数
 	else
 	{
 		step = (temp >> 3);
-		s8 tmp = (temp - TEMP_SETPOINT);
-		intergral += tmp / _Ki;
-		s8 pidValue = (tmp * _Kp) + intergral + ((tmp - last_tmp) * _Kd);
+		tmp = (temp - TEMP_SETPOINT2);
+		intergral = last_tmp * _Ki;
+		s8 pout = (tmp * _Kp);
+		s8 dout = ((tmp - last_tmp) * _Kd);
+		s16 pidValue = pout + intergral + dout;
 		last_tmp = tmp;
-		if(pidValue < 0)
+		if(last_tmp < 0)
 		{
-			if((-pidValue) > dcr)dcr = 0;
-			else dcr = dcr + pidValue;
+			dcr = dcr + pidValue;
 		}
 		else
 		{
-			if(pidValue > (FAN0_MAX_DCR - dcr))dcr = FAN0_MAX_DCR;
+			if(pidValue > (FAN0_MAX_DCR))
+				dcr = FAN0_MAX_DCR;
 			else
 				dcr = dcr + pidValue;
 		}
-		if(dcr > FAN0_MAX_DCR)dcr = FAN0_MAX_DCR;
+		if(dcr > FAN0_MAX_DCR)
+			dcr = FAN0_MAX_DCR;
 	}
 /*3:更新配置*/
 	if(dcr == 0)

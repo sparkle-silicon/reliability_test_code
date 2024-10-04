@@ -92,6 +92,9 @@ void PMC3_Cmd_14(void)
 void PMC3_Cmd_15(void)
 {
     PMC3_DOR = 0;
+#if ENABLE_DEBUGGER_SUPPORT
+    Debugger_KBC_PMC_Record(1, 3, 0);
+#endif
 }
 //----------------------------------------------------------------------------
 void PMC3_Cmd_16(void)
@@ -109,6 +112,9 @@ void PMC3_Cmd_19(void)
 void PMC3_Cmd_1A(void)
 {
     PMC3_DOR = 0;
+#if ENABLE_DEBUGGER_SUPPORT
+    Debugger_KBC_PMC_Record(1, 3, 0);
+#endif
 }
 //----------------------------------------------------------------------------
 void PMC3_Cmd_1B(void)
@@ -136,6 +142,9 @@ void PMC3_Cmd_20(void)
 void PMC3_Cmd_21(void)
 {
     PMC3_DOR = 0;
+#if ENABLE_DEBUGGER_SUPPORT
+    Debugger_KBC_PMC_Record(1, 3, 0);
+#endif
 }
 //----------------------------------------------------------------------------
 void PMC3_Cmd_22(void)
@@ -214,37 +223,58 @@ void PMC3_Cmd_33(void)
     if(Set_PortPM3_Data_Handle()) // Get PM3Data
     {
         PMC3_DOR = 0x00;
+    #if ENABLE_DEBUGGER_SUPPORT
+        Debugger_KBC_PMC_Record(1, 3, 0);
+    #endif
     }
 }
 //----------------------------------------------------------------------------
 void PMC3_Cmd_34(void)
 {
     PMC3_DOR = 0x00;
+#if ENABLE_DEBUGGER_SUPPORT
+    Debugger_KBC_PMC_Record(1, 3, 0);
+#endif
 }
 //----------------------------------------------------------------------------
 void PMC3_Cmd_35(void)
 {
     PMC3_DOR = 0x00;
+#if ENABLE_DEBUGGER_SUPPORT
+    Debugger_KBC_PMC_Record(1, 3, 0);
+#endif
 }
 //----------------------------------------------------------------------------
 void PMC3_Cmd_36(void)
 {
     PMC3_DOR = CTRL_FLAG1;
+#if ENABLE_DEBUGGER_SUPPORT
+    Debugger_KBC_PMC_Record(1, 3, CTRL_FLAG1);
+#endif
 }
 //----------------------------------------------------------------------------
 void PMC3_Cmd_37(void)
 {
     PMC3_DOR = 0x00;
+#if ENABLE_DEBUGGER_SUPPORT
+    Debugger_KBC_PMC_Record(1, 3, 0x00);
+#endif
 }
 //----------------------------------------------------------------------------
 void PMC3_Cmd_38(void)
 {
     PMC3_DOR = 0x00;
+#if ENABLE_DEBUGGER_SUPPORT
+    Debugger_KBC_PMC_Record(1, 3, 0x00);
+#endif
 }
 //----------------------------------------------------------------------------
 void PMC3_Cmd_39(void)
 {
     PMC3_DOR = 0x00;
+#if ENABLE_DEBUGGER_SUPPORT
+    Debugger_KBC_PMC_Record(1, 3, 0x00);
+#endif
 }
 //----------------------------------------------------------------------------
 void PMC3_Cmd_3A(void)

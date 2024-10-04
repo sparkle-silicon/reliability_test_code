@@ -117,7 +117,6 @@ extern BYTE Write_SCI_Query_Value(BYTE NewSCI);
 extern BYTE Read_SMI_Query_Value(void);
 extern BYTE Write_SMI_Query_Value(BYTE NewSMI);
 extern void Clear_Event_Buffer(void);
-extern void vDelayXus(BYTE bUS); // zb 10.26 add
 extern int CheckBurstMode(void); // zb 10.26 add
 extern void vSetTotalBurstTime(void);
 extern void ACPI_SMB_Via_EC(void);

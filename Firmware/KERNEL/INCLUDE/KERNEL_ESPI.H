@@ -270,6 +270,514 @@
 #define F_ASVWSS BIT(0) // VWCTRL7   // Auto Send VW SUS_ACK# Select
 // 0b: If ASVWSE is 1, EC sends SUS_ACK# =0.
 // 1b: If ASVWSE is 1, EC sends SUS_ACK# =1.
+//-----------------------------------------------------------------------------
+// RPMC-OOB Message&Response Struct define
+//-----------------------------------------------------------------------------
+typedef struct
+{
+// Byte 0
+	uint8_t eSPI_Cycle_Type : 8;   // 0: eSPI Cycle Type: OOB Message = 21h
+	// Byte 1
+	uint8_t Length_High : 4;        // 1: Length[11:8] = 0h
+	uint8_t Tag : 4;                // 1: Tag[3:0] = 0h
+	// Byte 2
+	uint8_t Length_Low : 8;         // 2: Length[7:0] = 48h
+	// Byte 3
+	uint8_t Reserved1 : 1;           // 3: Bit 0 reserved
+	uint8_t Dest_Slave_Addr : 7;    // 3: Dest Slave Addr[7:1] = 07h
+	// Byte 4
+	uint8_t Command_Code : 8;        // 4: Command Code = 0Fh
+	// Byte 5
+	uint8_t Byte_Count : 8;          // 5: Byte Count = 45h
+	// Byte 6
+	uint8_t Reserved2 : 1;           // 6: Bit 0 reserved
+	uint8_t Source_Slave_Addr : 7;   // 6: Source Slave Addr[7:1] = 08h
+	// Byte 7
+	uint8_t Header_Version : 4;      // 7: Header Version = 0h
+	uint8_t MCTP : 4;       		 // 7: MCTP Reserved = 0h
+	// Byte 8
+	uint8_t Destination_Endpoint_ID : 8; // 8: Destination Endpoint ID
+	// Byte 9
+	uint8_t Source_Endpoint_ID : 8;  // 9: Source Endpoint ID
+	// Byte 10
+	uint8_t Message_Tag : 3;         // 10: Message Tag = 000b
+	uint8_t TO : 1;                  // 10: TO = 0b
+	uint8_t Packet_Seq : 2;          // 10: Packet Seq # = 00b
+	uint8_t EOM : 1;                 // 10: EOM = 0b
+	uint8_t SOM : 1;                 // 10: SOM = 1b
+	// Byte 11
+	uint8_t Message_Type : 7;        // 11: Message Type = 7Dh
+	uint8_t IC : 1;                  // 11: IC
+	// Byte 12
+	uint8_t RPMC_Device : 8;         // 12: Reserved = 0h
+	// Byte 13
+	uint8_t Opcode : 8;              // 13: Opcode = 9Bh
+	// Byte 14
+	uint8_t Cmd_Type : 8;            // 14: Cmd Type = 00h
+	// Byte 15
+	uint8_t Counter_Addr : 8;        // 15: Counter Addr[7:0]
+	// Byte 16
+	uint8_t Rsvd : 8;        // 16: Counter Data[7:0]
+	// Byte 17-48
+	uint8_t Root_Key[32];            // 根密钥
+	// Byte 49-72
+	uint8_t TruncatedSignature2_27[25];   // 截断签名
+} eSPI_OOB_WriteRootKet_MESSAGE1;
+
+typedef struct {
+    // Byte 0
+    uint8_t eSPI_Cycle_Type : 8;               // Byte 0: eSPI Cycle Type: OOB Message = 21h
+    // Byte 1
+    uint8_t Length_High : 4;                   // 1: Length[11:8] = 0h
+    uint8_t Tag : 4;                           // 1: Tag[3:0] = 0h
+    // Byte 2
+    uint8_t Length_Low : 8;                    // Length[7:0]
+    // Byte 3
+    uint8_t Reserved1 : 1;                      // Bit 0 reserved
+    uint8_t Dest_Slave_Addr : 7;               // Dest Slave Addr[7:1] = 07h
+    // Byte 4
+    uint8_t Command_Code : 8;                   // Command Code = 0Fh
+    // Byte 5
+    uint8_t Byte_Count : 8;                     // Byte Count = 08h
+    // Byte 6
+    uint8_t Reserved2 : 1;                      // Bit 0 reserved
+    uint8_t Source_Slave_Address : 7;           // Source Slave Address[7:1] = 08h
+    // Byte 7
+    uint8_t Header_Version : 4;                 // 7: Header Version = 0h
+    uint8_t MCTP : 4;                           // 7: MCTP Reserved = 0h
+    // Byte 8
+    uint8_t Destination_Endpoint_ID : 8;        // Destination Endpoint ID
+    // Byte 9
+    uint8_t Source_Endpoint_ID : 8;             // Source Endpoint ID
+	// Byte 10
+	uint8_t Message_Tag : 3;                    // 10: Message Tag = 000b
+	uint8_t TO : 1;                             // 10: TO = 0b
+	uint8_t Packet_Seq : 2;                     // 10: Packet Seq # = 01b
+	uint8_t EOM : 1;                            // 10: EOM = 1b
+	uint8_t SOM : 1;                            // 10: SOM = 0b
+    // Byte 11
+    uint8_t Message_Type : 7;                   // 11: Message Type = 7Dh
+    uint8_t IC : 1;                             // 11: IC
+    // Byte 12
+    uint8_t TruncatedSignature_1 : 8;        // Truncated Signature High (Byte 12)
+    // Byte 13
+    uint8_t TruncatedSignature_0 : 8;         // Truncated Signature Low (Byte 13)
+
+} eSPI_OOB_WriteRootKet_MESSAGE2;
+
+typedef struct {
+    // Byte 0
+    uint8_t eSPI_Cycle_Type : 8;               // Byte 0: eSPI Cycle Type: OOB Message = 21h
+    // Byte 1
+    uint8_t Length_High : 4;                   // 1: Length[11:8] = 0h
+    uint8_t Tag : 4;                           // 1: Tag[3:0] = 0h
+    // Byte 2
+    uint8_t Length_Low : 8;                    // Length[7:0]
+    // Byte 3
+    uint8_t Reserved1 : 1;                      // Bit 0 reserved
+    uint8_t Dest_Slave_Addr : 7;               // Dest Slave Addr[7:1] = 07h
+    // Byte 4
+    uint8_t Command_Code : 8;                   // Command Code = 0Fh
+    // Byte 5
+    uint8_t Byte_Count : 8;                     // Byte Count = 08h
+    // Byte 6
+    uint8_t Reserved2 : 1;                      // Bit 0 reserved
+    uint8_t Source_Slave_Address : 7;           // Source Slave Address[7:1] = 08h
+    // Byte 7
+    uint8_t Header_Version : 4;                 // 7: Header Version = 0h
+    uint8_t MCTP : 4;                           // 7: MCTP Reserved = 0h
+    // Byte 8
+    uint8_t Destination_Endpoint_ID : 8;        // Destination Endpoint ID
+    // Byte 9
+    uint8_t Source_Endpoint_ID : 8;             // Source Endpoint ID
+	// Byte 10
+	uint8_t Message_Tag : 3;                    // 10: Message Tag = 000b
+	uint8_t TO : 1;                             // 10: TO = 0b
+	uint8_t Packet_Seq : 2;                     // 10: Packet Seq # = 01b
+	uint8_t EOM : 1;                            // 10: EOM = 1b
+	uint8_t SOM : 1;                            // 10: SOM = 0b
+    // Byte 11
+    uint8_t Message_Type : 7;                   // 11: Message Type = 7Dh
+    uint8_t IC : 1;                             // 11: IC
+    // Byte 12
+    uint8_t RPMC_Device : 8;        // Truncated Signature High (Byte 12)
+    // Byte 13
+    uint8_t Counter_Addr : 8;         // Truncated Signature Low (Byte 13)
+    // Byte 14
+    uint8_t Extended_Status : 8;         // Counter Data[7:0]
+
+} eSPI_OOB_WriteRootKet_RESPONSE;
+
+typedef struct
+{
+// Byte 0
+	uint8_t eSPI_Cycle_Type : 8;   // 0: eSPI Cycle Type: OOB Message = 21h
+	// Byte 1
+	uint8_t Length_High : 4;        // 1: Length[11:8] = 0h
+	uint8_t Tag : 4;                // 1: Tag[3:0] = 0h
+	// Byte 2
+	uint8_t Length_Low : 8;         // 2: Length[7:0] = 48h
+	// Byte 3
+	uint8_t Reserved1 : 1;           // 3: Bit 0 reserved
+	uint8_t Dest_Slave_Addr : 7;    // 3: Dest Slave Addr[7:1] = 07h
+	// Byte 4
+	uint8_t Command_Code : 8;        // 4: Command Code = 0Fh
+	// Byte 5
+	uint8_t Byte_Count : 8;          // 5: Byte Count = 45h
+	// Byte 6
+	uint8_t Reserved2 : 1;           // 6: Bit 0 reserved
+	uint8_t Source_Slave_Addr : 7;   // 6: Source Slave Addr[7:1] = 08h
+	// Byte 7
+	uint8_t Header_Version : 4;      // 7: Header Version = 0h
+	uint8_t MCTP : 4;       		 // 7: MCTP Reserved = 0h
+	// Byte 8
+	uint8_t Destination_Endpoint_ID : 8; // 8: Destination Endpoint ID
+	// Byte 9
+	uint8_t Source_Endpoint_ID : 8;  // 9: Source Endpoint ID
+	// Byte 10
+	uint8_t Message_Tag : 3;         // 10: Message Tag = 000b
+	uint8_t TO : 1;                  // 10: TO = 0b
+	uint8_t Packet_Seq : 2;          // 10: Packet Seq # = 00b
+	uint8_t EOM : 1;                 // 10: EOM = 0b
+	uint8_t SOM : 1;                 // 10: SOM = 1b
+	// Byte 11
+	uint8_t Message_Type : 7;        // 11: Message Type = 7Dh
+	uint8_t IC : 1;                  // 11: IC
+	// Byte 12
+	uint8_t RPMC_Device : 8;         // 12: Reserved = 0h
+	// Byte 13
+	uint8_t Opcode : 8;              // 13: Opcode = 9Bh
+	// Byte 14
+	uint8_t Cmd_Type : 8;            // 14: Cmd Type = 00h
+	// Byte 15
+	uint8_t Counter_Addr : 8;        // 15: Counter Addr[7:0]
+	// Byte 16
+	uint8_t Rsvd : 8;        // 16: Counter Data[7:0]
+	// Byte 17-20
+	uint8_t Key_Data[4];            
+	// Byte 21-52
+	uint8_t Signature[32];   
+} eSPI_OOB_UpdateHMACKey;
+
+typedef struct {
+    // Byte 0
+    uint8_t eSPI_Cycle_Type : 8;               // Byte 0: eSPI Cycle Type: OOB Message = 21h
+    // Byte 1
+    uint8_t Length_High : 4;                   // 1: Length[11:8] = 0h
+    uint8_t Tag : 4;                           // 1: Tag[3:0] = 0h
+    // Byte 2
+    uint8_t Length_Low : 8;                    // Length[7:0]
+    // Byte 3
+    uint8_t Reserved1 : 1;                      // Bit 0 reserved
+    uint8_t Dest_Slave_Addr : 7;               // Dest Slave Addr[7:1] = 07h
+    // Byte 4
+    uint8_t Command_Code : 8;                   // Command Code = 0Fh
+    // Byte 5
+    uint8_t Byte_Count : 8;                     // Byte Count = 08h
+    // Byte 6
+    uint8_t Reserved2 : 1;                      // Bit 0 reserved
+    uint8_t Source_Slave_Address : 7;           // Source Slave Address[7:1] = 08h
+    // Byte 7
+    uint8_t Header_Version : 4;                 // 7: Header Version = 0h
+    uint8_t MCTP : 4;                           // 7: MCTP Reserved = 0h
+    // Byte 8
+    uint8_t Destination_Endpoint_ID : 8;        // Destination Endpoint ID
+    // Byte 9
+    uint8_t Source_Endpoint_ID : 8;             // Source Endpoint ID
+	// Byte 10
+	uint8_t Message_Tag : 3;                    // 10: Message Tag = 000b
+	uint8_t TO : 1;                             // 10: TO = 0b
+	uint8_t Packet_Seq : 2;                     // 10: Packet Seq # = 01b
+	uint8_t EOM : 1;                            // 10: EOM = 1b
+	uint8_t SOM : 1;                            // 10: SOM = 0b
+    // Byte 11
+    uint8_t Message_Type : 7;                   // 11: Message Type = 7Dh
+    uint8_t IC : 1;                             // 11: IC
+    // Byte 12
+    uint8_t RPMC_Device : 8;        // Truncated Signature High (Byte 12)
+    // Byte 13
+    uint8_t Counter_Addr : 8;         // Truncated Signature Low (Byte 13)
+    // Byte 14
+    uint8_t Extended_Status : 8;         // Counter Data[7:0]
+
+} eSPI_OOB_UpdateHMACKey_RESPONSE;
+
+typedef struct
+{
+// Byte 0
+	uint8_t eSPI_Cycle_Type : 8;   // 0: eSPI Cycle Type: OOB Message = 21h
+	// Byte 1
+	uint8_t Length_High : 4;        // 1: Length[11:8] = 0h
+	uint8_t Tag : 4;                // 1: Tag[3:0] = 0h
+	// Byte 2
+	uint8_t Length_Low : 8;         // 2: Length[7:0] = 48h
+	// Byte 3
+	uint8_t Reserved1 : 1;           // 3: Bit 0 reserved
+	uint8_t Dest_Slave_Addr : 7;    // 3: Dest Slave Addr[7:1] = 07h
+	// Byte 4
+	uint8_t Command_Code : 8;        // 4: Command Code = 0Fh
+	// Byte 5
+	uint8_t Byte_Count : 8;          // 5: Byte Count = 45h
+	// Byte 6
+	uint8_t Reserved2 : 1;           // 6: Bit 0 reserved
+	uint8_t Source_Slave_Addr : 7;   // 6: Source Slave Addr[7:1] = 08h
+	// Byte 7
+	uint8_t Header_Version : 4;      // 7: Header Version = 0h
+	uint8_t MCTP : 4;       		 // 7: MCTP Reserved = 0h
+	// Byte 8
+	uint8_t Destination_Endpoint_ID : 8; // 8: Destination Endpoint ID
+	// Byte 9
+	uint8_t Source_Endpoint_ID : 8;  // 9: Source Endpoint ID
+	// Byte 10
+	uint8_t Message_Tag : 3;         // 10: Message Tag = 000b
+	uint8_t TO : 1;                  // 10: TO = 0b
+	uint8_t Packet_Seq : 2;          // 10: Packet Seq # = 00b
+	uint8_t EOM : 1;                 // 10: EOM = 0b
+	uint8_t SOM : 1;                 // 10: SOM = 1b
+	// Byte 11
+	uint8_t Message_Type : 7;        // 11: Message Type = 7Dh
+	uint8_t IC : 1;                  // 11: IC
+	// Byte 12
+	uint8_t RPMC_Device : 8;         // 12: Reserved = 0h
+	// Byte 13
+	uint8_t Opcode : 8;              // 13: Opcode = 9Bh
+	// Byte 14
+	uint8_t Cmd_Type : 8;            // 14: Cmd Type = 00h
+	// Byte 15
+	uint8_t Counter_Addr : 8;        // 15: Counter Addr[7:0]
+	// Byte 16
+	uint8_t Rsvd : 8;        // 16: Counter Data[7:0]
+	// Byte 17-20
+	uint8_t Counter_Data[4];            
+	// Byte 21-52
+	uint8_t Signature[32];   
+} eSPI_OOB_IncrementCounter;
+
+typedef struct {
+    // Byte 0
+    uint8_t eSPI_Cycle_Type : 8;               // Byte 0: eSPI Cycle Type: OOB Message = 21h
+    // Byte 1
+    uint8_t Length_High : 4;                   // 1: Length[11:8] = 0h
+    uint8_t Tag : 4;                           // 1: Tag[3:0] = 0h
+    // Byte 2
+    uint8_t Length_Low : 8;                    // Length[7:0]
+    // Byte 3
+    uint8_t Reserved1 : 1;                      // Bit 0 reserved
+    uint8_t Dest_Slave_Addr : 7;               // Dest Slave Addr[7:1] = 07h
+    // Byte 4
+    uint8_t Command_Code : 8;                   // Command Code = 0Fh
+    // Byte 5
+    uint8_t Byte_Count : 8;                     // Byte Count = 08h
+    // Byte 6
+    uint8_t Reserved2 : 1;                      // Bit 0 reserved
+    uint8_t Source_Slave_Address : 7;           // Source Slave Address[7:1] = 08h
+    // Byte 7
+    uint8_t Header_Version : 4;                 // 7: Header Version = 0h
+    uint8_t MCTP : 4;                           // 7: MCTP Reserved = 0h
+    // Byte 8
+    uint8_t Destination_Endpoint_ID : 8;        // Destination Endpoint ID
+    // Byte 9
+    uint8_t Source_Endpoint_ID : 8;             // Source Endpoint ID
+	// Byte 10
+	uint8_t Message_Tag : 3;                    // 10: Message Tag = 000b
+	uint8_t TO : 1;                             // 10: TO = 0b
+	uint8_t Packet_Seq : 2;                     // 10: Packet Seq # = 01b
+	uint8_t EOM : 1;                            // 10: EOM = 1b
+	uint8_t SOM : 1;                            // 10: SOM = 0b
+    // Byte 11
+    uint8_t Message_Type : 7;                   // 11: Message Type = 7Dh
+    uint8_t IC : 1;                             // 11: IC
+    // Byte 12
+    uint8_t RPMC_Device : 8;        // Truncated Signature High (Byte 12)
+    // Byte 13
+    uint8_t Counter_Addr : 8;         // Truncated Signature Low (Byte 13)
+    // Byte 14
+    uint8_t Extended_Status : 8;         // Counter Data[7:0]
+
+} eSPI_OOB_IncrementCounter_RESPONSE;
+
+typedef struct
+{
+// Byte 0
+	uint8_t eSPI_Cycle_Type : 8;   // 0: eSPI Cycle Type: OOB Message = 21h
+	// Byte 1
+	uint8_t Length_High : 4;        // 1: Length[11:8] = 0h
+	uint8_t Tag : 4;                // 1: Tag[3:0] = 0h
+	// Byte 2
+	uint8_t Length_Low : 8;         // 2: Length[7:0] = 48h
+	// Byte 3
+	uint8_t Reserved1 : 1;           // 3: Bit 0 reserved
+	uint8_t Dest_Slave_Addr : 7;    // 3: Dest Slave Addr[7:1] = 07h
+	// Byte 4
+	uint8_t Command_Code : 8;        // 4: Command Code = 0Fh
+	// Byte 5
+	uint8_t Byte_Count : 8;          // 5: Byte Count = 45h
+	// Byte 6
+	uint8_t Reserved2 : 1;           // 6: Bit 0 reserved
+	uint8_t Source_Slave_Addr : 7;   // 6: Source Slave Addr[7:1] = 08h
+	// Byte 7
+	uint8_t Header_Version : 4;      // 7: Header Version = 0h
+	uint8_t MCTP : 4;       		 // 7: MCTP Reserved = 0h
+	// Byte 8
+	uint8_t Destination_Endpoint_ID : 8; // 8: Destination Endpoint ID
+	// Byte 9
+	uint8_t Source_Endpoint_ID : 8;  // 9: Source Endpoint ID
+	// Byte 10
+	uint8_t Message_Tag : 3;         // 10: Message Tag = 000b
+	uint8_t TO : 1;                  // 10: TO = 0b
+	uint8_t Packet_Seq : 2;          // 10: Packet Seq # = 00b
+	uint8_t EOM : 1;                 // 10: EOM = 0b
+	uint8_t SOM : 1;                 // 10: SOM = 1b
+	// Byte 11
+	uint8_t Message_Type : 7;        // 11: Message Type = 7Dh
+	uint8_t IC : 1;                  // 11: IC
+	// Byte 12
+	uint8_t RPMC_Device : 8;         // 12: Reserved = 0h
+	// Byte 13
+	uint8_t Opcode : 8;              // 13: Opcode = 9Bh
+	// Byte 14
+	uint8_t Cmd_Type : 8;            // 14: Cmd Type = 00h
+	// Byte 15
+	uint8_t Counter_Addr : 8;        // 15: Counter Addr[7:0]
+	// Byte 16
+	uint8_t Rsvd : 8;        // 16: Counter Data[7:0]
+	// Byte 17-28
+	uint8_t Tag_Arr[12];            
+	// Byte 21-52
+	uint8_t Signature[32];   
+} eSPI_OOB_RequestCounter;
+
+typedef struct {
+    // Byte 0
+    uint8_t eSPI_Cycle_Type : 8;               // Byte 0: eSPI Cycle Type: OOB Message = 21h
+    // Byte 1
+    uint8_t Length_High : 4;                   // 1: Length[11:8] = 0h
+    uint8_t Tag : 4;                           // 1: Tag[3:0] = 0h
+    // Byte 2
+    uint8_t Length_Low : 8;                    // Length[7:0]
+    // Byte 3
+    uint8_t Reserved1 : 1;                      // Bit 0 reserved
+    uint8_t Dest_Slave_Addr : 7;               // Dest Slave Addr[7:1] = 07h
+    // Byte 4
+    uint8_t Command_Code : 8;                   // Command Code = 0Fh
+    // Byte 5
+    uint8_t Byte_Count : 8;                     // Byte Count = 08h
+    // Byte 6
+    uint8_t Reserved2 : 1;                      // Bit 0 reserved
+    uint8_t Source_Slave_Address : 7;           // Source Slave Address[7:1] = 08h
+    // Byte 7
+    uint8_t Header_Version : 4;                 // 7: Header Version = 0h
+    uint8_t MCTP : 4;                           // 7: MCTP Reserved = 0h
+    // Byte 8
+    uint8_t Destination_Endpoint_ID : 8;        // Destination Endpoint ID
+    // Byte 9
+    uint8_t Source_Endpoint_ID : 8;             // Source Endpoint ID
+	// Byte 10
+	uint8_t Message_Tag : 3;                    // 10: Message Tag = 000b
+	uint8_t TO : 1;                             // 10: TO = 0b
+	uint8_t Packet_Seq : 2;                     // 10: Packet Seq # = 01b
+	uint8_t EOM : 1;                            // 10: EOM = 1b
+	uint8_t SOM : 1;                            // 10: SOM = 0b
+    // Byte 11
+    uint8_t Message_Type : 7;                   // 11: Message Type = 7Dh
+    uint8_t IC : 1;                             // 11: IC
+    // Byte 12
+    uint8_t RPMC_Device : 8;        // Truncated Signature High (Byte 12)
+    // Byte 13
+    uint8_t Counter_Addr : 8;         // Truncated Signature Low (Byte 13)
+    // Byte 14
+    uint8_t Extended_Status : 8;         // Counter Data[7:0]
+    // Byte 15-26
+    uint8_t Tag_Arr[12];     
+    // Byte 27-30
+    uint8_t CounterReadData[4];
+    // Byte 31-62
+    uint8_t Signature[32];
+} eSPI_OOB_RequestCounter_RESPONSE;
+
+typedef struct {
+    // Byte 0
+    uint8_t eSPI_Cycle_Type : 8;               // Byte 0: eSPI Cycle Type: OOB Message = 21h
+    // Byte 1
+    uint8_t Length_High : 4;                   // 1: Length[11:8] = 0h
+    uint8_t Tag : 4;                           // 1: Tag[3:0] = 0h
+    // Byte 2
+    uint8_t Length_Low : 8;                    // Length[7:0]
+    // Byte 3
+    uint8_t Reserved1 : 1;                      // Bit 0 reserved
+    uint8_t Dest_Slave_Addr : 7;               // Dest Slave Addr[7:1] = 07h
+    // Byte 4
+    uint8_t Command_Code : 8;                   // Command Code = 0Fh
+    // Byte 5
+    uint8_t Byte_Count : 8;                     // Byte Count = 08h
+    // Byte 6
+    uint8_t Reserved2 : 1;                      // Bit 0 reserved
+    uint8_t Source_Slave_Address : 7;           // Source Slave Address[7:1] = 08h
+    // Byte 7
+    uint8_t Header_Version : 4;                 // 7: Header Version = 0h
+    uint8_t MCTP : 4;                           // 7: MCTP Reserved = 0h
+    // Byte 8
+    uint8_t Destination_Endpoint_ID : 8;        // Destination Endpoint ID
+    // Byte 9
+    uint8_t Source_Endpoint_ID : 8;             // Source Endpoint ID
+	// Byte 10
+	uint8_t Message_Tag : 3;                    // 10: Message Tag = 000b
+	uint8_t TO : 1;                             // 10: TO = 0b
+	uint8_t Packet_Seq : 2;                     // 10: Packet Seq # = 01b
+	uint8_t EOM : 1;                            // 10: EOM = 1b
+	uint8_t SOM : 1;                            // 10: SOM = 0b
+    // Byte 11
+    uint8_t Message_Type : 7;                   // 11: Message Type = 7Dh
+    uint8_t IC : 1;                             // 11: IC
+    // Byte 12
+    uint8_t RPMC_Device : 8;                    // 12: Reserved = 0h
+    // Byte 13
+    uint8_t Opcode : 8;                         // 13: Opcode = 9Bh
+
+} eSPI_OOB_ReadParameters;
+
+typedef struct {
+    // Byte 0
+    uint8_t eSPI_Cycle_Type : 8;               // Byte 0: eSPI Cycle Type: OOB Message = 21h
+    // Byte 1
+    uint8_t Length_High : 4;                   // 1: Length[11:8] = 0h
+    uint8_t Tag : 4;                           // 1: Tag[3:0] = 0h
+    // Byte 2
+    uint8_t Length_Low : 8;                    // Length[7:0]
+    // Byte 3
+    uint8_t Reserved1 : 1;                      // Bit 0 reserved
+    uint8_t Dest_Slave_Addr : 7;               // Dest Slave Addr[7:1] = 07h
+    // Byte 4
+    uint8_t Command_Code : 8;                   // Command Code = 0Fh
+    // Byte 5
+    uint8_t Byte_Count : 8;                     // Byte Count = 08h
+    // Byte 6
+    uint8_t Reserved2 : 1;                      // Bit 0 reserved
+    uint8_t Source_Slave_Address : 7;           // Source Slave Address[7:1] = 08h
+    // Byte 7
+    uint8_t Header_Version : 4;                 // 7: Header Version = 0h
+    uint8_t MCTP : 4;                           // 7: MCTP Reserved = 0h
+    // Byte 8
+    uint8_t Destination_Endpoint_ID : 8;        // Destination Endpoint ID
+    // Byte 9
+    uint8_t Source_Endpoint_ID : 8;             // Source Endpoint ID
+	// Byte 10
+	uint8_t Message_Tag : 3;                    // 10: Message Tag = 000b
+	uint8_t TO : 1;                             // 10: TO = 0b
+	uint8_t Packet_Seq : 2;                     // 10: Packet Seq # = 01b
+	uint8_t EOM : 1;                            // 10: EOM = 1b
+	uint8_t SOM : 1;                            // 10: SOM = 0b
+    // Byte 11
+    uint8_t Message_Type : 7;                   // 11: Message Type = 7Dh
+    uint8_t IC : 1;                             // 11: IC
+    // Byte 12
+    uint8_t Extended_Status : 8;        //  (Byte 12)
+    // Byte 13
+    uint8_t RPMC_ParameterTable[4];         //  (Byte 13)
+    // Byte 17-20
+    uint8_t RPMC_Parameters_Device0[4];      //  (Byte 17)
+
+} eSPI_OOB_ReadParameters_RESPONSE;
 
 //-----------------------------------------------------------------------------
 // (33xxh) EC Interface Registers, eSI Queue 0 - PUT_PC DATA , PUT_OOB DATA

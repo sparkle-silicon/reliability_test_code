@@ -161,6 +161,10 @@ void EC6266_Cmd_82(void)
 {
     SET_BIT(PMC1_STR, BURST_Mode); // PMC1_STR.4 Set Burst mode flag  FIXME Burs
     PMC1_DOR = 0x90;      // Byte #2 (Burst acknowledge byte)
+#if ENABLE_DEBUGGER_SUPPORT
+/* Debugger record */
+    Debugger_KBC_PMC_Record(1, 1, 0x90);
+#endif
     SET_MASK(SYSTEM_MISC1, ACPI_OS);     // Auto Set ACPI Mode if Host Do ECCmd82
 #if ACPI_SCI_Response
     SCI_Response(1); // Interrupt on IBF=0
@@ -191,12 +195,11 @@ int CheckBurstMode(void)
     {
         BurstLoopOut--;
         // if( TF1 || (BurstLoopOut==0) )  // Time-Out	//FIXME xia
-        if(TIMER3_TCR & TIMER_EN || (BurstLoopOut == 0)) // Time-Out 退出突发模式
+        if((TIMER3_TCR & TIMER_EN) || (BurstLoopOut == 0)) // Time-Out 退出突发模式
         {
             CLEAR_FLAG(PMC1_STR, BURST);
         #if ACPI_SCI_Response
             SCI_Response(1); // Generate Interrupt
-                            // TF1=0;
         #endif
             TIMER_Disable(TIMER3);
             return (0);
@@ -233,6 +236,9 @@ void EC6266_Cmd_84(void)
 #endif
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     PMC1_DOR = SCI_LastQueryEvent;
+#if ENABLE_DEBUGGER_SUPPORT
+    Debugger_KBC_PMC_Record(1, 1, SCI_LastQueryEvent);
+#endif
 #if ACPI_SCI_Response
     SCI_Response(1); // Interrupt on IBF=0
 #endif
@@ -902,7 +908,7 @@ void Release_EC_QEvent_Suspend(void)
 }
 
 //----------------------------------------------------------------------------
-// 该函数适用于龙芯CPU，请在Hook_1msEvent函数中调用
+// 该函数为轮询方式发送SCI信号，请在Hook_1msEvent函数中调用
 //----------------------------------------------------------------------------
 void SCI_Send(void)
 {
@@ -914,7 +920,6 @@ void SCI_Send(void)
             SCI_High();
             SCI_Response_Flag--;
             SCI_Count = 15;
-            dprint("sci_send\n");
         }
         SCI_Count--;
     }
