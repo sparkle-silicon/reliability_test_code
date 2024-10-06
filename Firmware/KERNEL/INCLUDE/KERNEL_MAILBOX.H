@@ -24,7 +24,7 @@ extern void mailbox_init(void);
 void Mailbox_Control();
 void Mailbox_Firmware();
 void Mailbox_Efuse();
-void Mailbox_RPMC();
+void Mailbox_eRPMC();
 void Mailbox_SecretKey();
 void Mailbox_Crypto();
 void Mailbox_SecureStorage();
@@ -34,4 +34,5 @@ extern void Mailbox_Read_EFUSE_Trigger(void);
 extern void Mailbox_FW_Extension_Trigger(void);
 extern void Mailbox_APB2_Source_Alloc_Trigger(void);
 extern void Mailbox_Test(void);
+extern void Mailbox_eRPMC_Trigger(void);
 #endif

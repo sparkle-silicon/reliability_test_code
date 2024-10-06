@@ -43,6 +43,96 @@ void Mailbox_APB2_Source_Alloc_Trigger(void)
     E2CINT = 0x1;   // 触发子系统中断
 }
 
+/*************************************eRPMC Mailbox***************************************/
+#define OP1_Code 0x9B
+#define OP2_Code 0x96
+
+#define Cmd_WriteRootKey 0x00
+#define Cmd_UpdateHmacKey 0x01
+#define Cmd_IncrementMonotonicCounter 0x02
+#define Cmd_RequestMonotonicCounter 0x03
+
+#define Counter00 0x0
+#define Counter01 0x1
+#define Counter02 0x2
+#define Counter03 0x3
+
+#define Reserved_Value 0x00
+#define Dummy_Value 0x00
+
+// 模拟设置Rootkey,将RootKey填入
+// void Set_RootKey(void)
+// {
+//     // 设置root key，由于HMAC为大端存储，因此Root_Key实际为Root_Key[0] = 0x00,Root_Key[31] = 0x1F，即0x1f1e...0100
+//     for (BYTE i = 0; i < 32; i++)
+//     {
+//         Root_Key[i] = 31 - i;
+//     }
+// }
+
+void Mailbox_eRPMC_Trigger(void)
+{
+#if 0
+    if (eRPMC_OPCode == OP1_Code)
+    {
+        if (eRPMC_CMD == Cmd_WriteRootKey)
+        {
+            E2CINFO0 = 0x30; // 命令字
+            E2CINFO1 = (eSPI_OOB_WriteRootKet_MESSAGE1.Rsvd  << 24) + (eSPI_OOB_WriteRootKet_MESSAGE1.Counter_Addr << 16) + (eSPI_OOB_WriteRootKet_MESSAGE1.Cmd_Type << 8) + eSPI_OOB_WriteRootKet_MESSAGE1.Opcode;
+        }
+        else if (eRPMC_CMD == Cmd_UpdateHmacKey)
+        {
+            E2CINFO0 = 0x31; // 命令字
+            E2CINFO1 = (eSPI_OOB_WriteRootKet_MESSAGE1.Rsvd  << 24) + (eSPI_OOB_UpdateHMACKey.Counter_Addr << 16) + (eSPI_OOB_UpdateHMACKey.Cmd_Type << 8) + eSPI_OOB_UpdateHMACKey.Opcode;
+        }
+        else if (eRPMC_CMD == Cmd_IncrementMonotonicCounter)
+        {
+            E2CINFO0 = 0x32; // 命令字
+            E2CINFO1 = (eSPI_OOB_WriteRootKet_MESSAGE1.Rsvd  << 24) + (eSPI_OOB_IncrementCounter.Counter_Addr << 16) + (eSPI_OOB_IncrementCounter.Cmd_Type << 8) + eSPI_OOB_IncrementCounter.Opcode;
+        }
+        else if (eRPMC_CMD == Cmd_RequestMonotonicCounter)
+        {
+            E2CINFO0 = 0x33; // 命令字
+            E2CINFO1 = (eSPI_OOB_WriteRootKet_MESSAGE1.Rsvd  << 24) + (eSPI_OOB_RequestCounter.Counter_Addr << 16) + (eSPI_OOB_RequestCounter.Cmd_Type << 8) + eSPI_OOB_RequestCounter.Opcode;
+        }
+    }
+    else if (eRPMC_OPCode == OP2_Code)
+    {
+        E2CINFO0 = 0x34; // 命令字
+        E2CINFO1 = eSPI_OOB_ReadParameters.Opcode;
+    }
+    else
+    {
+        printf("parameter error\n");
+    }
+#endif
+
+    printf("erpmc trigger\n");
+
+    //  往SRAM的0x31800后填入对应eRPMC数据
+    *((VDWORD *)0x31800) = 0x23d673af;
+    *((VDWORD *)0x31804) = 0xd5435e13;
+    *((VDWORD *)0x31808) = 0x2ec2cb40;
+    *((VDWORD *)0x3180C) = 0x2cf422fe;
+    *((VDWORD *)0x31810) = 0x7d37bc4a;
+    *((VDWORD *)0x31814) = 0xbdcfd3b7;
+    *((VDWORD *)0x31818) = 0x114267b3;
+
+    *((VDWORD *)0x3181C) = 0x1f1e1d1c;
+    *((VDWORD *)0x31820) = 0x1b1a1918;
+    *((VDWORD *)0x31824) = 0x17161514;
+    *((VDWORD *)0x31828) = 0x13121110;
+    *((VDWORD *)0x3182C) = 0x0f0e0d0c;
+    *((VDWORD *)0x31830) = 0x0b0a0908;
+    *((VDWORD *)0x31834) = 0x07060504;
+    *((VDWORD *)0x31838) = 0x03020100;
+
+    E2CINFO0 = 0x30;       // 命令字
+    E2CINFO1 = 0x0000009B; // WriteRootKey模拟测试
+    E2CINT = 0x8;          // 触发子系统中断
+}
+/*************************************eRPMC Mailbox***************************************/
+
 void Mailbox_Control(void)
 {
     if (C2EINFO0 == 0x3)
@@ -109,8 +199,18 @@ void Mailbox_Efuse(void)
     }
 }
 
-void Mailbox_RPMC(void)
+void Mailbox_eRPMC(void)
 {
+    if (C2EINFO0 == 0x30)
+        eRPMC_WriteRootKey_Response();
+    else if (C2EINFO0 == 0x31)
+        eRPMC_UpdateHMACKey_Response();
+    else if (C2EINFO0 == 0x32)
+        eRPMC_IncrementCounter_Response();
+    else if (C2EINFO0 == 0x33)
+        eRPMC_RequestCounter_Response();
+    else if (C2EINFO0 == 0x34)
+        eRPMC_ReadParameter_Response();
 }
 
 void Mailbox_SecretKey(void)
@@ -146,7 +246,7 @@ void Mailbox_C2E_Service(void)
         Mailbox_Efuse();
         break;
     case 0x08:
-        Mailbox_RPMC();
+        Mailbox_eRPMC();
         break;
     case 0x10:
         Mailbox_SecretKey();
