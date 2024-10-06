@@ -322,4 +322,10 @@ extern void EC_ACK_eSPI_SUS_WARN(void);
 extern BYTE Process_Peripheral_Message_Send(void);
 extern BYTE Process_Peripheral_Memory_Read32(void);
 
+extern void eRPMC_WriteRootKey_Response(void);
+extern void eRPMC_UpdateHMACKey_Response(void);
+extern void eRPMC_IncrementCounter_Response(void);
+extern void eRPMC_RequestCounter_Response(void);
+extern void eRPMC_ReadParameter_Response(void);
+
 #endif
