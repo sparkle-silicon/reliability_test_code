@@ -10,7 +10,6 @@
 
 添加子模块：
 
-
 ```bash
  git submodule add https://github.com/*****.git <name> #获取github路径链接到name中
  git submodule update --init --recursive #（获取仓库内容）
@@ -23,4 +22,12 @@
  git rm --cached <name> #删除仓库
  rm -rf <name> #删除仓库
  rm -rf .git/modules/GWToolkit
+```
+
+上传本地子模块子模块：
+
+```bash
+git add -A -- .../<module_name>/<submdule_name>
+git add -A -- ./crypto_sys
+git add -A -- ./ROM
 ```
