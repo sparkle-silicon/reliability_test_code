@@ -3,7 +3,7 @@
  # @Author: daweslinyu daowes.ly@qq.com
  # @Date: 2024-05-31 14:37:40
  # @LastEditors: daweslinyu daowes.ly@qq.com
- # @LastEditTime: 2024-10-04 11:04:47
+ # @LastEditTime: 2024-10-08 10:57:59
  # @FilePath: /SPK32AE103/Firmware/make.sh
  # @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 ### 
@@ -46,7 +46,7 @@ dd if=encrypt_rom.bin  of=main.bin bs=1k seek=288  conv=notrunc
 dd if=rom.bin  of=main.bin bs=1k seek=384  conv=notrunc
 #  dd if=./main.bin  of=main2.bin bs=512k seek=31  conv=notrunc #16M位置檢索
 # cp ./main2.bin /mnt/hgfs/Share/
-##sed 's/cc.*/& eeeee/g' ./ec_main.bin
+##sed 's/cc.*/& eeeee/g' ./ec_main.bin#全局查找cc**** 并替换成cc**** eeeee
 if [ -d "$folder0" ] ; then #存在目录/home/Share
     if [ -f "$binname" ]; then cp "$binname" "$folder0";fi
 elif [ -d "$folder1" ] ; then
