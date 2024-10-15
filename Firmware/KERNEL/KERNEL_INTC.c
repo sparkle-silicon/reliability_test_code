@@ -1908,7 +1908,7 @@ void intr1_mailbox(void)
 	Intr_num[157]++;
 #endif
 #endif
-	// printf("c2e int\n");
+	printf("c2e int\n");
 	Mailbox_Int_Store = C2EINT;
 	C2EINT |= C2EINT; // 清除中断
 	F_Service_Mailbox = 1;
@@ -1977,6 +1977,13 @@ void intr1_espi(void)
 	}
 #endif
 	VWCTRL1 = 0xFF;
+	/*OOB-ERPMC Interrupt*/
+	if(REG32(0x330C0)&&eRPMCSTS)
+	{
+		REG32(0x330C0)|=eRPMCSTS;
+		eRPMC_Handler_Rec=1;
+	}
+
 }
 void intr1_null63(void)
 {

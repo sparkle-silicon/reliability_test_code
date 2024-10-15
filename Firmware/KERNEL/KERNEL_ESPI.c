@@ -20,7 +20,7 @@
 #include "AE_CONFIG.H"
 #include "KERNEL_MEMORY.H"
 #include "CUSTOM_PECI.H"
-
+extern BYTE eRPMC_Busy_Status;
 /*-----------------------------------------------------------------------------
  * eSPI Module Proess Definition
  *---------------------------------------------------------------------------*/
@@ -61,6 +61,18 @@
 //*****************************************************************************
 /* eSPI Slave to PCH OOB PACKET */
 //*****************************************************************************
+eSPI_OOB_WriteRootKet_MESSAGE1 eRPMC_WriteRootKey_m1;
+eSPI_OOB_WriteRootKet_MESSAGE2 eRPMC_WriteRootKey_m2;
+eSPI_OOB_WriteRootKet_RESPONSE eRPMC_WriteRootKey_data;
+eSPI_OOB_UpdateHMACKey eRPMC_UpdateHMACKey;
+eSPI_OOB_UpdateHMACKey_RESPONSE eRPMC_UpdateHMACKey_data;
+eSPI_OOB_IncrementCounter eRPMC_IncrementCounter;
+eSPI_OOB_IncrementCounter_RESPONSE eRPMC_IncrementCounter_data;
+eSPI_OOB_RequestCounter eRPMC_RequestCounter;
+eSPI_OOB_RequestCounter_RESPONSE eRPMC_RequestCounter_data;
+eSPI_OOB_ReadParameters eRPMC_ReadParameters;
+eSPI_OOB_ReadParameters_RESPONSE eRPMC_ReadParameters_data;
+
 BYTE TO_PCH_TEMPERATURE[7] =
     {0x21, 0x00, 0x04, 0x02, 0x01, 0x01, 0x0F};
 BYTE TO_PCH_RTC_TIME[7] =
@@ -105,7 +117,8 @@ BYTE Peripheral_Memory_Read64[11] =
 // Byte#1: TAG & Length[11:8]
 // Byte#2: Length[7:0]  -> data length you want to read
 // Byte#3-6: 64bits address
-
+/* RPMC<-->OOB Message ARRAY */
+BYTE RPMC_OOB_TempArr[80];
 /*-----------------------------------------------------------------------------
  * Depends on parameter definition
  *---------------------------------------------------------------------------*/
@@ -186,6 +199,7 @@ void ESPI_Init(void)
     // ESGCTRL2 = 0x10;    /* REG@31A1.4: eSPI To WUC Enable */
     REG32(0x330A0) |= 0x100000;
 
+    REG32(0x330B0)|=Upstream_INT_EN; //使能upsteam中断使能
     // REG32(0x33190) |= 0x80; // 使能VW WIRE中断
     // dprint("330A0:%x\n", REG32(0x330A0));
 #endif
@@ -791,7 +805,7 @@ BYTE OOB_Check_OOB_Status(void)
     {
         // if(ESOCTRL0 & PUT_OOB_STATUS)
         // dprint("D:%x\n", REG32(0x330C0));
-        if (REG32(0x330C0) & 0x80)
+        if(REG32(0x330C0) & PUT_OOB_STATUS)
         {
             break;
         }
@@ -811,14 +825,12 @@ BYTE OOB_Check_OOB_Status(void)
     {
         xOOB_FailedCounter++;
         // ESOCTRL0 = PUT_OOB_STATUS;  /* Write clear for next OOB receive */
-        REG32(0x330C0) &= 0xffffff00;
         REG32(0x330C0) |= (PUT_OOB_STATUS << 0);
         dprint("E:%x\n", REG32(0x330C0));
         return FALSE;
     }
 
     // ESOCTRL0 = PUT_OOB_STATUS;  /* Write clear for next OOB receive */
-    REG32(0x330C0) &= 0xffffff00;
     REG32(0x330C0) |= (PUT_OOB_STATUS << 0);
     dprint("F:%x\n", REG32(0x330C0));
     return TRUE;
@@ -936,6 +948,102 @@ BYTE Process_eSPI_OOB_Message(void)
     return TRUE;
 }
 
+BYTE eSPI_OOBRecevie(BYTE *OOB_Meg_Table)
+{
+    /* Check put_oob status */
+    if(!OOB_Check_OOB_Status())
+    {
+        return FALSE;
+    }
+    Tmp_XPntr=OOB_Meg_Table;
+    /* Store Put_OOB Length to xOOB_PacketLength */
+    // _R5 = ESOCTRL4;
+    _R5 = (VBYTE)(REG32(0x330C4));
+    xOOB_PacketLength = _R5;
+    if(xOOB_PacketLength==0)
+        return FALSE;
+    _R6 = 0;
+    while(_R5 > 0)
+    {
+        /* Read OOB return data */
+        // *Tmp_XPntr = PUT_OOB_DATA[_R6];
+        // *Tmp_XPntr = *(PUT_OOB_DATA + _R6);
+        *Tmp_XPntr = (VBYTE)((REG32(0x33280 + ((_R6 / 4) * 4))) >> ((_R6 % 4) * 8));
+        _R6++;
+        Tmp_XPntr++;
+        _R5--;
+    }
+    // ESOCTRL0 = PUT_OOB_STATUS;  /* Write clear for next OOB receive */
+    // REG32(0x330C0) &= 0xffffff00;
+    // REG32(0x330C0) |= (PUT_OOB_STATUS << 0);
+    return TRUE;
+}
+
+BYTE eSPI_OOBSend(BYTE *OOB_Meg_Table)
+{
+    /*check if upstream is busy*/
+    if(REG32(0x330B0)&&Upstream_Busy)
+        return FALSE;
+    /* Check upstream authority enable */
+    if(!OOB_Check_Upstream_Authority_EN())
+    {
+        return FALSE;
+    }
+    OOB_Table_Pntr=OOB_Meg_Table;
+    _R5 = *OOB_Table_Pntr;
+    OOB_Table_Pntr++;
+    _R6 = OOB_Message;
+    if(_R5 == 0x21)
+    {
+        _R6 = OOB_Message;
+    }
+    // OOB_RamDebug(_R6);
+    // ESUCTRL1 = _R6;            //cycle type
+    REG32(0x330B0) &= 0xffff00ff;
+    REG32(0x330B0) |= (_R6 << 8);
+    _R7 = *OOB_Table_Pntr;
+    OOB_Table_Pntr++;
+    // ESUCTRL2 = _R7;     //tag + length[11:8],
+    REG32(0x330B0) &= 0xff00ffff;
+    REG32(0x330B0) |= (_R7 << 16);
+    // OOB_RamDebug(_R7);
+
+    _R7 = *OOB_Table_Pntr;
+    OOB_Table_Pntr++;
+    xOOB_PacketLength = _R7;
+    // ESUCTRL3 = xOOB_PacketLength;   //length[7:0],
+    REG32(0x330B0) &= 0x00ffffff;
+    REG32(0x330B0) |= (_R7 << 24);
+    // OOB_RamDebug(xOOB_PacketLength);
+
+    _R6 = xOOB_PacketLength;
+    for(_R5 = 0; _R5 < _R6; _R5++)
+    {
+        _R7 = *OOB_Table_Pntr;
+        OOB_Table_Pntr++;
+        // UPSTREAM_DATA[_R5] = _R7;
+        // *(UPSTREAM_DATA + _R5) = _R7;
+        REG32(0x33300 + ((_R5 / 4) * 4)) |= (_R7 << ((_R5 % 4) * 8));
+        // OOB_RamDebug(_R7);
+    }
+#if 0
+    /* Patch this can let data stable ? */
+    // ESOCTRL0 = PUT_OOB_STATUS;  /* Write clear for next OOB receive */
+    REG32(0x330C0) &= 0xffffff00;
+    REG32(0x330C0) |= (PUT_OOB_STATUS << 0);
+#endif
+    // ESUCTRL0 |= Upstream_EN;    //Set upstream enable
+    REG32(0x330B0) |= (Upstream_EN << 0);
+    // ESUCTRL0 |= Upstream_GO;    //Set upstream go
+    REG32(0x330B0) |= (Upstream_GO << 0);
+
+    /* Check upstream authority auto disable */
+    if(!OOB_Check_Upstream_Authority_Disable())
+    {
+        return FALSE;
+    }
+    return TRUE;
+}
 /*-----------------------------------------------------------------------------
  * @subroutine - Process_eSPI_OOB_CrashLog
  * @function - Process_eSPI_OOB_CrashLog
@@ -2495,41 +2603,169 @@ BYTE Process_Peripheral_Memory_Read32(void)
 #ifndef SystemWarmBoot
 #define SystemWarmBoot(x)
 #endif
-
 /*****************************************eRPMC OOB************************************************/
 void eRPMC_WriteRootKey_Response(void)
 {
     printf("extended status:%x\n", C2EINFO1);
-
-    // 填入OOB回复HOSET的OOB MTCP Packet
+    eRPMC_WriteRootKey_data.eSPI_Cycle_Type = 0x21;          
+    eRPMC_WriteRootKey_data.Length_High = 0x00;              
+    eRPMC_WriteRootKey_data.Tag = 0x0;                       
+    eRPMC_WriteRootKey_data.Length_Low = 0x0c;               
+    eRPMC_WriteRootKey_data.Reserved1 = 0x00;                
+    eRPMC_WriteRootKey_data.Dest_Slave_Addr = 0x08;          
+    eRPMC_WriteRootKey_data.Command_Code = 0x0F;             
+    eRPMC_WriteRootKey_data.Byte_Count = 0x09;               
+    eRPMC_WriteRootKey_data.Reserved2 = 0x00;                
+    eRPMC_WriteRootKey_data.Source_Slave_Address = 0x07;     
+    eRPMC_WriteRootKey_data.Header_Version = 0x0;            
+    eRPMC_WriteRootKey_data.MCTP = 0x0;                      
+    eRPMC_WriteRootKey_data.Destination_Endpoint_ID = 0x00;  
+    eRPMC_WriteRootKey_data.Source_Endpoint_ID = 0x00;       
+    eRPMC_WriteRootKey_data.Message_Tag = 0x00;              
+    eRPMC_WriteRootKey_data.TO = 0x0;                        
+    eRPMC_WriteRootKey_data.Packet_Seq = 0x00;               
+    eRPMC_WriteRootKey_data.EOM = 0x0;                       
+    eRPMC_WriteRootKey_data.SOM = 0x0;                       
+    eRPMC_WriteRootKey_data.Message_Type = 0x7D;             
+    eRPMC_WriteRootKey_data.IC = 0x0;                        
+    eRPMC_WriteRootKey_data.RPMC_Device = 0x01;              
+    eRPMC_WriteRootKey_data.Counter_Addr = 0x00;             
+    eRPMC_WriteRootKey_data.Extended_Status = 0x00;          
+    RMPC_ResType=0x1;
+    eRPMC_Handler_Res=1;
+    // 填入OOB回复HOST的OOB MTCP Packet
 }
 
 void eRPMC_UpdateHMACKey_Response(void)
 {
     printf("extended status:%x\n", C2EINFO1);
-
-    // 填入OOB回复HOSET的OOB MTCP Packet
+    eRPMC_UpdateHMACKey_data.eSPI_Cycle_Type = 0x21;                   
+    eRPMC_UpdateHMACKey_data.Length_High = 0x00;                       
+    eRPMC_UpdateHMACKey_data.Tag = 0x0;                                
+    eRPMC_UpdateHMACKey_data.Length_Low = 0x0c;                        
+    eRPMC_UpdateHMACKey_data.Reserved1 = 0x00;                         
+    eRPMC_UpdateHMACKey_data.Dest_Slave_Addr = 0x08;                   
+    eRPMC_UpdateHMACKey_data.Command_Code = 0x0F;                      
+    eRPMC_UpdateHMACKey_data.Byte_Count = 0x09;                        
+    eRPMC_UpdateHMACKey_data.Reserved2 = 0x00;                         
+    eRPMC_UpdateHMACKey_data.Source_Slave_Address = 0x07;              
+    eRPMC_UpdateHMACKey_data.Header_Version = 0x0;                     
+    eRPMC_UpdateHMACKey_data.MCTP = 0x0;                               
+    eRPMC_UpdateHMACKey_data.Destination_Endpoint_ID = 0x00;           
+    eRPMC_UpdateHMACKey_data.Source_Endpoint_ID = 0x00;                
+    eRPMC_UpdateHMACKey_data.Message_Tag = 0x00;                       
+    eRPMC_UpdateHMACKey_data.TO = 0x0;                                 
+    eRPMC_UpdateHMACKey_data.Packet_Seq = 0x00;                        
+    eRPMC_UpdateHMACKey_data.EOM = 0x0;                                
+    eRPMC_UpdateHMACKey_data.SOM = 0x0;                                
+    eRPMC_UpdateHMACKey_data.Message_Type = 0x7D;                      
+    eRPMC_UpdateHMACKey_data.IC = 0x0;                                 
+    eRPMC_UpdateHMACKey_data.RPMC_Device = 0x00;                       
+    eRPMC_UpdateHMACKey_data.Counter_Addr = 0x00;                      
+    eRPMC_UpdateHMACKey_data.Extended_Status = 0x00;                    
+    RMPC_ResType=0x2;
+    eRPMC_Handler_Res=1;
+    // 填入OOB回复HOST的OOB MTCP Packet
 }
 
 void eRPMC_IncrementCounter_Response(void)
 {
     printf("extended status:%x\n", C2EINFO1);
-
-    // 填入OOB回复HOSET的OOB MTCP Packet
+    eRPMC_IncrementCounter_data.eSPI_Cycle_Type = 0x21;                      
+    eRPMC_IncrementCounter_data.Length_High = 0x00;                          
+    eRPMC_IncrementCounter_data.Tag = 0x0;                                   
+    eRPMC_IncrementCounter_data.Length_Low = 0x0c;                           
+    eRPMC_IncrementCounter_data.Reserved1 = 0x00;                            
+    eRPMC_IncrementCounter_data.Dest_Slave_Addr = 0x08;                      
+    eRPMC_IncrementCounter_data.Command_Code = 0x0F;                         
+    eRPMC_IncrementCounter_data.Byte_Count = 0x09;                           
+    eRPMC_IncrementCounter_data.Reserved2 = 0x00;                            
+    eRPMC_IncrementCounter_data.Source_Slave_Address = 0x07;                    
+    eRPMC_IncrementCounter_data.Header_Version = 0x0;                        
+    eRPMC_IncrementCounter_data.MCTP = 0x0;                                  
+    eRPMC_IncrementCounter_data.Destination_Endpoint_ID = 0x00;              
+    eRPMC_IncrementCounter_data.Source_Endpoint_ID = 0x00;                   
+    eRPMC_IncrementCounter_data.Message_Tag = 0x00;                          
+    eRPMC_IncrementCounter_data.TO = 0x0;                                    
+    eRPMC_IncrementCounter_data.Packet_Seq = 0x0;                            
+    eRPMC_IncrementCounter_data.EOM = 0x0;                                   
+    eRPMC_IncrementCounter_data.SOM = 0x0;                                   
+    eRPMC_IncrementCounter_data.Message_Type = 0x7D;                         
+    eRPMC_IncrementCounter_data.IC = 0x0;                                    
+    eRPMC_IncrementCounter_data.RPMC_Device = 0x00;                          
+    eRPMC_IncrementCounter_data.Counter_Addr = 0x00;                         
+    eRPMC_IncrementCounter_data.Extended_Status = 0x00;                       
+    RMPC_ResType=0x3;
+    eRPMC_Handler_Res=1;
+    // 填入OOB回复HOST的OOB MTCP Packet
 }
 
 void eRPMC_RequestCounter_Response(void)
 {
     printf("extended status:%x\n", C2EINFO1);
-
-    // 填入OOB回复HOSET的OOB MTCP Packet
+    eRPMC_RequestCounter_data.eSPI_Cycle_Type = 0x21;                   
+    eRPMC_RequestCounter_data.Length_High = 0x00;                       
+    eRPMC_RequestCounter_data.Tag = 0x0;                                
+    eRPMC_RequestCounter_data.Length_Low = 0x3C;                      
+    eRPMC_RequestCounter_data.Reserved1 = 0x00;                         
+    eRPMC_RequestCounter_data.Dest_Slave_Addr = 0x08;                   
+    eRPMC_RequestCounter_data.Command_Code = 0x0F;                      
+    eRPMC_RequestCounter_data.Byte_Count = 0x39;                        
+    eRPMC_RequestCounter_data.Reserved2 = 0x00;                         
+    eRPMC_RequestCounter_data.Source_Slave_Address = 0x07;              
+    eRPMC_RequestCounter_data.Header_Version = 0x0;                     
+    eRPMC_RequestCounter_data.MCTP = 0x0;                               
+    eRPMC_RequestCounter_data.Destination_Endpoint_ID = 0x00;           
+    eRPMC_RequestCounter_data.Source_Endpoint_ID = 0x00;                
+    eRPMC_RequestCounter_data.Message_Tag = 0x00;                       
+    eRPMC_RequestCounter_data.TO = 0x0;                                 
+    eRPMC_RequestCounter_data.Packet_Seq = 0x00;                        
+    eRPMC_RequestCounter_data.EOM = 0x0;                                
+    eRPMC_RequestCounter_data.SOM = 0x0;                                
+    eRPMC_RequestCounter_data.Message_Type = 0x7D;                      
+    eRPMC_RequestCounter_data.IC = 0x0;                                 
+    eRPMC_RequestCounter_data.RPMC_Device = 0x00;
+    eRPMC_RequestCounter_data.Counter_Addr = 0x00;                      
+    eRPMC_RequestCounter_data.Extended_Status = 0x00;
+    /*数组留有赋值接口*/
+    // eRPMC_RequestCounter_data.Tag_Arr= ;
+    // eRPMC_RequestCounter_data.CounterReadData= ;
+    // eRPMC_RequestCounter_data.Signature= ;
+    RMPC_ResType=0x4;
+    eRPMC_Handler_Res=1;
+    // 填入OOB回复HOST的OOB MTCP Packet
 }
 
 void eRPMC_ReadParameter_Response(void)
 {
     printf("extended status:%x\n", C2EINFO1);
-
-    // 填入OOB回复HOSET的OOB MTCP Packet
+    eRPMC_ReadParameters_data.eSPI_Cycle_Type = 0x21;                   
+    eRPMC_ReadParameters_data.Length_High = 0x00;                       
+    eRPMC_ReadParameters_data.Tag = 0x0;                                
+    eRPMC_ReadParameters_data.Length_Low = 0x12;                        
+    eRPMC_ReadParameters_data.Reserved1 = 0x00;                         
+    eRPMC_ReadParameters_data.Dest_Slave_Addr = 0x08;                   
+    eRPMC_ReadParameters_data.Command_Code = 0x0F;                      
+    eRPMC_ReadParameters_data.Byte_Count = 0x0F;                        
+    eRPMC_ReadParameters_data.Reserved2 = 0x00;                         
+    eRPMC_ReadParameters_data.Source_Slave_Address = 0x07;              
+    eRPMC_ReadParameters_data.Header_Version = 0x0;                     
+    eRPMC_ReadParameters_data.MCTP = 0x0;                               
+    eRPMC_ReadParameters_data.Destination_Endpoint_ID = 0x00;           
+    eRPMC_ReadParameters_data.Source_Endpoint_ID = 0x00;                
+    eRPMC_ReadParameters_data.Message_Tag = 0x00;                       
+    eRPMC_ReadParameters_data.TO = 0x0;                                 
+    eRPMC_ReadParameters_data.Packet_Seq = 0x00;                        
+    eRPMC_ReadParameters_data.EOM = 0x0;                                
+    eRPMC_ReadParameters_data.SOM = 0x0;                                
+    eRPMC_ReadParameters_data.Message_Type = 0x7D;                      
+    eRPMC_ReadParameters_data.IC = 0x0;                                 
+    eRPMC_ReadParameters_data.Extended_Status = 0x00;                   
+    // eRPMC_ReadParameters_data.RPMC_ParameterTable = 
+    // eRPMC_ReadParameters_data.RPMC_Parameters_Device0 = 
+    RMPC_ResType=0x5;
+    eRPMC_Handler_Res=1;
+    // 填入OOB回复HOST的OOB MTCP Packet
 }
 /*****************************************eRPMC OOB************************************************/
 
@@ -2569,19 +2805,11 @@ void __weak Service_eSPI(void)
             // EC_ACK_eSPI_Boot_Ready();
         }
     }
+    eSPI_OOBRPMC_Handler();
+
 }
-#if 0
-eSPI_OOB_WriteRootKet_MESSAGE1 eRPMC_WriteRootKey_m1;
-eSPI_OOB_WriteRootKet_MESSAGE2 eRPMC_WriteRootKey_m2;
-eSPI_OOB_WriteRootKet_RESPONSE eRPMC_WriteRootKey_data;
-eSPI_OOB_UpdateHMACKey eRPMC_UpdateHMACKey;
-eSPI_OOB_UpdateHMACKey_RESPONSE eRPMC_UpdateHMACKey_data;
-eSPI_OOB_IncrementCounter eRPMC_IncrementCounter;
-eSPI_OOB_IncrementCounter_RESPONSE eRPMC_IncrementCounter_data;
-eSPI_OOB_RequestCounter eRPMC_RequestCounter;
-eSPI_OOB_RequestCounter_RESPONSE eRPMC_RequestCounter_data;
-eSPI_OOB_ReadParameters eRPMC_ReadParameters;
-eSPI_OOB_ReadParameters_RESPONSE eRPMC_ReadParameters_data;
+#if 1
+
 /*-----------------------------------------------------------------------------
  * @subroutine - OOB_Get_WriteRootKey
  * @function - OOB_Get_WriteRootKey
@@ -2662,6 +2890,102 @@ void OOB_Get_ReadParameters(void)
     Process_eSPI_OOB_Message();
 }
 
+BYTE eSPI_OOBRPMC_Handler(void)
+{
+    if((eRPMC_Handler_Rec==0)&&(eRPMC_Handler_Res==0)&&(eRPMC_Handler_Force==0))
+        return FALSE;
+    if(eRPMC_Handler_Rec==1)
+    {
+        if(eSPI_OOBRecevie(RPMC_OOB_TempArr))
+        {
+            eRPMC_Handler_Rec=0;
+            if(RPMC_OOB_TempArr[2]==0)//receive message length is 0, means no message
+            {
+                return FALSE;
+            }
+            eRPMC_Handler_Force=1;//susccess receive message wait send crypto
+        }
+    }
+    if(eRPMC_Handler_Force==1)
+    {
+        if(eRPMC_Busy_Status==1)
+        {
+            eRPMC_Handler_Force=1;
+            return FALSE;
+        }
+        switch(RPMC_OOB_TempArr[14])//cmd type
+        {
+            case 0x0://WriteRootKey
+                if(RPMC_OOB_TempArr[2]==0x48)//WriteRootKey message1
+                {
+
+                }
+                else if(RPMC_OOB_TempArr[2]==0x0B)//WriteRootKey message2
+                {
+                    /*mailbox WriteRootKey trigger*/
+                    Mailbox_WriteRootKey_Trigger();
+                }
+                break;
+            case 0x1://UpdateHMACKey
+                if(RPMC_OOB_TempArr[2]==0x32)//UpdateHMACKey message
+                {
+                    Mailbox_UpdateHMACKey_Trigger();
+                }
+                break;
+            case 0x2://IncrementCounter
+                if(RPMC_OOB_TempArr[2]==0x32)//IncrementCounter message
+                {
+                    Mailbox_IncrementCounter_Trigger();
+                }
+                break;
+            case 0x3://RequestCounter
+                if(RPMC_OOB_TempArr[2]==0x3A)//RequestCounter message
+                {
+                    Mailbox_RequestCounter_Trigger();
+                }
+                break;
+            case 0x4://ReadParameters
+                if(RPMC_OOB_TempArr[2]==0x0B)
+                {
+
+                }
+                break;
+            default:
+                break;
+        }
+        eRPMC_Handler_Force=0;
+    }
+    if(eRPMC_Handler_Res==1)
+    {
+        switch(RMPC_ResType)
+        {
+            case 0x1://WriteRootKey
+                if(eSPI_OOBSend((BYTE *)&eRPMC_WriteRootKey_data))
+                    eRPMC_Handler_Res=0;
+                break;
+            case 0x2://UpdateHMACKey
+                if(eSPI_OOBSend((BYTE *)&eRPMC_UpdateHMACKey_data))
+                    eRPMC_Handler_Res=0;
+                break;
+            case 0x3://IncrementCounter
+                if(eSPI_OOBSend((BYTE *)&eRPMC_IncrementCounter_data))
+                    eRPMC_Handler_Res=0;
+                break;
+            case 0x4://RequestCounter
+                if(eSPI_OOBSend((BYTE *)&eRPMC_RequestCounter_data))
+                    eRPMC_Handler_Res=0;
+                break;
+            case 0x5://ReadParameters
+                if(eSPI_OOBSend((BYTE *)&eRPMC_ReadParameters_data))
+                    eRPMC_Handler_Res=0;
+                break;
+            default:
+                RMPC_ResType=0;
+                break;
+        }
+    }
+    return TRUE;
+}
 #endif
 /****************************** OOB eRPMC Code *******************************/
 

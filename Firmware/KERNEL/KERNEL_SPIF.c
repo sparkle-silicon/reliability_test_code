@@ -66,6 +66,8 @@ ALIGNED(4) void SPIF_Write(DWORD addr, BYTEP write_buff, WORD length)
    DWORD i, j, write_data = 0;
    uint32_t temp_addrs = ((addr & 0xFF) << 24) + ((addr & 0xFF00) << 8) + ((addr & 0xFF0000) >> 8);//设置地址
    BYTE temp_status = 0;
+   BYTE _4ByteCunt = 0;
+   BYTE temp_length = 0;
    PRINTF_TX = 'a';
    while(!(SPIF_READY & SPIF_RDY));
    SPIF_FIFO_TOP = temp_addrs + FLASH_SECT_ERASE_CMD;   //Sector Erase
@@ -73,21 +75,88 @@ ALIGNED(4) void SPIF_Write(DWORD addr, BYTEP write_buff, WORD length)
    while(SPIF_STATUS & SPIF_Write_Status);
    while(!(SPIF_READY & SPIF_RDY));
    PRINTF_TX = 'b';
-   length = (length + 3) & ~3;
+   _4ByteCunt = length / 4;
+   temp_length = length % 4;
    //写
    SPIF_DBYTE = length - 1;                 //准备写256字节
    while(!(SPIF_READY & SPIF_RDY));
    SPIF_FIFO_TOP = (temp_addrs + FLASH_PAGE_PROGRAM_CMD);  //Page Program
-   for(i = 0; i < (length / 4); i++)
+   if(_4ByteCunt != 0)
    {
-      j = i * 4;
-      write_data = write_buff[j] | (write_buff[j + 1] << 8) | (write_buff[j + 2] << 16) | (write_buff[j + 3] << 24);
-      temp_status = SPIF_FIFO_CNT;
-      while((temp_status & 0x3) >= 2)
+      for(i = 0; i < (length / 4); i++)
       {
+         j = i * 4;
+         write_data = write_buff[j] | (write_buff[j + 1] << 8) | (write_buff[j + 2] << 16) | (write_buff[j + 3] << 24);
          temp_status = SPIF_FIFO_CNT;
+         while((temp_status & 0x3) >= 2)
+         {
+            temp_status = SPIF_FIFO_CNT;
+         }
+         SPIF_FIFO_TOP = write_data;
       }
-      SPIF_FIFO_TOP = write_data;
+      switch(temp_length)
+      {
+         case 1:
+            write_data = write_buff[j + 4];
+            temp_status = SPIF_FIFO_CNT;
+            while((temp_status & 0x3) >= 2)
+            {
+               temp_status = SPIF_FIFO_CNT;
+            }
+            SPIF_FIFO_TOP = write_data;
+            break;
+         case 2:
+            write_data = write_buff[j + 4] | (write_buff[j + 5] << 8);
+            temp_status = SPIF_FIFO_CNT;
+            while((temp_status & 0x3) >= 2)
+            {
+               temp_status = SPIF_FIFO_CNT;
+            }
+            SPIF_FIFO_TOP = write_data;
+            break;
+         case 3:
+            write_data = write_buff[j + 4] | (write_buff[j + 5] << 8) | (write_buff[j + 6] << 16);
+            temp_status = SPIF_FIFO_CNT;
+            while((temp_status & 0x3) >= 2)
+            {
+               temp_status = SPIF_FIFO_CNT;
+            }
+            SPIF_FIFO_TOP = write_data;
+            break;
+      }
+   }
+   else
+   {
+      switch(temp_length)
+      {
+         case 1:
+            write_data = write_buff[0];
+            temp_status = SPIF_FIFO_CNT;
+            while((temp_status & 0x3) >= 2)
+            {
+               temp_status = SPIF_FIFO_CNT;
+            }
+            SPIF_FIFO_TOP = write_data;
+            break;
+         case 2:
+            write_data = write_buff[0] | (write_buff[1] << 8);
+            temp_status = SPIF_FIFO_CNT;
+            while((temp_status & 0x3) >= 2)
+            {
+               temp_status = SPIF_FIFO_CNT;
+            }
+            SPIF_FIFO_TOP = write_data;
+            break;
+         case 3:
+            write_data = write_buff[0] | (write_buff[1] << 8) | (write_buff[2] << 16);
+            temp_status = SPIF_FIFO_CNT;
+            while((temp_status & 0x3) >= 2)
+            {
+               temp_status = SPIF_FIFO_CNT;
+            }
+            SPIF_FIFO_TOP = write_data;
+            break;
+      }
    }
    while(!(SPIF_READY & SPIF_RDY));
    while(SPIF_STATUS & SPIF_Write_Status);

@@ -537,8 +537,10 @@ int __weak main(void)
 #if ((GLE01 == 1) && (FLASH_TO_IRAM0 == 1))
 	GLE01_RomCode_Transport();
 	E2CINFO7 = 0x5aa5;
-	// while(C2EINFO7 != 0xa55a)
-	// 	; // 等待子系统初始化完毕
+	while (C2EINFO7 != 0xa55a) // 等待子系统初始化完毕
+	{
+		E2CINFO7 = 0x5aa5;
+	}
 #endif
 
 	// printf("mirror success\n");

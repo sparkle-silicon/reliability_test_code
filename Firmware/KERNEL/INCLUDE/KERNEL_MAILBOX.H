@@ -34,5 +34,9 @@ extern void Mailbox_Read_EFUSE_Trigger(void);
 extern void Mailbox_FW_Extension_Trigger(void);
 extern void Mailbox_APB2_Source_Alloc_Trigger(void);
 extern void Mailbox_Test(void);
+extern void Mailbox_WriteRootKey_Trigger(void);
+extern void Mailbox_UpdateHMACKey_Trigger(void);
+extern void Mailbox_IncrementCounter_Trigger(void);
+extern void Mailbox_RequestCounter_Trigger(void);
 extern void Mailbox_eRPMC_Trigger(void);
 #endif
