@@ -2501,35 +2501,35 @@ void eRPMC_WriteRootKey_Response(void)
 {
     printf("extended status:%x\n", C2EINFO1);
 
-    // 填入OOB回复HOSET的OOB MTCP Packet
+    // 填入OOB回复HOST的OOB MTCP Packet
 }
 
 void eRPMC_UpdateHMACKey_Response(void)
 {
     printf("extended status:%x\n", C2EINFO1);
 
-    // 填入OOB回复HOSET的OOB MTCP Packet
+    // 填入OOB回复HOST的OOB MTCP Packet
 }
 
 void eRPMC_IncrementCounter_Response(void)
 {
     printf("extended status:%x\n", C2EINFO1);
 
-    // 填入OOB回复HOSET的OOB MTCP Packet
+    // 填入OOB回复HOST的OOB MTCP Packet
 }
 
 void eRPMC_RequestCounter_Response(void)
 {
     printf("extended status:%x\n", C2EINFO1);
 
-    // 填入OOB回复HOSET的OOB MTCP Packet
+    // 填入OOB回复HOST的OOB MTCP Packet
 }
 
 void eRPMC_ReadParameter_Response(void)
 {
     printf("extended status:%x\n", C2EINFO1);
 
-    // 填入OOB回复HOSET的OOB MTCP Packet
+    // 填入OOB回复HOST的OOB MTCP Packet
 }
 /*****************************************eRPMC OOB************************************************/
 
@@ -2596,6 +2596,10 @@ void OOB_Get_WriteRootKey(void)
     Tmp_XPntr = (BYTE *)&eRPMC_WriteRootKey_data;
     xOOB_PacketMaxLength = 16;
     Process_eSPI_OOB_Message();
+
+    //判定payloadsize是否正确，若不正确，则response返回extended status
+
+    Mailbox_WriteRootKey_Trigger();
 }
 
 /*-----------------------------------------------------------------------------

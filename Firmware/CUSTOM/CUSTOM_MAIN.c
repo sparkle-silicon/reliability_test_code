@@ -142,7 +142,24 @@ void __weak Hook_1secEventA(void) // get all temp
         // Mailbox_Update_Function(0x3, 0x8000, 0x70800); // 发起mailbox更新
         //  Mailbox_Read_FLASHID_Trigger();
         //  Mailbox_Read_EFUSE_Trigger();
-        Mailbox_eRPMC_Trigger();
+        Mailbox_WriteRootKey_Trigger();
+    }
+    if (*((VBYTE *)(0x203B9)) == 2)
+    {
+        *((VBYTE *)(0x203B9)) = 0;
+        Mailbox_UpdateHMACKey_Trigger();
+    }
+
+    if (*((VBYTE *)(0x203B9)) == 3)
+    {
+        *((VBYTE *)(0x203B9)) = 0;
+        Mailbox_IncrementCounter_Trigger();
+    }
+
+    if (*((VBYTE *)(0x203B9)) == 4)
+    {
+        *((VBYTE *)(0x203B9)) = 0;
+        Mailbox_RequestCounter_Trigger();
     }
 #endif
 }

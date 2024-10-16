@@ -60,6 +60,8 @@ void Mailbox_APB2_Source_Alloc_Trigger(void)
 #define Reserved_Value 0x00
 #define Dummy_Value 0x00
 
+BYTE eRPMC_Busy_Status = 0;
+
 // 模拟设置Rootkey,将RootKey填入
 // void Set_RootKey(void)
 // {
@@ -69,6 +71,136 @@ void Mailbox_APB2_Source_Alloc_Trigger(void)
 //         Root_Key[i] = 31 - i;
 //     }
 // }
+
+void Mailbox_WriteRootKey_Trigger(void)
+{
+    if (eRPMC_Busy_Status == 1)
+    {
+        printf("RPMC Device is in busy status\n");
+        // externed status  busy
+        // eRPMC_WriteRootKey_Response(); 此处不一定是该命令对应的extenedstatus，后续最好是做成统一的状态回复
+        return;
+    }
+    // WriteRootKey命令  往SRAM的0x31800后填入对应eRPMC数据
+    *((VDWORD *)0x31800) = 0xaf73d623;
+    *((VDWORD *)0x31804) = 0x135e43d5;
+    *((VDWORD *)0x31808) = 0x40cbc22e;
+    *((VDWORD *)0x3180C) = 0xfe22f42c;
+    *((VDWORD *)0x31810) = 0x4abc377d;
+    *((VDWORD *)0x31814) = 0xb7d3cfbd;
+    *((VDWORD *)0x31818) = 0xb3674211;
+
+    *((VDWORD *)0x3181C) = 0x1c1d1e1f;
+    *((VDWORD *)0x31820) = 0x18191a1b;
+    *((VDWORD *)0x31824) = 0x14151617;
+    *((VDWORD *)0x31828) = 0x10111213;
+    *((VDWORD *)0x3182C) = 0x0c0d0e0f;
+    *((VDWORD *)0x31830) = 0x08090a0b;
+    *((VDWORD *)0x31834) = 0x04050607;
+    *((VDWORD *)0x31838) = 0x00010203;
+
+    E2CINFO0 = 0x30;       // 命令字
+    E2CINFO1 = 0x0000009B; // WriteRootKey模拟测试
+    E2CINT = 0x8;          // 触发子系统中断
+    eRPMC_Busy_Status = 1;
+}
+
+void Mailbox_UpdateHMACKey_Trigger(void)
+{
+
+    if (eRPMC_Busy_Status == 1)
+    {
+        printf("RPMC Device is in busy status\n");
+        // externed status  busy
+        // eRPMC_UpdateHMACKey_Response(); 此处不一定是该命令对应的extenedstatus，后续最好是做成统一的状态回复
+        return;
+    }
+    // UpdateHMACKey命令  往SRAM的0x31800后填入对应eRPMC数据
+    *((VDWORD *)0x31800) = 0x2df7cf5e;
+    *((VDWORD *)0x31804) = 0xa107e1ea;
+    *((VDWORD *)0x31808) = 0x5ad59fc8;
+    *((VDWORD *)0x3180C) = 0xb9ef975f;
+    *((VDWORD *)0x31810) = 0x8bc12b2b;
+    *((VDWORD *)0x31814) = 0x788ca1d3;
+    *((VDWORD *)0x31818) = 0x382b9006;
+    *((VDWORD *)0x3181C) = 0xfa806034;
+
+    // KeyData
+    *((VDWORD *)0x31820) = 0x01020304;
+
+    E2CINFO0 = 0x31;       // 命令字
+    E2CINFO1 = 0x0000019B; // UpdateHMACKey模拟测试
+    E2CINT = 0x8;          // 触发子系统中断
+    eRPMC_Busy_Status = 1;
+}
+
+void Mailbox_IncrementCounter_Trigger(void)
+{
+
+    if (eRPMC_Busy_Status == 1)
+    {
+        printf("RPMC Device is in busy status\n");
+        // externed status  busy
+        // eRPMC_UpdateHMACKey_Response(); 此处不一定是该命令对应的extenedstatus，后续最好是做成统一的状态回复
+        return;
+    }
+    // IncrementCounter命令  往SRAM的0x31800后填入对应eRPMC数据
+    // *((VDWORD *)0x31800) = 0xb5db4d28;
+    // *((VDWORD *)0x31804) = 0x32d6cad1;
+    // *((VDWORD *)0x31808) = 0xda8b892b;
+    // *((VDWORD *)0x3180C) = 0x4907d132;
+    // *((VDWORD *)0x31810) = 0xe80d47a3;
+    // *((VDWORD *)0x31814) = 0xd272db0c;
+    // *((VDWORD *)0x31818) = 0x1d44ec15;
+    // *((VDWORD *)0x3181C) = 0x7c19eb1f;
+    *((VDWORD *)0x31800) = 0x17324225;
+    *((VDWORD *)0x31804) = 0x5e5ad01e;
+    *((VDWORD *)0x31808) = 0xf49dcecf;
+    *((VDWORD *)0x3180C) = 0xb2e9c715;
+    *((VDWORD *)0x31810) = 0xa065a36f;
+    *((VDWORD *)0x31814) = 0xe2efd976;
+    *((VDWORD *)0x31818) = 0x331d7d0a;
+    *((VDWORD *)0x3181C) = 0x215d3cfc;
+
+    // CounterData
+    *((VDWORD *)0x31820) = 0x00000001;
+
+    E2CINFO0 = 0x32;       // 命令字
+    E2CINFO1 = 0x0000029B; // IncrementCounter模拟测试
+    E2CINT = 0x8;          // 触发子系统中断
+    eRPMC_Busy_Status = 1;
+}
+
+void Mailbox_RequestCounter_Trigger(void)
+{
+
+    if (eRPMC_Busy_Status == 1)
+    {
+        printf("RPMC Device is in busy status\n");
+        // externed status  busy
+        // eRPMC_UpdateHMACKey_Response(); 此处不一定是该命令对应的extenedstatus，后续最好是做成统一的状态回复
+        return;
+    }
+    // RequestCounter命令  往SRAM的0x31800后填入对应eRPMC数据
+    *((VDWORD *)0x31800) = 0xc4acbe62;
+    *((VDWORD *)0x31804) = 0xfadc266a;
+    *((VDWORD *)0x31808) = 0xcf62f1d2;
+    *((VDWORD *)0x3180C) = 0xd78281a0;
+    *((VDWORD *)0x31810) = 0x4bf94d12;
+    *((VDWORD *)0x31814) = 0x9cdaff80;
+    *((VDWORD *)0x31818) = 0x3fee8fd0;
+    *((VDWORD *)0x3181C) = 0x0d1d587c;
+
+    // Tag
+    *((VDWORD *)0x31820) = 0x00000001;
+    *((VDWORD *)0x31824) = 0x00000000;
+    *((VDWORD *)0x31828) = 0x00000000;
+
+    E2CINFO0 = 0x33;       // 命令字
+    E2CINFO1 = 0x0000039B; // RequestCounter模拟测试
+    E2CINT = 0x8;          // 触发子系统中断
+    eRPMC_Busy_Status = 1;
+}
 
 void Mailbox_eRPMC_Trigger(void)
 {
@@ -109,23 +241,45 @@ void Mailbox_eRPMC_Trigger(void)
 
     printf("erpmc trigger\n");
 
-    //  往SRAM的0x31800后填入对应eRPMC数据
-    *((VDWORD *)0x31800) = 0x23d673af;
-    *((VDWORD *)0x31804) = 0xd5435e13;
-    *((VDWORD *)0x31808) = 0x2ec2cb40;
-    *((VDWORD *)0x3180C) = 0x2cf422fe;
-    *((VDWORD *)0x31810) = 0x7d37bc4a;
-    *((VDWORD *)0x31814) = 0xbdcfd3b7;
-    *((VDWORD *)0x31818) = 0x114267b3;
+#if 0
+    //WriteRootKey命令  往SRAM的0x31800后填入对应eRPMC数据
+    *((VDWORD *)0x31800) = 0xaf73d623;
+    *((VDWORD *)0x31804) = 0x135e43d5;
+    *((VDWORD *)0x31808) = 0x40cbc22e;
+    *((VDWORD *)0x3180C) = 0xfe22f42c;
+    *((VDWORD *)0x31810) = 0x4abc377d;
+    *((VDWORD *)0x31814) = 0xb7d3cfbd;
+    *((VDWORD *)0x31818) = 0xb3674211;
 
-    *((VDWORD *)0x3181C) = 0x1f1e1d1c;
-    *((VDWORD *)0x31820) = 0x1b1a1918;
-    *((VDWORD *)0x31824) = 0x17161514;
-    *((VDWORD *)0x31828) = 0x13121110;
-    *((VDWORD *)0x3182C) = 0x0f0e0d0c;
-    *((VDWORD *)0x31830) = 0x0b0a0908;
-    *((VDWORD *)0x31834) = 0x07060504;
-    *((VDWORD *)0x31838) = 0x03020100;
+    *((VDWORD *)0x3181C) = 0x1c1d1e1f;
+    *((VDWORD *)0x31820) = 0x18191a1b;
+    *((VDWORD *)0x31824) = 0x14151617;
+    *((VDWORD *)0x31828) = 0x10111213;
+    *((VDWORD *)0x3182C) = 0x0c0d0e0f;
+    *((VDWORD *)0x31830) = 0x08090a0b;
+    *((VDWORD *)0x31834) = 0x04050607;
+    *((VDWORD *)0x31838) = 0x00010203;
+#endif
+
+#if 0
+    // UpdateHMACKey命令  往SRAM的0x31800后填入对应eRPMC数据
+    *((VDWORD *)0x31800) = 0xaf73d623;
+    *((VDWORD *)0x31804) = 0x135e43d5;
+    *((VDWORD *)0x31808) = 0x40cbc22e;
+    *((VDWORD *)0x3180C) = 0xfe22f42c;
+    *((VDWORD *)0x31810) = 0x4abc377d;
+    *((VDWORD *)0x31814) = 0xb7d3cfbd;
+    *((VDWORD *)0x31818) = 0xb3674211;
+
+    *((VDWORD *)0x3181C) = 0x1c1d1e1f;
+    *((VDWORD *)0x31820) = 0x18191a1b;
+    *((VDWORD *)0x31824) = 0x14151617;
+    *((VDWORD *)0x31828) = 0x10111213;
+    *((VDWORD *)0x3182C) = 0x0c0d0e0f;
+    *((VDWORD *)0x31830) = 0x08090a0b;
+    *((VDWORD *)0x31834) = 0x04050607;
+    *((VDWORD *)0x31838) = 0x00010203;
+#endif
 
     E2CINFO0 = 0x30;       // 命令字
     E2CINFO1 = 0x0000009B; // WriteRootKey模拟测试
@@ -201,6 +355,8 @@ void Mailbox_Efuse(void)
 
 void Mailbox_eRPMC(void)
 {
+    eRPMC_Busy_Status = 0; // 清除rpmc device busy状态
+
     if (C2EINFO0 == 0x30)
         eRPMC_WriteRootKey_Response();
     else if (C2EINFO0 == 0x31)
