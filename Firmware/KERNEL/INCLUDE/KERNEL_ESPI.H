@@ -98,7 +98,7 @@
 
 #define F_SESPIPC BIT(0)   // ESGCTRL3      // Suspend eSPI Peripheral Channel
 #define CH0_not_RDY BIT(0) // Suspend eSPI Peripheral Channel
-
+//REG32(0x330B0)
 #define Upstream_EN 0x80 // ESUCTRL0
 #define Upstream_GO 0x40
 #define Upstream_INT_EN 0x20
@@ -124,7 +124,9 @@
 #define Unsuccessful_Completion_Without_Data_the_only_Completion 0x06
 #define Invalid_Cycle_Type 0x0F
 
+//REG32(0x330C0)
 #define PUT_OOB_STATUS 0x80 // ESOCTRL0
+#define eRPMCSTS 0x10
 
 #define F_PUT_OOB_INT_ENABLE BIT(7) // ESOCTRL1
 
@@ -829,11 +831,11 @@ extern void espi_init(void);
 extern void EC_ACK_eSPI_SUS_WARN(void);
 extern BYTE Process_Peripheral_Message_Send(void);
 extern BYTE Process_Peripheral_Memory_Read32(void);
+extern BYTE eSPI_OOBRPMC_Handler(void);
 
 extern void eRPMC_WriteRootKey_Response(void);
 extern void eRPMC_UpdateHMACKey_Response(void);
 extern void eRPMC_IncrementCounter_Response(void);
 extern void eRPMC_RequestCounter_Response(void);
 extern void eRPMC_ReadParameter_Response(void);
-
 #endif

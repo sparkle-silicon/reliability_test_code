@@ -32,6 +32,13 @@ void Mailbox_Read_FLASHID_Trigger(void)
     E2CINT = 0x1;   // 触发子系统中断
 }
 
+void Mailbox_Read_FLASHUID_Trigger(void)
+{
+    dprint("Read_FLASHUID_Trigger\n");
+    E2CINFO0 = 0x8; // 命令字
+    E2CINT = 0x1;   // 触发子系统中断
+}
+
 void Mailbox_APB2_Source_Alloc_Trigger(void)
 {
     E2CINFO0 = 0x4; // 命令字
@@ -42,7 +49,6 @@ void Mailbox_APB2_Source_Alloc_Trigger(void)
     E2CINFO1 = 0x2; // 主/子系统APB2资源分配
     E2CINT = 0x1;   // 触发子系统中断
 }
-
 /*************************************eRPMC Mailbox***************************************/
 #define OP1_Code 0x9B
 #define OP2_Code 0x96
@@ -286,7 +292,6 @@ void Mailbox_eRPMC_Trigger(void)
     E2CINT = 0x8;          // 触发子系统中断
 }
 /*************************************eRPMC Mailbox***************************************/
-
 void Mailbox_Control(void)
 {
     if (C2EINFO0 == 0x3)
@@ -318,6 +323,14 @@ void Mailbox_Control(void)
         /* 响应子系统降频 */
         SYSCTL_CLKDIV_OSC80M = 1; // 配置内部时钟分频为2分频，降频到48M
         eFlash_Forbid_Flag = 1;   // 降频到48MHz后，设置eFlash禁止主系统访问标志
+    }
+    else if (C2EINFO0 == 0x8)
+    {
+        /* 读取内部FLASH ID */
+        if ((BYTE)(C2EINFO1 & 0x1) == 0x1)
+            printf("flash 9fcmd return id:0x%x 0x%x 0x%x 0x%x\n", C2EINFO5, C2EINFO4, C2EINFO3, C2EINFO2);
+        else if ((BYTE)(C2EINFO1 & 0x2) == 0x2)
+            printf("read flash failed\n");
     }
 }
 

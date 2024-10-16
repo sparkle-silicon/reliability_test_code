@@ -523,8 +523,12 @@
 #define wOOB_CrashCpuDataBytes (*(VWORDP)(eSPI_MemBase + 0x26))
 #define wOOB_CrashPchDataSizes (*(VWORDP)(eSPI_MemBase + 0x28))
 #define wOOB_CrashLogDataIndex (*(VWORDP)(eSPI_MemBase + 0x2A))
+#define eRPMC_Handler_Rec     (*(VBYTEP)(eSPI_MemBase + 0x2C))
+#define eRPMC_Handler_Res    (*(VBYTEP)(eSPI_MemBase + 0x2D))
+#define eRPMC_Handler_Force  (*(VBYTEP)(eSPI_MemBase + 0x2E))
+#define RMPC_ResType         (*(VBYTEP)(eSPI_MemBase + 0x2F))
 
-#define PECI_MemBase (eSPI_MemBase + MEMORY_032SIZE) //0x20418
+#define PECI_MemBase (eSPI_MemBase + MEMORY_064SIZE) //0x20418
 #define PECI_FLAG (*(VBYTEP)(PECI_MemBase + 0x0))
 #define F_PECI_STOP         BIT(7)
 #define F_PECI_BUSY         BIT(6)
