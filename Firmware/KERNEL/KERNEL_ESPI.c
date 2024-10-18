@@ -2736,8 +2736,8 @@ void eRPMC_RequestCounter_Response(void)
     RMPC_ResType = 0x4;
     eRPMC_Handler_Res = 1;
     // 填入OOB回复HOST的OOB MTCP Packet
-    if (*((DWORDP)(0x31820)) < 0x4010)
-        Mailbox_IncrementCounter_Trigger(*((DWORDP)(0x31820)));
+    // if (*((DWORDP)(0x31820)) < 0x4010)
+    Mailbox_IncrementCounter_Trigger(*((DWORDP)(0x31820)));
 }
 
 void eRPMC_ReadParameter_Response(void)
