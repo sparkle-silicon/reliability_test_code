@@ -140,7 +140,7 @@ void Mailbox_UpdateHMACKey_Trigger(void)
     eRPMC_Busy_Status = 1;
 }
 
-void Mailbox_IncrementCounter_Trigger(void)
+void Mailbox_IncrementCounter_Trigger(uint32_t CountData)
 {
 
     if (eRPMC_Busy_Status == 1)
@@ -169,7 +169,7 @@ void Mailbox_IncrementCounter_Trigger(void)
     *((VDWORD *)0x3181C) = 0x215d3cfc;
 
     // CounterData
-    *((VDWORD *)0x31820) = 0x00000001;
+    *((VDWORD *)0x31820) = CountData;
 
     E2CINFO0 = 0x32;       // 命令字
     E2CINFO1 = 0x0000029B; // IncrementCounter模拟测试

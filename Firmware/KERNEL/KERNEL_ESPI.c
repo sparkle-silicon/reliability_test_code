@@ -2698,6 +2698,8 @@ void eRPMC_IncrementCounter_Response(void)
     RMPC_ResType = 0x3;
     eRPMC_Handler_Res = 1;
     // 填入OOB回复HOST的OOB MTCP Packet
+
+    Mailbox_RequestCounter_Trigger();
 }
 
 void eRPMC_RequestCounter_Response(void)
@@ -2734,6 +2736,8 @@ void eRPMC_RequestCounter_Response(void)
     RMPC_ResType = 0x4;
     eRPMC_Handler_Res = 1;
     // 填入OOB回复HOST的OOB MTCP Packet
+    if (*((DWORDP)(0x31820)) < 0x4010)
+        Mailbox_IncrementCounter_Trigger(*((DWORDP)(0x31820)));
 }
 
 void eRPMC_ReadParameter_Response(void)
@@ -2937,13 +2941,13 @@ BYTE eSPI_OOBRPMC_Handler(void)
         case 0x2:                            // IncrementCounter
             if (RPMC_OOB_TempArr[2] == 0x32) // IncrementCounter message
             {
-                Mailbox_IncrementCounter_Trigger();
+                // Mailbox_IncrementCounter_Trigger();
             }
             break;
         case 0x3:                            // RequestCounter
             if (RPMC_OOB_TempArr[2] == 0x3A) // RequestCounter message
             {
-                Mailbox_RequestCounter_Trigger();
+                // Mailbox_RequestCounter_Trigger();
             }
             break;
         case 0x4: // ReadParameters

@@ -140,7 +140,7 @@ void __weak Hook_1secEventA(void) // get all temp
         // Mailbox_FW_Extension_Trigger();
         // Mailbox_APB2_Source_Alloc_Trigger();
         // Mailbox_Update_Function(0x3, 0x8000, 0x70800); // 发起mailbox更新
-        //Mailbox_Read_FLASHUID_Trigger();
+        // Mailbox_Read_FLASHUID_Trigger();
         //  Mailbox_Read_EFUSE_Trigger();
         Mailbox_WriteRootKey_Trigger();
     }
@@ -153,7 +153,7 @@ void __weak Hook_1secEventA(void) // get all temp
     if (*((VBYTE *)(0x203B9)) == 3)
     {
         *((VBYTE *)(0x203B9)) = 0;
-        Mailbox_IncrementCounter_Trigger();
+        Mailbox_IncrementCounter_Trigger(0x3FFE);
     }
 
     if (*((VBYTE *)(0x203B9)) == 4)
