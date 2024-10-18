@@ -294,7 +294,8 @@ void Mailbox_eRPMC_Trigger(void)
 /*************************************eRPMC Mailbox***************************************/
 void Mailbox_Control(void)
 {
-    if (C2EINFO0 == 0x3)
+    DWORD APB_cryptoModulex_temp=0;
+    if (C2E_CMD == 0x3)
     {
         /* 固件扩展结果反馈 */
         if ((BYTE)(C2EINFO1 & 0xff) == 0x1)
@@ -302,15 +303,55 @@ void Mailbox_Control(void)
         else if ((BYTE)(C2EINFO1 & 0xff) == 0x2)
             printf("固件扩展失败\n");
     }
-    else if (C2EINFO0 == 0x4)
+    else if (C2E_CMD == 0x4)
     {
         /* APB2资源分配结果反馈 */
-        if ((BYTE)(C2EINFO1 & 0xff) == 0x1)
-            printf("资源分配成功\n");
-        else if ((BYTE)(C2EINFO1 & 0xff) == 0x2)
-            printf("资源分配失败\n");
+        APB_cryptoModulex_temp=C2EINFO1;
+        APB_ShareMod_Cry=C2EINFO2;
+        if(APB_cryptoModulex_temp&0x80000000)//强制申请使用权限
+        {
+            APB_ShareMod_Cry=APB_cryptoModulex_temp&0x7fffffff;
+            E2CINFO1=0x1;
+            E2CINFO2=APB_ShareMod_Cry;
+            E2CINFO0 = 0x4; // 命令字
+            E2CINT = 0x1;   // 触发子系统中断
+            dprint("force access success cryptoModulex:%x\n",APB_cryptoModulex_temp);
+            return;
+        }
+        printf("APB_cryptoModulex_temp:0x%x APB_ShareMod_Cry:0x%x\n",APB_cryptoModulex_temp,APB_ShareMod_Cry);
+        if(APB_cryptoModulex_temp>APB_ShareMod_Cry)//使用申请
+        {
+            APB_cryptoModulex_temp^=APB_ShareMod_Cry;
+            if(APB_cryptoModulex_temp&APB_ShareMod_EC)//冲突 拒绝申请
+            {
+                E2CINFO1=0x2;//申请拒绝
+                E2CINFO2=APB_ShareMod_Cry;
+                E2CINFO0 = 0x4; // 命令字
+                E2CINT = 0x1;   // 触发子系统中断
+                dprint("access conflict cryptoModulex:%x\n",APB_cryptoModulex_temp);
+            }
+            else//申请成功
+            {
+                APB_ShareMod_Cry|=APB_cryptoModulex_temp;
+                E2CINFO1=0x1;//申请允许
+                E2CINFO2=APB_ShareMod_Cry;
+                E2CINFO0 = 0x4; // 命令字
+                E2CINT = 0x1;   // 触发子系统中断
+                dprint("access success cryptoModulex:%x\n",APB_cryptoModulex_temp);
+            }
+        }
+        else//使用释放
+        {
+            APB_cryptoModulex_temp^=APB_ShareMod_Cry;
+            APB_ShareMod_Cry&=~APB_cryptoModulex_temp;
+            E2CINFO1=0x1;//释放成功
+            E2CINFO2=APB_ShareMod_Cry;
+            E2CINFO0 = 0x4; // 命令字
+            E2CINT = 0x1;   // 触发子系统中断
+            dprint("release success cryptoModulex:%x\n",APB_cryptoModulex_temp);
+        }
     }
-    else if (C2EINFO0 == 0x5)
+    else if (C2E_CMD == 0x5)
     {
         /* 读取内部FLASH ID */
         if ((BYTE)(C2EINFO1 & 0xff) == 0x1)
@@ -318,13 +359,13 @@ void Mailbox_Control(void)
         else if ((BYTE)(C2EINFO1 & 0xff) == 0x2)
             printf("read flash failed\n");
     }
-    else if (C2EINFO0 == 0x6)
+    else if (C2E_CMD == 0x6)
     {
         /* 响应子系统降频 */
         SYSCTL_CLKDIV_OSC80M = 1; // 配置内部时钟分频为2分频，降频到48M
         eFlash_Forbid_Flag = 1;   // 降频到48MHz后，设置eFlash禁止主系统访问标志
     }
-    else if (C2EINFO0 == 0x8)
+    else if (C2E_CMD == 0x8)
     {
         /* 读取内部FLASH ID */
         if ((BYTE)(C2EINFO1 & 0x1) == 0x1)
@@ -342,13 +383,13 @@ void Mailbox_Firmware(void)
         printf("更新失败，请检查参数\n");
         return;
     }
-    if (C2EINFO0 == 0x10)
+    if (C2E_CMD == 0x10)
     {
         /* code */
         printf("c");
         // Mailbox_Update_Function((DWORD)(E2CINFO1 >> 24), (DWORD)((E2CINFO1 << 8) >> 8), 0x70800);
     }
-    else if (C2EINFO0 == 0x11)
+    else if (C2E_CMD == 0x11)
     {
         /* code */
     }
@@ -360,7 +401,7 @@ void Mailbox_Firmware(void)
 
 void Mailbox_Efuse(void)
 {
-    if (C2EINFO0 == 0x20)
+    if (C2E_CMD == 0x20)
     {
         printf("efuse:%x,%x,%x,%x,%x,%x,%x\n", C2EINFO1, C2EINFO2, C2EINFO3, C2EINFO4, C2EINFO5, C2EINFO6, C2EINFO7);
     }
@@ -368,17 +409,15 @@ void Mailbox_Efuse(void)
 
 void Mailbox_eRPMC(void)
 {
-    eRPMC_Busy_Status = 0; // 清除rpmc device busy状态
-
-    if (C2EINFO0 == 0x30)
+    if (C2E_CMD == 0x30)
         eRPMC_WriteRootKey_Response();
-    else if (C2EINFO0 == 0x31)
+    else if (C2E_CMD == 0x31)
         eRPMC_UpdateHMACKey_Response();
-    else if (C2EINFO0 == 0x32)
+    else if (C2E_CMD == 0x32)
         eRPMC_IncrementCounter_Response();
-    else if (C2EINFO0 == 0x33)
+    else if (C2E_CMD == 0x33)
         eRPMC_RequestCounter_Response();
-    else if (C2EINFO0 == 0x34)
+    else if (C2E_CMD == 0x34)
         eRPMC_ReadParameter_Response();
 }
 

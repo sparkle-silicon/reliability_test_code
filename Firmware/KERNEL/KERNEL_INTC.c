@@ -1910,6 +1910,7 @@ void intr1_mailbox(void)
 #endif
 	// printf("c2e int\n");
 	Mailbox_Int_Store = C2EINT;
+	C2E_CMD=C2EINFO0;
 	C2EINT |= C2EINT; // 清除中断
 	F_Service_Mailbox = 1;
 }

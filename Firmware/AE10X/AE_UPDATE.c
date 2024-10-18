@@ -566,7 +566,7 @@ void ALIGNED(4) EC_SinglePage_Update(void)
     E2CINFO0 = 0x11;
     E2CINFO1 = (DWORD)(*((VBYTEP)(SRAM_BASE_ADDR + 0x107)) << 24) + (DWORD)(*((VBYTEP)(SRAM_BASE_ADDR + 0x106)) << 16) + (DWORD)(*((VBYTEP)(SRAM_BASE_ADDR + 0x105)) << 8) + (DWORD)(*((VBYTEP)(SRAM_BASE_ADDR + 0x104)));
     E2CINT = 0x2; // 触发对应中断
-    while(C2EINFO0 != 0x11); // 等待子系统完毕回复
+    while(C2E_CMD != 0x11); // 等待子系统完毕回复
     return;
 }
 
@@ -588,7 +588,7 @@ void ALIGNED(4) Mailbox_4KSMS_UPDATE(BYTE mode, DWORD fw_size, DWORD start_addr)
     // printf("d:%x,%x,%x\n", E2CINFO0, E2CINFO1, E2CINFO2);
     PRINTF_TX = 'C';
     E2CINT = 0x2; // 触发对应中断
-    while(C2EINFO0 != 0x10); // 等待子系统更新完毕回复
+    while(C2E_CMD != 0x10); // 等待子系统更新完毕回复
     // WDT_CRR = 0x76;
 
     if(C2EINFO1 == 0x1)
