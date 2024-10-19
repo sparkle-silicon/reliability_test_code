@@ -523,8 +523,12 @@
 #define wOOB_CrashCpuDataBytes (*(VWORDP)(eSPI_MemBase + 0x26))
 #define wOOB_CrashPchDataSizes (*(VWORDP)(eSPI_MemBase + 0x28))
 #define wOOB_CrashLogDataIndex (*(VWORDP)(eSPI_MemBase + 0x2A))
+#define eRPMC_Handler_Rec     (*(VBYTEP)(eSPI_MemBase + 0x2C))
+#define eRPMC_Handler_Res    (*(VBYTEP)(eSPI_MemBase + 0x2D))
+#define eRPMC_Handler_Force  (*(VBYTEP)(eSPI_MemBase + 0x2E))
+#define RMPC_ResType         (*(VBYTEP)(eSPI_MemBase + 0x2F))
 
-#define PECI_MemBase (eSPI_MemBase + MEMORY_032SIZE) //0x20418
+#define PECI_MemBase (eSPI_MemBase + MEMORY_064SIZE) //0x20418
 #define PECI_FLAG (*(VBYTEP)(PECI_MemBase + 0x0))
 #define F_PECI_STOP         BIT(7)
 #define F_PECI_BUSY         BIT(6)
@@ -572,7 +576,9 @@
 #define ROM_COPY_CNT (*(VDWORDP)(Mailbox_MemBase + 0x04))
 #define Remaining_size (*(VDWORDP)(Mailbox_MemBase + 0x08))
 #define eFlash_Forbid_Flag (*(VBYTEP)(Mailbox_MemBase + 0x0C))
-
+#define C2E_CMD (*(VBYTEP)(Mailbox_MemBase + 0x0D))
+#define APB_ShareMod_Cry (*(VBYTEP)(Mailbox_MemBase + 0x0E))//同步子系统正在使用的模块
+#define APB_ShareMod_EC (*(VBYTEP)(Mailbox_MemBase + 0x0F))//同步主系统正在使用的模块
 #define DEFAULT_BASE_ADDR2 (Mailbox_MemBase + MEMORY_016SIZE) // 0x203C0
 #define DEFAULT_BASE_SIZE 0x2A8
 

@@ -16,7 +16,7 @@ hexname="./ec_main.hex"
 s19name="./ec_main.s19"
 # clear
 make clean -j4 DOWNLOAD=crypto
-make compile -j4
+make compile -j4 DOWNLOAD=crypto
 ##sed 's/cc.*/& eeeee/g' ./ec_main.bin
 if [ -d "$folder0" ] ; then #存在目录/home/Share
     if [ -f "$binname" ]; then cp "$binname" "$folder0";fi
