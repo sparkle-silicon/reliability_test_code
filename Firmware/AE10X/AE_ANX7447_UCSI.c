@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-03-06 19:18:39
+ * @LastEditTime: 2024-10-19 15:16:56
  * @Description:
  *
  *
@@ -700,7 +700,7 @@ static u8 ppm_get_alt_modes()
 //ucsi_errno = ERR_INVALID;
 //set_error_data();
         DataLength = 0;
-        goto out;;
+        goto out;
     }
 
     if(gam->NumofAlternateMode >
@@ -1394,7 +1394,7 @@ static u8 ppm_set_pdm()
     context[port_index].power_operation_mode_pdm = 0;
 
     result = UCSI_COMMAND_SUCC;
-    //context[port_index].power_operation_mode_pdm = (((((VBYTE *)spdm)[3])&0x80) >> 6) | (((((VBYTE *)spdm)[2])&0x3) << 1);;
+    //context[port_index].power_operation_mode_pdm = (((((VBYTE *)spdm)[3])&0x80) >> 6) | (((((VBYTE *)spdm)[2])&0x3) << 1);
 #ifdef EC_ANX_BIG_ENDIAN
     if((((VBYTE *)spdm)[3]) & 0x80)
         context[port_index].power_operation_mode_pdm |= PW_PROVIDER;
@@ -1510,7 +1510,7 @@ static u8 ppm_set_pdr()
     set_pdr_port_id = port_index;
     DETECT_POWER_ON(port_index);
     context[port_index].power_operation_mode_pdr = 0;
-    //context[port_index].power_operation_mode_pdr = (((((VBYTE *)spdr)[3])&0x80) >> 6) | (((((VBYTE *)spdr)[2])&0x3) << 1);;
+    //context[port_index].power_operation_mode_pdr = (((((VBYTE *)spdr)[3])&0x80) >> 6) | (((((VBYTE *)spdr)[2])&0x3) << 1);
 #ifdef EC_ANX_BIG_ENDIAN
     if((((VBYTE *)spdr)[3]) & 0x80)
         context[port_index].power_operation_mode_pdr |= PW_PROVIDER;
