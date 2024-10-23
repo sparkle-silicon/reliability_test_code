@@ -19,6 +19,19 @@
 #include "AE_GLOBAL.H"
 #include "AE_REG.H"
 #include "AE_CONFIG.H"
+typedef void (*TaskFunction)(void*); // 定义任务函数类型，接受参数
+// 定义一个结构体来封装多个参数
+typedef struct {
+    DWORD E2C_INFO1;
+    DWORD E2C_INFO2;
+    DWORD E2C_INFO3;
+} TaskParams;
+
+typedef struct Task {
+    TaskFunction function; // 任务函数指针
+    TaskParams params;     // 任务参数
+    struct Task *next;     // 指向下一个任务
+} Task;
 
 
 /*APB 共享模块使用情况定义*/
@@ -40,6 +53,8 @@
 #define APB_UART1  BIT(15)
 #define APB_SPIM   BIT(16)
 #define APB_PECI   BIT(17)
+#define APB_REL    BIT(30)
+#define APB_REQ    BIT(31)
 
 extern void mailbox_init(void);
 void Mailbox_Control();
@@ -53,11 +68,14 @@ extern void Mailbox_C2E_Service(void);
 extern void Mailbox_Read_FLASHID_Trigger(void);
 extern void Mailbox_Read_EFUSE_Trigger(void);
 extern void Mailbox_FW_Extension_Trigger(void);
-extern void Mailbox_APB2_Source_Alloc_Trigger(void);
+extern void Mailbox_APB2_Source_Alloc_Trigger(void *param);
+extern void Mailbox_Read_FLASHUID_Trigger(void);
 extern void Mailbox_Test(void);
 extern void Mailbox_WriteRootKey_Trigger(void);
 extern void Mailbox_UpdateHMACKey_Trigger(void);
 extern void Mailbox_IncrementCounter_Trigger(uint32_t CountData);
 extern void Mailbox_RequestCounter_Trigger(void);
 extern void Mailbox_eRPMC_Trigger(void);
+extern void Process_Tasks(void);
+extern Task * Add_Task(TaskFunction function, TaskParams params,Task **head);
 #endif

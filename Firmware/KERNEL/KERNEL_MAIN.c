@@ -16,6 +16,7 @@
 #include "AE_INCLUDE.H"
 #include "KERNEL_INCLUDE.H"
 #include "CUSTOM_INCLUDE.H"
+extern Task *task_head;
 #define printf_instructions_msg " \
 \n\
 ************************************************************************************\n\
@@ -401,6 +402,14 @@ void Service_Debugger(void)
 	}
 }
 #endif
+//----------------------------------------------------------------------------
+// FUNCTION: Service_PUTC
+// UART putchar support function
+//----------------------------------------------------------------------------
+void Service_Process_Tasks(void)
+{
+	Process_Tasks();
+}
 //-----------------------------------------------------------------------------
 //  Function Pointers
 //-----------------------------------------------------------------------------
@@ -421,6 +430,7 @@ const FUNCT_PTR_V_V service_table[] =
 	Service_KBS,		// Keyboard scanner service
 #if (GLE01 == 1)
 		Service_Mailbox, // Mailbox service
+		Service_Process_Tasks, // Process Tasks
 #endif
 						 // Lo-Level Service
 		Service_PCI3,	   // PMC2 Host Command/Data service
@@ -545,8 +555,7 @@ int __weak main(void)
 
 	// printf("mirror success\n");
 
-	while(C2EINFO7 != 0xa55a)
-		; // 等待子系统初始化完毕
+	while(C2EINFO7 != 0xa55a); // 等待子系统初始化完毕
 
 	//  3. jump loop
 	main_loop();

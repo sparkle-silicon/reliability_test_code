@@ -1,4 +1,44 @@
 #include "KERNEL_MAILBOX.H"
+volatile bool command_processed = true; // 用于标志子系统是否处理完命令
+Task *task_head = NULL; // 任务链表头
+// 添加任务到链表
+Task * Add_Task(TaskFunction function, TaskParams params,Task **head)
+{
+    Task *new_task = malloc(sizeof(Task));
+    if (new_task == NULL) {
+        return NULL;
+    }
+    new_task->function = function;
+    new_task->params = params;
+    new_task->next = NULL; // 新任务的下一个指针为 NULL
+
+    if (*head == NULL)//链表为空，则新任务为头节点 
+    { 
+        *head = new_task;
+    } else// 链表不为空,尾插入 
+    { 
+        Task *p = *head;
+        while(p->next != NULL) {
+            p = p->next;
+        }
+        p->next = new_task;
+    }
+    return *head; // 返回更新后的头指针
+}
+
+// 处理任务队列中的任务
+void Process_Tasks(void) 
+{
+    if (task_head!= NULL) 
+    {
+        if(command_processed==false)
+            return;
+        Task *task = task_head;
+        task_head = task_head->next; // 移动到下一个任务
+        task->function(&task->params); // 执行任务函数，传递参数
+        free(task); // 处理完成，释放任务内存
+    }
+}
 
 void mailbox_init(void)
 {
@@ -37,17 +77,25 @@ void Mailbox_Read_FLASHUID_Trigger(void)
     dprint("Read_FLASHUID_Trigger\n");
     E2CINFO0 = 0x8; // 命令字
     E2CINT = 0x1;   // 触发子系统中断
+    command_processed = false;
 }
 
-void Mailbox_APB2_Source_Alloc_Trigger(void)
+void Mailbox_APB2_Source_Alloc_Trigger(void *param)
 {
+    TaskParams *params = (TaskParams *)param;
+    printf("param0:0x%x, param1:0x%x, param2:0x%x\n",params->E2C_INFO1, params->E2C_INFO2, params->E2C_INFO3);
     E2CINFO0 = 0x4; // 命令字
-    // APB2资源分配，0表示资源为主系统使用，1表示资源为子系统使用
-    // bit18:PECI   bit17:SPIM  bit16:PWM
-    // bit15:ADC    bit14:CEC1  bit13:CEC0  bit12:SMBUS8    bit11:SMBUS7    bit10:SMBUS6    bit9:SMBUS5 bit8:SMBUS4
-    // bit7:SMBUS3  bit6:SMBUS2 bit5:SMBUS1 bit4:SMBUS0     bit3:UARTB      bit2:UARTA      bit1:UART1  bit0:UART0
-    E2CINFO1 = 0x2; // 主/子系统APB2资源分配
+    E2CINFO1 = params->E2C_INFO1;
+    E2CINFO2 = params->E2C_INFO2;
+    E2CINFO3 = params->E2C_INFO3;
     E2CINT = 0x1;   // 触发子系统中断
+    command_processed = false;
+}
+
+void Mailbox_Ctrpto_Selfcheck(void)
+{
+    E2CINFO0=0x1;
+    E2CINT = 0x1;
 }
 /*************************************eRPMC Mailbox***************************************/
 #define OP1_Code 0x9B
@@ -294,8 +342,15 @@ void Mailbox_eRPMC_Trigger(void)
 /*************************************eRPMC Mailbox***************************************/
 void Mailbox_Control(void)
 {
-    DWORD APB_cryptoModulex_temp=0;
-    if (C2E_CMD == 0x3)
+    if(C2E_CMD==0x1)
+    {
+        /*子系统自检结果反馈*/
+        if ((BYTE)(C2EINFO1 & 0xff) == 0x1)
+            printf("子系统自检成功\n");
+        else if ((BYTE)(C2EINFO1 & 0xff) == 0x2)
+            printf("子系统自检失败 err_sta:0x%x\n",C2EINFO2);
+    }
+    else if (C2E_CMD == 0x3)
     {
         /* 固件扩展结果反馈 */
         if ((BYTE)(C2EINFO1 & 0xff) == 0x1)
@@ -305,50 +360,19 @@ void Mailbox_Control(void)
     }
     else if (C2E_CMD == 0x4)
     {
-        /* APB2资源分配结果反馈 */
-        APB_cryptoModulex_temp=C2EINFO1;
-        APB_ShareMod_Cry=C2EINFO2;
-        if(APB_cryptoModulex_temp&0x80000000)//强制申请使用权限
+        DWORD APB_ShareMod_temp = C2EINFO1;
+        if(APB_ShareMod_temp&APB_REL)//子系统释放使用权限
         {
-            APB_ShareMod_Cry=APB_cryptoModulex_temp&0x7fffffff;
-            E2CINFO1=0x1;
-            E2CINFO2=APB_ShareMod_Cry;
-            E2CINFO0 = 0x4; // 命令字
-            E2CINT = 0x1;   // 触发子系统中断
-            dprint("force access success cryptoModulex:%x\n",APB_cryptoModulex_temp);
-            return;
+            APB_ShareMod_temp&=~APB_REL;
+            APB_ShareMod_Cry&=~APB_ShareMod_temp;
+            E2CINFO1=APB_ShareMod_Cry;
+            printf("apb_share_mod_cry:%x\n",APB_ShareMod_Cry);
         }
-        printf("APB_cryptoModulex_temp:0x%x APB_ShareMod_Cry:0x%x\n",APB_cryptoModulex_temp,APB_ShareMod_Cry);
-        if(APB_cryptoModulex_temp>APB_ShareMod_Cry)//使用申请
+        else
         {
-            APB_cryptoModulex_temp^=APB_ShareMod_Cry;
-            if(APB_cryptoModulex_temp&APB_ShareMod_EC)//冲突 拒绝申请
-            {
-                E2CINFO1=0x2;//申请拒绝
-                E2CINFO2=APB_ShareMod_Cry;
-                E2CINFO0 = 0x4; // 命令字
-                E2CINT = 0x1;   // 触发子系统中断
-                dprint("access conflict cryptoModulex:%x\n",APB_cryptoModulex_temp);
-            }
-            else//申请成功
-            {
-                APB_ShareMod_Cry|=APB_cryptoModulex_temp;
-                E2CINFO1=0x1;//申请允许
-                E2CINFO2=APB_ShareMod_Cry;
-                E2CINFO0 = 0x4; // 命令字
-                E2CINT = 0x1;   // 触发子系统中断
-                dprint("access success cryptoModulex:%x\n",APB_cryptoModulex_temp);
-            }
-        }
-        else//使用释放
-        {
-            APB_cryptoModulex_temp^=APB_ShareMod_Cry;
-            APB_ShareMod_Cry&=~APB_cryptoModulex_temp;
-            E2CINFO1=0x1;//释放成功
-            E2CINFO2=APB_ShareMod_Cry;
-            E2CINFO0 = 0x4; // 命令字
-            E2CINT = 0x1;   // 触发子系统中断
-            dprint("release success cryptoModulex:%x\n",APB_cryptoModulex_temp);
+            APB_ShareMod_Cry=APB_ShareMod_temp;
+            printf("apb_share_mod_cry:%x\n",APB_ShareMod_Cry);
+            command_processed = true;
         }
     }
     else if (C2E_CMD == 0x5)
@@ -372,6 +396,7 @@ void Mailbox_Control(void)
             printf("flash 9fcmd return id:0x%x 0x%x 0x%x 0x%x\n", C2EINFO5, C2EINFO4, C2EINFO3, C2EINFO2);
         else if ((BYTE)(C2EINFO1 & 0x2) == 0x2)
             printf("read flash failed\n");
+        command_processed = true;
     }
 }
 

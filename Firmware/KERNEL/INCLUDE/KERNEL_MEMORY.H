@@ -578,7 +578,6 @@
 #define eFlash_Forbid_Flag (*(VBYTEP)(Mailbox_MemBase + 0x0C))
 #define C2E_CMD (*(VBYTEP)(Mailbox_MemBase + 0x0D))
 #define APB_ShareMod_Cry (*(VBYTEP)(Mailbox_MemBase + 0x0E))//同步子系统正在使用的模块
-#define APB_ShareMod_EC (*(VBYTEP)(Mailbox_MemBase + 0x0F))//同步主系统正在使用的模块
 #define DEFAULT_BASE_ADDR2 (Mailbox_MemBase + MEMORY_016SIZE) // 0x203C0
 #define DEFAULT_BASE_SIZE 0x2A8
 
