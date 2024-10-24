@@ -2606,7 +2606,7 @@ BYTE Process_Peripheral_Memory_Read32(void)
 /*****************************************eRPMC OOB************************************************/
 void eRPMC_WriteRootKey_Response(void)
 {
-    printf("extended status:%x\n", C2EINFO1);
+    printf("extended status:%x\n", C2EINFO2);
     eRPMC_WriteRootKey_data.eSPI_Cycle_Type = 0x21;
     eRPMC_WriteRootKey_data.Length_High = 0x00;
     eRPMC_WriteRootKey_data.Tag = 0x0;
@@ -2638,7 +2638,7 @@ void eRPMC_WriteRootKey_Response(void)
 
 void eRPMC_UpdateHMACKey_Response(void)
 {
-    printf("extended status:%x\n", C2EINFO1);
+    printf("extended status:%x\n", C2EINFO2);
     eRPMC_UpdateHMACKey_data.eSPI_Cycle_Type = 0x21;
     eRPMC_UpdateHMACKey_data.Length_High = 0x00;
     eRPMC_UpdateHMACKey_data.Tag = 0x0;
@@ -2670,7 +2670,7 @@ void eRPMC_UpdateHMACKey_Response(void)
 
 void eRPMC_IncrementCounter_Response(void)
 {
-    printf("extended status:%x\n", C2EINFO1);
+    printf("extended status:%x\n", C2EINFO2);
     eRPMC_IncrementCounter_data.eSPI_Cycle_Type = 0x21;
     eRPMC_IncrementCounter_data.Length_High = 0x00;
     eRPMC_IncrementCounter_data.Tag = 0x0;
@@ -2704,7 +2704,7 @@ void eRPMC_IncrementCounter_Response(void)
 
 void eRPMC_RequestCounter_Response(void)
 {
-    printf("extended status:%x\n", C2EINFO1);
+    printf("extended status:%x\n", C2EINFO2);
     eRPMC_RequestCounter_data.eSPI_Cycle_Type = 0x21;
     eRPMC_RequestCounter_data.Length_High = 0x00;
     eRPMC_RequestCounter_data.Tag = 0x0;
@@ -2737,12 +2737,12 @@ void eRPMC_RequestCounter_Response(void)
     eRPMC_Handler_Res = 1;
     // 填入OOB回复HOST的OOB MTCP Packet
     // if (*((DWORDP)(0x31820)) < 0x4010)
-    Mailbox_IncrementCounter_Trigger(*((DWORDP)(0x31820)));
+    Mailbox_IncrementCounter_Trigger(*((DWORDP)(0x3180C)));
 }
 
 void eRPMC_ReadParameter_Response(void)
 {
-    printf("extended status:%x\n", C2EINFO1);
+    printf("extended status:%x\n", C2EINFO2);
     eRPMC_ReadParameters_data.eSPI_Cycle_Type = 0x21;
     eRPMC_ReadParameters_data.Length_High = 0x00;
     eRPMC_ReadParameters_data.Tag = 0x0;
