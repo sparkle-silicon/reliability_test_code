@@ -1,24 +1,27 @@
 #include "KERNEL_MAILBOX.H"
 volatile bool command_processed = true; // 用于标志子系统是否处理完命令
-Task *task_head = NULL; // 任务链表头
+Task *task_head = NULL;                 // 任务链表头
 // 添加任务到链表
-Task * Add_Task(TaskFunction function, TaskParams params,Task **head)
+Task *Add_Task(TaskFunction function, TaskParams params, Task **head)
 {
     Task *new_task = malloc(sizeof(Task));
-    if (new_task == NULL) {
+    if (new_task == NULL)
+    {
         return NULL;
     }
     new_task->function = function;
     new_task->params = params;
     new_task->next = NULL; // 新任务的下一个指针为 NULL
 
-    if (*head == NULL)//链表为空，则新任务为头节点 
-    { 
+    if (*head == NULL) // 链表为空，则新任务为头节点
+    {
         *head = new_task;
-    } else// 链表不为空,尾插入 
-    { 
+    }
+    else // 链表不为空,尾插入
+    {
         Task *p = *head;
-        while(p->next != NULL) {
+        while (p->next != NULL)
+        {
             p = p->next;
         }
         p->next = new_task;
@@ -27,16 +30,16 @@ Task * Add_Task(TaskFunction function, TaskParams params,Task **head)
 }
 
 // 处理任务队列中的任务
-void Process_Tasks(void) 
+void Process_Tasks(void)
 {
-    if (task_head!= NULL) 
+    if (task_head != NULL)
     {
-        if(command_processed==false)
+        if (command_processed == false)
             return;
         Task *task = task_head;
-        task_head = task_head->next; // 移动到下一个任务
+        task_head = task_head->next;   // 移动到下一个任务
         task->function(&task->params); // 执行任务函数，传递参数
-        free(task); // 处理完成，释放任务内存
+        free(task);                    // 处理完成，释放任务内存
     }
 }
 
@@ -87,18 +90,18 @@ void Mailbox_Read_FLASHUID_Trigger(void)
 void Mailbox_APB2_Source_Alloc_Trigger(void *param)
 {
     TaskParams *params = (TaskParams *)param;
-    printf("param0:0x%x, param1:0x%x, param2:0x%x\n",params->E2C_INFO1, params->E2C_INFO2, params->E2C_INFO3);
+    printf("param0:0x%x, param1:0x%x, param2:0x%x\n", params->E2C_INFO1, params->E2C_INFO2, params->E2C_INFO3);
     E2CINFO0 = 0x4; // 命令字
     E2CINFO1 = params->E2C_INFO1;
     E2CINFO2 = params->E2C_INFO2;
     E2CINFO3 = params->E2C_INFO3;
-    E2CINT = 0x1;   // 触发子系统中断
+    E2CINT = 0x1; // 触发子系统中断
     command_processed = false;
 }
 
 void Mailbox_Ctrpto_Selfcheck(void)
 {
-    E2CINFO0=0x1;
+    E2CINFO0 = 0x1;
     E2CINT = 0x1;
     command_processed = false;
 }
@@ -159,7 +162,7 @@ void Mailbox_WriteRootKey_Trigger(void)
     *((VDWORD *)0x31838) = 0x00010203;
 
     E2CINFO0 = 0x30;       // 命令字
-    E2CINFO1 = 0x0001009B; // WriteRootKey模拟测试
+    E2CINFO1 = 0x0000009B; // WriteRootKey模拟测试
     E2CINT = 0x8;          // 触发子系统中断
     command_processed = false;
     eRPMC_Busy_Status = 1;
@@ -189,7 +192,7 @@ void Mailbox_UpdateHMACKey_Trigger(void)
     *((VDWORD *)0x31820) = 0x01020304;
 
     E2CINFO0 = 0x31;       // 命令字
-    E2CINFO1 = 0x0001019B; // UpdateHMACKey模拟测试
+    E2CINFO1 = 0x0000019B; // UpdateHMACKey模拟测试
     E2CINT = 0x8;          // 触发子系统中断
     command_processed = false;
     eRPMC_Busy_Status = 1;
@@ -227,7 +230,7 @@ void Mailbox_IncrementCounter_Trigger(uint32_t CountData)
     *((VDWORD *)0x31820) = CountData;
 
     E2CINFO0 = 0x32;       // 命令字
-    E2CINFO1 = 0x0001029B; // IncrementCounter模拟测试
+    E2CINFO1 = 0x0000029B; // IncrementCounter模拟测试
     E2CINT = 0x8;          // 触发子系统中断
     command_processed = false;
     eRPMC_Busy_Status = 1;
@@ -259,7 +262,7 @@ void Mailbox_RequestCounter_Trigger(void)
     *((VDWORD *)0x31828) = 0x00000000;
 
     E2CINFO0 = 0x33;       // 命令字
-    E2CINFO1 = 0x0001039B; // RequestCounter模拟测试
+    E2CINFO1 = 0x0000039B; // RequestCounter模拟测试
     E2CINT = 0x8;          // 触发子系统中断
     command_processed = false;
     eRPMC_Busy_Status = 1;
@@ -352,13 +355,13 @@ void Mailbox_eRPMC_Trigger(void)
 /*************************************eRPMC Mailbox***************************************/
 void Mailbox_Control(void)
 {
-    if(C2E_CMD==0x1)
+    if (C2E_CMD == 0x1)
     {
         /*子系统自检结果反馈*/
         if ((BYTE)(C2EINFO1 & 0xff) == 0x1)
             printf("子系统自检成功\n");
         else if ((BYTE)(C2EINFO1 & 0xff) == 0x2)
-            printf("子系统自检失败 err_sta:0x%x\n",C2EINFO2);
+            printf("子系统自检失败 err_sta:0x%x\n", C2EINFO2);
     }
     else if (C2E_CMD == 0x3)
     {
@@ -371,17 +374,17 @@ void Mailbox_Control(void)
     else if (C2E_CMD == 0x4)
     {
         DWORD APB_ShareMod_temp = C2EINFO1;
-        if(APB_ShareMod_temp&APB_REL)//子系统释放使用权限
+        if (APB_ShareMod_temp & APB_REL) // 子系统释放使用权限
         {
-            APB_ShareMod_temp&=~APB_REL;
-            APB_ShareMod_Cry&=~APB_ShareMod_temp;
-            E2CINFO1=APB_ShareMod_Cry;
-            printf("apb_share_mod_cry0:%x\n",APB_ShareMod_Cry);
+            APB_ShareMod_temp &= ~APB_REL;
+            APB_ShareMod_Cry &= ~APB_ShareMod_temp;
+            E2CINFO1 = APB_ShareMod_Cry;
+            printf("apb_share_mod_cry0:%x\n", APB_ShareMod_Cry);
         }
         else
         {
-            APB_ShareMod_Cry=APB_ShareMod_temp;
-            printf("apb_share_mod_cry1:0x%x\n",APB_ShareMod_Cry);
+            APB_ShareMod_Cry = APB_ShareMod_temp;
+            printf("apb_share_mod_cry1:0x%x\n", APB_ShareMod_Cry);
         }
     }
     else if (C2E_CMD == 0x5)
