@@ -159,7 +159,7 @@ void Mailbox_WriteRootKey_Trigger(void)
     *((VDWORD *)0x31838) = 0x00010203;
 
     E2CINFO0 = 0x30;       // 命令字
-    E2CINFO1 = 0x0000009B; // WriteRootKey模拟测试
+    E2CINFO1 = 0x0001009B; // WriteRootKey模拟测试
     E2CINT = 0x8;          // 触发子系统中断
     command_processed = false;
     eRPMC_Busy_Status = 1;
@@ -189,7 +189,7 @@ void Mailbox_UpdateHMACKey_Trigger(void)
     *((VDWORD *)0x31820) = 0x01020304;
 
     E2CINFO0 = 0x31;       // 命令字
-    E2CINFO1 = 0x0000019B; // UpdateHMACKey模拟测试
+    E2CINFO1 = 0x0001019B; // UpdateHMACKey模拟测试
     E2CINT = 0x8;          // 触发子系统中断
     command_processed = false;
     eRPMC_Busy_Status = 1;
@@ -227,7 +227,7 @@ void Mailbox_IncrementCounter_Trigger(uint32_t CountData)
     *((VDWORD *)0x31820) = CountData;
 
     E2CINFO0 = 0x32;       // 命令字
-    E2CINFO1 = 0x0000029B; // IncrementCounter模拟测试
+    E2CINFO1 = 0x0001029B; // IncrementCounter模拟测试
     E2CINT = 0x8;          // 触发子系统中断
     command_processed = false;
     eRPMC_Busy_Status = 1;
@@ -259,7 +259,7 @@ void Mailbox_RequestCounter_Trigger(void)
     *((VDWORD *)0x31828) = 0x00000000;
 
     E2CINFO0 = 0x33;       // 命令字
-    E2CINFO1 = 0x0000039B; // RequestCounter模拟测试
+    E2CINFO1 = 0x0001039B; // RequestCounter模拟测试
     E2CINT = 0x8;          // 触发子系统中断
     command_processed = false;
     eRPMC_Busy_Status = 1;
