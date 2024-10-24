@@ -556,7 +556,9 @@ int __weak main(void)
 	// printf("mirror success\n");
 
 	while(C2EINFO7 != 0xa55a); // 等待子系统初始化完毕
-
+	//分配串口1给子系统
+	TaskParams Params={(APB_UART1|APB_REQ),0,0};
+	task_head=Add_Task(Mailbox_APB2_Source_Alloc_Trigger,Params,&task_head);
 	//  3. jump loop
 	main_loop();
 	return 0;

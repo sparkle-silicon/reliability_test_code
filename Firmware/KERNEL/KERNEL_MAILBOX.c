@@ -51,6 +51,7 @@ void Mailbox_Test(void)
     E2CINFO1 = ((DWORD)(0x3 << 24) | (4 * 1024)); // BYTE3:固件位置标志 BYTE0~2:固件大小
     E2CINFO2 = 0x60000;                           // 更新起始地址
     E2CINT = 0x2;                                 // 触发对应中断
+    command_processed = false;
 }
 
 void Mailbox_FW_Extension_Trigger(void)
@@ -58,18 +59,21 @@ void Mailbox_FW_Extension_Trigger(void)
     E2CINFO0 = 0x3;       // 命令字
     E2CINFO1 = 0x1070800; // 扩展固件信息
     E2CINT = 0x1;         // 触发子系统中断
+    command_processed = false;
 }
 
 void Mailbox_Read_EFUSE_Trigger(void)
 {
     E2CINFO0 = 0x20; // 命令字
     E2CINT = 0x4;    // 触发子系统中断
+    command_processed = false;
 }
 
 void Mailbox_Read_FLASHID_Trigger(void)
 {
     E2CINFO0 = 0x5; // 命令字
     E2CINT = 0x1;   // 触发子系统中断
+    command_processed = false;
 }
 
 void Mailbox_Read_FLASHUID_Trigger(void)
@@ -96,6 +100,7 @@ void Mailbox_Ctrpto_Selfcheck(void)
 {
     E2CINFO0=0x1;
     E2CINT = 0x1;
+    command_processed = false;
 }
 /*************************************eRPMC Mailbox***************************************/
 #define OP1_Code 0x9B
@@ -156,6 +161,7 @@ void Mailbox_WriteRootKey_Trigger(void)
     E2CINFO0 = 0x30;       // 命令字
     E2CINFO1 = 0x0000009B; // WriteRootKey模拟测试
     E2CINT = 0x8;          // 触发子系统中断
+    command_processed = false;
     eRPMC_Busy_Status = 1;
 }
 
@@ -185,6 +191,7 @@ void Mailbox_UpdateHMACKey_Trigger(void)
     E2CINFO0 = 0x31;       // 命令字
     E2CINFO1 = 0x0000019B; // UpdateHMACKey模拟测试
     E2CINT = 0x8;          // 触发子系统中断
+    command_processed = false;
     eRPMC_Busy_Status = 1;
 }
 
@@ -222,6 +229,7 @@ void Mailbox_IncrementCounter_Trigger(uint32_t CountData)
     E2CINFO0 = 0x32;       // 命令字
     E2CINFO1 = 0x0000029B; // IncrementCounter模拟测试
     E2CINT = 0x8;          // 触发子系统中断
+    command_processed = false;
     eRPMC_Busy_Status = 1;
 }
 
@@ -253,6 +261,7 @@ void Mailbox_RequestCounter_Trigger(void)
     E2CINFO0 = 0x33;       // 命令字
     E2CINFO1 = 0x0000039B; // RequestCounter模拟测试
     E2CINT = 0x8;          // 触发子系统中断
+    command_processed = false;
     eRPMC_Busy_Status = 1;
 }
 
@@ -338,6 +347,7 @@ void Mailbox_eRPMC_Trigger(void)
     E2CINFO0 = 0x30;       // 命令字
     E2CINFO1 = 0x0000009B; // WriteRootKey模拟测试
     E2CINT = 0x8;          // 触发子系统中断
+    command_processed = false;
 }
 /*************************************eRPMC Mailbox***************************************/
 void Mailbox_Control(void)
@@ -366,13 +376,12 @@ void Mailbox_Control(void)
             APB_ShareMod_temp&=~APB_REL;
             APB_ShareMod_Cry&=~APB_ShareMod_temp;
             E2CINFO1=APB_ShareMod_Cry;
-            printf("apb_share_mod_cry:%x\n",APB_ShareMod_Cry);
+            printf("apb_share_mod_cry0:%x\n",APB_ShareMod_Cry);
         }
         else
         {
             APB_ShareMod_Cry=APB_ShareMod_temp;
-            printf("apb_share_mod_cry:%x\n",APB_ShareMod_Cry);
-            command_processed = true;
+            printf("apb_share_mod_cry1:0x%x\n",APB_ShareMod_Cry);
         }
     }
     else if (C2E_CMD == 0x5)
@@ -396,7 +405,6 @@ void Mailbox_Control(void)
             printf("flash 9fcmd return id:0x%x 0x%x 0x%x 0x%x\n", C2EINFO5, C2EINFO4, C2EINFO3, C2EINFO2);
         else if ((BYTE)(C2EINFO1 & 0x2) == 0x2)
             printf("read flash failed\n");
-        command_processed = true;
     }
 }
 
@@ -494,5 +502,6 @@ void Mailbox_C2E_Service(void)
         dprint("Mailbox_Int_Store:%x\n", Mailbox_Int_Store);
         break;
     }
+    command_processed = true;
     Mailbox_Int_Store = 0;
 }
