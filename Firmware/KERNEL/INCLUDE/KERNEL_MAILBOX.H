@@ -19,42 +19,43 @@
 #include "AE_GLOBAL.H"
 #include "AE_REG.H"
 #include "AE_CONFIG.H"
-typedef void (*TaskFunction)(void*); // 定义任务函数类型，接受参数
+typedef void (*TaskFunction)(void *); // 定义任务函数类型，接受参数
 // 定义一个结构体来封装多个参数
-typedef struct {
+typedef struct
+{
     DWORD E2C_INFO1;
     DWORD E2C_INFO2;
     DWORD E2C_INFO3;
 } TaskParams;
 
-typedef struct Task {
+typedef struct Task
+{
     TaskFunction function; // 任务函数指针
     TaskParams params;     // 任务参数
     struct Task *next;     // 指向下一个任务
 } Task;
-
 
 /*APB 共享模块使用情况定义*/
 #define APB_SMBUS0 BIT(0)
 #define APB_SMBUS1 BIT(1)
 #define APB_SMBUS2 BIT(2)
 #define APB_SMBUS3 BIT(3)
-#define APB_CEC0   BIT(4)
-#define APB_CEC1   BIT(5)
+#define APB_CEC0 BIT(4)
+#define APB_CEC1 BIT(5)
 #define APB_SMBUS4 BIT(6)
 #define APB_SMBUS5 BIT(7)
-#define APB_ADC    BIT(8)
-#define APB_PWM    BIT(9)
+#define APB_ADC BIT(8)
+#define APB_PWM BIT(9)
 #define APB_SMBUS6 BIT(10)
 #define APB_SMBUS7 BIT(11)
-#define APB_UARTA  BIT(12)
-#define APB_UARTB  BIT(13)
-#define APB_UART0  BIT(14)
-#define APB_UART1  BIT(15)
-#define APB_SPIM   BIT(16)
-#define APB_PECI   BIT(17)
-#define APB_REL    BIT(30)
-#define APB_REQ    BIT(31)
+#define APB_UARTA BIT(12)
+#define APB_UARTB BIT(13)
+#define APB_UART0 BIT(14)
+#define APB_UART1 BIT(15)
+#define APB_SPIM BIT(16)
+#define APB_PECI BIT(17)
+#define APB_REL BIT(30)
+#define APB_REQ BIT(31)
 
 extern void mailbox_init(void);
 void Mailbox_Control();
@@ -75,7 +76,8 @@ extern void Mailbox_WriteRootKey_Trigger(void);
 extern void Mailbox_UpdateHMACKey_Trigger(void);
 extern void Mailbox_IncrementCounter_Trigger(uint32_t CountData);
 extern void Mailbox_RequestCounter_Trigger(void);
+extern void Mailbox_ReadParameter_Trigger(void);
 extern void Mailbox_eRPMC_Trigger(void);
 extern void Process_Tasks(void);
-extern Task * Add_Task(TaskFunction function, TaskParams params,Task **head);
+extern Task *Add_Task(TaskFunction function, TaskParams params, Task **head);
 #endif

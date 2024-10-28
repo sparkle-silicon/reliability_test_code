@@ -268,6 +268,38 @@ void Mailbox_RequestCounter_Trigger(void)
     eRPMC_Busy_Status = 1;
 }
 
+void Mailbox_ReadParameter_Trigger(void)
+{
+
+    if (eRPMC_Busy_Status == 1)
+    {
+        printf("RPMC Device is in busy status\n");
+        // externed status  busy
+        // eRPMC_UpdateHMACKey_Response(); 此处不一定是该命令对应的extenedstatus，后续最好是做成统一的状态回复
+        return;
+    }
+    // RequestCounter命令  往SRAM的0x31800后填入对应eRPMC数据
+    *((VDWORD *)0x31800) = 0xc4acbe62;
+    *((VDWORD *)0x31804) = 0xfadc266a;
+    *((VDWORD *)0x31808) = 0xcf62f1d2;
+    *((VDWORD *)0x3180C) = 0xd78281a0;
+    *((VDWORD *)0x31810) = 0x4bf94d12;
+    *((VDWORD *)0x31814) = 0x9cdaff80;
+    *((VDWORD *)0x31818) = 0x3fee8fd0;
+    *((VDWORD *)0x3181C) = 0x0d1d587c;
+
+    // Tag
+    *((VDWORD *)0x31820) = 0x00000001;
+    *((VDWORD *)0x31824) = 0x00000000;
+    *((VDWORD *)0x31828) = 0x00000000;
+
+    E2CINFO0 = 0x34;       // 命令字
+    E2CINFO1 = 0x0000009F; // RequestCounter模拟测试
+    E2CINT = 0x8;          // 触发子系统中断
+    command_processed = false;
+    eRPMC_Busy_Status = 1;
+}
+
 void Mailbox_eRPMC_Trigger(void)
 {
 #if 0
@@ -445,6 +477,7 @@ void Mailbox_Efuse(void)
 
 void Mailbox_eRPMC(void)
 {
+    eRPMC_Busy_Status = 0; // 清除rpmc device busy状态
     if (C2E_CMD == 0x30)
         eRPMC_WriteRootKey_Response();
     else if (C2E_CMD == 0x31)

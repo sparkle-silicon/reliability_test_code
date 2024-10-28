@@ -161,6 +161,13 @@ void __weak Hook_1secEventA(void) // get all temp
         *((VBYTE *)(0x203B9)) = 0;
         Mailbox_RequestCounter_Trigger();
     }
+
+    if (*((VBYTE *)(0x203B9)) == 5)
+    {
+        *((VBYTE *)(0x203B9)) = 0;
+        Mailbox_ReadParameter_Trigger();
+    }
+
 #endif
 }
 //-----------------------------------------------------------------------------
