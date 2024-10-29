@@ -262,7 +262,7 @@ void Service_MS_1(void)
 // FUNCTION: Service_Mailbox
 //----------------------------------------------------------------------------
 #if (GLE01 == 1)
-static void Service_Mailbox(void)
+void Service_Mailbox(void)
 {
 #if (Service_Mailbox_START == 1)
 	if(F_Service_Mailbox == 1)
@@ -552,13 +552,10 @@ int __weak main(void)
 		E2CINFO7 = 0x5aa5;
 	}
 #endif
-
-	// printf("mirror success\n");
-
 	while(C2EINFO7 != 0xa55a); // 等待子系统初始化完毕
-	//分配串口1给子系统
+	AwaitCrypSelfcheck();
 	TaskParams Params={(APB_UART1|APB_REQ),0,0};
-	task_head=Add_Task(Mailbox_APB2_Source_Alloc_Trigger,Params,&task_head);
+	task_head=Add_Task(Mailbox_APB2_Source_Alloc_Trigger,Params,&task_head);//分配串口1给子系统
 	//  3. jump loop
 	main_loop();
 	return 0;

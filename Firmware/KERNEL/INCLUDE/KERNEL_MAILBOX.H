@@ -35,7 +35,7 @@ typedef struct Task
     struct Task *next;     // 指向下一个任务
 } Task;
 extern Task *task_head; // 任务链表头
-
+extern volatile bool command_processed;
 /*APB 共享模块使用情况定义*/
 #define APB_SMBUS0 BIT(0)
 #define APB_SMBUS1 BIT(1)
@@ -81,4 +81,6 @@ extern void Mailbox_ReadParameter_Trigger(void);
 extern void Mailbox_eRPMC_Trigger(void);
 extern void Process_Tasks(void);
 extern Task *Add_Task(TaskFunction function, TaskParams params, Task **head);
+extern void Mailbox_Cryp_Selfcheck(void);
+extern void AwaitCrypSelfcheck(void);
 #endif

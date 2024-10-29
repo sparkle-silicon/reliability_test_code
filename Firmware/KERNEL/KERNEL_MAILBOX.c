@@ -90,7 +90,6 @@ void Mailbox_Read_FLASHUID_Trigger(void)
 void Mailbox_APB2_Source_Alloc_Trigger(void *param)
 {
     TaskParams *params = (TaskParams *)param;
-    printf("param0:0x%x, param1:0x%x, param2:0x%x\n", params->E2C_INFO1, params->E2C_INFO2, params->E2C_INFO3);
     E2CINFO0 = 0x4; // 命令字
     E2CINFO1 = params->E2C_INFO1;
     E2CINFO2 = params->E2C_INFO2;
@@ -99,11 +98,43 @@ void Mailbox_APB2_Source_Alloc_Trigger(void *param)
     command_processed = false;
 }
 
-void Mailbox_Ctrpto_Selfcheck(void)
+void Mailbox_Cryp_Selfcheck(void)
 {
     E2CINFO0 = 0x1;
     E2CINT = 0x1;
     command_processed = false;
+}
+
+extern void Service_Process_Tasks(void);
+extern void Service_Mailbox(void);
+void AwaitCrypSelfcheck(void)
+{
+    TaskParams Params;
+    task_head=Add_Task((TaskFunction)Mailbox_Read_EFUSE_Trigger,Params,&task_head);//安全使能是否打开
+    while(EFUSE_Avail==0)
+	{
+		Service_Process_Tasks(); 
+		Service_Mailbox(); 
+	}
+    EFUSE_Avail=0;
+	if((C2EINFO1&BIT3)!=0)//crypto need selfcheck
+	{
+		task_head=Add_Task((TaskFunction)Mailbox_Cryp_Selfcheck,Params,&task_head);//子系统自检命令触发
+		while(Cry_SelfCheck_Flag!=0x1)//等待子系统自检完成
+		{
+            Service_Process_Tasks(); 
+			Service_Mailbox(); 
+			if(Cry_SelfCheck_Flag&0x2)//crypto selfcheck err
+            {
+                switch((Cry_SelfCheck_Flag>>8))//根据子系统自检错误码进行处理
+                {
+                    default:
+                        break;
+                }
+            }
+		}
+	}
+
 }
 /*************************************eRPMC Mailbox***************************************/
 #define OP1_Code 0x9B
@@ -440,11 +471,16 @@ void Mailbox_Control(void)
 {
     if (C2E_CMD == 0x1)
     {
+        Cry_SelfCheck_Flag = C2EINFO1;
         /*子系统自检结果反馈*/
-        if ((BYTE)(C2EINFO1 & 0xff) == 0x1)
-            printf("子系统自检成功\n");
-        else if ((BYTE)(C2EINFO1 & 0xff) == 0x2)
-            printf("子系统自检失败 err_sta:0x%x\n", C2EINFO2);
+        if ((BYTE)(Cry_SelfCheck_Flag & 0xff) == 0x1)
+            printf("Crypto SelfCheck Pass\n");
+        else if ((BYTE)(Cry_SelfCheck_Flag & 0xff) == 0x2)
+        {
+            printf("Crypto SelfCheck error err_sta:0x%x\n", (Cry_SelfCheck_Flag>>8));
+            // TaskParams Params;
+            // task_head=Add_Task((TaskFunction)Mailbox_Read_EFUSE_Trigger,Params,&task_head);//分配串口1给子系统
+        }
     }
     else if (C2E_CMD == 0x3)
     {
@@ -522,6 +558,7 @@ void Mailbox_Efuse(void)
 {
     if (C2E_CMD == 0x20)
     {
+        EFUSE_Avail=1;
         printf("efuse:%x,%x,%x,%x,%x,%x,%x\n", C2EINFO1, C2EINFO2, C2EINFO3, C2EINFO4, C2EINFO5, C2EINFO6, C2EINFO7);
     }
 }
