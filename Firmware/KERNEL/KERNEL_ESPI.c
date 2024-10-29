@@ -2607,8 +2607,7 @@ BYTE Process_Peripheral_Memory_Read32(void)
 /*****************************************eRPMC OOB************************************************/
 void eRPMC_WriteRootKey_Response(void)
 {
-    DWORD Temp_Info1 = C2EINFO1;
-    dprint("Info1:0x%x\n", Temp_Info1);
+    //DWORD Temp_Info1 = C2EINFO1;
     eRPMC_WriteRootKey_data.eSPI_Cycle_Type = 0x21;
     eRPMC_WriteRootKey_data.Length_High = 0x00;
     eRPMC_WriteRootKey_data.Tag = 0x0;
@@ -2640,8 +2639,7 @@ void eRPMC_WriteRootKey_Response(void)
 
 void eRPMC_UpdateHMACKey_Response(void)
 {
-    DWORD Temp_Info1 = C2EINFO1;
-    dprint("Info1:0x%x\n", Temp_Info1);
+    //DWORD Temp_Info1 = C2EINFO1;
     eRPMC_UpdateHMACKey_data.eSPI_Cycle_Type = 0x21;
     eRPMC_UpdateHMACKey_data.Length_High = 0x00;
     eRPMC_UpdateHMACKey_data.Tag = 0x0;
@@ -2672,8 +2670,7 @@ void eRPMC_UpdateHMACKey_Response(void)
 
 void eRPMC_IncrementCounter_Response(void)
 {
-    DWORD Temp_Info1 = C2EINFO1;
-    dprint("Info1:0x%x\n", Temp_Info1);
+    //DWORD Temp_Info1 = C2EINFO1;
     eRPMC_IncrementCounter_data.eSPI_Cycle_Type = 0x21;
     eRPMC_IncrementCounter_data.Length_High = 0x00;
     eRPMC_IncrementCounter_data.Tag = 0x0;
@@ -2709,8 +2706,7 @@ void eRPMC_IncrementCounter_Response(void)
 
 void eRPMC_RequestCounter_Response(void)
 {
-    DWORD Temp_Info1 = C2EINFO1;
-    dprint("Info1:0x%x\n", Temp_Info1);
+    //DWORD Temp_Info1 = C2EINFO1;
     eRPMC_RequestCounter_data.eSPI_Cycle_Type = 0x21;
     eRPMC_RequestCounter_data.Length_High = 0x00;
     eRPMC_RequestCounter_data.Tag = 0x0;
@@ -2762,8 +2758,7 @@ void eRPMC_RequestCounter_Response(void)
 
 void eRPMC_ReadParameter_Response(void)
 {
-    DWORD Temp_Info1 = C2EINFO1;
-    dprint("Info1:0x%x\n", Temp_Info1);
+    //DWORD Temp_Info1 = C2EINFO1;
     eRPMC_ReadParameters_data.eSPI_Cycle_Type = 0x21;
     eRPMC_ReadParameters_data.Length_High = 0x00;
     eRPMC_ReadParameters_data.Tag = 0x0;

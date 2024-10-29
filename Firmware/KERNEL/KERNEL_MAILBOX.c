@@ -345,7 +345,7 @@ void Mailbox_ReadParameter_Trigger(void)
     }
     // RequestCounter命令  往SRAM的0x31800后填入对应eRPMC数据
     E2CINFO0 = 0x33;       // 命令字
-    E2CINFO1 = eRPMC_ReadParameters.Opcode 
+    E2CINFO1 = eRPMC_ReadParameters.Opcode;
     E2CINT = 0x8;          // 触发子系统中断
     command_processed = false;
     eRPMC_Busy_Status = 1;
