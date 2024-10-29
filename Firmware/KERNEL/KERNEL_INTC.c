@@ -22,6 +22,7 @@
 #include "CUSTOM_POWER.H"
 extern unsigned char iicFeedback, iic_flag, iic_int_flag;
 extern char Uart_buffer[UART_BUFFER_SIZE]; // An array of data transferred by the debugger
+extern BYTE RPMC_OOB_TempArr[80];
 /************weak声明************/
 void intr0_gpio_a0(void) __weak;
 void intr0_gpio_a1(void) __weak;
@@ -1981,8 +1982,88 @@ void intr1_espi(void)
 	/*OOB-ERPMC Interrupt*/
 	if (REG32(0x330C0) && eRPMCSTS)
 	{
+		TaskParams params;
 		REG32(0x330C0) |= eRPMCSTS;
-		eRPMC_Handler_Rec = 1;
+		RPMC_OOB_TempArr[14]=0xAA;//set default
+		if (eSPI_OOBReceive(RPMC_OOB_TempArr))
+		{
+			if (RPMC_OOB_TempArr[2] == 0) // receive message length is 0, means no message
+			{
+				//异常处理
+				return;
+			}
+		}
+		switch (RPMC_OOB_TempArr[14]) // cmd type
+        {
+        case 0x0:                            // WriteRootKey
+            if (RPMC_OOB_TempArr[2] == 0x48) // WriteRootKey message1
+            {
+				memcpy(&eRPMC_WriteRootKey_m1, RPMC_OOB_TempArr, sizeof(eRPMC_WriteRootKey_m1));
+            }
+            else if (RPMC_OOB_TempArr[2] == 0x0B) // WriteRootKey message2
+            {
+				memcpy(&eRPMC_WriteRootKey_m2, RPMC_OOB_TempArr, sizeof(eRPMC_WriteRootKey_m2));
+                /*mailbox WriteRootKey trigger*/
+				task_head=Add_Task((TaskFunction)Mailbox_WriteRootKey_Trigger,params,&task_head);
+            }
+			else//payload length error
+			{
+				eRPMC_WriteRootKey_data.Extended_Status=0x04;
+				eSPI_OOBSend((BYTE*)&eRPMC_WriteRootKey_data);
+			}
+            break;
+        case 0x1:                            // UpdateHMACKey
+            if (RPMC_OOB_TempArr[2] == 0x32) // UpdateHMACKey message
+            {
+				memcpy(&eRPMC_UpdateHMACKey, RPMC_OOB_TempArr, sizeof(eRPMC_UpdateHMACKey));
+				task_head=Add_Task((TaskFunction)Mailbox_UpdateHMACKey_Trigger,params,&task_head);
+            }
+			else//payload length error
+			{
+				eRPMC_UpdateHMACKey_data.Extended_Status=0x04;
+				eSPI_OOBSend((BYTE*)&eRPMC_UpdateHMACKey_data);
+			}
+            break;
+        case 0x2:                            // IncrementCounter
+            if (RPMC_OOB_TempArr[2] == 0x32) // IncrementCounter message
+            {
+				memcpy(&eRPMC_IncrementCounter, RPMC_OOB_TempArr, sizeof(eRPMC_IncrementCounter));
+				task_head=Add_Task((TaskFunction)Mailbox_IncrementCounter_Trigger,params,&task_head);
+            }
+			else//payload length error
+			{
+				eRPMC_IncrementCounter_data.Extended_Status=0x04;
+				eSPI_OOBSend((BYTE*)&eRPMC_IncrementCounter_data);
+			}
+            break;
+        case 0x3:                            // RequestCounter
+            if (RPMC_OOB_TempArr[2] == 0x3A) // RequestCounter message
+            {
+				memcpy(&eRPMC_RequestCounter, RPMC_OOB_TempArr, sizeof(eRPMC_RequestCounter));
+				task_head=Add_Task((TaskFunction)Mailbox_RequestCounter_Trigger,params,&task_head);
+            }
+			else//payload length error
+			{
+				eRPMC_RequestCounter_data.Extended_Status=0x04;
+				eSPI_OOBSend((BYTE*)&eRPMC_RequestCounter_data);
+			}
+            break;
+        default:
+            break;
+        }
+		if(RPMC_OOB_TempArr[13]==0x9F)// ReadParameters
+		{
+			if (RPMC_OOB_TempArr[2] == 0x0B)
+            {
+				memcpy(&eRPMC_ReadParameters, RPMC_OOB_TempArr, sizeof(eRPMC_ReadParameters));
+				task_head=Add_Task((TaskFunction)Mailbox_ReadParameter_Trigger,params,&task_head);
+            }
+			else//payload length error
+			{
+				eRPMC_ReadParameters_data.Extended_Status=0x04;
+				eSPI_OOBSend((BYTE*)&eRPMC_ReadParameters_data);
+			}
+		}
 	}
 }
 void intr1_null63(void)

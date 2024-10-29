@@ -139,30 +139,53 @@ void Mailbox_WriteRootKey_Trigger(void)
     if (eRPMC_Busy_Status == 1)
     {
         printf("RPMC Device is in busy status\n");
-        // externed status  busy
-        // eRPMC_WriteRootKey_Response(); 此处不一定是该命令对应的extenedstatus，后续最好是做成统一的状态回复
+        eRPMC_WriteRootKey_data.Extended_Status=0x04;
+		eSPI_OOBSend((BYTE*)&eRPMC_WriteRootKey_data);        
         return;
     }
     // WriteRootKey命令  往SRAM的0x31800后填入对应eRPMC数据
-    *((VDWORD *)0x31800) = 0xaf73d623;
-    *((VDWORD *)0x31804) = 0x135e43d5;
-    *((VDWORD *)0x31808) = 0x40cbc22e;
-    *((VDWORD *)0x3180C) = 0xfe22f42c;
-    *((VDWORD *)0x31810) = 0x4abc377d;
-    *((VDWORD *)0x31814) = 0xb7d3cfbd;
-    *((VDWORD *)0x31818) = 0xb3674211;
+    // 定义目标地址
+    uint32_t *pTarget = (uint32_t *)0x3181C;
+    uint32_t data=0;
+    // 将 Root_Key 搬运到目标地址
+    for (int i = 0; i < 32; i += 4) 
+    {
+        // 将 Root_Key 的四个字节组合成一个 uint32_t
+        data = (uint32_t)eRPMC_WriteRootKey_m1.Root_Key[i+3] << 24
+        | (uint32_t)eRPMC_WriteRootKey_m1.Root_Key[i+2] << 16
+        | (uint32_t)eRPMC_WriteRootKey_m1.Root_Key[i+1] << 8
+        | (uint32_t)eRPMC_WriteRootKey_m1.Root_Key[i];
+        // 将组合后的数据存储到目标地址
+        pTarget[i/4] = data;
+    }
 
-    *((VDWORD *)0x3181C) = 0x1c1d1e1f;
-    *((VDWORD *)0x31820) = 0x18191a1b;
-    *((VDWORD *)0x31824) = 0x14151617;
-    *((VDWORD *)0x31828) = 0x10111213;
-    *((VDWORD *)0x3182C) = 0x0c0d0e0f;
-    *((VDWORD *)0x31830) = 0x08090a0b;
-    *((VDWORD *)0x31834) = 0x04050607;
-    *((VDWORD *)0x31838) = 0x00010203;
+    //TruncatedSignature
+    pTarget = (uint32_t *)0x31800;
+    for (int i = 0; i < 28; i += 4) 
+    {
+        if(i>23)
+        {
+            data=(uint32_t)eRPMC_WriteRootKey_m2.TruncatedSignature0_1[1]<<24
+            |(uint32_t)eRPMC_WriteRootKey_m2.TruncatedSignature0_1[0]<<16
+            |(uint32_t)eRPMC_WriteRootKey_m1.TruncatedSignature2_27[i+1]<<8
+            |(uint32_t)eRPMC_WriteRootKey_m1.TruncatedSignature2_27[i];
+        }
+        else
+        {
+            data = (uint32_t)eRPMC_WriteRootKey_m1.TruncatedSignature2_27[i+3] << 24
+            | (uint32_t)eRPMC_WriteRootKey_m1.TruncatedSignature2_27[i+2] << 16
+            | (uint32_t)eRPMC_WriteRootKey_m1.TruncatedSignature2_27[i+1] << 8
+            | (uint32_t)eRPMC_WriteRootKey_m1.TruncatedSignature2_27[i];
+        }
+        // 将组合后的数据存储到目标地址
+        pTarget[i/4] = data;
+    }
 
     E2CINFO0 = 0x30;       // 命令字
-    E2CINFO1 = 0x0000009B; // WriteRootKey模拟测试
+    E2CINFO1 = eRPMC_WriteRootKey_m1.Opcode 
+    | (eRPMC_WriteRootKey_m1.Cmd_Type << 8) 
+    | (eRPMC_WriteRootKey_m1.Counter_Addr << 16) 
+    | (eRPMC_WriteRootKey_m1.Rsvd << 24);    
     E2CINT = 0x8;          // 触发子系统中断
     command_processed = false;
     eRPMC_Busy_Status = 1;
@@ -170,67 +193,94 @@ void Mailbox_WriteRootKey_Trigger(void)
 
 void Mailbox_UpdateHMACKey_Trigger(void)
 {
-
     if (eRPMC_Busy_Status == 1)
     {
         printf("RPMC Device is in busy status\n");
-        // externed status  busy
-        // eRPMC_UpdateHMACKey_Response(); 此处不一定是该命令对应的extenedstatus，后续最好是做成统一的状态回复
+        eRPMC_UpdateHMACKey_data.Extended_Status=0x04;
+		eSPI_OOBSend((BYTE*)&eRPMC_UpdateHMACKey_data);        
         return;
     }
     // UpdateHMACKey命令  往SRAM的0x31800后填入对应eRPMC数据
-    *((VDWORD *)0x31800) = 0x2df7cf5e;
-    *((VDWORD *)0x31804) = 0xa107e1ea;
-    *((VDWORD *)0x31808) = 0x5ad59fc8;
-    *((VDWORD *)0x3180C) = 0xb9ef975f;
-    *((VDWORD *)0x31810) = 0x8bc12b2b;
-    *((VDWORD *)0x31814) = 0x788ca1d3;
-    *((VDWORD *)0x31818) = 0x382b9006;
-    *((VDWORD *)0x3181C) = 0xfa806034;
-
+    // 定义目标地址
+    uint32_t *pTarget = (uint32_t *)0x31800;
+    uint32_t data=0;
+    // 将 Signature 搬运到目标地址
+    for (int i = 0; i < 32; i += 4) 
+    {
+        // 将 Root_Key 的四个字节组合成一个 uint32_t
+        data = (uint32_t)eRPMC_UpdateHMACKey.Signature[i+3] << 24
+        | (uint32_t)eRPMC_UpdateHMACKey.Signature[i+2] << 16
+        | (uint32_t)eRPMC_UpdateHMACKey.Signature[i+1] << 8
+        | (uint32_t)eRPMC_UpdateHMACKey.Signature[i];
+        // 将组合后的数据存储到目标地址
+        pTarget[i/4] = data;
+    }
     // KeyData
-    *((VDWORD *)0x31820) = 0x01020304;
+    pTarget = (uint32_t *)0x31820;
+    for (int i = 0; i < 4; i += 4) 
+    {
+        // 将 Root_Key 的四个字节组合成一个 uint32_t
+        data = (uint32_t)eRPMC_UpdateHMACKey.Key_Data[i+3] << 24
+        | (uint32_t)eRPMC_UpdateHMACKey.Key_Data[i+2] << 16
+        | (uint32_t)eRPMC_UpdateHMACKey.Key_Data[i+1] << 8
+        | (uint32_t)eRPMC_UpdateHMACKey.Key_Data[i];
+        // 将组合后的数据存储到目标地址
+        pTarget[i/4] = data;
+    }
 
     E2CINFO0 = 0x31;       // 命令字
-    E2CINFO1 = 0x0000019B; // UpdateHMACKey模拟测试
+    E2CINFO1 = eRPMC_UpdateHMACKey.Opcode 
+    | (eRPMC_UpdateHMACKey.Cmd_Type << 8) 
+    | (eRPMC_UpdateHMACKey.Counter_Addr << 16) 
+    | (eRPMC_UpdateHMACKey.Rsvd << 24); 
+    printf("E2CINFO1:0x%x\n",E2CINFO1); 
     E2CINT = 0x8;          // 触发子系统中断
     command_processed = false;
     eRPMC_Busy_Status = 1;
 }
 
-void Mailbox_IncrementCounter_Trigger(uint32_t CountData)
+void Mailbox_IncrementCounter_Trigger(void)
 {
-
     if (eRPMC_Busy_Status == 1)
     {
         printf("RPMC Device is in busy status\n");
-        // externed status  busy
-        // eRPMC_UpdateHMACKey_Response(); 此处不一定是该命令对应的extenedstatus，后续最好是做成统一的状态回复
+        eRPMC_IncrementCounter_data.Extended_Status=0x04;
+		eSPI_OOBSend((BYTE*)&eRPMC_IncrementCounter_data);        
         return;
     }
     // IncrementCounter命令  往SRAM的0x31800后填入对应eRPMC数据
-    // *((VDWORD *)0x31800) = 0xb5db4d28;
-    // *((VDWORD *)0x31804) = 0x32d6cad1;
-    // *((VDWORD *)0x31808) = 0xda8b892b;
-    // *((VDWORD *)0x3180C) = 0x4907d132;
-    // *((VDWORD *)0x31810) = 0xe80d47a3;
-    // *((VDWORD *)0x31814) = 0xd272db0c;
-    // *((VDWORD *)0x31818) = 0x1d44ec15;
-    // *((VDWORD *)0x3181C) = 0x7c19eb1f;
-    *((VDWORD *)0x31800) = 0x17324225;
-    *((VDWORD *)0x31804) = 0x5e5ad01e;
-    *((VDWORD *)0x31808) = 0xf49dcecf;
-    *((VDWORD *)0x3180C) = 0xb2e9c715;
-    *((VDWORD *)0x31810) = 0xa065a36f;
-    *((VDWORD *)0x31814) = 0xe2efd976;
-    *((VDWORD *)0x31818) = 0x331d7d0a;
-    *((VDWORD *)0x3181C) = 0x215d3cfc;
-
-    // CounterData
-    *((VDWORD *)0x31820) = CountData;
+    uint32_t *pTarget = (uint32_t *)0x31800;
+    uint32_t data=0;
+    // 将 Signature 搬运到目标地址
+    for (int i = 0; i < 32; i += 4) 
+    {
+        // 将 Root_Key 的四个字节组合成一个 uint32_t
+        data = (uint32_t)eRPMC_IncrementCounter.Signature[i+3] << 24
+        | (uint32_t)eRPMC_IncrementCounter.Signature[i+2] << 16
+        | (uint32_t)eRPMC_IncrementCounter.Signature[i+1] << 8
+        | (uint32_t)eRPMC_IncrementCounter.Signature[i];
+        // 将组合后的数据存储到目标地址
+        pTarget[i/4] = data;
+    }
+    // Counter_Data
+    pTarget = (uint32_t *)0x31820;
+    for (int i = 0; i < 4; i += 4) 
+    {
+        // 将 Root_Key 的四个字节组合成一个 uint32_t
+        data = (uint32_t)eRPMC_IncrementCounter.Counter_Data[i+3] << 24
+        | (uint32_t)eRPMC_IncrementCounter.Counter_Data[i+2] << 16
+        | (uint32_t)eRPMC_IncrementCounter.Counter_Data[i+1] << 8
+        | (uint32_t)eRPMC_IncrementCounter.Counter_Data[i];
+        // 将组合后的数据存储到目标地址
+        pTarget[i/4] = data;
+    }
 
     E2CINFO0 = 0x32;       // 命令字
-    E2CINFO1 = 0x0000029B; // IncrementCounter模拟测试
+    E2CINFO1 = eRPMC_IncrementCounter.Opcode 
+    | (eRPMC_IncrementCounter.Cmd_Type << 8) 
+    | (eRPMC_IncrementCounter.Counter_Addr << 16) 
+    | (eRPMC_IncrementCounter.Rsvd << 24);
+    printf("E2CINFO1:0x%x\n",E2CINFO1);
     E2CINT = 0x8;          // 触发子系统中断
     command_processed = false;
     eRPMC_Busy_Status = 1;
@@ -242,27 +292,42 @@ void Mailbox_RequestCounter_Trigger(void)
     if (eRPMC_Busy_Status == 1)
     {
         printf("RPMC Device is in busy status\n");
-        // externed status  busy
-        // eRPMC_UpdateHMACKey_Response(); 此处不一定是该命令对应的extenedstatus，后续最好是做成统一的状态回复
+        eRPMC_RequestCounter_data.Extended_Status=0x04;
+		eSPI_OOBSend((BYTE*)&eRPMC_RequestCounter_data);        
         return;
     }
     // RequestCounter命令  往SRAM的0x31800后填入对应eRPMC数据
-    *((VDWORD *)0x31800) = 0xc4acbe62;
-    *((VDWORD *)0x31804) = 0xfadc266a;
-    *((VDWORD *)0x31808) = 0xcf62f1d2;
-    *((VDWORD *)0x3180C) = 0xd78281a0;
-    *((VDWORD *)0x31810) = 0x4bf94d12;
-    *((VDWORD *)0x31814) = 0x9cdaff80;
-    *((VDWORD *)0x31818) = 0x3fee8fd0;
-    *((VDWORD *)0x3181C) = 0x0d1d587c;
-
+    uint32_t *pTarget = (uint32_t *)0x31800;
+    uint32_t data=0;
+    // 将 Signature 搬运到目标地址
+    for (int i = 0; i < 32; i += 4) 
+    {
+        // 将 Root_Key 的四个字节组合成一个 uint32_t
+        data = (uint32_t)eRPMC_RequestCounter.Signature[i+3] << 24
+        | (uint32_t)eRPMC_RequestCounter.Signature[i+2] << 16
+        | (uint32_t)eRPMC_RequestCounter.Signature[i+1] << 8
+        | (uint32_t)eRPMC_RequestCounter.Signature[i];
+        // 将组合后的数据存储到目标地址
+        pTarget[i/4] = data;
+    }
     // Tag
-    *((VDWORD *)0x31820) = 0x00000001;
-    *((VDWORD *)0x31824) = 0x00000000;
-    *((VDWORD *)0x31828) = 0x00000000;
+    pTarget = (uint32_t *)0x31820;
+    for (int i = 0; i < 12; i += 4) 
+    {
+        // 将 Root_Key 的四个字节组合成一个 uint32_t
+        data = (uint32_t)eRPMC_RequestCounter.Tag_Arr[i+3] << 24
+        | (uint32_t)eRPMC_RequestCounter.Tag_Arr[i+2] << 16
+        | (uint32_t)eRPMC_RequestCounter.Tag_Arr[i+1] << 8
+        | (uint32_t)eRPMC_RequestCounter.Tag_Arr[i];
+        // 将组合后的数据存储到目标地址
+        pTarget[i/4] = data;
+    }
 
     E2CINFO0 = 0x33;       // 命令字
-    E2CINFO1 = 0x0000039B; // RequestCounter模拟测试
+    E2CINFO1 = eRPMC_RequestCounter.Opcode 
+    | (eRPMC_RequestCounter.Cmd_Type << 8) 
+    | (eRPMC_RequestCounter.Counter_Addr << 16) 
+    | (eRPMC_RequestCounter.Rsvd << 24);
     E2CINT = 0x8;          // 触发子系统中断
     command_processed = false;
     eRPMC_Busy_Status = 1;
@@ -274,27 +339,13 @@ void Mailbox_ReadParameter_Trigger(void)
     if (eRPMC_Busy_Status == 1)
     {
         printf("RPMC Device is in busy status\n");
-        // externed status  busy
-        // eRPMC_UpdateHMACKey_Response(); 此处不一定是该命令对应的extenedstatus，后续最好是做成统一的状态回复
+        eRPMC_ReadParameters_data.Extended_Status=0x04;
+		eSPI_OOBSend((BYTE*)&eRPMC_ReadParameters_data);        
         return;
     }
     // RequestCounter命令  往SRAM的0x31800后填入对应eRPMC数据
-    *((VDWORD *)0x31800) = 0xc4acbe62;
-    *((VDWORD *)0x31804) = 0xfadc266a;
-    *((VDWORD *)0x31808) = 0xcf62f1d2;
-    *((VDWORD *)0x3180C) = 0xd78281a0;
-    *((VDWORD *)0x31810) = 0x4bf94d12;
-    *((VDWORD *)0x31814) = 0x9cdaff80;
-    *((VDWORD *)0x31818) = 0x3fee8fd0;
-    *((VDWORD *)0x3181C) = 0x0d1d587c;
-
-    // Tag
-    *((VDWORD *)0x31820) = 0x00000001;
-    *((VDWORD *)0x31824) = 0x00000000;
-    *((VDWORD *)0x31828) = 0x00000000;
-
-    E2CINFO0 = 0x34;       // 命令字
-    E2CINFO1 = 0x0000009F; // RequestCounter模拟测试
+    E2CINFO0 = 0x33;       // 命令字
+    E2CINFO1 = eRPMC_ReadParameters.Opcode 
     E2CINT = 0x8;          // 触发子系统中断
     command_processed = false;
     eRPMC_Busy_Status = 1;
@@ -488,6 +539,7 @@ void Mailbox_eRPMC(void)
         eRPMC_RequestCounter_Response();
     else if (C2E_CMD == 0x34)
         eRPMC_ReadParameter_Response();
+    eRPMC_Busy_Status=0;
 }
 
 void Mailbox_SecretKey(void)

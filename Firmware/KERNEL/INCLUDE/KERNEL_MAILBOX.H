@@ -34,6 +34,7 @@ typedef struct Task
     TaskParams params;     // 任务参数
     struct Task *next;     // 指向下一个任务
 } Task;
+extern Task *task_head; // 任务链表头
 
 /*APB 共享模块使用情况定义*/
 #define APB_SMBUS0 BIT(0)
@@ -74,7 +75,7 @@ extern void Mailbox_Read_FLASHUID_Trigger(void);
 extern void Mailbox_Test(void);
 extern void Mailbox_WriteRootKey_Trigger(void);
 extern void Mailbox_UpdateHMACKey_Trigger(void);
-extern void Mailbox_IncrementCounter_Trigger(uint32_t CountData);
+extern void Mailbox_IncrementCounter_Trigger(void);
 extern void Mailbox_RequestCounter_Trigger(void);
 extern void Mailbox_ReadParameter_Trigger(void);
 extern void Mailbox_eRPMC_Trigger(void);

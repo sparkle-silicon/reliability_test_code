@@ -207,6 +207,27 @@ void test_service(void)
 // FUNCTION: main loop
 // enter main loop
 //----------------------------------------------------------------------------
+extern BYTE RPMC_OOB_TempArr[80];
+// 将一个字符转换为对应的十六进制值
+unsigned char hexCharToValue(char c) {
+    if (c >= '0' && c <= '9') {
+        return c - '0';
+    } else if (c >= 'a' && c <= 'f') {
+        return c - 'a' + 10;
+    } else if (c >= 'A' && c <= 'F') {
+        return c - 'A' + 10;
+    } else {
+        return 0; // 如果不是合法的十六进制字符，返回0
+    }
+}
+
+// 将十六进制字符串转换为字节数组
+void hexStringToByteArray(const char* hexString, unsigned char* byteArray, int byteArraySize) {
+    for (int i = 0; i < byteArraySize; i++) {
+        // 每两个字符组成一个字节
+        byteArray[i] = (hexCharToValue(hexString[i * 2]) << 4) | hexCharToValue(hexString[i * 2 + 1]);
+    }
+}
 int test_loop(void)
 {
 	dprint("Enter test_service \n");
@@ -214,6 +235,50 @@ int test_loop(void)
 }
 int main()
 {
+	// RPMC_OOB_TempArr[13]=0x9B;
+	// RPMC_OOB_TempArr[14]=0x00;
+	// RPMC_OOB_TempArr[15]=0x00;
+	// RPMC_OOB_TempArr[16]=0x00;
+	// const char hexString0[] = "1f1e1d1c1b1a191817161514131211100f0e0d0c0b0a09080706050403020100";
+	// const char hexString1[] = "23d673afd5435e132ec2cb402cf422fe7d37bc4abdcfd3b71142";
+	// const char hexString2[] = "67b3";
+	// const char HMAC[] = "5ecff72deae107a1c89fd55a5f97efb92b2bc18bd3a18c7806902b38346080fa";
+	// const char KData[] = "04030201";
+	// const char ISign[] = "254232171ed05a5ecfce9df415c7e9b26fa365a076d9efe20a7d1d33fc3c5d21";
+	// const char CData[] = "00003ffe";
+	// const char RSign[] = "62beacc46a26dcfad2f162cfa08182d7124df94b80ffda9cd08fee3f7c581d0d";
+	// const char Tag[] = "010000000000000000000000";
+// 循环遍历十六进制字符串，并将每两位转换为数字
+	// hexStringToByteArray(hexString0, &RPMC_OOB_TempArr[17], 32);
+	// hexStringToByteArray(hexString1, &RPMC_OOB_TempArr[49], 26);
+	// memcpy(&eRPMC_WriteRootKey_m1, RPMC_OOB_TempArr, sizeof(eRPMC_WriteRootKey_m1));
+	// hexStringToByteArray(hexString2, &RPMC_OOB_TempArr[12], 2);
+	// memcpy(&eRPMC_WriteRootKey_m2, RPMC_OOB_TempArr, sizeof(eRPMC_WriteRootKey_m2));
+	// /*mailbox WriteRootKey trigger*/
+	// task_head=Add_Task((TaskFunction)Mailbox_WriteRootKey_Trigger,Params,&task_head);
+
+	// RPMC_OOB_TempArr[13]=0x9B;
+	// RPMC_OOB_TempArr[14]=0x01;
+	// hexStringToByteArray(HMAC, &RPMC_OOB_TempArr[21], 32);
+	// hexStringToByteArray(KData, &RPMC_OOB_TempArr[17], 4);
+	// memcpy(&eRPMC_UpdateHMACKey, RPMC_OOB_TempArr, sizeof(eRPMC_UpdateHMACKey));
+	// /*mailbox UpdateHMACKey trigger*/
+	// task_head=Add_Task((TaskFunction)Mailbox_UpdateHMACKey_Trigger,Params,&task_head);
+
+	// RPMC_OOB_TempArr[13]=0x9B;
+	// RPMC_OOB_TempArr[14]=0x03;
+	// hexStringToByteArray(RSign, &RPMC_OOB_TempArr[29], 32);
+	// hexStringToByteArray(Tag, &RPMC_OOB_TempArr[17], 12);
+	// memcpy(&eRPMC_RequestCounter, RPMC_OOB_TempArr, sizeof(eRPMC_RequestCounter));
+	// task_head=Add_Task((TaskFunction)Mailbox_RequestCounter_Trigger,Params,&task_head);
+
+	// RPMC_OOB_TempArr[13]=0x9B;
+	// RPMC_OOB_TempArr[14]=0x02;
+	// hexStringToByteArray(ISign, &RPMC_OOB_TempArr[21], 32);
+	// hexStringToByteArray(CData, &RPMC_OOB_TempArr[17], 4);
+	// memcpy(&eRPMC_IncrementCounter, RPMC_OOB_TempArr, sizeof(eRPMC_IncrementCounter));
+	// task_head=Add_Task((TaskFunction)Mailbox_IncrementCounter_Trigger,Params,&task_head);
+
 	unsigned long tmp;
 	int ret = 0;
 	// dprint ("%s",printf_instructions_msg);
