@@ -20,6 +20,7 @@
 #include "AE_CONFIG.H"
 #include "KERNEL_MEMORY.H"
 #include "CUSTOM_PECI.H"
+#include "KERNEL_MAILBOX.H"
 extern BYTE eRPMC_Busy_Status;
 /*-----------------------------------------------------------------------------
  * eSPI Module Proess Definition
@@ -948,7 +949,7 @@ BYTE Process_eSPI_OOB_Message(void)
     return TRUE;
 }
 
-BYTE eSPI_OOBRecevie(BYTE *OOB_Meg_Table)
+BYTE eSPI_OOBReceive(BYTE *OOB_Meg_Table)
 {
     /* Check put_oob status */
     if (!OOB_Check_OOB_Status())
@@ -2606,7 +2607,7 @@ BYTE Process_Peripheral_Memory_Read32(void)
 /*****************************************eRPMC OOB************************************************/
 void eRPMC_WriteRootKey_Response(void)
 {
-    printf("extended status:%x\n", C2EINFO1);
+    //DWORD Temp_Info1 = C2EINFO1;
     eRPMC_WriteRootKey_data.eSPI_Cycle_Type = 0x21;
     eRPMC_WriteRootKey_data.Length_High = 0x00;
     eRPMC_WriteRootKey_data.Tag = 0x0;
@@ -2630,15 +2631,15 @@ void eRPMC_WriteRootKey_Response(void)
     eRPMC_WriteRootKey_data.IC = 0x0;
     eRPMC_WriteRootKey_data.RPMC_Device = 0x01;
     eRPMC_WriteRootKey_data.Counter_Addr = 0x00;
-    eRPMC_WriteRootKey_data.Extended_Status = 0x00;
-    RMPC_ResType = 0x1;
-    eRPMC_Handler_Res = 1;
+    eRPMC_WriteRootKey_data.Extended_Status = C2EINFO2&0xff;
+    printf("Extended_Status:0x%x\n", eRPMC_WriteRootKey_data.Extended_Status);
+    //eSPI_OOBSend((BYTE *)&eRPMC_WriteRootKey_data);
     // 填入OOB回复HOST的OOB MTCP Packet
 }
 
 void eRPMC_UpdateHMACKey_Response(void)
 {
-    printf("extended status:%x\n", C2EINFO1);
+    //DWORD Temp_Info1 = C2EINFO1;
     eRPMC_UpdateHMACKey_data.eSPI_Cycle_Type = 0x21;
     eRPMC_UpdateHMACKey_data.Length_High = 0x00;
     eRPMC_UpdateHMACKey_data.Tag = 0x0;
@@ -2662,15 +2663,14 @@ void eRPMC_UpdateHMACKey_Response(void)
     eRPMC_UpdateHMACKey_data.IC = 0x0;
     eRPMC_UpdateHMACKey_data.RPMC_Device = 0x00;
     eRPMC_UpdateHMACKey_data.Counter_Addr = 0x00;
-    eRPMC_UpdateHMACKey_data.Extended_Status = 0x00;
-    RMPC_ResType = 0x2;
-    eRPMC_Handler_Res = 1;
+    eRPMC_UpdateHMACKey_data.Extended_Status = C2EINFO2&0xff;
+    //SPI_OOBSend((BYTE *)&eRPMC_UpdateHMACKey_data)
     // 填入OOB回复HOST的OOB MTCP Packet
 }
 
 void eRPMC_IncrementCounter_Response(void)
 {
-    printf("extended status:%x\n", C2EINFO1);
+    //DWORD Temp_Info1 = C2EINFO1;
     eRPMC_IncrementCounter_data.eSPI_Cycle_Type = 0x21;
     eRPMC_IncrementCounter_data.Length_High = 0x00;
     eRPMC_IncrementCounter_data.Tag = 0x0;
@@ -2694,17 +2694,19 @@ void eRPMC_IncrementCounter_Response(void)
     eRPMC_IncrementCounter_data.IC = 0x0;
     eRPMC_IncrementCounter_data.RPMC_Device = 0x00;
     eRPMC_IncrementCounter_data.Counter_Addr = 0x00;
-    eRPMC_IncrementCounter_data.Extended_Status = 0x00;
-    RMPC_ResType = 0x3;
-    eRPMC_Handler_Res = 1;
+    eRPMC_IncrementCounter_data.Extended_Status = C2EINFO2&0xff;
+    //eSPI_OOBSend((BYTE *)&eRPMC_IncrementCounter_data)
     // 填入OOB回复HOST的OOB MTCP Packet
-
-    Mailbox_RequestCounter_Trigger();
+    RPMC_OOB_TempArr[13]=0x9B;
+	RPMC_OOB_TempArr[14]=0x03;
+    memcpy(&eRPMC_RequestCounter, RPMC_OOB_TempArr, sizeof(eRPMC_RequestCounter));
+    TaskParams Params;
+    task_head=Add_Task((TaskFunction)Mailbox_RequestCounter_Trigger,Params,&task_head);
 }
 
 void eRPMC_RequestCounter_Response(void)
 {
-    printf("extended status:%x\n", C2EINFO1);
+    //DWORD Temp_Info1 = C2EINFO1;
     eRPMC_RequestCounter_data.eSPI_Cycle_Type = 0x21;
     eRPMC_RequestCounter_data.Length_High = 0x00;
     eRPMC_RequestCounter_data.Tag = 0x0;
@@ -2728,21 +2730,35 @@ void eRPMC_RequestCounter_Response(void)
     eRPMC_RequestCounter_data.IC = 0x0;
     eRPMC_RequestCounter_data.RPMC_Device = 0x00;
     eRPMC_RequestCounter_data.Counter_Addr = 0x00;
-    eRPMC_RequestCounter_data.Extended_Status = 0x00;
+    eRPMC_RequestCounter_data.Extended_Status = C2EINFO2&0xff;
     /*数组留有赋值接口*/
-    // eRPMC_RequestCounter_data.Tag_Arr= ;
-    // eRPMC_RequestCounter_data.CounterReadData= ;
-    // eRPMC_RequestCounter_data.Signature= ;
-    RMPC_ResType = 0x4;
-    eRPMC_Handler_Res = 1;
-    // 填入OOB回复HOST的OOB MTCP Packet
-    // if (*((DWORDP)(0x31820)) < 0x4010)
-    Mailbox_IncrementCounter_Trigger(*((DWORDP)(0x31820)));
+    for(_R5=0;_R5<12;_R5++)
+    {
+        eRPMC_RequestCounter_data.Tag_Arr[_R5]=REG8(0x31800+_R5);
+    }
+    for(_R5=0;_R5<4;_R5++)
+    {
+        eRPMC_RequestCounter_data.CounterReadData[_R5]=REG8(0x3180c+_R5);
+    }
+    for(_R5=0;_R5<32;_R5++)
+    {
+        eRPMC_RequestCounter_data.Signature[_R5]=REG8(0x31810+_R5);
+    }
+    //eSPI_OOBSend((BYTE *)&eRPMC_RequestCounter_data)
+    RPMC_OOB_TempArr[13]=0x9B;
+	RPMC_OOB_TempArr[14]=0x02;
+	for(_R5=0;_R5<4;_R5++)
+    {
+        RPMC_OOB_TempArr[17+_R5]=eRPMC_RequestCounter_data.CounterReadData[_R5];
+    }
+	memcpy(&eRPMC_IncrementCounter, RPMC_OOB_TempArr, sizeof(eRPMC_IncrementCounter));
+    TaskParams Params;
+    task_head=Add_Task((TaskFunction)Mailbox_IncrementCounter_Trigger,Params,&task_head);
 }
 
 void eRPMC_ReadParameter_Response(void)
 {
-    printf("extended status:%x\n", C2EINFO1);
+    //DWORD Temp_Info1 = C2EINFO1;
     eRPMC_ReadParameters_data.eSPI_Cycle_Type = 0x21;
     eRPMC_ReadParameters_data.Length_High = 0x00;
     eRPMC_ReadParameters_data.Tag = 0x0;
@@ -2764,11 +2780,10 @@ void eRPMC_ReadParameter_Response(void)
     eRPMC_ReadParameters_data.SOM = 0x0;
     eRPMC_ReadParameters_data.Message_Type = 0x7D;
     eRPMC_ReadParameters_data.IC = 0x0;
-    eRPMC_ReadParameters_data.Extended_Status = 0x00;
-    // eRPMC_ReadParameters_data.RPMC_ParameterTable =
-    // eRPMC_ReadParameters_data.RPMC_Parameters_Device0 =
-    RMPC_ResType = 0x5;
-    eRPMC_Handler_Res = 1;
+    eRPMC_ReadParameters_data.Extended_Status = C2EINFO2&0xff;
+    eRPMC_ReadParameters_data.RPMC_ParameterTable = C2EINFO3;
+    eRPMC_ReadParameters_data.RPMC_Parameters_Device0 =C2EINFO4;
+    //if (eSPI_OOBSend((BYTE *)&eRPMC_ReadParameters_data))
     // 填入OOB回复HOST的OOB MTCP Packet
 }
 /*****************************************eRPMC OOB************************************************/
@@ -2813,182 +2828,98 @@ void __weak Service_eSPI(void)
 }
 #if 1
 
-/*-----------------------------------------------------------------------------
- * @subroutine - OOB_Get_WriteRootKey
- * @function - OOB_Get_WriteRootKey
- * @Upstream - Service_OOB_Message
- * @input    - None
- * @return   - None
- * @note     - None
- */
-void OOB_Get_WriteRootKey(void)
-{
-    OOB_Table_Pntr = (BYTE *)&eRPMC_WriteRootKey_m1;
-    Tmp_XPntr = (BYTE *)&eRPMC_WriteRootKey_data;
-    xOOB_PacketMaxLength = 16;
-    Process_eSPI_OOB_Message();
-
-    // 判定payloadsize是否正确，若不正确，则response返回extended status
-
-    Mailbox_WriteRootKey_Trigger();
-}
-
-/*-----------------------------------------------------------------------------
- * @subroutine - OOB_Get_UpdateHMACKey
- * @function - OOB_Get_UpdateHMACKey
- * @Upstream - Service_OOB_Message
- * @input    - None
- * @return   - None
- * @note     - None
- */
-void OOB_Get_UpdateHMACKey(void)
-{
-    OOB_Table_Pntr = (BYTE *)&eRPMC_UpdateHMACKey;
-    Tmp_XPntr = (BYTE *)&eRPMC_UpdateHMACKey_data;
-    xOOB_PacketMaxLength = 16;
-    Process_eSPI_OOB_Message();
-}
-
-/*-----------------------------------------------------------------------------
- * @subroutine - OOB_Get_IncrementCounter
- * @function - OOB_Get_IncrementCounter
- * @Upstream - Service_OOB_Message
- * @input    - None
- * @return   - None
- * @note     - None
- */
-void OOB_Get_IncrementCounter(void)
-{
-    OOB_Table_Pntr = (BYTE *)&eRPMC_IncrementCounter;
-    Tmp_XPntr = (BYTE *)&eRPMC_IncrementCounter_data;
-    xOOB_PacketMaxLength = 16;
-    Process_eSPI_OOB_Message();
-}
-
-/*-----------------------------------------------------------------------------
- * @subroutine - OOB_Get_RequestCounter
- * @function - OOB_Get_RequestCounter
- * @Upstream - Service_OOB_Message
- * @input    - None
- * @return   - None
- * @note     - None
- */
-void OOB_Get_RequestCounter(void)
-{
-    OOB_Table_Pntr = (BYTE *)&eRPMC_RequestCounter;
-    Tmp_XPntr = (BYTE *)&eRPMC_RequestCounter_data;
-    xOOB_PacketMaxLength = 16;
-    Process_eSPI_OOB_Message();
-}
-
-/*-----------------------------------------------------------------------------
- * @subroutine - OOB_Get_ReadParameters
- * @function - OOB_Get_ReadParameters
- * @Upstream - Service_OOB_Message
- * @input    - None
- * @return   - None
- * @note     - None
- */
-void OOB_Get_ReadParameters(void)
-{
-    OOB_Table_Pntr = (BYTE *)&eRPMC_ReadParameters;
-    Tmp_XPntr = (BYTE *)&eRPMC_ReadParameters_data;
-    xOOB_PacketMaxLength = 16;
-    Process_eSPI_OOB_Message();
-}
-
 BYTE eSPI_OOBRPMC_Handler(void)
 {
-    if ((eRPMC_Handler_Rec == 0) && (eRPMC_Handler_Res == 0) && (eRPMC_Handler_Force == 0))
-        return FALSE;
-    if (eRPMC_Handler_Rec == 1)
-    {
-        if (eSPI_OOBRecevie(RPMC_OOB_TempArr))
-        {
-            eRPMC_Handler_Rec = 0;
-            if (RPMC_OOB_TempArr[2] == 0) // receive message length is 0, means no message
-            {
-                return FALSE;
-            }
-            eRPMC_Handler_Force = 1; // susccess receive message wait send crypto
-        }
-    }
-    if (eRPMC_Handler_Force == 1)
-    {
-        if (eRPMC_Busy_Status == 1)
-        {
-            eRPMC_Handler_Force = 1;
-            return FALSE;
-        }
-        switch (RPMC_OOB_TempArr[14]) // cmd type
-        {
-        case 0x0:                            // WriteRootKey
-            if (RPMC_OOB_TempArr[2] == 0x48) // WriteRootKey message1
-            {
-            }
-            else if (RPMC_OOB_TempArr[2] == 0x0B) // WriteRootKey message2
-            {
-                /*mailbox WriteRootKey trigger*/
-                Mailbox_WriteRootKey_Trigger();
-            }
-            break;
-        case 0x1:                            // UpdateHMACKey
-            if (RPMC_OOB_TempArr[2] == 0x32) // UpdateHMACKey message
-            {
-                Mailbox_UpdateHMACKey_Trigger();
-            }
-            break;
-        case 0x2:                            // IncrementCounter
-            if (RPMC_OOB_TempArr[2] == 0x32) // IncrementCounter message
-            {
-                // Mailbox_IncrementCounter_Trigger();
-            }
-            break;
-        case 0x3:                            // RequestCounter
-            if (RPMC_OOB_TempArr[2] == 0x3A) // RequestCounter message
-            {
-                // Mailbox_RequestCounter_Trigger();
-            }
-            break;
-        case 0x4: // ReadParameters
-            if (RPMC_OOB_TempArr[2] == 0x0B)
-            {
-            }
-            break;
-        default:
-            break;
-        }
-        eRPMC_Handler_Force = 0;
-    }
-    if (eRPMC_Handler_Res == 1)
-    {
-        switch (RMPC_ResType)
-        {
-        case 0x1: // WriteRootKey
-            if (eSPI_OOBSend((BYTE *)&eRPMC_WriteRootKey_data))
-                eRPMC_Handler_Res = 0;
-            break;
-        case 0x2: // UpdateHMACKey
-            if (eSPI_OOBSend((BYTE *)&eRPMC_UpdateHMACKey_data))
-                eRPMC_Handler_Res = 0;
-            break;
-        case 0x3: // IncrementCounter
-            if (eSPI_OOBSend((BYTE *)&eRPMC_IncrementCounter_data))
-                eRPMC_Handler_Res = 0;
-            break;
-        case 0x4: // RequestCounter
-            if (eSPI_OOBSend((BYTE *)&eRPMC_RequestCounter_data))
-                eRPMC_Handler_Res = 0;
-            break;
-        case 0x5: // ReadParameters
-            if (eSPI_OOBSend((BYTE *)&eRPMC_ReadParameters_data))
-                eRPMC_Handler_Res = 0;
-            break;
-        default:
-            RMPC_ResType = 0;
-            break;
-        }
-    }
+    // if ((eRPMC_Handler_Rec == 0) && (eRPMC_Handler_Res == 0) && (eRPMC_Handler_Force == 0))
+    //     return FALSE;
+    // if (eRPMC_Handler_Rec == 1)
+    // {
+    //     if (eSPI_OOBReceive(RPMC_OOB_TempArr))
+    //     {
+    //         eRPMC_Handler_Rec = 0;
+    //         if (RPMC_OOB_TempArr[2] == 0) // receive message length is 0, means no message
+    //         {
+    //             return FALSE;
+    //         }
+    //         eRPMC_Handler_Force = 1; // susccess receive message wait send crypto
+    //     }
+    // }
+    // if (eRPMC_Handler_Force == 1)
+    // {
+    //     if (eRPMC_Busy_Status == 1)
+    //     {
+    //         eRPMC_Handler_Force = 1;
+    //         return FALSE;
+    //     }
+    //     switch (RPMC_OOB_TempArr[14]) // cmd type
+    //     {
+    //     case 0x0:                            // WriteRootKey
+    //         if (RPMC_OOB_TempArr[2] == 0x48) // WriteRootKey message1
+    //         {
+    //         }
+    //         else if (RPMC_OOB_TempArr[2] == 0x0B) // WriteRootKey message2
+    //         {
+    //             /*mailbox WriteRootKey trigger*/
+    //             Mailbox_WriteRootKey_Trigger();
+    //         }
+    //         break;
+    //     case 0x1:                            // UpdateHMACKey
+    //         if (RPMC_OOB_TempArr[2] == 0x32) // UpdateHMACKey message
+    //         {
+    //             Mailbox_UpdateHMACKey_Trigger();
+    //         }
+    //         break;
+    //     case 0x2:                            // IncrementCounter
+    //         if (RPMC_OOB_TempArr[2] == 0x32) // IncrementCounter message
+    //         {
+    //             // Mailbox_IncrementCounter_Trigger();
+    //         }
+    //         break;
+    //     case 0x3:                            // RequestCounter
+    //         if (RPMC_OOB_TempArr[2] == 0x3A) // RequestCounter message
+    //         {
+    //             // Mailbox_RequestCounter_Trigger();
+    //         }
+    //         break;
+    //     case 0x4: // ReadParameters
+    //         if (RPMC_OOB_TempArr[2] == 0x0B)
+    //         {
+    //         }
+    //         break;
+    //     default:
+    //         break;
+    //     }
+    //     eRPMC_Handler_Force = 0;
+    // }
+    // if (eRPMC_Handler_Res == 1)
+    // {
+    //     switch (RMPC_ResType)
+    //     {
+    //     case 0x1: // WriteRootKey
+    //         if (eSPI_OOBSend((BYTE *)&eRPMC_WriteRootKey_data))
+    //             eRPMC_Handler_Res = 0;
+    //         break;
+    //     case 0x2: // UpdateHMACKey
+    //         if (eSPI_OOBSend((BYTE *)&eRPMC_UpdateHMACKey_data))
+    //             eRPMC_Handler_Res = 0;
+    //         break;
+    //     case 0x3: // IncrementCounter
+    //         if (eSPI_OOBSend((BYTE *)&eRPMC_IncrementCounter_data))
+    //             eRPMC_Handler_Res = 0;
+    //         break;
+    //     case 0x4: // RequestCounter
+    //         if (eSPI_OOBSend((BYTE *)&eRPMC_RequestCounter_data))
+    //             eRPMC_Handler_Res = 0;
+    //         break;
+    //     case 0x5: // ReadParameters
+    //         if (eSPI_OOBSend((BYTE *)&eRPMC_ReadParameters_data))
+    //             eRPMC_Handler_Res = 0;
+    //         break;
+    //     default:
+    //         RMPC_ResType = 0;
+    //         break;
+    //     }
+    // }
     return TRUE;
 }
 #endif

@@ -323,7 +323,7 @@ typedef struct
 	// Byte 17-48
 	uint8_t Root_Key[32];            // 根密钥
 	// Byte 49-72
-	uint8_t TruncatedSignature2_27[25];   // 截断签名
+	uint8_t TruncatedSignature2_27[26];   // 截断签名
 } eSPI_OOB_WriteRootKet_MESSAGE1;
 
 typedef struct {
@@ -360,10 +360,8 @@ typedef struct {
     // Byte 11
     uint8_t Message_Type : 7;                   // 11: Message Type = 7Dh
     uint8_t IC : 1;                             // 11: IC
-    // Byte 12
-    uint8_t TruncatedSignature_1 : 8;        // Truncated Signature High (Byte 12)
-    // Byte 13
-    uint8_t TruncatedSignature_0 : 8;         // Truncated Signature Low (Byte 13)
+    // Byte 12-13
+    uint8_t TruncatedSignature0_1[2];           // 截断签名     
 
 } eSPI_OOB_WriteRootKet_MESSAGE2;
 
@@ -775,12 +773,23 @@ typedef struct {
     // Byte 12
     uint8_t Extended_Status : 8;        //  (Byte 12)
     // Byte 13
-    uint8_t RPMC_ParameterTable[4];         //  (Byte 13)
+    uint32_t RPMC_ParameterTable;         //  (Byte 13)
     // Byte 17-20
-    uint8_t RPMC_Parameters_Device0[4];      //  (Byte 17)
+    uint32_t RPMC_Parameters_Device0;      //  (Byte 17)
 
 } eSPI_OOB_ReadParameters_RESPONSE;
 
+extern eSPI_OOB_WriteRootKet_MESSAGE1 eRPMC_WriteRootKey_m1;
+extern eSPI_OOB_WriteRootKet_MESSAGE2 eRPMC_WriteRootKey_m2;
+extern eSPI_OOB_WriteRootKet_RESPONSE eRPMC_WriteRootKey_data;
+extern eSPI_OOB_UpdateHMACKey eRPMC_UpdateHMACKey;
+extern eSPI_OOB_UpdateHMACKey_RESPONSE eRPMC_UpdateHMACKey_data;
+extern eSPI_OOB_IncrementCounter eRPMC_IncrementCounter;
+extern eSPI_OOB_IncrementCounter_RESPONSE eRPMC_IncrementCounter_data;
+extern eSPI_OOB_RequestCounter eRPMC_RequestCounter;
+extern eSPI_OOB_RequestCounter_RESPONSE eRPMC_RequestCounter_data;
+extern eSPI_OOB_ReadParameters eRPMC_ReadParameters;
+extern eSPI_OOB_ReadParameters_RESPONSE eRPMC_ReadParameters_data;
 //-----------------------------------------------------------------------------
 // (33xxh) EC Interface Registers, eSI Queue 0 - PUT_PC DATA , PUT_OOB DATA
 //-----------------------------------------------------------------------------
@@ -832,10 +841,11 @@ extern void EC_ACK_eSPI_SUS_WARN(void);
 extern BYTE Process_Peripheral_Message_Send(void);
 extern BYTE Process_Peripheral_Memory_Read32(void);
 extern BYTE eSPI_OOBRPMC_Handler(void);
-
+extern BYTE eSPI_OOBReceive(BYTE *OOB_Meg_Table);
 extern void eRPMC_WriteRootKey_Response(void);
 extern void eRPMC_UpdateHMACKey_Response(void);
 extern void eRPMC_IncrementCounter_Response(void);
 extern void eRPMC_RequestCounter_Response(void);
 extern void eRPMC_ReadParameter_Response(void);
+extern BYTE eSPI_OOBSend(BYTE *OOB_Meg_Table);
 #endif

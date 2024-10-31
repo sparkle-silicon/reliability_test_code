@@ -153,7 +153,7 @@ void __weak Hook_1secEventA(void) // get all temp
     if (*((VBYTE *)(0x203B9)) == 3)
     {
         *((VBYTE *)(0x203B9)) = 0;
-        Mailbox_IncrementCounter_Trigger(0x3FFE);
+        //Mailbox_IncrementCounter_Trigger(0x3FFE);
     }
 
     if (*((VBYTE *)(0x203B9)) == 4)
@@ -161,6 +161,13 @@ void __weak Hook_1secEventA(void) // get all temp
         *((VBYTE *)(0x203B9)) = 0;
         Mailbox_RequestCounter_Trigger();
     }
+
+    if (*((VBYTE *)(0x203B9)) == 5)
+    {
+        *((VBYTE *)(0x203B9)) = 0;
+        Mailbox_ReadParameter_Trigger();
+    }
+
 #endif
 }
 //-----------------------------------------------------------------------------

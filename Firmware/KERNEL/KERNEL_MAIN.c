@@ -16,6 +16,7 @@
 #include "AE_INCLUDE.H"
 #include "KERNEL_INCLUDE.H"
 #include "CUSTOM_INCLUDE.H"
+extern Task *task_head;
 #define printf_instructions_msg " \
 \n\
 ************************************************************************************\n\
@@ -261,7 +262,7 @@ void Service_MS_1(void)
 // FUNCTION: Service_Mailbox
 //----------------------------------------------------------------------------
 #if (GLE01 == 1)
-static void Service_Mailbox(void)
+void Service_Mailbox(void)
 {
 #if (Service_Mailbox_START == 1)
 	if(F_Service_Mailbox == 1)
@@ -401,6 +402,14 @@ void Service_Debugger(void)
 	}
 }
 #endif
+//----------------------------------------------------------------------------
+// FUNCTION: Service_PUTC
+// UART putchar support function
+//----------------------------------------------------------------------------
+void Service_Process_Tasks(void)
+{
+	Process_Tasks();
+}
 //-----------------------------------------------------------------------------
 //  Function Pointers
 //-----------------------------------------------------------------------------
@@ -421,6 +430,7 @@ const FUNCT_PTR_V_V service_table[] =
 	Service_KBS,		// Keyboard scanner service
 #if (GLE01 == 1)
 		Service_Mailbox, // Mailbox service
+		Service_Process_Tasks, // Process Tasks
 #endif
 						 // Lo-Level Service
 		Service_PCI3,	   // PMC2 Host Command/Data service
@@ -542,12 +552,10 @@ int __weak main(void)
 		E2CINFO7 = 0x5aa5;
 	}
 #endif
-
-	// printf("mirror success\n");
-
-	while(C2EINFO7 != 0xa55a)
-		; // 等待子系统初始化完毕
-
+	while(C2EINFO7 != 0xa55a); // 等待子系统初始化完毕
+	AwaitCrypSelfcheck();
+	TaskParams Params={(APB_UART1|APB_REQ),0,0};
+	task_head=Add_Task(Mailbox_APB2_Source_Alloc_Trigger,Params,&task_head);//分配串口1给子系统
 	//  3. jump loop
 	main_loop();
 	return 0;
