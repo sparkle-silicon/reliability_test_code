@@ -461,18 +461,15 @@ void SECTION(".update.function") Flash_Update_Function(void)
             uint8_t Update_Addr0, Update_Addr1, Update_Addr2 = 0;
             uint32_t Update_Addr = 0;
             uint32_t FW_256byte_cnt = 0;
-
-            Update_Addr0 = *((volatile uint8_t *)(SRAM_BASE_ADDR + 0x101));
-            Update_Addr1 = *((volatile uint8_t *)(SRAM_BASE_ADDR + 0x102));
-            Update_Addr2 = *((volatile uint8_t *)(SRAM_BASE_ADDR + 0x103));
-            Update_Addr = (uint32_t)(Update_Addr2 << 16) + (uint32_t)(Update_Addr1 << 8) + (uint32_t)(Update_Addr0);
-            FW_256byte_cnt = *((volatile uint32_t *)(SRAM_BASE_ADDR + 0x104));
+            Update_Addr = REG32((SRAM_BASE_ADDR + 0x108));
+            FW_256byte_cnt = REG32((SRAM_BASE_ADDR + 0x104));
             printf("%x,%x,%x,%x,%d\n", Update_Addr0, Update_Addr1, Update_Addr2, Update_Addr, FW_256byte_cnt);
             __nop__;
             __nop__;
-            Transport_Update_To_iram1(Mailbox_4KSMS_UPDATE, 0x100);
-            FUNCT_PTR_B_D_D mailbox_update_jump = (FUNCT_PTR_B_D_D)0x34000;
-            (mailbox_update_jump)(0x3, FW_256byte_cnt * 256, Update_Addr); // 直接跳转到IRAM1里的Mailbox_SMS_UPDATE开始执行
+            // Transport_Update_To_iram1(Mailbox_4KSMS_UPDATE, 0x100);
+            // FUNCT_PTR_B_D_D mailbox_update_jump = (FUNCT_PTR_B_D_D)0x34000;
+            // (mailbox_update_jump)(0x3, FW_256byte_cnt * 256, Update_Addr); // 直接跳转到IRAM1里的Mailbox_SMS_UPDATE开始执行
+            Mailbox_4KSMS_UPDATE(0x3, FW_256byte_cnt * 256, Update_Addr);
         }
 #else
         {
@@ -486,11 +483,11 @@ void SECTION(".update.function") Flash_Update_Function(void)
     {
         mode = 0x1;
         printf("SinglePage Write\n");
-        printf("d_a:%x,%x\n", *((VDWORDP)(SRAM_BASE_ADDR + 0x108)), *((VDWORDP)(SRAM_BASE_ADDR + 0x10C)));
-        Transport_Func_To_iram1(EC_SinglePage_Update, 0x100); // 加载func到dram
+        //Transport_Func_To_iram1(EC_SinglePage_Update, 0x100); // 加载func到dram
         *(volatile uint8_t *)(SRAM_BASE_ADDR + 0x100) = 0xCC;
-        FUNCT_PTR_V_V mailbox_singlepage_jump = (FUNCT_PTR_V_V)0x34000;
-        (mailbox_singlepage_jump)(); // 直接跳转到IRAM1里的EC_SinglePage_Update开始执行
+        // FUNCT_PTR_V_V mailbox_singlepage_jump = (FUNCT_PTR_V_V)0x34000;
+        // (mailbox_singlepage_jump)(); // 直接跳转到IRAM1里的EC_SinglePage_Update开始执行
+        EC_SinglePage_Update();
     }
 #endif
     else if (IO_UPDATE && update_mode == 0xdc && (eFlash_Forbid_Flag == 0))
@@ -562,7 +559,6 @@ void ALIGNED(4) EC_SinglePage_Update(void)
             *((VDWORDP)(0x32008 + i * 4)) = *((VDWORDP)(SRAM_BASE_ADDR + 0x108 + i * 4));
         }
     }
-
     E2CINFO0 = 0x11;
     E2CINFO1 = (DWORD)(*((VBYTEP)(SRAM_BASE_ADDR + 0x107)) << 24) + (DWORD)(*((VBYTEP)(SRAM_BASE_ADDR + 0x106)) << 16) + (DWORD)(*((VBYTEP)(SRAM_BASE_ADDR + 0x105)) << 8) + (DWORD)(*((VBYTEP)(SRAM_BASE_ADDR + 0x104)));
     E2CINT = 0x2; // 触发对应中断

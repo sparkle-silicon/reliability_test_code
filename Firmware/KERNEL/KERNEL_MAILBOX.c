@@ -48,11 +48,21 @@ void mailbox_init(void)
     E2CINTEN |= 0xFFFFFFFF; // 打开主系统到子系统32个mailbox中断使能
 }
 
-void Mailbox_Test(void)
+void Mailbox_ExecuteFirmwareUpdate(void *param)
 {
+    TaskParams *params = (TaskParams *)param;
     E2CINFO0 = 0x10;                              // 命令字
-    E2CINFO1 = ((DWORD)(0x3 << 24) | (4 * 1024)); // BYTE3:固件位置标志 BYTE0~2:固件大小
-    E2CINFO2 = 0x60000;                           // 更新起始地址
+    E2CINFO1 = params->E2C_INFO1;                 // BYTE3:固件位置标志 BYTE0~2:固件大小
+    if((BYTE)(E2CINFO1 >> 24)==0x2)//外部mirror 配置复用功能
+    {
+        sysctl_iomux_config(GPIOB,17,0x1);//wp
+        sysctl_iomux_config(GPIOB,20,0x1);//mosi
+        sysctl_iomux_config(GPIOB,21,0x1);//miso
+        sysctl_iomux_config(GPIOB,22,0x1);//cs0
+        sysctl_iomux_config(GPIOB,23,0x1);//clk
+        sysctl_iomux_config(GPIOB,30,0x1);//hold
+    }
+    E2CINFO2 = params->E2C_INFO2;                 // 更新起始地址
     E2CINT = 0x2;                                 // 触发对应中断
     command_processed = false;
 }
@@ -98,8 +108,10 @@ void Mailbox_APB2_Source_Alloc_Trigger(void *param)
     command_processed = false;
 }
 
-void Mailbox_Cryp_Selfcheck(void)
+void Mailbox_Cryp_Selfcheck(void *param)
 {
+    TaskParams *params = (TaskParams *)param;
+    E2CINFO1 = params->E2C_INFO1;
     E2CINFO0 = 0x1;
     E2CINT = 0x1;
     command_processed = false;
@@ -119,17 +131,29 @@ void AwaitCrypSelfcheck(void)
     EFUSE_Avail=0;
 	if((C2EINFO1&BIT3)!=0)//crypto need selfcheck
 	{
-		task_head=Add_Task((TaskFunction)Mailbox_Cryp_Selfcheck,Params,&task_head);//子系统自检命令触发
+        Params.E2C_INFO1=0x0;
+		task_head=Add_Task(Mailbox_Cryp_Selfcheck,Params,&task_head);//子系统自检命令触发
 		while(Cry_SelfCheck_Flag!=0x1)//等待子系统自检完成
 		{
             Service_Process_Tasks(); 
 			Service_Mailbox(); 
 			if(Cry_SelfCheck_Flag&0x2)//crypto selfcheck err
             {
-                switch((Cry_SelfCheck_Flag>>8))//根据子系统自检错误码进行处理
+                if (CRYP_SHA_MODULES_SC_STA != 0)//SHA模块自检失败
                 {
-                    default:
-                        break;
+                    printf("SHA Module Status: %d\n", CRYP_SHA_MODULES_SC_STA);
+                }
+                if (CRYP_AES_MODULLES_SC_STA != 0) 
+                {
+                    printf("AES Module Status: %d\n", CRYP_AES_MODULLES_SC_STA);
+                }
+                if (CRYP_MODULLES_RSA_SC_STA != 0) 
+                {
+                    printf("RSA Module Status: %d\n", CRYP_MODULLES_RSA_SC_STA);
+                }
+                if (CRYP_MODULLES_ECC_SC_STA != 0) 
+                {
+                    printf("ECC Module Status: %d\n", CRYP_MODULLES_ECC_SC_STA);
                 }
             }
 		}
@@ -477,9 +501,7 @@ void Mailbox_Control(void)
             printf("Crypto SelfCheck Pass\n");
         else if ((BYTE)(Cry_SelfCheck_Flag & 0xff) == 0x2)
         {
-            printf("Crypto SelfCheck error err_sta:0x%x\n", (Cry_SelfCheck_Flag>>8));
-            // TaskParams Params;
-            // task_head=Add_Task((TaskFunction)Mailbox_Read_EFUSE_Trigger,Params,&task_head);//分配串口1给子系统
+            printf("Crypto SelfCheck error\n");
         }
     }
     else if (C2E_CMD == 0x3)
@@ -510,7 +532,11 @@ void Mailbox_Control(void)
     {
         /* 读取内部FLASH ID */
         if ((BYTE)(C2EINFO1 & 0xff) == 0x1)
-            printf("flash id:%x\n", (DWORD)(C2EINFO1 >> 8));
+        {
+            Flash_Capacity=(1<<((C2EINFO1>>24)&0xff));
+            printf("flash capacity:%d BYTES\n",Flash_Capacity);
+            printf("flash 9f cmd return id:0x%x\n",(C2EINFO1 >> 8));
+        }
         else if ((BYTE)(C2EINFO1 & 0xff) == 0x2)
             printf("read flash failed\n");
     }
@@ -541,8 +567,6 @@ void Mailbox_Firmware(void)
     if (C2E_CMD == 0x10)
     {
         /* code */
-        printf("c");
-        // Mailbox_Update_Function((DWORD)(E2CINFO1 >> 24), (DWORD)((E2CINFO1 << 8) >> 8), 0x70800);
     }
     else if (C2E_CMD == 0x11)
     {
