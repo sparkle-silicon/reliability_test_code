@@ -117,12 +117,23 @@ void Mailbox_Cryp_Selfcheck(void *param)
     command_processed = false;
 }
 
+void Mailbox_SetClockFrequency(void *param)
+{
+    TaskParams *params = (TaskParams *)param;
+    CHIP_CLOCK_SWITCH = params->E2C_INFO1;//设置多少分频
+    E2CINFO1=params->E2C_INFO1;//通知子系统设置多少分频
+    E2CINFO0 = 0x06;
+    E2CINT = 0x1;
+    command_processed = false;
+}
+
 extern void Service_Process_Tasks(void);
 extern void Service_Mailbox(void);
 void AwaitCrypSelfcheck(void)
 {
     TaskParams Params;
     task_head=Add_Task((TaskFunction)Mailbox_Read_EFUSE_Trigger,Params,&task_head);//安全使能是否打开
+    mailbox_init();
     while(EFUSE_Avail==0)
 	{
 		Service_Process_Tasks(); 
@@ -159,6 +170,32 @@ void AwaitCrypSelfcheck(void)
 		}
 	}
 
+}
+
+void CheckClockFrequencyChange(void)
+{
+    //后续根据文档修改为主系统直接访问efuse的bit位
+    TaskParams Params;
+    task_head=Add_Task((TaskFunction)Mailbox_Read_EFUSE_Trigger,Params,&task_head);//安全使能是否打开
+    mailbox_init();
+    Module_init();//暂时保留，后续根据实际情况是否需要调用初始化
+    while(EFUSE_Avail==0)
+	{
+		Service_Process_Tasks(); 
+		Service_Mailbox(); 
+	}
+    EFUSE_Avail=0;
+    if(((C2EINFO2&BIT(29))!=0)&&(CHIP_CLOCK_SWITCH!=1))//clock frequency need set
+    {
+        CHIP_CLOCK_SWITCH=1;//设置全局分频变量
+        SYSCTL_CLKDIV_OSC96M=(CHIP_CLOCK_SWITCH-1);//96M
+        __nop
+        Module_init();//暂时保留，后续根据实际情况是否需要调用初始化
+    }
+    AwaitCrypSelfcheck();//等待子系统自检完成
+    CHIP_CLOCK_SWITCH=CHIP_CLOCKFREQ_DEFAULT;//自检完成切回默认分频
+    SYSCTL_CLKDIV_OSC96M=(CHIP_CLOCK_SWITCH-1);//fpga 测试只能设置为最高24M
+    Module_init();//暂时保留，后续根据实际情况是否需要调用初始化
 }
 /*************************************eRPMC Mailbox***************************************/
 #define OP1_Code 0x9B

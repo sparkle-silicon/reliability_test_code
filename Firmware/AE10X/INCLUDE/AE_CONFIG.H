@@ -166,33 +166,14 @@
 #define KBC_PNP_ONLY_SWITCH 0   // 0:all logicdevice 1:only open keyboard&mouse
 #define FAN1_PWM_CHANNEL_SWITCH 4
 #define FAN2_PWM_CHANNEL_SWITCH 0
-#if defined(AE103)
-#define OSC_CLOCK_SWITCH 0       // 1（外部） 0（内部）
-#define CHIP_CLOCK_INT_LOW 32000 //
-#if GLE01
-#define CHIP_CLOCK_INT_HIGH 96000000 // 1(80) 2(40) 3(26.6M) 4（20）5（38.4）分频数（时钟）//192000000  // 1(192) 2(96) 3(64) 4（48）5（38.4）分频数（时钟）
-#else
-#define CHIP_CLOCK_INT_HIGH 80000000 // 1(80) 2(40) 3(26.6M) 4（20）5（38.4）分频数（时钟）//192000000  // 1(192) 2(96) 3(64) 4（48）5（38.4）分频数（时钟）
-#endif
-#define CHIP_CLOCK_EXT 32768 // 32000         // 1(96) 2(48) 3(32) 4（24）5（19.2）分频数（时钟）
-#if (OSC_CLOCK_SWITCH == 1)
-#define CHIP_CLOCK_SWITCH 4 // 1(96) 2(48) 3(32) 4（24）5（19.2）分频数（时钟）//2457600
-#define LOW_CHIP_CLOCK CHIP_CLOCK_EXT
-#define HIGHT_CHIP_CLOCK ((LOW_CHIP_CLOCK * 3000) / CHIP_CLOCK_SWITCH)
+
+#define CHIP_CLOCK_INT_HIGH 96000000
+#define CHIP_CLOCK_INT_LOW  32000
+#define CHIP_CLOCKFREQ_DEFAULT 4     // 1(96) 2(48) 3(32) 4（24）5（19.2）分频数（时钟）                                                                              
+#define LOW_CHIP_CLOCK CHIP_CLOCK_INT_LOW
+#define HIGHT_CHIP_CLOCK (CHIP_CLOCK_INT_HIGH / CHIP_CLOCK_SWITCH) // 96M/CHIP_CLOCK_SWITCH
 #define TIMER_FREQ LOW_CHIP_CLOCK * 2
-#elif (OSC_CLOCK_SWITCH == 0)
-#define CHIP_CLOCK_SWITCH 4                                        // 1(192) 2(96) 3(64) 4（48）8（24）分频数（时钟）//2457600
-#define LOW_CHIP_CLOCK CHIP_CLOCK_INT_LOW                          // 32768
-#define HIGHT_CHIP_CLOCK (CHIP_CLOCK_INT_HIGH / CHIP_CLOCK_SWITCH) // 192M/CHIP_CLOCK_SWITCH
-#define TIMER_FREQ LOW_CHIP_CLOCK * 2
-#endif
-#else
-#define CHIP_CLOCK_SWITCH 4                                            // 1(96) 2(48) 3(32) 4（24）5（19.2）分频数（时钟）//2457600
-#define CHIP_CLOCK_EXT 32768                                           // 32000         // 1(96) 2(48) 3(32) 4（24）5（19.2）分频数（时钟）
-#define LOW_CHIP_CLOCK CHIP_CLOCK_EXT                                  // 32000
-#define HIGHT_CHIP_CLOCK ((LOW_CHIP_CLOCK * 3000) / CHIP_CLOCK_SWITCH) // 96M/CHIP_CLOCK_SWITCH
-#define TIMER_FREQ LOW_CHIP_CLOCK * 2
-#endif
+
 #define ADC_CLOCK_SWITCH 7
 #define ADC_CLOCK ((LOW_CHIP_CLOCK * 3000) / ((ADC_CLOCK_SWITCH) ? (ADC_CLOCK_SWITCH * 2) : 1)) // 96M/CHIP_CLOCK_SWITCH
 #define PLL_POSTDIV2 ((ADC_CLOCK_SWITCH & 0x1f) << 21)

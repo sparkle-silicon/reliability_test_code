@@ -83,4 +83,5 @@ extern void Process_Tasks(void);
 extern Task *Add_Task(TaskFunction function, TaskParams params, Task **head);
 extern void Mailbox_Cryp_Selfcheck(void *param);
 extern void AwaitCrypSelfcheck(void);
+extern void CheckClockFrequencyChange(void);
 #endif

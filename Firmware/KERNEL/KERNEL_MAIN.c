@@ -553,7 +553,7 @@ int __weak main(void)
 	}
 #endif
 	while(C2EINFO7 != 0xa55a); // 等待子系统初始化完毕
-	AwaitCrypSelfcheck();
+	CheckClockFrequencyChange();
 	TaskParams Params={(APB_UART1|APB_REQ),0,0};
 	task_head=Add_Task(Mailbox_APB2_Source_Alloc_Trigger,Params,&task_head);//分配串口1给子系统
 	task_head=Add_Task((TaskFunction)Mailbox_Read_FLASHID_Trigger,Params,&task_head);//读取FLASHID
