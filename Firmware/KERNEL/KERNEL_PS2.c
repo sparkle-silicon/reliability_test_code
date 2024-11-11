@@ -236,7 +236,7 @@ BYTE Wait_PS2_Device_Ack_Timeout(BYTE channel)
 	BYTE cnt = 0;
 	result = 0x1;
 	TIMER_Disable(TIMER1);
-	TIMER_Init(TIMER1, TIMER1_10ms * 3, 0x0, 0x1);
+	TIMER_Init(TIMER1, 0xc03f, 0x0, 0x1);
 	do
 	{ // Wait PS2 transaction Done Status
 		BYTE status = PS2_PortN_Read_Status(channel);
@@ -414,7 +414,7 @@ void Send_ResetCmd_To_MS_WaitACK(BYTE PortNum)
 		ICTL1_INTMASK5 |=0x40;
 	PS2_PortN_Write_Output_W(0xFF, PortNum);
 	TIMER_Disable(0x0);
-	TIMER_Init(0x0, TIMER0_1s, 0x0, 0x1);
+	TIMER_Init(0x0, TIMER0_1ms*4, 0x0, 0x1);
 	do // Wait PS2 ACK 0xFA
 	{
 		BYTE status = PS2_PortN_Read_Status(PortNum);
@@ -527,7 +527,7 @@ void Stop_MS_Reporting(VBYTE port)
 {
 	PS2_PortN_Write_Output_W(0xf5, port);
 	TIMER_Disable(TIMER1);
-	TIMER_Init(TIMER1, TIMER1_10ms * 3, 0x0, 0x1);
+	TIMER_Init(TIMER1, TIMER1_1ms * 3, 0x0, 0x1);
 	do
 	{ // Wait PS2 transaction Done Status
 		BYTE ack;
@@ -561,7 +561,7 @@ char Disable_Aux_Data_Reporting(BYTE channel)
 {
 	PS2_PortN_Write_Output_W(0xf5, channel);
 	TIMER_Disable(TIMER1);
-	TIMER_Init(TIMER1, TIMER1_10ms * 3, 0x0, 0x1);
+	TIMER_Init(TIMER1, TIMER1_1ms * 3, 0x0, 0x1);
 	do
 	{ // Wait PS2 transaction Done Status
 		BYTE ack;

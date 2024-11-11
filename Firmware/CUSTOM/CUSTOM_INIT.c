@@ -200,8 +200,8 @@ void Device_init(void)
 #endif
 #if SUPPORT_LD_PNP_DEVBOARD
 	LogicalDevice_PNP_Config();
+#endif
 #if SUPPORT_SHAREMEM_PNP
 	ShareMem_PNP_Config();
-#endif
 #endif
 } // 初始化配置
