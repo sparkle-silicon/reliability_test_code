@@ -146,6 +146,8 @@ void Default_GPIO_LowPower()
  */
 void Default_Freq(void)
 {
+	if(CHIP_CLOCK_SWITCH==0)
+		CHIP_CLOCK_SWITCH=1;
 	SYSCTL_CLKDIV_OSC96M = (CHIP_CLOCK_SWITCH - 1); // 配置内部时钟分频
 	nop;
 	nop;

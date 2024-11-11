@@ -102,8 +102,6 @@ void Mailbox_APB2_Source_Alloc_Trigger(void *param)
     TaskParams *params = (TaskParams *)param;
     E2CINFO0 = 0x4; // 命令字
     E2CINFO1 = params->E2C_INFO1;
-    E2CINFO2 = params->E2C_INFO2;
-    E2CINFO3 = params->E2C_INFO3;
     E2CINT = 0x1; // 触发子系统中断
     command_processed = false;
 }
@@ -190,11 +188,14 @@ void CheckClockFrequencyChange(void)
         CHIP_CLOCK_SWITCH=1;//设置全局分频变量
         SYSCTL_CLKDIV_OSC96M=(CHIP_CLOCK_SWITCH-1);//96M
         __nop
-        Module_init();//暂时保留，后续根据实际情况是否需要调用初始化
+    }
+    else 
+    {
+        CHIP_CLOCK_SWITCH=CHIP_CLOCKFREQ_DEFAULT;
+        SYSCTL_CLKDIV_OSC96M=(CHIP_CLOCK_SWITCH-1);//96M
+        __nop
     }
     AwaitCrypSelfcheck();//等待子系统自检完成
-    CHIP_CLOCK_SWITCH=CHIP_CLOCKFREQ_DEFAULT;//自检完成切回默认分频
-    SYSCTL_CLKDIV_OSC96M=(CHIP_CLOCK_SWITCH-1);//fpga 测试只能设置为最高24M
     Module_init();//暂时保留，后续根据实际情况是否需要调用初始化
 }
 /*************************************eRPMC Mailbox***************************************/
@@ -552,17 +553,16 @@ void Mailbox_Control(void)
     else if (C2E_CMD == 0x4)
     {
         DWORD APB_ShareMod_temp = C2EINFO1;
-        if (APB_ShareMod_temp & APB_REL) // 子系统释放使用权限
+        if (APB_ShareMod_temp & APB_ERR) // 子系统返回失败
         {
-            APB_ShareMod_temp &= ~APB_REL;
-            APB_ShareMod_Cry &= ~APB_ShareMod_temp;
-            E2CINFO1 = APB_ShareMod_Cry;
-            printf("apb_share_mod_cry0:%x\n", APB_ShareMod_Cry);
+            APB_ShareMod_temp &= ~APB_ERR;
+            APB_ShareMod_Cry = APB_ShareMod_temp;
+            printf("request or release err apb_share_mod_cry:0x%x\n", APB_ShareMod_Cry);
         }
         else
         {
             APB_ShareMod_Cry = APB_ShareMod_temp;
-            printf("apb_share_mod_cry1:0x%x\n", APB_ShareMod_Cry);
+            printf("apb_share_mod_cry:0x%x\n", APB_ShareMod_Cry);
         }
     }
     else if (C2E_CMD == 0x5)
@@ -580,7 +580,11 @@ void Mailbox_Control(void)
     else if (C2E_CMD == 0x6)
     {
         /* 响应子系统降频 */
-        SYSCTL_CLKDIV_OSC80M = 1; // 配置内部时钟分频为2分频，降频到48M
+        if(CHIP_CLOCK_SWITCH==0)
+		    CHIP_CLOCK_SWITCH=1;
+        SYSCTL_CLKDIV_OSC96M = (CHIP_CLOCK_SWITCH - 1); 
+        __nop
+        Module_init();//暂时保留，后续根据实际情况是否需要调用初始化
         eFlash_Forbid_Flag = 1;   // 降频到48MHz后，设置eFlash禁止主系统访问标志
     }
     else if (C2E_CMD == 0x8)

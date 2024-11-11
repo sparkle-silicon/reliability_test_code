@@ -116,6 +116,29 @@ void KB_Cmd_Handle(BYTE nKB60DAT)
                 // Led_Data = nKB60DAT;
                 ack = 0xFA;
                 KB_Command = 0x00;
+                if(nKB60DAT&0x01)
+                {
+                        Led_Data_SCROLL =1;
+                }else
+                {
+                        Led_Data_SCROLL =0;
+                }
+                 if(nKB60DAT&0x02)
+                {
+                        NumLockKey =1;
+                        Led_Data_NUM =1;
+                }else
+                {
+                        NumLockKey =0;
+                        Led_Data_NUM =0;
+                }
+                 if(nKB60DAT&0x04)
+                {
+                        Led_Data_CAPS =1;
+                }else
+                {
+                        Led_Data_CAPS =0;
+                }
                 OEM_Write_Leds(); // Hook Oem On-board LED control
                 /* Update scanner numlock state. */
                 Scanner_State_NUM_LOCK = Led_Data_NUM;

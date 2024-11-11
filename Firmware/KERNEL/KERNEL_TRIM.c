@@ -76,7 +76,7 @@ void Low_Clock_Autotrim(void)//必须高电平准
     u32 freq;
     u32 base_freq;
     u32 div = 0xffffffff;
-    base_freq = CHIP_CLOCK_INT_HIGH / SYSCTL_CLKDIV_OSC80M;
+    base_freq = CHIP_CLOCK_INT_HIGH / SYSCTL_CLKDIV_OSC96M;
     do
     {
         freq = get_cpu_freq();
@@ -105,7 +105,7 @@ void High_Clock_Autotrim(void)//必须低电平准
     u32 freq;
     u32 base_freq;
     u32 div = 0xffffffff;
-    base_freq = CHIP_CLOCK_INT_HIGH / SYSCTL_CLKDIV_OSC80M;
+    base_freq = CHIP_CLOCK_INT_HIGH / SYSCTL_CLKDIV_OSC96M;
     do
     {
         freq = get_cpu_freq();

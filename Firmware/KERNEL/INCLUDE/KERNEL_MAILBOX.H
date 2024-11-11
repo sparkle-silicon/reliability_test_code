@@ -55,6 +55,7 @@ extern volatile bool command_processed;
 #define APB_UART1 BIT(15)
 #define APB_SPIM BIT(16)
 #define APB_PECI BIT(17)
+#define APB_ERR BIT(29)
 #define APB_REL BIT(30)
 #define APB_REQ BIT(31)
 
@@ -84,4 +85,5 @@ extern Task *Add_Task(TaskFunction function, TaskParams params, Task **head);
 extern void Mailbox_Cryp_Selfcheck(void *param);
 extern void AwaitCrypSelfcheck(void);
 extern void CheckClockFrequencyChange(void);
+extern void Mailbox_SetClockFrequency(void *param);
 #endif
