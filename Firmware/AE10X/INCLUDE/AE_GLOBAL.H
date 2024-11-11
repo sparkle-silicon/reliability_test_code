@@ -377,6 +377,7 @@ typedef struct _point
 #pragma pack(4) // 4字节对齐
 extern int main();
 extern sMode Mode;
+extern u_int32_t CHIP_CLOCK_SWITCH;
 /*-------------------------------------set reg Information-------------------------------------*/
 #include <AE_REG.H>
 #include <AE_CONFIG.H>

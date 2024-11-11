@@ -72,7 +72,6 @@ void SECTION(".init.flow") Init()
 
 // 1.double boot
   DoubleBoot_Init();
-
   // 2.default Set Operating Environment
   Default_Config();
   // 3.Module Initialization
