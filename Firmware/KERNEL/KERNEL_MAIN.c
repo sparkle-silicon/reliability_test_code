@@ -464,7 +464,7 @@ void main_service(void)
 void main_loop(void)
 {
 	dprint("Enter main_service \n");
-	//sysctl_iomux_config(GPIOA,0,0);
+
 	while(1)
 	{
 		main_service();
@@ -548,19 +548,19 @@ int __weak main(void)
 #if ((GLE01 == 1) && (FLASH_TO_IRAM0 == 1))
 	GLE01_RomCode_Transport();
 	E2CINFO7 = 0x5aa5;
-	// while (C2EINFO7 != 0xa55a) // 等待子系统初始化完毕
-	// {
-	// 	E2CINFO7 = 0x5aa5;
-	// }
+	while (C2EINFO7 != 0xa55a) // 等待子系统初始化完毕
+	{
+		E2CINFO7 = 0x5aa5;
+	}
 #endif
 	while(C2EINFO7 != 0xa55a); // 等待子系统初始化完毕
 	CheckClockFrequencyChange();
 	TaskParams Params={(APB_UART1|APB_REQ),0,0};
 	task_head=Add_Task(Mailbox_APB2_Source_Alloc_Trigger,Params,&task_head);//分配串口1给子系统
-	//task_head=Add_Task((TaskFunction)Mailbox_Read_FLASHID_Trigger,Params,&task_head);//读取FLASHID
-	//Params.E2C_INFO1=0x40000|(0x2<<24);
-	//Params.E2C_INFO2=0;
-	//task_head=Add_Task(Mailbox_ExecuteFirmwareUpdate,Params,&task_head);//mirror 外部flash 测试
+	task_head=Add_Task((TaskFunction)Mailbox_Read_FLASHID_Trigger,Params,&task_head);//读取FLASHID
+	Params.E2C_INFO1=0x40000|(0x2<<24);
+	Params.E2C_INFO2=0;
+	task_head=Add_Task(Mailbox_ExecuteFirmwareUpdate,Params,&task_head);//mirror 外部flash 测试
 
 	//  3. jump loop
 	main_loop();
