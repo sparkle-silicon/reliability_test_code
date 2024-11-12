@@ -55,6 +55,7 @@ extern volatile bool command_processed;
 #define APB_UART1 BIT(15)
 #define APB_SPIM BIT(16)
 #define APB_PECI BIT(17)
+#define APB_ERR BIT(29)
 #define APB_REL BIT(30)
 #define APB_REQ BIT(31)
 
@@ -72,7 +73,7 @@ extern void Mailbox_Read_EFUSE_Trigger(void);
 extern void Mailbox_FW_Extension_Trigger(void);
 extern void Mailbox_APB2_Source_Alloc_Trigger(void *param);
 extern void Mailbox_Read_FLASHUID_Trigger(void);
-extern void Mailbox_Test(void);
+extern void Mailbox_ExecuteFirmwareUpdate(void *param);
 extern void Mailbox_WriteRootKey_Trigger(void);
 extern void Mailbox_UpdateHMACKey_Trigger(void);
 extern void Mailbox_IncrementCounter_Trigger(void);
@@ -81,6 +82,8 @@ extern void Mailbox_ReadParameter_Trigger(void);
 extern void Mailbox_eRPMC_Trigger(void);
 extern void Process_Tasks(void);
 extern Task *Add_Task(TaskFunction function, TaskParams params, Task **head);
-extern void Mailbox_Cryp_Selfcheck(void);
+extern void Mailbox_Cryp_Selfcheck(void *param);
 extern void AwaitCrypSelfcheck(void);
+extern void CheckClockFrequencyChange(void);
+extern void Mailbox_SetClockFrequency(void *param);
 #endif

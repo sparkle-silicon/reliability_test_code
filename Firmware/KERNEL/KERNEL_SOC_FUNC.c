@@ -426,7 +426,7 @@ void ps2_init(void)
 #if PS2_0_EN_Init
 	ps2_0_MoudleClock_EN;
 	ps2_0_frequency();
-	sysctl_iomux_ps2_0();
+	//sysctl_iomux_ps2_0();
 #if 0 // 上拉配置
 	ps2_0_pull_up();
 #endif
@@ -434,7 +434,7 @@ void ps2_init(void)
 #if PS2_1_EN_Init
 	ps2_1_MoudleClock_EN;
 	ps2_1_frequency();
-	sysctl_iomux_ps2_1();
+	//sysctl_iomux_ps2_1();
 #if 0 // 上拉配置
 	ps2_1_pull_up();
 #endif

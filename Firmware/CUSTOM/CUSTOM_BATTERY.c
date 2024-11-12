@@ -172,7 +172,7 @@ void ChargerWrite(BYTE addr, WORD value)
 	data[0] = (value & 0xFF);
 	data[1] = ((value >> 8) & 0xFF);
 
-	I2cM_Write_Block(CHARGER_ADDR, data, 2, addr, BAT_I2C_CHANNEL);
+	I2cM_Write_Block(CHARGER_ADDR, data, 2, addr, CHG_I2C_CHANNEL);
 }
 
 VWORD BatteryRead(BYTE addr)

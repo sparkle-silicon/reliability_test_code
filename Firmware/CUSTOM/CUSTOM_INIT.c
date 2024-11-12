@@ -16,7 +16,7 @@
 #include "CUSTOM_INIT.H"
 #include "CUSTOM_FAN.H"
 #include "AE_ANX7447_UCSI.H"
-
+u_int32_t CHIP_CLOCK_SWITCH=CHIP_CLOCKFREQ_DEFAULT; // 1(96) 2(48) 3(32) 4（24）5（19.2）分频数（时钟）  
 /****************************************************************************
 * SPKAE10X Init FLOW :
 * 1. DoubleBoot (Custom Configuration Double Boot Addr，Function Is Get_DoubleBoot_ADDR() In File CUSTOM_INIT.c)
@@ -146,17 +146,9 @@ void Default_GPIO_LowPower()
  */
 void Default_Freq(void)
 {
-#if defined(AE103)
-#if (OSC_CLOCK_SWITCH == 1)
-	SYSCTL_SWITCH_PLL &= ~(BIT0 | BIT1);						  // 切换外部并关闭内部osc192M（低功耗考虑）
-	// SYSCTL_RESERVER = 0x40800000 | ((CHIP_CLOCK_SWITCH - 1) << 16) | PLL_ENF2 | PLL_POSTDIV2; // PLL分频
-#else
-	// SYSCTL_SWITCH_PLL |= (BIT0 | BIT1);			  // 切换内部时钟
-	SYSCTL_CLKDIV_OSC80M = (CHIP_CLOCK_SWITCH - 1); // 配置内部时钟分频
-#endif
-#else
-	// SYSCTL_RESERVER = 0x40800000 | ((CHIP_CLOCK_SWITCH - 1) << 16) | PLL_ENF2 | PLL_POSTDIV2;
-#endif
+	if(CHIP_CLOCK_SWITCH==0)
+		CHIP_CLOCK_SWITCH=1;
+	SYSCTL_CLKDIV_OSC96M = (CHIP_CLOCK_SWITCH - 1); // 配置内部时钟分频
 	nop;
 	nop;
 	nop;
@@ -200,8 +192,8 @@ void Device_init(void)
 #endif
 #if SUPPORT_LD_PNP_DEVBOARD
 	LogicalDevice_PNP_Config();
+#endif
 #if SUPPORT_SHAREMEM_PNP
 	ShareMem_PNP_Config();
-#endif
 #endif
 } // 初始化配置

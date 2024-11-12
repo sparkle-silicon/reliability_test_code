@@ -364,6 +364,7 @@
 #define BRAM_ReadBuff ((VBYTEP)(BRAM_MemBase + 0))  // 定义一个48字节的数组
 /*SPIF Interface*/
 #define SPIF_MemBase (BRAM_MemBase + MEMORY_064SIZE) // 0x20250
+#define Flash_Capacity (*(VDWORDP)(SPIF_MemBase + 0x0))// 存放flash容量 单位字节
 /*ShareMemory*/
 #define SM_MemBase (SPIF_MemBase + MEMORY_032SIZE) // 0x20270
 /*SWUC Module*/
@@ -580,7 +581,11 @@
 #define APB_ShareMod_Cry (*(VDWORDP)(Mailbox_MemBase + 0x0E))//同步子系统正在使用的模块
 #define Cry_SelfCheck_Flag (*(VBYTEP)(Mailbox_MemBase + 0x12))
 #define EFUSE_Avail (*(VBYTEP)(Mailbox_MemBase + 0x13))
-#define DEFAULT_BASE_ADDR2 (Mailbox_MemBase + MEMORY_032SIZE) // 0x203C0
+#define CRYP_SHA_MODULES_SC_STA (*(VDWORDP)(Mailbox_MemBase + 0x14))
+#define CRYP_AES_MODULLES_SC_STA (*(VDWORDP)(Mailbox_MemBase + 0x18))
+#define CRYP_MODULLES_RSA_SC_STA (*(VDWORDP)(Mailbox_MemBase + 0x1C))
+#define CRYP_MODULLES_ECC_SC_STA (*(VDWORDP)(Mailbox_MemBase + 0x20))
+#define DEFAULT_BASE_ADDR2 (Mailbox_MemBase + MEMORY_064SIZE) // 0x203C0
 #define DEFAULT_BASE_SIZE 0x2A8
 
 #endif // end #if AE103

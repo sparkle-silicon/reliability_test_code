@@ -41,24 +41,24 @@
 #define TIMER3 0x3
 /************TIMER0常见定时定义************/
 #define TIMER0_Division 0x0
-#define TIMER0_1s (LOW_CHIP_CLOCK / (2 << TIMER0_Division))
-#define TIMER0_100ms (TIMER0_1s / 10)
-#define TIMER0_50ms (TIMER0_1s / 20)
-#define TIMER0_20ms (TIMER0_1s / 50)
-#define TIMER0_10ms (TIMER0_1s / 100)
-#define TIMER0_5ms (TIMER0_1s / 200)
-#define TIMER0_2ms (TIMER0_1s / 500)
-#define TIMER0_1ms (TIMER0_1s / 1000)
+#define TIMER0_1ms (HIGHT_CHIP_CLOCK / (2 << TIMER0_Division)/1000)
+#define TIMER0_100us (TIMER0_1ms / 10)
+#define TIMER0_50us (TIMER0_1ms / 20)
+#define TIMER0_20us (TIMER0_1ms / 50)
+#define TIMER0_10us (TIMER0_1ms / 100)
+#define TIMER0_5us (TIMER0_1ms / 200)
+#define TIMER0_2us (TIMER0_1ms / 500)
+#define TIMER0_1us (TIMER0_1ms / 1000)
 /************TIMER1常见定时定义************/
 #define TIMER1_Division 0x0
-#define TIMER1_1s (LOW_CHIP_CLOCK / (2 << TIMER1_Division))
-#define TIMER1_100ms (TIMER1_1s / 10)
-#define TIMER1_50ms (TIMER1_1s / 20)
-#define TIMER1_20ms (TIMER1_1s / 50)
-#define TIMER1_10ms (TIMER1_1s / 100)
-#define TIMER1_5ms (TIMER1_1s / 200)
-#define TIMER1_2ms (TIMER1_1s / 500)
-#define TIMER1_1ms (TIMER1_1s / 1000)
+#define TIMER1_1ms (HIGHT_CHIP_CLOCK / (2 << TIMER1_Division)/1000)
+#define TIMER1_100us (TIMER1_1ms / 10)
+#define TIMER1_50us (TIMER1_1ms / 20)
+#define TIMER1_20us (TIMER1_1ms / 50)
+#define TIMER1_10us (TIMER1_1ms / 100)
+#define TIMER1_5us (TIMER1_1ms / 200)
+#define TIMER1_2us (TIMER1_1ms / 500)
+#define TIMER1_1us (TIMER1_1ms / 1000)
 /************TIMER2常见定时定义************/
 // 由于计数器只有16位而timer2频率有24.576Mhz所以延时最长大概4ms左右
 #define TIMER2_Division 0x0
