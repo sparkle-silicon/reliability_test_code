@@ -119,7 +119,7 @@
 #define SPI_MODULE_EN 0
 #define WDT_MODULE_EN 0
 #define PWM_MODULE_EN 1
-#define TACH_MODULE_EN 1
+#define TACH_MODULE_EN 0
 #define TIMER_MODULE_EN 1
 #define PMC_MODULE_EN 1
 #define KBC_MODULE_EN 1
@@ -271,8 +271,8 @@
 #define SPIM_CS_EN 0
 #endif
 // PWM TACH 初始化
-#define PWM0_EN_Init 1 & PWM_CLOCK_EN
-#define PWM1_EN_Init 1 & PWM_CLOCK_EN
+#define PWM0_EN_Init 0 & PWM_CLOCK_EN
+#define PWM1_EN_Init 0 & PWM_CLOCK_EN
 #define PWM2_EN_Init 0 & PWM_CLOCK_EN
 #define PWM3_EN_Init 0 & PWM_CLOCK_EN
 #define PWM4_EN_Init 0 & PWM_CLOCK_EN

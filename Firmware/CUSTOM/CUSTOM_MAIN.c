@@ -40,7 +40,7 @@ void __weak Hook_1msEvent(BYTE EventId)
     Event_Center(EventId);    // Polling system event
     Sys_PowerState_Control(); // System Power Control
     // KBD_ListeningEvent();
-    Moudle_test();
+    //Moudle_test();
 
 #if SCI_POLLING_CONTROL
     SCI_Send();
@@ -182,122 +182,6 @@ void __weak Hook_1secEventA(void) // get all temp
         *((VBYTE *)(0x203B9)) = 0;
         Mailbox_ReadParameter_Trigger();
     }
-
-
-            // static int i=0;
-            // i++;
-            // if(i==10)
-            // {
-            //     i=0;
-            // }
-            // printf("i:%d\n",i);
-            // PWM_Init_channel(PWM_CHANNEL1, PWM_HIGH, PWM_CLK0, PWM_CTR0, i*10, 0);
-            // PWM_Init_channel(PWM_CHANNEL0, PWM_HIGH, PWM_CLK0, PWM_CTR0, i*10, 0);
-
-            // DWORD Polling0 = TACH_Get_Polling(0);
-            // if(Polling0 != -1)
-            // {
-            //     TACH0_Speed=(DWORD)6000000/Polling0;
-            //     dprint("FAN1 RPM is %u\n",TACH0_Speed);
-            // }
-        
-
-
-    // static int flag=0;
-    // if(flag)
-    // {
-    //     flag=0;        
-    // }
-    // else
-    // {
-    //     flag=1;
-    // }
-
-
-    // GPIO_Config(GPIOB, 0, 1, flag, 0, 0);
-    // GPIO_Config(GPIOB, 1, 1, flag, 0, 0);
-    // GPIO_Config(GPIOB, 2, 1, flag, 0, 0);
-    // GPIO_Config(GPIOB, 3, 1, flag, 0, 0);
-    // GPIO_Config(GPIOB, 4, 1, flag, 0, 0);
-    // GPIO_Config(GPIOB, 5, 1, flag, 0, 0);
-    // GPIO_Config(GPIOB, 6, 1, flag, 0, 0);
-    // GPIO_Config(GPIOB, 7, 1, flag, 0, 0);
-
-    // sysctl_iomux_config(GPIOB, 0, 0);
-    // sysctl_iomux_config(GPIOB, 1, 0);
-    // sysctl_iomux_config(GPIOB, 2, 0);
-    // sysctl_iomux_config(GPIOB, 3, 0);
-    // sysctl_iomux_config(GPIOB, 4, 0);
-    // sysctl_iomux_config(GPIOB, 5, 0);
-    // sysctl_iomux_config(GPIOB, 6, 0);
-    // sysctl_iomux_config(GPIOB, 7, 0);
-
-    // GPIO1_DDR0 =0xff;
-    // if(flag)
-    // {
-    //   GPIO1_DR0 = 0xff;
-    // }
-    // else
-    // {
-    //     GPIO1_DR0 = 0x0;
-    // }
-    // GPIO_Config(GPIOA, 0, 1,flag , 0, 0);
-    // GPIO_Config(GPIOE, 4, 1, flag, 0, 0);
-    //GPIO_Config(GPIOA, 5, 1, flag, 0, 0);
-    // GPIO_Config(GPIOC, 11, 1, 0, 0, 0);
-
-    // printf("0x30464:%x\n",(*(unsigned int*)(0x30464)));
-    // printf("GPIO2_DDR1:%x\n",GPIO2_DDR1);
-	// printf("GPIO2_DR1 :%x\n",GPIO2_DR1 );      
-    // printf("GPIO2_EXT1:%x\n",GPIO2_EXT1);
-
-    // GPIO_Config(GPIOB, 7, 1, 0, 0, 0);
-    // GPIO_Config(GPIOB, 27, 1, 1, 0, 0);
-    // GPIO_Config(GPIOC, 9, 1, flag, 0, 0);
-    // GPIO_Config(GPIOE, 19, 1, 0, 0, 0);
-
-    // printf("PA0\n");
-    // printf("0x30454:%x\n",(*(unsigned int*)(0x30454)));
-    // printf("0x3046C:%x\n",(*(unsigned int*)(0x3046C)));
-    // printf("GPIO0_DDR0:%x\n",GPIO0_DDR0);
-	// printf("GPIO0_DR0:%x\n",GPIO0_DR0);      
-    // printf("GPIO0_EXT0:%x\n",GPIO0_EXT0);
-
-    // printf("0x30460:%x\n",(*(unsigned int*)(0x30460)));
-    // printf("GPIO1_DDR3:%x\n",GPIO1_DDR3);
-	// printf("GPIO1_DR3:%x\n",GPIO1_DR3);      
-    // printf("GPIO1_EXT3:%x\n",GPIO1_EXT3);
-
-    // printf("0x3045C:%x\n",(*(unsigned int*)(0x3045C)));
-    // printf("GPIO1_DDR0:%x\n",GPIO1_DDR0);
-	// printf("GPIO1_DR0:%x\n",GPIO1_DR0);      
-    // printf("GPIO1_EXT0:%x\n",GPIO1_EXT0);
-
-    // printf("0x30464:%x\n",(*(unsigned int*)(0x30464)));
-    // printf("GPIO2_DDR1:%x\n",GPIO2_DDR1);
-	// printf("GPIO2_DR1:%x\n",GPIO2_DR1);      
-    // printf("GPIO2_EXT1:%x\n",GPIO2_EXT1); 
-
-
-    // printf("PD7 PD8\n");
-    // printf("0x30468:%x\n",(*(unsigned int*)(0x30468)));
-    // printf("0x30480:%x\n",(*(unsigned int*)(0x30480)));
-    // printf("GPIO2_DDR2:%x\n",GPIO2_DDR2);
-	// printf("GPIO2_DR2:%x\n",GPIO2_DR2);      
-    // printf("GPIO2_EXT2:%x\n",GPIO2_EXT2);
-    // printf("GPIO2_EXT3:%x\n",GPIO2_EXT3);
-
-    // printf("PE4\n");
-    // printf("0x30468:%x\n",(*(unsigned int*)(0x30468)));
-    // printf("GPIO3_DDR0:%x\n",GPIO3_DDR0);
-	// printf("GPIO3_DR0:%x\n",GPIO3_DR0);
-    // printf("GPIO3_EXT0:%x\n",GPIO3_EXT0);
-
-    // printf("0x30468:%x\n",(*(unsigned int*)(0x30468)));
-    // printf("GPIO3_DDR2:%x\n",GPIO3_DDR2);
-	// printf("GPIO3_DR2:%x\n",GPIO3_DR2);
-    // printf("GPIO3_EXT2:%x\n",GPIO3_EXT2);
-
 
 #endif
 }
