@@ -44,7 +44,7 @@
 #define UARTB_SEL  SYSCTL_PIO4_UDCFG &= ~BIT0;
 #define SMBUS3_SEL  SYSCTL_PIO4_UDCFG |=BIT0;
 #endif
-#if (COMMAND_UART_SWITCH == 5 || DEBUG_UART_SWITCH == 5 || PRINTF_UART_SWITCH == 5)
+#if (COMMAND_UART_SWITCH == 3 || DEBUG_UART_SWITCH == 3 || PRINTF_UART_SWITCH == 3)
 #if SMBUS3_CLOCK_EN
 // #error 
 #warning "You want use UARTB,but SMBUS3(IIC3) Enable, They reuse the same pin"

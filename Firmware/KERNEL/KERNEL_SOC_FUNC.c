@@ -181,6 +181,7 @@ void uart_init(void)
 	sysctl_iomux_uart1();
 	flag |= BIT1;
 	baud[1] = serial_init(UART1_CHANNEL, UART1_BAUD);
+
 #endif
 // #ifdef UART2_BAUD
 // 	uart2_MoudleClock_EN;
@@ -199,14 +200,14 @@ void uart_init(void)
 	uarta_MoudleClock_EN;
 	sysctl_iomux_uarta();
 	flag |= BIT4;
-	baud[4] = serial_init(UARTA_CHANNEL, UARTA_BAUD);
+	baud[4] = serial_init(UARTA_CHANNEL, 115200);
 #endif
 #ifdef UARTB_BAUD
 	SMBUS3_UARTB_SEL;
 	uartb_MoudleClock_EN;
 	sysctl_iomux_uartb();
 	flag |= BIT5;
-	baud[5] = serial_init(UARTB_CHANNEL, UARTB_BAUD);
+	baud[5] = serial_init(UARTB_CHANNEL, 115200);
 #endif
 	for (cnt = 0; cnt < 6; cnt++)
 	{

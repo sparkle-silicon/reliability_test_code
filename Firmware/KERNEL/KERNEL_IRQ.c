@@ -22,6 +22,9 @@
 #include "CUSTOM_POWER.H"
 #include "KERNEL_MEMORY.H"
 #include "KERNEL_RTC.H"
+
+#define MOUDLE_TEST 0
+extern char Uart_buffer[UART_BUFFER_SIZE]; // An array of data transferred by the debugger
 BYTE intr_st0, intr_st1, intr_st2, intr_st3, intr_st4, intr_st5, intr_st6, intr_st7;
 BYTE intr_st;
 /***************weak声明*********************/
@@ -599,7 +602,7 @@ void __interrupt SECTION(".interrupt.UARTA_HANDLER") UARTA_HANDLER(void)
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[22]++;
 #endif
-#if ((DEBUG_UART_SWITCH == 4) || (PRINTF_UART_SWITCH == 4) || (COMMAND_UART_SWITCH == 4))
+#if ((DEBUG_UART_SWITCH == 2) || (PRINTF_UART_SWITCH == 2) || (COMMAND_UART_SWITCH == 2))
 #else
 	irqprint(irq_string, __FUNCTION__, 22);
 #endif
@@ -615,7 +618,7 @@ void __interrupt SECTION(".interrupt.UARTA_HANDLER") UARTA_HANDLER(void)
 		}//接收错误
 
 	}
-#if (ENABLE_COMMAND_SUPPORT && COMMAND_UART_SWITCH == 4)
+#if (ENABLE_COMMAND_SUPPORT && COMMAND_UART_SWITCH == 2)
 	if(F_Service_CMD == 1)
 	{
 		char temp = UARTA_RX;
@@ -658,7 +661,7 @@ void __interrupt SECTION(".interrupt.UARTB_HANDLER") UARTB_HANDLER(void)
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[23]++;
 #endif
-#if ((DEBUG_UART_SWITCH == 5) || (PRINTF_UART_SWITCH == 5) || (COMMAND_UART_SWITCH == 5))
+#if ((DEBUG_UART_SWITCH == 3) || (PRINTF_UART_SWITCH == 3) || (COMMAND_UART_SWITCH == 3))
 #else
 	irqprint(irq_string, __FUNCTION__, 23);
 #endif
@@ -679,7 +682,7 @@ void __interrupt SECTION(".interrupt.UARTB_HANDLER") UARTB_HANDLER(void)
 		}//接收错误
 
 	}
-#if (ENABLE_COMMAND_SUPPORT && COMMAND_UART_SWITCH == 5)
+#if (ENABLE_COMMAND_SUPPORT && COMMAND_UART_SWITCH == 3)
 	if(F_Service_CMD == 1)
 	{
 		char temp = UARTB_RX;
@@ -739,6 +742,18 @@ void __interrupt SECTION(".interrupt.TIMER0_HANDLER") TIMER0_HANDLER(void)
 #if 0
 	irqprint(irq_string, __FUNCTION__, 26);
 #endif
+
+#if MOUDLE_TEST
+	if((GPIO1_DR0)&(0x1<<0))//pb0翻转
+	{
+		GPIO1_DR0 &=(0x0<<0);//GPIO输出寄存器原为1时清0
+	}
+	else
+	{
+		GPIO1_DR0 |=(0x1<<0);//GPIO输出寄存器原为0时置1
+	}
+#endif
+
 	if((TIMER0_TIS & 0x1) == 0x1)
 		TIMER0_TEOI; // clear int
 };
@@ -750,6 +765,18 @@ void __interrupt SECTION(".interrupt.TIMER1_HANDLER") TIMER1_HANDLER(void)
 #if 0
 	irqprint(irq_string, __FUNCTION__, 27);
 #endif
+
+#if MOUDLE_TEST
+	if((GPIO1_DR0)&(0x1<<1))//pb1翻转
+	{
+		GPIO1_DR0 &=(0x0<<1);//GPIO输出寄存器原为1时清0
+	}
+	else
+	{
+		GPIO1_DR0 |=(0x1<<1);//GPIO输出寄存器原为0时置1
+	}
+#endif
+
 	if(TIMER1_TIS & 0x1) // read int status
 	{
 		TIMER1_TEOI; // clear int
@@ -763,6 +790,18 @@ void __interrupt SECTION(".interrupt.TIMER2_HANDLER") TIMER2_HANDLER(void)
 #if 0
 	irqprint(irq_string, __FUNCTION__, 28);
 #endif
+
+#if MOUDLE_TEST
+	if((GPIO1_DR0)&(0x1<<2))//pb1翻转
+	{
+		GPIO1_DR0 &=(0x0<<2);//GPIO输出寄存器原为1时清0
+	}
+	else
+	{
+		GPIO1_DR0 |=(0x1<<2);//GPIO输出寄存器原为0时置1
+	}
+#endif
+
 	// irqprint ("%s","--------Begin TIMER2 handler----Vector mode\n");
 	if(TIMER2_TIS & 0x1)
 	{
@@ -781,6 +820,18 @@ void __interrupt SECTION(".interrupt.TIMER3_HANDLER") TIMER3_HANDLER(void)
 #if 0
 	irqprint(irq_string, __FUNCTION__, 29);
 #endif
+
+#if MOUDLE_TEST
+	if((GPIO1_DR0)&(0x1<<3))//pb1翻转
+	{
+		GPIO1_DR0 &=(0x0<<3);//GPIO输出寄存器原为1时清0
+	}
+	else
+	{
+		GPIO1_DR0 |=(0x1<<3);//GPIO输出寄存器原为0时置1
+	}
+#endif
+
 	// irqprint ("%s","--------Begin TIMER3 handler----Vector mode\n");
 	if(TIMER3_TIS & 0x1)
 	{
