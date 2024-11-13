@@ -570,8 +570,8 @@ BYTE Moudle_test(void)
 				temp_data = REG8(Uart_base);
 				dprint("input 0x%x\n", temp_data);
 				Prt_flag = 1;
-				TIMER_Init(TIMER0, TIMER0_2ms, 0x1, 0x0);  //使用定时器0的中断进行测试，每1ms翻转GPIOB0电平
-				TIMER_Init(TIMER1, TIMER1_5ms, 0x1, 0x0);  //使用定时器1的中断进行测试，每1ms翻转GPIOB1电平
+				TIMER_Init(TIMER0, TIMER0_1ms, 0x1, 0x0);  //使用定时器0的中断进行测试，每1ms翻转GPIOB0电平
+				TIMER_Init(TIMER1, TIMER1_1ms, 0x1, 0x0);  //使用定时器1的中断进行测试，每1ms翻转GPIOB1电平
 				TIMER_Init(TIMER2, TIMER2_1ms, 0x1, 0x0);  //使用定时器2的中断进行测试，每1ms翻转GPIOB2电平
 				TIMER_Init(TIMER3, TIMER3_1ms, 0x1, 0x0);  //使用定时器3的中断进行测试，每1ms翻转GPIOB3电平
 				dprint("TIMER0-3 start\n");
@@ -2502,7 +2502,7 @@ BYTE Moudle_test(void)
 				REG8(Uart_base);
 				while(!(REG8(Uart_base + 0x5) & 0x1));
 				//定时器
-				TIMER_Init(TIMER0, TIMER0_100ms, 0x1, 0x0); //都是100ms打印
+				TIMER_Init(TIMER0, TIMER0_1ms, 0x1, 0x0); //都是100ms打印
 				TIMER_Init(TIMER1, TIMER1_1ms, 0x1, 0x0);
 				TIMER_Init(TIMER3, TIMER3_1ms, 0x1, 0x0);
 
@@ -2517,7 +2517,7 @@ BYTE Moudle_test(void)
 			{
 				TIMER_Init(TIMER3, TIMER3_1ms, 0x1, 0x1);
 				TIMER_Init(TIMER1, TIMER1_1ms, 0x1, 0x1);
-				TIMER_Init(TIMER0, TIMER0_100ms, 0x1, 0x1); //打开屏蔽
+				TIMER_Init(TIMER0, TIMER0_1ms, 0x1, 0x1); //打开屏蔽
 
 				printf("open mask\n");
 			}
@@ -2525,7 +2525,7 @@ BYTE Moudle_test(void)
 			{
 				TIMER_Init(TIMER3, TIMER3_1ms, 0x1, 0x0);
 				TIMER_Init(TIMER1, TIMER1_1ms, 0x1, 0x0);
-				TIMER_Init(TIMER0, TIMER0_100ms, 0x1, 0x0);//关闭屏蔽
+				TIMER_Init(TIMER0, TIMER0_1ms, 0x1, 0x0);//关闭屏蔽
 				printf("close mask\n");
 			}
 			
@@ -2541,7 +2541,7 @@ BYTE Moudle_test(void)
 			{
 				TIMER_Init(TIMER3, TIMER3_1ms, 0x1, 0x0);
 				TIMER_Init(TIMER1, TIMER1_1ms, 0x1, 0x0);
-				TIMER_Init(TIMER0, TIMER0_100ms, 0x1, 0x0); //enable
+				TIMER_Init(TIMER0, TIMER0_1ms, 0x1, 0x0); //enable
 				printf("enable irq\n");
 			}	
 			if(Mtimer_Cunt==35000)
