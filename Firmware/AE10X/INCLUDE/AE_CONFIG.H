@@ -184,7 +184,7 @@
 #else
 #undef DEBUG_UART_SWITCH
 #endif
-#define PRINTF_UART_SWITCH 0                   // 串口引脚选择 uarta对应数值2 uartb对应数值3
+#define PRINTF_UART_SWITCH 0                 // 串口引脚选择 uarta对应数值2 uartb对应数值3
 #define COMMAND_UART_SWITCH PRINTF_UART_SWITCH // It's aobut receive uart, comand send is printf.
 #else
 #if ENABLE_DEBUGGER_SUPPORT
@@ -238,18 +238,18 @@
 #if (COMMAND_UART_SWITCH == 1 || DEBUG_UART_SWITCH == 1 || PRINTF_UART_SWITCH == 1)
 #define UART1_BAUD 115200
 #endif
+// #if (COMMAND_UART_SWITCH == 2 || DEBUG_UART_SWITCH == 2 || PRINTF_UART_SWITCH == 2)
+// #define UART2_BAUD 115200
+// #endif
+// #if (COMMAND_UART_SWITCH == 3 || DEBUG_UART_SWITCH == 3 || PRINTF_UART_SWITCH == 3)
+// #define UART3_BAUD 115200
+// #endif
+#endif
 #if (COMMAND_UART_SWITCH == 2 || DEBUG_UART_SWITCH == 2 || PRINTF_UART_SWITCH == 2)
-#define UART2_BAUD 115200
-#endif
-#if (COMMAND_UART_SWITCH == 3 || DEBUG_UART_SWITCH == 3 || PRINTF_UART_SWITCH == 3)
-#define UART3_BAUD 115200
-#endif
-#endif
-#if (COMMAND_UART_SWITCH == 4 || DEBUG_UART_SWITCH == 4 || PRINTF_UART_SWITCH == 4)
 #define UARTA_BAUD 115200
 #endif
-#if (COMMAND_UART_SWITCH == 5 || DEBUG_UART_SWITCH == 5 || PRINTF_UART_SWITCH == 5)
-#define UARTB_BAUD 256000
+#if (COMMAND_UART_SWITCH == 3 || DEBUG_UART_SWITCH == 3 || PRINTF_UART_SWITCH == 3)
+#define UARTB_BAUD 115200
 #endif
 
 // I2C 初始化
@@ -279,7 +279,7 @@
 #define PWM5_EN_Init 0 & PWM_CLOCK_EN
 #define PWM6_EN_Init 0 & PWM_CLOCK_EN
 #define PWM7_EN_Init 0 & PWM_CLOCK_EN
-#define TACH0_EN 0 & PWM_CLOCK_EN
+#define TACH0_EN 1 & PWM_CLOCK_EN
 #define TACH1_EN 0 & PWM_CLOCK_EN
 #define TACH2_EN 0 & PWM_CLOCK_EN
 #define TACH3_EN 0 & PWM_CLOCK_EN

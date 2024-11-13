@@ -60,10 +60,10 @@ int serial_config(BYTE uart_num, DWORD baudrate)
 #else
     freq = CPU_FREQ;//如果时钟不标准则可以使用现场推算的（例如晶振不标准，但必须是外部PPL锁屏成比例的时钟）
 #endif
-    divisor = freq / baudrate + (0b100 << (uart_num >> 2)); // 27
+    divisor = freq / baudrate + (0b100 << (uart_num >> 1)); // 27
     // Set DLAB to 1 in LCR
     *uart_lcr = UART_LCR_DLAB | UART_LCR_DLS_8bit;
-    divisor >>= (3 + (uart_num >> 2));
+    divisor >>= (3 + (uart_num >> 1));
     *uart_divisor_lsb = divisor;
     *uart_divisor_msb = (divisor >> 8);
     // Set Line Control Register

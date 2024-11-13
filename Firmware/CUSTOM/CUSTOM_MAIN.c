@@ -31,6 +31,7 @@
 //-----------------------------------------------------------------------------
 // Oem 1ms Events/Hook Here
 //-----------------------------------------------------------------------------
+extern BYTE Moudle_test(void);
 void __weak Hook_1msEvent(BYTE EventId)
 {
 #if SUPPORT_ANX7447
@@ -39,6 +40,8 @@ void __weak Hook_1msEvent(BYTE EventId)
     Event_Center(EventId);    // Polling system event
     Sys_PowerState_Control(); // System Power Control
     // KBD_ListeningEvent();
+    //Moudle_test();
+
 #if SCI_POLLING_CONTROL
     SCI_Send();
 #endif

@@ -464,6 +464,7 @@ void main_service(void)
 void main_loop(void)
 {
 	dprint("Enter main_service \n");
+
 	while(1)
 	{
 		main_service();
@@ -556,10 +557,10 @@ int __weak main(void)
 	CheckClockFrequencyChange();
 	TaskParams Params={(APB_UART1|APB_REQ),0,0};
 	task_head=Add_Task(Mailbox_APB2_Source_Alloc_Trigger,Params,&task_head);//分配串口1给子系统
-	//task_head=Add_Task((TaskFunction)Mailbox_Read_FLASHID_Trigger,Params,&task_head);//读取FLASHID
-	//Params.E2C_INFO1=0x40000|(0x2<<24);
-	//Params.E2C_INFO2=0;
-	//task_head=Add_Task(Mailbox_ExecuteFirmwareUpdate,Params,&task_head);//mirror 外部flash 测试
+	task_head=Add_Task((TaskFunction)Mailbox_Read_FLASHID_Trigger,Params,&task_head);//读取FLASHID
+	Params.E2C_INFO1=0x40000|(0x2<<24);
+	Params.E2C_INFO2=0;
+	task_head=Add_Task(Mailbox_ExecuteFirmwareUpdate,Params,&task_head);//mirror 外部flash 测试
 
 	//  3. jump loop
 	main_loop();

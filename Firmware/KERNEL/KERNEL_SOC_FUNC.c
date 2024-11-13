@@ -181,6 +181,7 @@ void uart_init(void)
 	sysctl_iomux_uart1();
 	flag |= BIT1;
 	baud[1] = serial_init(UART1_CHANNEL, UART1_BAUD);
+
 #endif
 // #ifdef UART2_BAUD
 // 	uart2_MoudleClock_EN;

@@ -250,16 +250,26 @@ void sysctl_iomux_config(DWORD port, DWORD io, unsigned port_type)
 		}
 		else if(port == 5)
 		{
-			cfg_val = *(DWORDP)addr;
-		#if (defined AE102 || defined AE101)
-			cfg_val &= ~(3 << 14);
-			cfg_val |= port_type << 14;
-		#endif
-		#if (defined AE103)
-			cfg_val &= ~(3 << 18);
-			cfg_val |= port_type << 18;
-		#endif
-			*(DWORDP)addr = cfg_val;
+			if((io >= 10) && (io <= 15))
+			{
+				cfg_val = *(DWORDP)addr;
+				cfg_val &= ~(3 << (io << 1));
+				cfg_val |= port_type << (io << 1);
+				*(DWORDP)addr = cfg_val;
+			}
+			else
+			{
+				cfg_val = *(DWORDP)addr;
+			#if (defined AE102 || defined AE101)
+				cfg_val &= ~(3 << 14);
+				cfg_val |= port_type << 14;
+			#endif
+			#if (defined AE103)
+				cfg_val &= ~(3 << 18);
+				cfg_val |= port_type << 18;
+			#endif
+				*(DWORDP)addr = cfg_val;
+			}
 		}
 		else
 		{
@@ -300,12 +310,18 @@ void sysctl_iomux_disable_uart0()
 //      none
 //
 //*****************************************************************************
+#define uart1_PIN_SEL 1
 void sysctl_iomux_uart1()
 {
-#if (defined(AE102) || defined(AE103))
-	sysctl_iomux_config(GPIOB, 1, 1);
-	sysctl_iomux_config(GPIOB, 3, 1);
-#endif
+	#if uart1_PIN_SEL==1
+		#if (defined(AE102) || defined(AE103))
+		sysctl_iomux_config(GPIOB, 1, 1);//tx
+		sysctl_iomux_config(GPIOB, 3, 1);//rx
+		#endif
+	#elif uart1_PIN_SEL==2
+		sysctl_iomux_config(GPIOE, 14, 3);//rx
+		sysctl_iomux_config(GPIOE, 15, 3);//tx
+	#endif
 }
 void sysctl_iomux_disable_uart1()
 {
@@ -391,10 +407,16 @@ void sysctl_iomux_disable_uart3()
 //      none
 //
 //*****************************************************************************
+#define uarta_PIN_SEL 2
 void sysctl_iomux_uarta()
 {
-	sysctl_iomux_config(GPIOA, 8, 2);
-	sysctl_iomux_config(GPIOA, 9, 2);
+	#if uarta_PIN_SEL==1
+		sysctl_iomux_config(GPIOA, 8, 2);//rx
+		sysctl_iomux_config(GPIOA, 9, 2);//tx
+	#elif uarta_PIN_SEL==2
+	sysctl_iomux_config(GPIOA, 23, 2);//rx
+	sysctl_iomux_config(GPIOB, 6, 3);//tx
+	#endif
 }
 void sysctl_iomux_disable_uarta()
 {
@@ -419,8 +441,8 @@ void sysctl_iomux_uartb()
 	sysctl_iomux_config(GPIOB, 22, 2);
 #endif
 #ifdef AE103
-	sysctl_iomux_config(GPIOB, 25, 2);
-	sysctl_iomux_config(GPIOB, 26, 2);
+	sysctl_iomux_config(GPIOB, 25, 2);//rx
+	sysctl_iomux_config(GPIOB, 26, 2);//tx
 #endif
 }
 void sysctl_iomux_disable_uartb()
@@ -1050,19 +1072,44 @@ int GPIO_Config(int GPIO, int gpio_no, int mode, int op_val, int int_lv, int pol
 			{
 				if(op_val > 0)
 				{
-					GPIOC_REG((0xc)) |= ((0x1) << gpio_no);	 // 配置输出值
-					GPIOC_REG((0x10)) |= ((0x1) << gpio_no); // 配置输出模式
+					if(gpio_no==8)//piod8
+					{
+						GPIOC_REG((0xd)) |=0x1;
+						GPIOC_REG((0x11)) |= 0x1;
+					}
+					else
+					{
+						GPIOC_REG((0xc)) |= ((0x1) << gpio_no);	 // 配置输出值
+						GPIOC_REG((0x10)) |= ((0x1) << gpio_no); // 配置输出模式
+					}
 				}
 				else
 				{
-					GPIOC_REG((0xc)) &= (~((0x1) << gpio_no)); // 配置输出值
-					GPIOC_REG((0x10)) |= ((0x1) << gpio_no);   // 配置输出模式
+					if(gpio_no==8)
+					{
+						GPIOC_REG((0xd)) &= ~(0x1); // 配置输出值
+						GPIOC_REG((0x11)) |= 0x1;   // 配置输出模式						
+					}
+					else
+					{
+						GPIOC_REG((0xc)) &= (~((0x1) << gpio_no)); // 配置输出值
+						GPIOC_REG((0x10)) |= ((0x1) << gpio_no);   // 配置输出模式
+					}
+
 				}
 			}
 			else if(mode == 0) // input
 			{
-				//(*((BYTEP )(SYSCTL_PIO0_UDCFG)))|=((0x1)<<gpio_no);//配置上拉
-				GPIOC_REG(0x10) &= (~((0x1) << gpio_no)); // 配置输入模式
+				if(gpio_no==8)
+				{
+					GPIOC_REG(0x11) &= (~(0x1)); // 配置输入模式	
+				}
+				else
+				{
+					//(*((BYTEP )(SYSCTL_PIO0_UDCFG)))|=((0x1)<<gpio_no);//配置上拉
+					GPIOC_REG(0x10) &= (~((0x1) << gpio_no)); // 配置输入模式					
+				}
+
 			}
 		}
 		else if((GPIO == 3))
@@ -1434,7 +1481,7 @@ char GPIOAutoTest(void)//102
 {
 	BYTE gpa0, gpa1, gpa2, gpa3;
 	BYTE gpb0, gpb1, gpb2, gpb3;
-	BYTE gpc0, gpc1, gpc2;
+	BYTE gpc0, gpc1, gpc2, gpc3;
 	BYTE gpd0, gpd1, gpd2;
 
 	BYTE gpa0z, gpa1z, gpa2z, gpa3z;
@@ -1458,23 +1505,28 @@ char GPIOAutoTest(void)//102
 			GPIO_Config(GPIOA, i, 1, flag, 0, 0);
 		}
 	}
-	for(int i = 0; i < 27; i++)
+	for(int i = 0; i < 32; i++)
 	{
-		GPIO_Config(GPIOB, i, 1, flag, 0, 0);
+		if(i != 16 && i != 19)
+		{
+			GPIO_Config(GPIOB, i, 1, flag, 0, 0);
+		}
 	}
-	for(int i = 0; i < 14; i++)
+	for(int i = 0; i < 16; i++)
 	{
-		GPIO_Config(GPIOC, i, 1, flag, 0, 0);
+		if(i != 10)
+		{
+			GPIO_Config(GPIOC, i, 1, flag, 0, 0);
+		}
 	}
-	for(int i = 0; i < 7; i++)
+	for(int i = 0; i < 9; i++)
 	{
 		GPIO_Config(GPIOD, i, 1, flag, 0, 0);
 	}
 	for(int i = 0; i < 24; i++)
 	{
-		GPIO_Config(GPIOE, i, 1, flag, 0, 0);
+			GPIO_Config(GPIOE, i, 1, flag, 0, 0);
 	}
-
 	gpa0 = GPIO0_EXT0;
 	gpa1 = GPIO0_EXT1;
 	gpa2 = GPIO0_EXT2;
@@ -1485,9 +1537,10 @@ char GPIOAutoTest(void)//102
 	gpb2 = GPIO1_EXT2;
 	gpb3 = GPIO1_EXT3;
 
-	gpc0 = GPIO2_EXT0;
-	gpc1 = GPIO2_EXT1;
-	gpc2 = GPIO2_EXT2;
+	gpc0 = GPIO2_EXT0;//C:0-7
+	gpc1 = GPIO2_EXT1;//C:8-15
+	gpc2 = GPIO2_EXT2;//D:0-7
+	gpc3 = GPIO2_EXT3;//D:8-15 
 
 	gpd0 = GPIO3_EXT0;
 	gpd1 = GPIO3_EXT1;
@@ -1495,14 +1548,13 @@ char GPIOAutoTest(void)//102
 	if(flag)
 	{
 		gpa3 |= 0x3;//uart0
-		gpb3 |= 0xf8;//只有低三位有效
-		gpc1 |= 0xc0;//没有高两位
-		gpc2 |= 0x80;//没有最高位
-
+		gpb2 |= 0x9;//pb16 pb19用作电源
+		gpc1 |= 0x4;//pc10用作电源
+			
 		printf("\n");
 		dprint("GPIO0: 0x%x 0x%x 0x%x 0x%x\n", gpa0, gpa1, gpa2, gpa3);
 		dprint("GPIO1: 0x%x 0x%x 0x%x 0x%x\n", gpb0, gpb1, gpb2, gpb3);
-		dprint("GPIO2: 0x%x 0x%x 0x%x\n", gpc0, gpc1, gpc2);
+		dprint("GPIO2: 0x%x 0x%x 0x%x 0x%x\n", gpc0, gpc1, gpc2,gpc3);
 		dprint("GPIO3: 0x%x 0x%x 0x%x\n", gpd0, gpd1, gpd2);
 		gpa0z = ~gpa0;
 		gpa1z = ~gpa1;
@@ -1533,13 +1585,13 @@ char GPIOAutoTest(void)//102
 	else
 	{
 		gpa3 &= (~0x3);//uart0
-		gpb3 &= (~0xf8);//只有低三位有效
-		gpc1 &= (~0xc0);//没有高两位
-		gpc2 &= (~0x80);//没有最高位
+		gpb2 &= (~0x9);//pb16 pb19用作电源
+		gpc1 &= (~0x4);//pc10用作电源
+
 		printf("\n");
 		dprint("GPIO0: 0x%x 0x%x 0x%x 0x%x\n", gpa0, gpa1, gpa2, gpa3);
 		dprint("GPIO1: 0x%x 0x%x 0x%x 0x%x\n", gpb0, gpb1, gpb2, gpb3);
-		dprint("GPIO2: 0x%x 0x%x 0x%x\n", gpc0, gpc1, gpc2);
+		dprint("GPIO2: 0x%x 0x%x 0x%x 0x%x\n", gpc0, gpc1, gpc2,gpc3);
 		dprint("GPIO3: 0x%x 0x%x 0x%x\n", gpd0, gpd1, gpd2);
 		//gpa0 gpa1...全部加起来不等于0
 		if((gpa0 + gpa1 + gpa2 + gpa3 + gpb0 + gpb1 + gpb2 + gpb3 + gpc0 + gpc1 + gpc2 + gpd0 + gpd1 + gpd2))
