@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-06-18 09:53:21
+ * @LastEditTime: 2024-11-20 18:03:24
  * @Description:
  *               define chip_type
  *               define identifier
@@ -303,12 +303,12 @@ typedef union _Dword
 //-----------------------------------------------------------------------------
 typedef void (*FUNCT_PTR_V_V)(void);
 typedef void (*FUNCT_PTR_V_W)(WORD);
-typedef WORD (*FUNCT_PTR_W_V)(void);
-typedef WORD (*FUNCT_PTR_W_W)(WORD);
-typedef WORD (*FUNCT_PTR_W_B)(BYTE);
-typedef BYTE (*FUNCT_PTR_B_B)(BYTE);
-typedef BYTE (*FUNCT_PTR_B_V)(void);
-typedef BYTE (*FUNCT_PTR_S_V)(void);
+typedef WORD(*FUNCT_PTR_W_V)(void);
+typedef WORD(*FUNCT_PTR_W_W)(WORD);
+typedef WORD(*FUNCT_PTR_W_B)(BYTE);
+typedef BYTE(*FUNCT_PTR_B_B)(BYTE);
+typedef BYTE(*FUNCT_PTR_B_V)(void);
+typedef BYTE(*FUNCT_PTR_S_V)(void);
 typedef void (*FUNCT_PTR_V_B)(BYTE);
 typedef void (*FUNCT_PTR_V_B_B)(BYTE, BYTE);
 typedef void (*FUNCT_PTR_V_D_BP)(DWORD, BYTEP);
@@ -377,7 +377,7 @@ typedef struct _point
 #pragma pack(4) // 4字节对齐
 extern int main();
 extern sMode Mode;
-extern u_int32_t CHIP_CLOCK_SWITCH;
+// extern u_int32_t CHIP_CLOCK_SWITCH;
 /*-------------------------------------set reg Information-------------------------------------*/
 #include <AE_REG.H>
 #include <AE_CONFIG.H>
