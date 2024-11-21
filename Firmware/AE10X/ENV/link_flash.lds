@@ -254,11 +254,11 @@ ilm是作为ejtag调试用的一个内部存储空间，和dlm相对应。
     . = __stack_size;
     PROVIDE( _sp = . );
   } >stack AT>stack =0xff
-  .magic_number 				:/*留1k给flash 验签*/
-  {
+  /* .magic_number 				:/*留1k给flash 验签*/
+  /* {
      . = (ORIGIN(flash) + ((. - ORIGIN(flash)) * 1000 / 875)) + ALIGN(0x100) ;/*前面的87.5%固定死代码不可改动，中间留可活动代码空间提供使用*/
-  PROVIDE( _MAGIC_NUMBER = . );
+  /* PROVIDE( _MAGIC_NUMBER = . );
 	*(.FlashInfo.Dynamic)
     . = ALIGN(0x400);/*按1k封装*/
-  } >flash AT>flash =0xff
+  /* } >flash AT>flash =0xff */
 }

@@ -1,7 +1,7 @@
 /*
  * @Author: dejavuwdh
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-11-20 19:34:30
+ * @LastEditTime: 2024-11-21 19:52:53
  * @Description:
  *
  *
@@ -117,27 +117,27 @@ USED sFixedFlashInfo Fix_flash_info = {
 	.DEBUGGER_PE = 0,
 	.DEBUGGER_EPE = 0,
 };
-SECTION(".FlashInfo.Dynamic")
-USED sDynamicFlashInfo Dy_flash_info = {
-#if GLE01
-	.Firmware_ID = "SPK32 GLE01\036EC\003\0",
-#else
-	.Firmware_ID = "SPK32 AE103\036EC\003\0", // 特殊字符
-#endif
-	.sign = {
-		.hash = {0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF},
-	},
-	.publickey = {
-		.rsa = {
-			.modulus = {0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF},
-			.exponent = {0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF},
-		},
-	},
-	.Info = {
-		.EXTFlash_ID = 0xFFFFFFFF,
-		.FixedFlashInfo_Addr = 0xFFFFFF,
-	},
-};
+// SECTION(".FlashInfo.Dynamic")
+// USED sDynamicFlashInfo Dy_flash_info = {
+// #if GLE01
+// 	.Firmware_ID = "SPK32 GLE01\036EC\003\0",
+// #else
+// 	.Firmware_ID = "SPK32 AE103\036EC\003\0", // 特殊字符
+// #endif
+// 	.sign = {
+// 		.hash = {0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF},
+// 	},
+// 	.publickey = {
+// 		.rsa = {
+// 			.modulus = {0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF},
+// 			.exponent = {0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF},
+// 		},
+// 	},
+// 	.Info = {
+// 		.EXTFlash_ID = 0xFFFFFFFF,
+// 		.FixedFlashInfo_Addr = 0xFFFFFF,
+// 	},
+// };
 #else
 SECTION(".FlashInfo.Dynamic")
 USED sDynamicFlashInfo flash_magic_number = {
