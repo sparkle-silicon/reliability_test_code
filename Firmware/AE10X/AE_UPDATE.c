@@ -14,6 +14,7 @@
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
 #include "AE_UPDATE.H"
+#include "KERNEL_MAILBOX.H"
 /****************************************************************************************************************/
 /***********************************************************************/
 #define flash_write(addr, value) ((*((volatile uint32_t *)(addr))) = (value))
@@ -647,4 +648,55 @@ void ALIGNED(4) Mailbox_Update_Function(BYTE mode, DWORD fwsize, DWORD update_ad
     }
 }
 
+ALIGNED(4) void Go2Ram_WaitUpdate(void)
+{
+    while(1)
+    {   
+        if(C2EINT==0x2)
+        {
+            if(C2EINFO0 == 0x13)
+            {
+                PRINTF_TX = 'S';
+                PRINTF_TX = 'U';
+                PRINTF_TX = 'C';
+                PRINTF_TX = 'C';
+                PRINTF_TX = 'E';
+                PRINTF_TX = 'S';
+                SYSCTL_RST1|=BIT(16);//chip reset
+                __nop;
+                SYSCTL_RST1&=~BIT(16);//release chip reset
+                goto *80084UL;
+            }
+        }
+    }
+}
+
+void GLE01_Flash_Update_Function(void)
+{
+    uint32_t Update_Addr = 0;
+    uint32_t FM_size = (REG8((SRAM_BASE_ADDR + 0x104)))|(REG8((SRAM_BASE_ADDR + 0x105))<<8)|(REG8((SRAM_BASE_ADDR + 0x106))<<16)|(REG8((SRAM_BASE_ADDR + 0x107))<<24);
+    uint8_t flashOption = REG8((SRAM_BASE_ADDR + 0x110));
+    printf("FM_size:%d\n",FM_size);
+    printf("flashOption:%x\n",flashOption);
+    if(SYSCTL_RST1&0x00000100)
+    {
+        SYSCTL_RST1 &= 0xfffffeff; // 释放复位
+    }
+    sysctl_iomux_config(GPIOB,17,0x1);//wp
+    sysctl_iomux_config(GPIOB,20,0x1);//mosi
+    sysctl_iomux_config(GPIOB,21,0x1);//miso
+    sysctl_iomux_config(GPIOB,22,0x1);//cs0
+    sysctl_iomux_config(GPIOB,23,0x1);//clk
+    sysctl_iomux_config(GPIOB,30,0x1);//hold
+    /* 中断屏蔽 */
+    Disable_Interrupt_Main_Switch();
+    E2CINFO0 = 0x13;
+    E2CINFO1 = flashOption;//0x0:内部flash，0x1:外部flash
+    E2CINFO2 = FM_size;//更新大小
+    E2CINFO3 = Update_Addr;//更新地址
+    /* 进入ram跑代码 */
+    Smf_Ptr = Load_Smfi_To_Dram(Go2Ram_WaitUpdate, 0x400);
+    E2CINT = 0x2; // 触发对应中断
+    (*Smf_Ptr)(); // Do Function at malloc address
+}
 #endif

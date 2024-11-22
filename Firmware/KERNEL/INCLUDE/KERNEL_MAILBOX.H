@@ -26,6 +26,9 @@ typedef struct
     DWORD E2C_INFO1;
     DWORD E2C_INFO2;
     DWORD E2C_INFO3;
+    DWORD E2C_INFO4;
+    DWORD E2C_INFO5;
+    DWORD E2C_INFO6;
 } TaskParams;
 
 typedef struct Task
@@ -86,4 +89,6 @@ extern void Mailbox_Cryp_Selfcheck(void *param);
 extern void AwaitCrypSelfcheck(void);
 extern void CheckClockFrequencyChange(void);
 extern void Mailbox_SetClockFrequency(void *param);
+void Transfer_IntFlashToExtFlash(uint32_t destAddr, uint32_t srcAddr, size_t dataSize);
+void Transfer_ExtFlashToIntFlash(uint32_t destAddr, uint32_t srcAddr, size_t dataSize);
 #endif

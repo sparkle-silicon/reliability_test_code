@@ -52,17 +52,31 @@ void Mailbox_ExecuteFirmwareUpdate(void *param)
 {
     TaskParams *params = (TaskParams *)param;
     E2CINFO0 = 0x10;                              // 命令字
-    E2CINFO1 = params->E2C_INFO1;                 // BYTE3:固件位置标志 BYTE0~2:固件大小
-    if((BYTE)(E2CINFO1 >> 24) == 0x2)//外部mirror 配置复用功能
+    E2CINFO1 = params->E2C_INFO1;                 // 固件更新模式
+    E2CINFO2 = params->E2C_INFO2;                 // 更新大小
+    E2CINFO3 = params->E2C_INFO3;                 // 目标地址
+    E2CINFO4 = params->E2C_INFO4;                 // 起始地址
+    if(((BYTE)E2CINFO1==0x1)||((BYTE)E2CINFO1==0x2))// 配置外部flash复用功能
     {
-        sysctl_iomux_config(GPIOB, 17, 0x1);//wp
-        sysctl_iomux_config(GPIOB, 20, 0x1);//mosi
-        sysctl_iomux_config(GPIOB, 21, 0x1);//miso
-        sysctl_iomux_config(GPIOB, 22, 0x1);//cs0
-        sysctl_iomux_config(GPIOB, 23, 0x1);//clk
-        sysctl_iomux_config(GPIOB, 30, 0x1);//hold
+        sysctl_iomux_config(GPIOB,17,0x1);//wp
+        sysctl_iomux_config(GPIOB,20,0x1);//mosi
+        sysctl_iomux_config(GPIOB,21,0x1);//miso
+        sysctl_iomux_config(GPIOB,22,0x1);//cs0
+        sysctl_iomux_config(GPIOB,23,0x1);//clk
+        sysctl_iomux_config(GPIOB,30,0x1);//hold
+        if(SYSCTL_RST1&0x00000100)
+        {
+            SYSCTL_RST1 &= 0xfffffeff; // 释放复位
+        }
+        if (SPIF_STATUS & BIT4)               // 0:2线，1:4线
+        {
+            SPIF_CTRL0 |= BIT1; // 成功则使用4线模式
+        }
+        else
+        {
+            SPIF_CTRL0 &= ~BIT1; // 失败使用二线模式
+        }
     }
-    E2CINFO2 = params->E2C_INFO2;                 // 更新起始地址
     E2CINT = 0x2;                                 // 触发对应中断
     command_processed = false;
 }
@@ -197,6 +211,26 @@ void CheckClockFrequencyChange(void)
     }
     AwaitCrypSelfcheck();//等待子系统自检完成
     Module_init();//暂时保留，后续根据实际情况是否需要调用初始化
+}
+
+void Transfer_IntFlashToExtFlash(uint32_t destAddr, uint32_t srcAddr, size_t dataSize)
+{
+    TaskParams Params;
+    Params.E2C_INFO1 = 0x1;//update mode
+    Params.E2C_INFO2 = dataSize;
+    Params.E2C_INFO3 = destAddr;
+    Params.E2C_INFO4 = srcAddr;
+    Add_Task(Mailbox_ExecuteFirmwareUpdate,Params,&task_head);
+}
+
+void Transfer_ExtFlashToIntFlash(uint32_t destAddr, uint32_t srcAddr, size_t dataSize)
+{
+    TaskParams Params;
+    Params.E2C_INFO1 = 0x2;//update mode
+    Params.E2C_INFO2 = dataSize;
+    Params.E2C_INFO3 = destAddr;
+    Params.E2C_INFO4 = srcAddr;
+    Add_Task(Mailbox_ExecuteFirmwareUpdate,Params,&task_head);
 }
 /*************************************eRPMC Mailbox***************************************/
 #define OP1_Code 0x9B
@@ -600,12 +634,7 @@ void Mailbox_Control(void)
 void Mailbox_Firmware(void)
 {
 
-    if(C2EINFO1 == 0x2)
-    {
-        printf("更新失败，请检查参数\n");
-        return;
-    }
-    if(C2E_CMD == 0x10)
+    if (C2E_CMD == 0x10)
     {
         /* code */
     }
