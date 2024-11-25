@@ -1,7 +1,7 @@
 /*
  * @Author: dejavuwdh
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-11-20 16:48:03
+ * @LastEditTime: 2024-11-25 15:53:19
  * @Description:
  *
  *
@@ -228,11 +228,11 @@ typedef struct _FixedFlashInfo
     //0
     uint32_t MainFrequency : 6;// 主频分频系数 
     uint32_t SECVER_Enable : 1; // 1：安全验签(默认)，0：EFUSE打开则安全验签，否则进行hash校验
-    uint32_t SECVER_VERIFY_Switch : 1; // 1：RSA验签（默认），0：ECC验签
-    uint32_t SECVER_AES_Enable : 1; // 1：AES加密，0：不加密（默认）
+    uint32_t SECVER_VERIFY_Switch : 1; // 1：RSA验签（默认），0：ECC验签//无效
+    uint32_t SECVER_AES_Enable : 1; // 1：AES加密，0：不加密（默认）//无效
     uint32_t SECVER_HASH_Switch : 2;// 0:SHA224 1：SHA256（默认） 2：SHA384 3：SHA512
-    uint32_t SECVER_BIT_Switch : 2; // 0:RSA1024/ECC192 1：RSA2048/ECC256（默认） 2：RSA3072/ECC384 3：RSA4096/ECC512
-    uint32_t SECVER_AES_MODE_Switch : 2; // 3:ECB模式 2：CBC模式 1：CFB模式 0：OFB模式
+    uint32_t SECVER_BIT_Switch : 2; // 0:ECC192 ECC256（默认） ECC384 ECC512//无效
+    uint32_t SECVER_AES_MODE_Switch : 2; // 3:ECB模式 2：CBC模式 1：CFB模式 0：OFB模式//无效
     uint32_t BACKUP_LOCACTION_Switch : 1; // 0:备份区域在正式代码前面，1：备份区域在正式代码后面（默认）
      //16
     uint32_t EXIT_ReBOOT_Switch : 1; // （安全失败后一段时间）0休眠 1自动重启（默认）

@@ -23,15 +23,21 @@ PROGRAM_FILE ?= $(PROGRAM)_$(BUILD_DATE)$(BUILD_TIME).elf
 DUAL_BOOT_FLAG?=0#双启动开关
 SAVE_TEMPS_FILE ?= 0#保留编译文件
 USER_RISCV_LIBC_A?=0#0 USER_AE10X_LIBC_A 1 USER_RISCV_LIBC_A
-
-
+#安全相关
+PEM_FILE ?= $(TOPDIR)/TOOLS/SMx/private_key.pem
+EFUSE_SECVER_FLAG?=0#efuse security open or close 
+HASH_4kSECTORSIZE?=0#0:4k sector size, 1:32k sector size
 ifeq ($(findstring /sh,$(SHELL_TYPES)),/sh)
 SHELL_TYPE := $(shell readlink -f $(SHELL_TYPES))
 else 
 SHELL_TYPE := $(SHELL_TYPES)
 endif
 
-
+ifeq ($(EFUSE_SECVER_FLAG),1)
+EFUSE_SECVER_FLAG_STR := -efuse
+else
+EFUSE_SECVER_FLAG_STR := -no_efuse
+endif
 
 
 
@@ -91,14 +97,14 @@ ifeq ($(OS),Linux) #Linux
 #	 @cp ./gle01_sign ./TOOLS/SMx/
 ifeq ($(findstring bash,$(SHELL_TYPE)),bash)
 # 如果是bash
-	@if [ $(CHIP) == GLE01 ];then cp  ./TOOLS/SMx/gle01_sign ./;./gle01_sign -f $(PROGRAM).bin -s 4096 -h $(HASH_4kSECTORSIZE) -a;rm ./gle01_sign;fi;
+	@if [ $(CHIP) == GLE01 ];then cp  ./TOOLS/SMx/gle01_sign ./;./gle01_sign -f $(PROGRAM).bin -s 4096 -h $(HASH_4kSECTORSIZE) -sign_key $(PEM_FILE) $(EFUSE_SECVER_FLAG_STR);rm ./gle01_sign;fi;
 else
 ifeq ($(findstring dash,$(SHELL_TYPE)),dash)
 # 如果是dash
-	@if [ $(CHIP) = GLE01 ];then cp  ./TOOLS/SMx/gle01_sign ./;./gle01_sign -f $(PROGRAM).bin -s 4096 -h $(HASH_4kSECTORSIZE) -a;rm ./gle01_sign;fi;
+	@if [ $(CHIP) = GLE01 ];then cp  ./TOOLS/SMx/gle01_sign ./;./gle01_sign -f $(PROGRAM).bin -s 4096 -h $(HASH_4kSECTORSIZE) -sign_key $(PEM_FILE) $(EFUSE_SECVER_FLAG_STR);rm ./gle01_sign;fi;
 else
 # 默认情况
-	@if [ $(CHIP) == GLE01 ];then cp  ./TOOLS/SMx/gle01_sign ./;./gle01_sign -f $(PROGRAM).bin -s 4096 -h $(HASH_4kSECTORSIZE) -a;rm ./gle01_sign;fi;
+	@if [ $(CHIP) == GLE01 ];then cp  ./TOOLS/SMx/gle01_sign ./;./gle01_sign -f $(PROGRAM).bin -s 4096 -h $(HASH_4kSECTORSIZE) -sign_key $(PEM_FILE) $(EFUSE_SECVER_FLAG_STR);rm ./gle01_sign;fi;
 endif
 endif
 	@if [ -e SM3_hash.txt ];then mv SM3_hash.txt ./TOOLS/SMx/;fi;

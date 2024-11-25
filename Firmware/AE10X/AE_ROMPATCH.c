@@ -1,7 +1,7 @@
 /*
  * @Author: dejavuwdh
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-11-21 20:22:03
+ * @LastEditTime: 2024-11-25 15:51:45
  * @Description:
  *
  *
@@ -78,12 +78,12 @@ USED sFixedFlashInfo Fix_flash_info = {
 	// 主频
 	.MainFrequency = CHIP_CLOCK_SWITCH,
 	// 验签
-	.SECVER_Enable = 1,		 // 0：EFUSE决定，1：安全验签测试输出（默认）
-	.SECVER_VERIFY_Switch = 1,//RSA
-	.SECVER_AES_Enable = 0,//disable aes
+	.SECVER_Enable = 0,		 // 0：EFUSE决定，1：安全验签测试输出（默认）
+	// .SECVER_VERIFY_Switch = 1,//RSA//无效
+	// .SECVER_AES_Enable = 0,//disable aes//无效
 	.SECVER_HASH_Switch = 1,//SHA256
-	.SECVER_BIT_Switch = 1,//rsa 2048bit
-	.SECVER_AES_MODE_Switch = 3,//aes-256-ecb
+	// .SECVER_BIT_Switch = 1,//rsa 2048bit//无效,ecc的时候生效
+	// .SECVER_AES_MODE_Switch = 3,//aes-256-ecb//无效
 
 	//backup
 	.BACKUP_Enable = 1,
