@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-11-20 18:03:24
+ * @LastEditTime: 2024-11-27 11:08:49
  * @Description:
  *               define chip_type
  *               define identifier
@@ -379,6 +379,32 @@ extern int main();
 extern sMode Mode;
 // extern u_int32_t CHIP_CLOCK_SWITCH;
 /*-------------------------------------set reg Information-------------------------------------*/
+
+#define SYSCTL_ESTAT_BOOTMODE_SYNC                              ((SYSCTL_ESTAT&0x00000003)>>0)//[1:0]
+#define SYSCTL_ESTAT_BUSERR_STATUS                              ((SYSCTL_ESTAT&0x00000004)>>2)//[2]
+#define SYSCTL_ESTAT_BOOTWDTRST                                 ((SYSCTL_ESTAT&0x00000008)>>3)//[3]
+#define SYSCTL_ESTAT_EFUSE_CRYPTO_NORMAL                        ((SYSCTL_ESTAT&0x00000010)>>4)//[4]
+#define SYSCTL_ESTAT_EFUSE_SECURITY                             ((SYSCTL_ESTAT&0x00000020)>>5)//[5]
+#define SYSCTL_ESTAT_BOOTPWRSWRST                               ((SYSCTL_ESTAT&0x00000040)>>6)//[6]
+#define SYSCTL_ESTAT_CRYPTO_BOOTCTRL                            ((SYSCTL_ESTAT&0x00000080)>>7)//[7]
+
+#define SYSCTL_ESTAT_LRS_AON                                    ((SYSCTL_ESTAT&0x00001F00)>>8)//[12:8]
+#define SYSCTL_ESTAT_PMUC_STATE                                 ((SYSCTL_ESTAT&0x00006000)>>13)//[14:13]
+#define SYSCTL_ESTAT_EFUSE_CRYPTO_JTAG_DISABLE                  ((SYSCTL_ESTAT&0x00008000)>>15)//[15]
+
+#define SYSCTL_ESTAT_EFUSE_JTAG_DISABLE                         ((SYSCTL_ESTAT&0x00010000)>>16)//[16]
+#define SYSCTL_ESTAT_EFUSE_ROMPATCH_DISABLE                     ((SYSCTL_ESTAT&0x00020000)>>17)//[17]
+#define SYSCTL_ESTAT_EFUSE_WAKEUP_BYPASS_SECURITY_DISABLE       ((SYSCTL_ESTAT&0x00040000)>>18)//[18]
+#define SYSCTL_ESTAT_EFUSE_PROGRAM_DISABLE                      ((SYSCTL_ESTAT&0x00080000)>>19)//[19]
+#define SYSCTL_ESTAT_EFUSE_CRYTO_EN                             ((SYSCTL_ESTAT&0x00100000)>>20)//[20]
+#define SYSCTL_ESTAT_EFUSE_EC_DEBUG                             ((SYSCTL_ESTAT&0x00200000)>>21)//[21]
+#define SYSCTL_ESTAT_EFUSE_CRYPTO_DEBUG                         ((SYSCTL_ESTAT&0x00400000)>>22)//[22]
+#define SYSCTL_ESTAT_EFUSE_EFLASH_512K                          ((SYSCTL_ESTAT&0x00800000)>>23)//[23]
+
+#define SYSCTL_ESTAT_EFUSE_CRYPTO_SPEEDUP                       ((SYSCTL_ESTAT&0x01000000)>>24)//[24]
+#define SYSCTL_ESTAT_EFUSE_CRYPTO_CLKGATE_DISABLE               ((SYSCTL_ESTAT&0x02000000)>>25)//[25]
+#define SYSCTL_ESTAT_RESERVED                                   ((SYSCTL_ESTAT&0xFC000000)>>26)//[31:26]
+
 #include <AE_REG.H>
 #include <AE_CONFIG.H>
 #include <AE_LIBC.H>
