@@ -23,16 +23,21 @@ PROGRAM_FILE ?= $(PROGRAM)_$(BUILD_DATE)$(BUILD_TIME).elf
 DUAL_BOOT_FLAG?=0#双启动开关
 SAVE_TEMPS_FILE ?= 0#保留编译文件
 USER_RISCV_LIBC_A?=0#0 USER_AE10X_LIBC_A 1 USER_RISCV_LIBC_A
-
-PUBLIC_KEY?=5 # 公钥选择
-
+#安全相关
+PEM_FILE ?= $(TOPDIR)/TOOLS/SMx/private_key.pem
+EFUSE_SECVER_FLAG?=0#efuse security open or close 
+HASH_4kSECTORSIZE?=0#0:4k sector size, 1:32k sector size
 ifeq ($(findstring /sh,$(SHELL_TYPES)),/sh)
 SHELL_TYPE := $(shell readlink -f $(SHELL_TYPES))
 else 
 SHELL_TYPE := $(SHELL_TYPES)
 endif
 
-
+ifeq ($(EFUSE_SECVER_FLAG),1)
+EFUSE_SECVER_FLAG_STR := -efuse
+else
+EFUSE_SECVER_FLAG_STR := -no_efuse
+endif
 
 
 
@@ -88,18 +93,18 @@ DD_ELF_BOOT2:= if=./$(PROGRAM_BOOT2).bin  of=$(PROGRAM).bin seek=256 conv=notrun
 
 compile: software 
 ifeq ($(OS),Linux) #Linux
-#	@gcc ./TOOLS/SMx/SM2.c -D$(CHIP) -I/usr/include/openssl/ $(CINCLUDE) -L /usr/lib/x86_64-linux-gnu/ -lcrypto  -o sm2 #-D_DEBUG
-#	@cp ./sm2 ./TOOLS/SMx/
+#	 @gcc ./TOOLS/SMx/gle01_sign.c ./TOOLS/SMx/gle01_sign.h -D$(CHIP) -I/usr/include/openssl/ -L /usr/lib/x86_64-linux-gnu/ -lcrypto  -o gle01_sign #-D_DEBUG
+#	 @cp ./gle01_sign ./TOOLS/SMx/
 ifeq ($(findstring bash,$(SHELL_TYPE)),bash)
 # 如果是bash
-	@if [ $(CHIP) == AE103 ];then cp  ./TOOLS/SMx/sm2 ./;./sm2 $(PUBLIC_KEY);rm ./sm2;fi;
+	@if [ $(CHIP) == GLE01 ];then cp  ./TOOLS/SMx/gle01_sign ./;./gle01_sign -f $(PROGRAM).bin -s 4096 -h $(HASH_4kSECTORSIZE) -sign_key $(PEM_FILE) $(EFUSE_SECVER_FLAG_STR);rm ./gle01_sign;fi;
 else
 ifeq ($(findstring dash,$(SHELL_TYPE)),dash)
 # 如果是dash
-	@if [ $(CHIP) = AE103 ];then cp  ./TOOLS/SMx/sm2 ./;./sm2 $(PUBLIC_KEY);rm ./sm2;fi;
+	@if [ $(CHIP) = GLE01 ];then cp  ./TOOLS/SMx/gle01_sign ./;./gle01_sign -f $(PROGRAM).bin -s 4096 -h $(HASH_4kSECTORSIZE) -sign_key $(PEM_FILE) $(EFUSE_SECVER_FLAG_STR);rm ./gle01_sign;fi;
 else
 # 默认情况
-	@if [ $(CHIP) == AE103 ];then cp  ./TOOLS/SMx/sm2 ./;./sm2 $(PUBLIC_KEY);rm ./sm2;fi;
+	@if [ $(CHIP) == GLE01 ];then cp  ./TOOLS/SMx/gle01_sign ./;./gle01_sign -f $(PROGRAM).bin -s 4096 -h $(HASH_4kSECTORSIZE) -sign_key $(PEM_FILE) $(EFUSE_SECVER_FLAG_STR);rm ./gle01_sign;fi;
 endif
 endif
 	@if [ -e SM3_hash.txt ];then mv SM3_hash.txt ./TOOLS/SMx/;fi;

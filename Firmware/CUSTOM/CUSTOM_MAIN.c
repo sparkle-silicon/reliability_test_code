@@ -80,18 +80,13 @@ void __weak Hook_10msEventB(void)
 //-----------------------------------------------------------------------------
 void __weak Hook_50msEventA(void)
 {
-    //MAILBOX SMS updata 测试用例2
-    // if(REG8((SRAM_BASE_ADDR + 0x100))==0xAB)
-    // {
-    //     TaskParams Params;
-    //     Params.E2C_INFO1=((REG32((SRAM_BASE_ADDR + 0x104))&0x00ffffff)*256)|(0x3<<24);//size
-	//     Params.E2C_INFO2=REG32((SRAM_BASE_ADDR + 0x108));//addr
-	//     task_head=Add_Task(Mailbox_ExecuteFirmwareUpdate,Params,&task_head);//sms update
-    // }
-    // else if(REG8((SRAM_BASE_ADDR + 0x100))==0xBB)
-    // {
-    //     TaskParams Params;
-    // }
+    //MAILBOX SMSha256 updata 测试用例
+    if(REG8((SRAM_BASE_ADDR + 0x100))==0xAB)
+    {
+        printf("准备更新固件\n");
+        TaskParams Params;
+	    Add_Task((TaskFunction)GLE01_Flash_Update_Function,Params,&task_head);//sms update
+    }
 }
 //-----------------------------------------------------------------------------
 void __weak Hook_50msEventB(void)

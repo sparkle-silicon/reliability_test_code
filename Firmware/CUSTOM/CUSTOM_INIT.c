@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-07-29 10:06:31
+ * @LastEditTime: 2024-11-20 18:03:20
  * @Description:
  *
  *
@@ -16,7 +16,7 @@
 #include "CUSTOM_INIT.H"
 #include "CUSTOM_FAN.H"
 #include "AE_ANX7447_UCSI.H"
-u_int32_t CHIP_CLOCK_SWITCH=CHIP_CLOCKFREQ_DEFAULT; // 1(96) 2(48) 3(32) 4（24）5（19.2）分频数（时钟）  
+// u_int32_t CHIP_CLOCK_SWITCH = CHIP_CLOCK_SWITCH; // 1(96) 2(48) 3(32) 4（24）5（19.2）分频数（时钟）  
 /****************************************************************************
 * SPKAE10X Init FLOW :
 * 1. DoubleBoot (Custom Configuration Double Boot Addr，Function Is Get_DoubleBoot_ADDR() In File CUSTOM_INIT.c)
@@ -146,8 +146,8 @@ void Default_GPIO_LowPower()
  */
 void Default_Freq(void)
 {
-	if(CHIP_CLOCK_SWITCH==0)
-		CHIP_CLOCK_SWITCH=1;
+	// if(CHIP_CLOCK_SWITCH == 0)
+	// 	CHIP_CLOCK_SWITCH = 1;
 	SYSCTL_CLKDIV_OSC96M = (CHIP_CLOCK_SWITCH - 1); // 配置内部时钟分频
 	nop;
 	nop;

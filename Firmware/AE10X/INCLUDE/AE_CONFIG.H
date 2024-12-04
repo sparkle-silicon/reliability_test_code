@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-08-08 16:55:09
+ * @LastEditTime: 2024-11-20 18:04:59
  * @Description:
  *
  *
@@ -169,13 +169,13 @@
 
 #define CHIP_CLOCK_INT_HIGH 96000000
 #define CHIP_CLOCK_INT_LOW  32000
-#define CHIP_CLOCKFREQ_DEFAULT 4     // 1(96) 2(48) 3(32) 4（24）5（19.2）分频数（时钟）                                                                              
+#define CHIP_CLOCK_SWITCH 4     // 1(96) 2(48) 3(32) 4（24）5（19.2）分频数（时钟）
 #define LOW_CHIP_CLOCK CHIP_CLOCK_INT_LOW
 #define HIGHT_CHIP_CLOCK (CHIP_CLOCK_INT_HIGH / CHIP_CLOCK_SWITCH) // 96M/CHIP_CLOCK_SWITCH
 #define TIMER_FREQ LOW_CHIP_CLOCK * 2
 
 #define ADC_CLOCK_SWITCH 7
-#define ADC_CLOCK ((LOW_CHIP_CLOCK * 3000) / ((ADC_CLOCK_SWITCH) ? (ADC_CLOCK_SWITCH * 2) : 1)) // 96M/CHIP_CLOCK_SWITCH
+#define ADC_CLOCK ((LOW_CHIP_CLOCK * 3000) / ((ADC_CLOCK_SWITCH) ? (ADC_CLOCK_SWITCH * 2) : 1)) // 96M/ADC_CLOCK_SWITCH
 #define PLL_POSTDIV2 ((ADC_CLOCK_SWITCH & 0x1f) << 21)
 // uart 功能选择 suggestions COMMAND_UART_SWITCH == PRINTF_UART_SWITCH != DEBUG_UART_SWITCH
 #if (defined(AE102) || defined(AE103))

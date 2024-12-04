@@ -33,3 +33,6 @@
 #表格统计
 **/*.csv
 **/*.tags
+#安全考虑,不允许公开程序
+**/Firmware/TOOLS/SMx/*.c
+**/Firmware/TOOLS/SMx/*.h

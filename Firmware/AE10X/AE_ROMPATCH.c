@@ -1,7 +1,7 @@
 /*
  * @Author: dejavuwdh
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-08-20 11:15:23
+ * @LastEditTime: 2024-11-25 15:51:45
  * @Description:
  *
  *
@@ -54,9 +54,6 @@ USED sFixedFlashInfo Fix_flash_info = {
 	.EXTERNAL_FLASH_CTRL.LowAddr_OFFSET = 0b11,		// 4k（内部为准）
 	.EXTERNAL_FLASH_CTRL.HighAddr_SPACE = 0b111,	//[23:x]（内部为准）
 	.EXTERNAL_FLASH_CTRL.MUST_MIRROR_DISABLE = 0b1, // ，一般关闭，需要强制更新时候开启（外部为准）
-	.EXTERNAL_FLASH_CTRL.SPACE_OFFSET = SPACE_OFFSET_VAR,
-	.EXTERNAL_FLASH_CTRL.INFO_EXPLICIT = 0b1,
-	.EXTERNAL_FLASH_CTRL.EXTERNAL_NOBOOT = 0b1,
 	.EXTERNAL_FLASH_CTRL.PWM_Enable = 0b1,
 	.EXTERNAL_FLASH_CTRL.PWMn_Switch = 0b0,
 	.EXTERNAL_FLASH_CTRL.SPI_Switch = 0b1,	// 4线
@@ -65,108 +62,82 @@ USED sFixedFlashInfo Fix_flash_info = {
 	.EXTERNAL_FLASH_CTRL.Firmware_4KSector = (Firmware_nKsize / 4 - 1),
 
 	// FLASH	地址
-	.Mirror_Addr = MIRROR_ADDR,												   // 虽然其他可以
-	.IVT = ((uint32_t)&vector_base - ((!SPACE_OFFSET_VAR) * FLASH_BASE_ADDR)), // 中断向量表
-	.Restart = ((uint32_t)&_start - ((!SPACE_OFFSET_VAR) * FLASH_BASE_ADDR)),  // 起始地址
-	.DBoot_IVT = ((uint32_t)&vector_base + 0x40000 - ((!SPACE_OFFSET_VAR) * FLASH_BASE_ADDR)),
-	.DBoot_Restart = ((uint32_t)&_start + 0x40000 - ((!SPACE_OFFSET_VAR) * FLASH_BASE_ADDR)), // 起始地址
-	.DynamicFlashInfo = ((uint32_t)&Dy_flash_info - ((!SPACE_OFFSET_VAR) * FLASH_BASE_ADDR)), // 由编译填入
+	.IVT = ((uint32_t)&vector_base - (FLASH_BASE_ADDR)), // 中断向量表
+	.Restart = ((uint32_t)&_start - (FLASH_BASE_ADDR)),  // 起始地址
+	// .DynamicFlashInfo = ((uint32_t)&Dy_flash_info - (FLASH_BASE_ADDR)), // 由编译填入
+		.PATCH = {
+		[0] .data.dword = 0xa001,
+		[0].addrl = (PATCH0_ADDR >> 2) & 0xff,
+		[0].addrh = (PATCH0_ADDR >> 10) & 0x1f,
+		[0].last = 1,
+		[1].data.dword = 0x00010001,
+		[1].addrl = (PATCH1_ADDR >> 2) & 0xff,
+		[1].addrh = (PATCH1_ADDR >> 10) & 0x1f,
+		[1].last = 0,
+	},
 	// 主频
-	.RESERVED_EXTCLOCK_Disable = 1, // 不初始化外部时钟
-	.RESERVED_EXTClock_Switch = 1,  // 适用内部时钟
 	.MainFrequency = CHIP_CLOCK_SWITCH,
 	// 验签
-	.SECVER_Enable = 1,		 // 0：EFUSE决定，1：安全验签测试输出（默认）
+	.SECVER_Enable = 0,		 // 0：EFUSE决定，1：安全验签测试输出（默认）
+	// .SECVER_VERIFY_Switch = 1,//RSA//无效
+	// .SECVER_AES_Enable = 0,//disable aes//无效
+	.SECVER_HASH_Switch = 1,//SHA256
+	// .SECVER_BIT_Switch = 1,//rsa 2048bit//无效,ecc的时候生效
+	// .SECVER_AES_MODE_Switch = 3,//aes-256-ecb//无效
+
+	//backup
+	.BACKUP_Enable = 1,
+	.BACKUP_LOCACTION_Switch = 1,
+	.Backup_OFFSET = 0x40000,
+
 	.EXIT_ReBOOT_Switch = 1, // （安全失败后一段时间）0休眠 1自动重启（默认）
 							 // 模块
-	.PATCH_Disable = 1,		 // 0:打开ROM PATCH，1：关闭rom patch（默认）
+	.PATCH_Disable = 0,		 // 0:打开ROM PATCH，1：关闭rom patch（默认）
 	.LPC_Enable = 1,		 // 0：ESPI口 1：LPC口
 // 调试手段
-#ifdef DUBLE_FIRMWARE1
-	.DoubleBoot_Disable = 0, // Disableable double boot
-#else
-	// Enable double boot
-	.DoubleBoot_Disable = 1,
-#endif
-	.WDT_Disable = 1,
-	.EJTAG_Enable = 0,
+
+	.EJTAG_Enable = 1,
 	.EJTAG_Switch = 1,
-	.UART_Enable = 1,
-	.DEBUG_PRINTF_Enable = 1,
-	.Uartn_Print_SWitch = 0,
-	.DEBUGGER_Enable = 0,
-	.DEBUGGER_UART_Enable = 0,
-	.DEBUGGER_SMBUS_Enable = 0,
+	.CRYPTO_EJTAG_Switch = 1,
+	.DEBUG_PRINTF_Enable = 0,
+	.Uartn_Print_SWitch = PRINTF_UART_SWITCH,
+	.DEBUGGER_Enable = 1,
+	.DEBUGGER_UART_Enable = 1,
+	.DEBUGGER_SMBUS_Enable = 1,
 	.SMBUS_CLOCK_Switch = 1,
 	.DEBUG_BAUD_RATE = (UART_BAUD / 3200) - 1,
-	.DEBUG_LEVEL = 0,
+	.DEBUG_LEVEL = 1,
 	.DEBUG_PRINTF_DLS = 0b11,
 	.DEBUG_PRINTF_STOP = 0,
 	.DEBUG_PRINTF_PE = 0,
 	.DEBUG_PRINTF_EPE = 0,
 	.DEBUGGER_BAUD_RATE = 0,
-	.DEBUGGER_LEVEL = 0,
 	.DEBUGGER_DLS = 0b11,
 	.DEBUGGER_STOP = 0,
 	.DEBUGGER_PE = 0,
 	.DEBUGGER_EPE = 0,
-
-	// 	//串口输出
-	// 	.DEBUG_PRINTF_Enable = 1,
-	// 	.DEBUG_BAUD_RATE = ,
-	// 	.DEBUG_LEVEL = 1,
-	// 	.DEBUG_PRINTF_DLS = 3,
-	// 	.DEBUG_PRINTF_STOP = 0,
-	// 	.DEBUG_PRINTF_PE = 0,
-	// 	.DEBUG_PRINTF_EPE = 0,
-	// 	//调试器
-	// 	.DEBUGGER_Enable = 0,
-	// 	.DEBUGGER_SMBUS_CLOCK = 0,
-	// 	.DEBUGGER_UART_Enable = 1,
-	// 	.DEBUGGER_BAUD_RATE = UART1_BAUD / 3200,
-	// 	.DEBUGGER_LEVEL = 1,
-	// 	.DEBUGGER_DLS = 3,
-	// 	.DEBUGGER_STOP = 0,
-	// 	.DEBUGGER_PE = 0,
-	// 	.DEBUGGER_EPE = 0,
-	// 	//地址配置
-	// 	.EXTERNAL_INFO = 0,//非隐式
-	// 	.EXTERNAL_BOOT = 0,//不由外部FLASH运行（MIRROR）
-	// 	//是否加入偏移值
-	// 	.SPACE_OFFSET = SPACE_OFFSET_VAR,
-	// 	//MIRROR的起始地址即这些在flash中的相对位置,由客户填入（MIRROR以这个为准，）
-	// 	.Mirror_Addr = MIRROR_ADDR,
-	// 	//中断向量表，起始位置，结尾位置
-
-	// 		.DBINV_FLASH_SIZE = ((uint32_t)&vector_base + MIRROR_ADDR + 0x20000 - ((!SPACE_OFFSET_VAR) * FLASH_BASE_ADDR)), // 双启动中断向量表
-	// 	.DBSTART_MIRROR_SIZE = ((uint32_t)&_start + MIRROR_ADDR + 0x20000 - ((!SPACE_OFFSET_VAR) * FLASH_BASE_ADDR)),//双启动起始地址
-
 };
-SECTION(".FlashInfo.Dynamic")
-USED sDynamicFlashInfo Dy_flash_info = {
-#if GLE01
-	.Firmware_ID = "SPK32 GLE01\036EC\003\0",
-#else
-	.Firmware_ID = "SPK32 AE103\036EC\003\0", // 特殊字符
-#endif
-	.SM2_ssign1 = {
-		.r = {0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF},
-		.s = {0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF},
-	},
-	.PATCH = {
-		[0] .data.dword = 0xa001,
-		[0].addrl = (PATCH0_ADDR >> 2) & 0xff,
-		[0].addrh = (PATCH0_ADDR >> 10) & 0x1f,
-		[0].last = 0,
-	},
-	.Info = {
-		.EXTFlash_ID = 0xFFFFFFFF,
-		.FixedFlashInfo_Addr = 0xFFFFFF,
-		.Program_Method = 0x7,
-		.MIRRO_Enable = 0x1,
-		.RESERVED = 0xf,
-	},
-};
+// SECTION(".FlashInfo.Dynamic")
+// USED sDynamicFlashInfo Dy_flash_info = {
+// #if GLE01
+// 	.Firmware_ID = "SPK32 GLE01\036EC\003\0",
+// #else
+// 	.Firmware_ID = "SPK32 AE103\036EC\003\0", // 特殊字符
+// #endif
+// 	.sign = {
+// 		.hash = {0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF},
+// 	},
+// 	.publickey = {
+// 		.rsa = {
+// 			.modulus = {0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF},
+// 			.exponent = {0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF},
+// 		},
+// 	},
+// 	.Info = {
+// 		.EXTFlash_ID = 0xFFFFFFFF,
+// 		.FixedFlashInfo_Addr = 0xFFFFFF,
+// 	},
+// };
 #else
 SECTION(".FlashInfo.Dynamic")
 USED sDynamicFlashInfo flash_magic_number = {

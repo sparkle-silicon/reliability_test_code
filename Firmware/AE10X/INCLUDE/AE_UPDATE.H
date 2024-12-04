@@ -63,5 +63,6 @@ extern void ALIGNED(4) EC_SMS_Update(void);
 extern void Mailbox_4KSMS_UPDATE(BYTE mode, DWORD fw_size, DWORD start_addr);
 extern void Mailbox_Update_Function(BYTE mode, DWORD fwsize, DWORD update_addr);
 extern void ALIGNED(4) EC_SinglePage_Update(void);
+extern void GLE01_Flash_Update_Function(void);
 #define WRITE_READ_CHECK 0
 #endif
