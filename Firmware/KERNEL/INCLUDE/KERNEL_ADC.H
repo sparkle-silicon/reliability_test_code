@@ -89,12 +89,17 @@
 #define  ENABLE                   HEX01
 #define  DISABLE                  HEX00
 /******采样方式宏*******/
-#define  SINGLE_ENDED             1
-#define  DIFFERENTIAL             0
+#define  SINGLE_ENDED             0
+#define  DIFFERENTIAL             1
 #define  SW_SAMPLE                0
 #define  HW_SAMPLE                1
 #define  CONT_SAMPLE              2 
 #define  AUTO_SAMPLE              3
+/*yujiang add*/
+/******ADCFormat*******/
+#define OriginCode 0 //原码
+#define CompCode   1 //补码
+/*yujiang add*/
 //*****************************************************************************
 // Function prototype
 //*****************************************************************************
@@ -106,10 +111,14 @@ void ADC_IRQ_Config(uint16_t irq_type, uint8_t sw);
 void ADC_Clear_IRQ(uint8_t irq_type);
 uint8_t CheckADCDataValidity(uint8_t channelx);
 void ADC_Timercount_Set(uint32_t timercount);
-void ADC_SW_Sample_Init(uint8_t channelx,uint8_t ADC_Databuffer_channelx, uint8_t attenuationMode, uint8_t mode);
-void ADC_HW_Sample_Init(uint8_t channelx,u_int8_t ADC_Databuffer_channelx, uint8_t attenuationMode, uint8_t mode,uint32_t timercount);
-void ADC_Cont_Sample_Init(uint8_t channelx,u_int8_t ADC_Databuffer_channelx, uint8_t attenuationMode, uint8_t mode);
-void ADC_Auto_Sample_Init(uint8_t channelx,uint8_t ADC_Databuffer_channelx, char cmp_channelx, uint8_t cmp_rule, uint16_t threshold, uint32_t timercount);
+void ADC_SW_Sample_Init_Single(uint8_t channelx,uint8_t ADC_Databuffer_channelx, uint8_t mode);
+uint8_t ADC_Swap_Channel(uint8_t channelx, uint8_t Data_Chan);
+void ADC_SW_Sample_Init_Multi(uint8_t mode,uint8_t Data_Select,uint8_t Chanal_8_mode);
+void ADC_HW_Sample_Init_Single(uint8_t channelx, u_int8_t ADC_Databuffer_channelx, uint8_t mode, uint32_t timercount,char cmp_channelx,uint8_t cmp_rule,uint16_t cmp_thr);
+void ADC_HW_Sample_Init_Multi(uint8_t mode, uint32_t timercount,uint8_t Data_Select,uint8_t Chanal_8_mode);
+void ADC_Cont_Sample_Init_Single(uint8_t channelx, u_int8_t ADC_Databuffer_channelx, uint8_t mode);
+void ADC_Cont_Sample_Init_Multi(uint8_t mode,uint8_t Data_Select,uint8_t Chanal_8_mode);
+void ADC_Auto_Sample_Init(uint8_t channelx,uint8_t ADC_Databuffer_channelx, char cmp_channelx, uint8_t cmp_rule, uint16_t threshold, uint32_t timercount,uint8_t mode);
 short ADC_ReadData(uint8_t ADC_Databuffer_channelx);
 void ADC_Cnt(uint32_t timercount);
 short ADC_SW_Sample(uint8_t ADC_Databuffer_channelx);

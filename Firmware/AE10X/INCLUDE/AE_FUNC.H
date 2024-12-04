@@ -36,10 +36,13 @@
 #define ADC_CLOCK_EN 1
 #define PPORT_CLOCK_EN 1
 #define WDT_CLOCK_EN 1
+#define SMBUS8_CLOCK_EN 1
+#define SMBUS7_CLOCK_EN 1
+#define SMBUS6_CLOCK_EN 1
 #define SMBUS5_CLOCK_EN 1
 #define SMBUS4_CLOCK_EN 1
-#define SMBUS3_CLOCK_EN 0
-#define SMBUS2_CLOCK_EN 0
+#define SMBUS3_CLOCK_EN 1
+#define SMBUS2_CLOCK_EN 1
 #define SMBUS1_CLOCK_EN 1
 #define SMBUS0_CLOCK_EN 1
 #define GPIO_CLOCK_EN 1
@@ -110,8 +113,14 @@
 #define CAN3_EN 0x00000002
 #endif
 #define SPIM_EN 0x00000001
+#define SMB6_EN 0x00000002
+#define SMB7_EN 0x00000004
+#define SMB8_EN 0x00000008
 // SYSCTL_MODE1
 #if defined(AE103)
+/*yujiang add*/
+#define IRAM_EN 0x00800000
+/*yujiang add*/
 #define PECI_EN 0x00400000
 #define RTC_EN 0x00200000
 #define ROM_EN 0x00100000

@@ -1572,9 +1572,17 @@ void SB_PowerButton_Monitor(void)
 #define PWRSW_TBT(tbt) ((tbt&0x3fff)<<9)/*Ttbt = ref_clock * (PWRSW_TBT + 1)*/
 #define PWRSW_DBBT(dbbt) ((dbbt&0x1ff)<<23)/*Tdbbt = ref_clock * (PWRSW_DBBT + 1)*/
 #endif 
+#define PWRSW_PIN_SEL 3
 void PWRSW_Config(BYTE timeout, BYTE mode)
 {
-    sysctl_iomux_config(GPIOB, 4, 1); // 设置GPE4复用功能
+#if PWRSW_PIN_SEL==1
+    sysctl_iomux_config(GPIOB, 4, 1); // 设置GPB4复用功能
+#elif PWRSW_PIN_SEL==2
+    sysctl_iomux_config(GPIOA, 11, 2);
+#elif PWRSW_PIN_SEL==3
+    sysctl_iomux_config(GPIOB, 17, 3);
+#endif
+    sysctl_iomux_config(GPIOC, 5, 3); // 设置GPC5复用功能
 #if (SYSCTL_CLOCK_EN)
     u_int32_t pwrswcsr = 0;
     pwrswcsr |= PWRSW_WDTIME(timeout) | PWRSW_EN;
@@ -1583,7 +1591,7 @@ void PWRSW_Config(BYTE timeout, BYTE mode)
         pwrswcsr |= PWRSW_RSTMODE;
     }
     pwrswcsr |= PWRSW_DBTIMEL(0x01); // 去抖64ms
-   // pwrswcsr |= PWRSW_RSTOEN;//GPIOC5输出500ms低电平
+    pwrswcsr |= PWRSW_RSTOEN;//GPIOC5输出500ms低电平
 #ifdef AE103
     pwrswcsr |= PWRSW_TBT(15999);//32k的16000分频（2Hz）
     pwrswcsr |= PWRSW_DBBT(511);//32k的512分频(62.5Hz)

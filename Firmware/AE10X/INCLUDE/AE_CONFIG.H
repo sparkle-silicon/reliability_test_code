@@ -266,9 +266,17 @@
 #define I2C4_SPEED 100000
 #define I2C5_EN_Init 0 & SMBUS5_CLOCK_EN
 #define I2C5_SPEED 100000
+/*yujiang add*/
+#define I2C6_EN_Init 0 & SMBUS6_CLOCK_EN
+#define I2C6_SPEED 100000
+#define I2C7_EN_Init 0 & SMBUS7_CLOCK_EN
+#define I2C7_SPEED 100000
+#define I2C8_EN_Init 0 & SMBUS8_CLOCK_EN
+#define I2C8_SPEED 100000
+/*yujiang add*/
 #endif
 #if SPI_MODULE_EN
-#define SPIM_CS_EN 0
+#define SPIM_CS_EN 1
 #endif
 // PWM TACH 初始化
 #define PWM0_EN_Init 0 & PWM_CLOCK_EN

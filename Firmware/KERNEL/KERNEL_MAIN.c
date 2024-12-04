@@ -452,6 +452,7 @@ const short array_count = sizeof(service_table) / sizeof(FUNCT_PTR_V_V);
 //----------------------------------------------------------------------------
 void main_service(void)
 {
+
 	if(_R1 >= sizeof(service_table) / sizeof(FUNCT_PTR_V_V))
 		_R1 = 0;
 	(service_table[_R1])();
@@ -464,7 +465,6 @@ void main_service(void)
 void main_loop(void)
 {
 	dprint("Enter main_service \n");
-
 	while(1)
 	{
 		main_service();

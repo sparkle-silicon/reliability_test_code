@@ -225,14 +225,16 @@ void smbus_init(void)
 #if I2C0_EN_Init
 	smbus0_MoudleClock_EN;
 	sysctl_iomux_i2c0();
-	i2c0_pull_up();
+	printf("0x30454:%x\n",*(unsigned int *)0x30454);
+	//i2c0_pull_up();
 #if (DEBUGGER_OUTPUT_SWITCH == 1)
 #if (DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0)
 	I2c_Channel_Init(I2C_CHANNEL_0, I2C0_SPEED, I2C_SLAVE_ROLE, 0x6A, 1);
 	I2C0_INTR_MASK |= I2C_INTR_RX_FULL;
 #endif
 #else
-	I2c_Channel_Init(I2C_CHANNEL_0, I2C0_SPEED, I2C_MASTER_ROLE, 0x6A, 1);
+	I2c_Channel_Init(I2C_CHANNEL_0, I2C0_SPEED, I2C_MASTER_ROLE, 0x4c, 1);
+
 #endif
 #endif
 #if I2C1_EN_Init
@@ -619,7 +621,6 @@ void __weak SECTION(".init.module") Module_init(void)
 
 	// 4.Initialize The Serial Port
 	uart_init();
-
 	// 5.Initialize The SMBUS
 	smbus_init();
 	// 6.Initialize The SPI

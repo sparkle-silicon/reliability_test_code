@@ -18,9 +18,9 @@ ENTRY( vector_base )
 /*c代码中公共内存分配*/
 "MEM_SIZE"=2K;
 /*data段内存分配*/
-"DATA_SIZE"=20K;
+"DATA_SIZE"=21K;
 /*bss段内存分配*/
-"BSS_SIZE"=8K;
+"BSS_SIZE"=7K;
 /*栈stack分配，如果没有定义stack大小则默认2k*/
 __stack_size = DEFINED(__stack_size) ? __stack_size : 2K;
 "STACK_SIZE"=__stack_size;

@@ -43,8 +43,10 @@ void SPIF_READ_ID(void)
    while(!(SPIF_READY & SPIF_RDY));
    SPIF_DBYTE = 0x2;
    while(!(SPIF_READY & SPIF_RDY));
-   SPIF_FIFO_TOP = FLASH_ID_CMD;
-   while(!(SPIF_READY & SPIF_RDY));
+   // SPIF_FIFO_TOP = FLASH_ID_CMD;
+   SPIF_FIFO_TOP = 0x9f;
+   // while(!(SPIF_READY & SPIF_RDY));
+   while (((SPIF_FIFO_CNT & 0x3) == 0));
    dprint("read flash id is %#x\n", SPIF_FIFO_TOP);
 }
 /**

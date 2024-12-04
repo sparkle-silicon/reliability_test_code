@@ -1518,7 +1518,7 @@
 #define TACH3_DATA TACH_REG(TACH3_DATA_OFFSET)
 /**********************************SMBUS7-8 Register Set********************************/
 #define SMBUS7_BASE_ADDR 0x4D00UL
-#define SMBUS8_BASE_ADDR 0x4F00UL
+#define SMBUS8_BASE_ADDR 0x4E00UL
 #define I2C7_REG_ADDR(offset) REG_ADDR(SMBUS7_BASE_ADDR, offset)
 #define I2C8_REG_ADDR(offset) REG_ADDR(SMBUS8_BASE_ADDR, offset)
 #define I2C7_REG(offset) REG16(I2C7_REG_ADDR(offset))
@@ -2963,3 +2963,36 @@
 #define FLASH_BASE_ADDR 0x80000UL
 
 #endif
+
+/*yujiang add*/
+
+/************************I3C******************************/
+
+#define I3C_Master_0 0
+#define I3C_Master_1 1
+#define I3C_Slave  0
+/***********************************I3C Master Register Set**********************************/
+#define I3C_MASTER0_BASE_ADDR 0x38000UL
+#define I3C_MASTER1_BASE_ADDR 0x38400UL
+
+
+#define I3C_MASTER_REG_SIZE DEC32
+#define DEVICE_CTRL_OFFSET 0x000
+#define COMMAND_QUEUE_PORT_OFFSET 0x0c
+#define TX_DATA_PORT_OFFSET 0x14
+#define RX_DATA_PORT_OFFSET 0x14
+#define DATA_BUFFER_THLD_CTRL_OFFSET 0x20
+#define INTR_STATUS_OFFSET 0x3C
+#define INTR_STATUS_EN_OFFSET 0x40
+#define DATA_BUFFER_STATUS_LEVEL_OFFSET 0x50
+#define SCL_I3C_OD_TIMING_OFFSET 0xb4
+#define SCL_I3C_PP_TIMING_OFFSET 0xb8
+#define DEV_ADDR_TABLE_LOC1_OFFSET 0x220
+
+#define IDEXT_OFFSET  0x070
+
+
+#define I3C_SLAVE0_BASE_ADDR 0x38800UL
+#define I3C_SLAVE1_BASE_ADDR 0x38A00UL
+
+/*yujiang add*/

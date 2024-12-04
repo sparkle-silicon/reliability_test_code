@@ -407,7 +407,7 @@ void sysctl_iomux_disable_uart3()
 //      none
 //
 //*****************************************************************************
-#define uarta_PIN_SEL 2
+#define uarta_PIN_SEL 1
 void sysctl_iomux_uarta()
 {
 	#if uarta_PIN_SEL==1
@@ -512,16 +512,28 @@ BYTE sysctl_iomux_ps2_1()
 //      none
 //
 //*****************************************************************************
+#define iomux_spim_PIN_SEL 1
 void sysctl_iomux_spim()
 {
 	sysctl_iomux_config(GPIOA, 6, 2);  // spim_sck
+	#if iomux_spim_PIN_SEL==1
 	sysctl_iomux_config(GPIOA, 19, 2); // spim_mosi
 	sysctl_iomux_config(GPIOA, 21, 2); // spim_miso
+	#elif iomux_spim_PIN_SEL==2
+	sysctl_iomux_config(GPIOA, 22, 2); // spim_mosi
+	sysctl_iomux_config(GPIOA, 20, 3); // spim_miso
+	#endif
 }
+#define spim_cs_PIN_SEL 2
 void sysctl_iomux_spim_cs()
 {
+	#if spim_cs_PIN_SEL==1
 	sysctl_iomux_config(GPIOB, 18, 2); // csn0
-	sysctl_iomux_config(GPIOB, 16, 2); // csn1
+	sysctl_iomux_config(GPIOB, 4, 2); // csn1
+	#elif spim_cs_PIN_SEL==2
+	sysctl_iomux_config(GPIOC, 15, 1); // csn0
+	sysctl_iomux_config(GPIOB, 31, 1); // csn1
+	#endif
 }
 
 //*****************************************************************************
@@ -578,21 +590,38 @@ void sysctl_iomux_pwm7()
 //      none
 //
 //*****************************************************************************
+#define tach0_PIN_SEL 2
 void sysctl_iomux_tach0()
 {
+	#if tach0_PIN_SEL==1
 	sysctl_iomux_config(GPIOA, 30, 1); // tach0
+	#elif tach0_PIN_SEL==2
+	sysctl_iomux_config(GPIOA, 22, 1); // tach0
+	#endif
 }
+#define tach1_PIN_SEL 3
 void sysctl_iomux_tach1()
-{
+{	
+	#if tach1_PIN_SEL==1
 	sysctl_iomux_config(GPIOA, 31, 1); // tach1
+	#elif tach1_PIN_SEL==2
+	sysctl_iomux_config(GPIOC, 9, 2); // tach1
+	#elif tach1_PIN_SEL==3
+	sysctl_iomux_config(GPIOC, 14, 1); // tach1
+	#endif
 }
 void sysctl_iomux_tach2()
 {
-	sysctl_iomux_config(GPIOC, 10, 2); // tach2
+	sysctl_iomux_config(GPIOC, 8, 1); // tach2
 }
+#define tach3_PIN_SEL 2
 void sysctl_iomux_tach3()
 {
+	#if tach3_PIN_SEL==1
+	sysctl_iomux_config(GPIOC, 9, 1);
+	#elif tach3_PIN_SEL==2
 	sysctl_iomux_config(GPIOC, 11, 2); // tach3
+	#endif
 }
 //*****************************************************************************
 //
@@ -605,20 +634,32 @@ void sysctl_iomux_tach3()
 //      none
 //
 //*****************************************************************************
+#define i2c0_PIN_SEL 1
 void sysctl_iomux_i2c0()
 {
-	sysctl_iomux_config(GPIOA, 11, 1);
+	#if i2c0_PIN_SEL==1
+	sysctl_iomux_config(GPIOA, 11, 1);//clk
 	sysctl_iomux_config(GPIOA, 12, 1);
+	#elif i2c0_PIN_SEL==2
+	sysctl_iomux_config(GPIOB, 10, 2);//clk
+	sysctl_iomux_config(GPIOB, 11, 2);
+	#endif	
 }
 void sysctl_iomux_i2c1()
 {
-	sysctl_iomux_config(GPIOA, 17, 1);
+	sysctl_iomux_config(GPIOA, 17, 1);//clk
 	sysctl_iomux_config(GPIOA, 18, 1);
 }
+#define i2c2_PIN_SEL 1
 void sysctl_iomux_i2c2()
 {
-	sysctl_iomux_config(GPIOB, 14, 1);
+	#if i2c2_PIN_SEL==1
+	sysctl_iomux_config(GPIOA, 23, 3);//clk
 	sysctl_iomux_config(GPIOB, 15, 1);
+	#elif i2c0_PIN_SEL==2
+	sysctl_iomux_config(GPIOB, 14, 1);//clk
+	sysctl_iomux_config(GPIOB, 15, 1);
+	#endif
 }
 void sysctl_iomux_i2c3()
 {
@@ -634,21 +675,35 @@ void sysctl_iomux_i2c3()
 void sysctl_iomux_i2c4()
 {
 #if (defined(AE103))
-#if AE5571
 	sysctl_iomux_config(GPIOB, 0, 2);
 	sysctl_iomux_config(GPIOB, 7, 2);
-#endif
 #endif
 }
 void sysctl_iomux_i2c5()
 {
 #if (defined(AE103))
-#if AE5571
 	sysctl_iomux_config(GPIOA, 4, 3);
 	sysctl_iomux_config(GPIOA, 5, 3);
 #endif
-#endif
 }
+
+#if (GLE01==1)
+void sysctl_iomux_i2c6()
+{
+	sysctl_iomux_config(GPIOA, 24, 3);//clk
+	sysctl_iomux_config(GPIOA, 25, 3);
+}
+void sysctl_iomux_i2c7()
+{
+	sysctl_iomux_config(GPIOA, 10, 2);//clk
+	sysctl_iomux_config(GPIOB, 24, 2);
+}
+void sysctl_iomux_i2c8()
+{
+	sysctl_iomux_config(GPIOA, 13, 3);//clk
+	sysctl_iomux_config(GPIOC, 14, 3);
+}
+#endif
 //*****************************************************************************
 //
 //  To setup pmc iomux

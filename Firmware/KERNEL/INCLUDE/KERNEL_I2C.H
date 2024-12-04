@@ -162,6 +162,11 @@
 #define I2C_CHANNEL_3 3
 #define I2C_CHANNEL_4 4
 #define I2C_CHANNEL_5 5
+/*yujiang add*/
+#define I2C_CHANNEL_6 6
+#define I2C_CHANNEL_7 7
+#define I2C_CHANNEL_8 8
+/*yujiang add*/
 #define I2C_WRITE 0x0
 #define I2C_READ 0x1
 #define I2C_STOP 0x2

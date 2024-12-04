@@ -26,20 +26,20 @@
 #include "CUSTOM_TEMPERATURE.H"
 #include "CUSTOM_POWER.H"
 #include "KERNEL_SOC_FUNC.H"
-#define WDT_mode 1 //1中断模式 0非中断
+#define WDT_mode 0 //1中断模式 0非中断
 #define PWRSW_mode 0
 
 #define Test_Clock_Disable 0
 BYTE Moudle_test(void)
 {
 	static DWORD Mtimer_Cunt = 0;
-	static BYTE MCtrStep = 2;        //上电之后先执行case2
+	static BYTE MCtrStep = 2;   //6:uarta     //上电之后先执行case2
 	static BYTE Prt_flag = 0;
 	static BYTE case2_flag = 0;      //用于第一次执行case2模块时，跳转到指定模块
 	DWORD timercunt = 0;
 	BYTE temp_data;
 	DWORD Uart_base = 0;
-
+	int i;
 
 	if(PRINTF_UART_SWITCH >= 4)
 	{
@@ -364,10 +364,10 @@ BYTE Moudle_test(void)
 		case 6:
 			if(Prt_flag == 0)
 			{
-				if(Test_Clock_Disable)
-				{
-					SYSCTL_MODEN0 &=(~UARTA_EN);
-				}
+				// if(Test_Clock_Disable)
+				// {
+				// 	SYSCTL_MODEN0 &=(~UARTA_EN);
+				// }
 				sysctl_iomux_uarta();
 				serial_init(UARTA_CHANNEL, 115200);
 
@@ -673,6 +673,9 @@ BYTE Moudle_test(void)
 		case 11:
 			if(Prt_flag == 0)
 			{
+
+				sysctl_iomux_pwm0();
+				//pwm,A0
 				sysctl_iomux_tach0();
 				//tach0_pull_up();
 				sysctl_iomux_tach1();
@@ -685,6 +688,8 @@ BYTE Moudle_test(void)
 				TACH_Init_Channel(TACH_CHANNEL1, 1, 0);//tach0-3分别与FAN2_TACH连接，观察打印是否有打印风扇转速信息
 				TACH_Init_Channel(TACH_CHANNEL2, 1, 0);
 				TACH_Init_Channel(TACH_CHANNEL3, 1, 0);
+
+				PWM_Init_channel(PWM_CHANNEL0, PWM_LOW, PWM_CLK0, PWM_CTR0, 90, 0);//pwm设置90，对应转速九百多
 				dprint("perpare TACH0、1、2、3、4\n");
 				dprint("completing the jumper, then send any key to start test\n");
 				Uart_Int_Disable(PRINTF_UART_SWITCH, 0);
@@ -696,10 +701,12 @@ BYTE Moudle_test(void)
 				dprint("input 0x%x\n", temp_data);
 				Prt_flag = 1;
 				dprint("TACH0、2、3、4 start\n");
+				
 			}
 			Mtimer_Cunt++;
 			if(Mtimer_Cunt % 1000 == 0)   //1s打印一次
-			{
+			{	
+				printf("0x30458:%d",*(unsigned int *)0x30458);
 				dprint("TACH0:%d\n", (6000000 / TACH_Get_Polling(0)));
 				dprint("TACH1:%d\n", (6000000 / TACH_Get_Polling(1)));
 				dprint("TACH2:%d\n", (6000000 / TACH_Get_Polling(2)));
@@ -1095,73 +1102,14 @@ BYTE Moudle_test(void)
 			}
 			break;
 
-		case 18:
-		 	if(Prt_flag == 0)
-		 	{
-				if(Test_Clock_Disable)
-				{
-					SYSCTL_MODEN0 &=(~ADC_EN);
-				}
-				dprint("completing the jumper of ADC software single-ended test,then send any key\n");//将PIOC0-7与ADC_R连接
-				Uart_Int_Disable(PRINTF_UART_SWITCH, 0);
-				REG8(Uart_base);
-				REG8(Uart_base);
-				REG8(Uart_base);
-				while(!(REG8(Uart_base + 0x5) & 0x1));
-				temp_data = REG8(Uart_base);
-				dprint("Input detected:0x%x\n", temp_data);
-				Prt_flag = 1;
-			}
-			Mtimer_Cunt++;
-			if(Mtimer_Cunt == 1000)
-			{
-				ADC_HW_Sample_Init(ADC_CHANNEL0,0, 0, SINGLE_ENDED, 500);
-				ADC_HW_Sample_Init(ADC_CHANNEL1,1,0,SINGLE_ENDED,500);
-				ADC_HW_Sample_Init(ADC_CHANNEL2,2,0,SINGLE_ENDED,500);
-				ADC_HW_Sample_Init(ADC_CHANNEL3,3,0,SINGLE_ENDED,500);
-				ADC_HW_Sample_Init(ADC_CHANNEL4,4, 0, SINGLE_ENDED, 500);
-				ADC_HW_Sample_Init(ADC_CHANNEL5,5,0,SINGLE_ENDED,500);
-				ADC_HW_Sample_Init(ADC_CHANNEL6,6,0,SINGLE_ENDED,500);
-				ADC_HW_Sample_Init(ADC_CHANNEL7,7,0,SINGLE_ENDED,500);							
-			}
-			if(Mtimer_Cunt >= 10000)
-			{
-				dprint("Enter test module via serial, or auto-advance soon.\n");
-				do
-				{
-					REG8(Uart_base);     //清除掉打印串口接收FIFO
-					REG8(Uart_base);
-					REG8(Uart_base);
-					timercunt++;
-					if(REG8(Uart_base + 0x5) & 0x1)
-					{
-						temp_data = REG8(Uart_base);
-						MCtrStep = temp_data;
-						Mtimer_Cunt = 0;
-						Prt_flag = 0;
-						dprint("Proceeding to test step %d\n", MCtrStep);
-						return 1;
-					}
-				}
-				while(timercunt < 0xffffff);
-				MCtrStep += 1;
-				Mtimer_Cunt = 0;
-				Prt_flag = 0;
-			}
-			break;
-
-		// case 19:
-		// 	if(Prt_flag == 0)
-		// 	{
-		// 		sysctl_iomux_adc0();
-		// 		sysctl_iomux_adc1();
-		// 		sysctl_iomux_adc2();
-		// 		sysctl_iomux_adc3();
-		// 		sysctl_iomux_adc4();
-		// 		sysctl_iomux_adc5();
-		// 		sysctl_iomux_adc6();
-		// 		sysctl_iomux_adc7();
-		// 		dprint("completing the jumper of ADC continuous single-ended test,then send any key\n");//将PIOC0-7与ADC_R连接
+		// case 18:
+		//  	if(Prt_flag == 0)
+		//  	{
+		// 		if(Test_Clock_Disable)
+		// 		{
+		// 			SYSCTL_MODEN0 &=(~ADC_EN);
+		// 		}
+		// 		dprint("completing the jumper of ADC software single-ended test,then send any key\n");//将PIOC0-7与ADC_R连接
 		// 		Uart_Int_Disable(PRINTF_UART_SWITCH, 0);
 		// 		REG8(Uart_base);
 		// 		REG8(Uart_base);
@@ -1172,15 +1120,19 @@ BYTE Moudle_test(void)
 		// 		Prt_flag = 1;
 		// 	}
 		// 	Mtimer_Cunt++;
-		// 	if(Mtimer_Cunt % 1000 == 0)
+		// 	if(Mtimer_Cunt == 1000)
 		// 	{
-		// 		dprint("Reading ADC channel %d sample\n", ((Mtimer_Cunt / 1000) % 8));
-		// 		ADC_Init(((Mtimer_Cunt / 1000) % 8), 1, 2, 1);  //连续单端模式，通过轮询每个一秒切换到下一个通道进行连续单端测试
-		// 		ADC_IRQ_Config(AF_IRQ, ENABLE);                //通过ADC中断打印数据
-		// 		ADC_TRIGGER = 1;
-		// 		while((ADC_INTMASK & 0x1) == 0);
+		// 		// ADC_HW_Sample_Init(ADC_CHANNEL0,0,0,SINGLE_ENDED,500);
+		// 		// ADC_HW_Sample_Init(ADC_CHANNEL1,1,0,SINGLE_ENDED,500);
+		// 		// ADC_HW_Sample_Init(ADC_CHANNEL2,2,0,SINGLE_ENDED,500);
+		// 		// ADC_HW_Sample_Init(ADC_CHANNEL3,3,0,SINGLE_ENDED,500);
+		// 		// ADC_HW_Sample_Init(ADC_CHANNEL4,4,0,SINGLE_ENDED,500);
+		// 		// ADC_HW_Sample_Init(ADC_CHANNEL5,5,0,SINGLE_ENDED,500);
+		// 		// ADC_HW_Sample_Init(ADC_CHANNEL6,6,0,SINGLE_ENDED,500);
+		// 		// ADC_HW_Sample_Init(ADC_CHANNEL7,7,0,SINGLE_ENDED,500);
+			
 		// 	}
-		// 	if(Mtimer_Cunt >= 17000)
+		// 	if(Mtimer_Cunt >= 10000)
 		// 	{
 		// 		dprint("Enter test module via serial, or auto-advance soon.\n");
 		// 		do
@@ -1206,6 +1158,82 @@ BYTE Moudle_test(void)
 		// 	}
 		// 	break;
 
+		case 19:
+			if(Prt_flag == 0)
+			{
+				if(Test_Clock_Disable)
+				{
+					SYSCTL_MODEN1 &=(~IRAM_EN);
+				}
+				dprint("prepare IRAM,Send any key to begin test\n");    //直接上电检测
+				Uart_Int_Disable(PRINTF_UART_SWITCH, 0);
+				REG8(Uart_base);
+				REG8(Uart_base);
+				REG8(Uart_base);
+				while(!(REG8(Uart_base + 0x5) & 0x1));
+				temp_data = REG8(Uart_base);
+				dprint("Input detected:0x%x\n", temp_data);
+				Prt_flag = 1;
+			}
+			Mtimer_Cunt++;
+			if(Mtimer_Cunt == 1000)
+			{
+				dprint("Reading 48 bytes from IRAM 0x28000\n");
+				for(i = 0; i < 48; i++)
+				{
+					dprint("0x%x:%x\n", (0x28000 + i), *((volatile uint8_t *)(IRAM_BASE_ADDR + i)));
+				}
+			}
+			if(Mtimer_Cunt == 2000)
+			{
+				dprint("Writing 0-48 bytes to IRAM 0x28000\n");
+				for(i = 0; i < 48; i++)
+				{
+					*((volatile uint8_t *)(IRAM_BASE_ADDR + i)) = i;
+				}
+			}
+			if(Mtimer_Cunt == 3000)
+			{
+				dprint("Reading 48 bytes from IRAM 0x28000\n");
+				for(i = 0; i < 48; i++)
+				{
+					if(*((volatile uint8_t *)(IRAM_BASE_ADDR + i)) != i)
+					{
+						dprint("地址0x%x的写入或读取的值不正确，读取的数据为%x\n", (0x28000 + i), *((volatile uint8_t *)(IRAM_BASE_ADDR + i)));
+						break;
+					}
+				}
+				if(i < 48)
+					dprint("IRAM failed\n");
+				else
+					dprint("IRAM passed\n");
+			}
+			if(Mtimer_Cunt >= 5000)
+			{
+				dprint("Enter test module via serial, or auto-advance soon.\n");
+				do
+				{
+					REG8(Uart_base);
+					REG8(Uart_base);
+					REG8(Uart_base);
+					timercunt++;
+					if(REG8(Uart_base + 0x5) & 0x1)
+					{
+						temp_data = REG8(Uart_base);
+						MCtrStep = temp_data;
+						Mtimer_Cunt = 0;
+						Prt_flag = 0;
+						dprint("Proceeding to test step %d\n", MCtrStep);
+						return 1;
+					}
+				}
+				while(timercunt < 0xffffff);
+				MCtrStep += 1;
+				Mtimer_Cunt = 0;
+				Prt_flag = 0;
+			}			
+			break;
+
 		case 20:
 			if(Prt_flag == 0)
 			{
@@ -1224,7 +1252,6 @@ BYTE Moudle_test(void)
 				Prt_flag = 1;
 			}
 			Mtimer_Cunt++;
-			int i;
 			if(Mtimer_Cunt == 1000)
 			{
 				dprint("Reading 48 bytes from BRAM 0x2700\n");
@@ -1290,6 +1317,15 @@ BYTE Moudle_test(void)
 				{
 					SYSCTL_MODEN1 &=(~SPIF_EN);
 				}
+				printf("0x3042c:%x\n",*(unsigned int *)0x3042c);
+				*(unsigned int *)0x3042c &=~(0x100);//gle需要关闭复位
+				sysctl_iomux_config(GPIOB, 20, 1);//fspi_mosi(inout)
+				sysctl_iomux_config(GPIOB, 21, 1);//fspi_miso(inout)
+				sysctl_iomux_config(GPIOB, 22, 1);//fspi_csn0(out)
+				sysctl_iomux_config(GPIOA, 16, 2);//fspi_csn1(out)
+				sysctl_iomux_config(GPIOB, 23, 1);//fspi_sck(out)
+				// sysctl_iomux_config(GPIOB, 30, 1);//fspi_hold(inout)
+				printf("0x3047C:%x\n",*(unsigned int *)0x3047C);
 				dprint("prepare SPIF,Send any key to begin test\n");            //不需要任何跳线，只用把FLASH放入开发板
 				Uart_Int_Disable(PRINTF_UART_SWITCH, 0);
 				REG8(Uart_base);
@@ -1385,7 +1421,7 @@ BYTE Moudle_test(void)
 				}
 				else
 				{
-					WDT_Init(0x0, 0xff);   //到达时间直接复位，可在1sec函数中喂狗。
+					WDT_Init(0x0, 0xff);   //到达时间直接复位，可在1sec函数中喂狗。//89s
 				}
 				dprint("watchDOG,Send any key to begin test\n");
 				Uart_Int_Disable(PRINTF_UART_SWITCH, 0);
@@ -2000,7 +2036,7 @@ BYTE Moudle_test(void)
 			if(Mtimer_Cunt==2000)
 			{
 				SYSCTL_RST1 |= (3<<15);
-				dprint("all chip resetn");
+				dprint("all chip reset\n");
 			}
 			if(Mtimer_Cunt >= 5000)
 			{	
@@ -2076,8 +2112,8 @@ BYTE Moudle_test(void)
 				// 开时钟：bit3
 				SYSCTL_MODEN1 |= SPIF_EN; 
 				//初始化
-				//*((unsigned char *)0x30000) =0xff;
-				printf("*0x30000:%x\n",*((unsigned char *)0x30000));
+				*((unsigned char *)0x30004) =0xff;
+				printf("*0x30004:%x\n",*((unsigned char *)0x30004));
 
 				// 开时钟：bit4
 				SYSCTL_MODEN1 |= SRAM_EN; 
@@ -2103,11 +2139,11 @@ BYTE Moudle_test(void)
 				*((unsigned char *)0x32400) =0xff;
 				printf("*0x32400:%x\n",*((unsigned char *)0x32400));
 
-				// 开时钟：bit8
-				SYSCTL_MODEN1 |= SM2_EN; 
-				//初始化
-				*((unsigned char *)0x30C00) =0xff;
-				printf("*0x30C00:%x\n",*((unsigned char *)0x30C00));
+				// // 开时钟：bit8
+				// SYSCTL_MODEN1 |= SM2_EN; 
+				// //初始化
+				// *((unsigned char *)0x30C00) =0xff;
+				// printf("*0x30C00:%x\n",*((unsigned char *)0x30C00));
 
 				// 开时钟：bit9
 				SYSCTL_MODEN1 |= SYSCTL_EN; 
@@ -2130,29 +2166,48 @@ BYTE Moudle_test(void)
 				*((unsigned char *)0x33000) =0xff;
 				printf("*0x33000:%x\n",*((unsigned char *)0x33000));
 
-				// 开时钟：bit13
-				//SYSCTL_MODEN1 |= IRAM1_EN; 
+				// // 开时钟：bit13
+				// //SYSCTL_MODEN1 |= IRAM1_EN; 
+				// //初始化
+				// *((unsigned char *)0x34000) =0xff;
+				// printf("*0x34000:%x\n",*((unsigned char *)0x34000));	
+				
+				SYSCTL_MODEN0 |= SMB8_EN; 
 				//初始化
-				*((unsigned char *)0x34000) =0xff;
-				printf("*0x34000:%x\n",*((unsigned char *)0x34000));	
+				*((unsigned char *)0x4E00) =0xff;
+				printf("*0x4E00:%x\n",*((unsigned char *)0x4E00));					
 
+				SYSCTL_MODEN0 |= SMB7_EN; 
+				//初始化
+				*((unsigned char *)0x4D00) =0xff;
+				printf("*0x4D00:%x\n",*((unsigned char *)0x4D00));
+
+				SYSCTL_MODEN0 |= SMB6_EN; 
+				//初始化
+				*((unsigned char *)0x4700) =0xff;
+				printf("*0x4700:%x\n",*((unsigned char *)0x4700));
+	
 				// 开时钟：bit14
 				SYSCTL_MODEN1 |= SMB5_EN; 
 				//初始化
-				*((unsigned char *)0x3E00) =0xff;
-				printf("*0x3E00:%x\n",*((unsigned char *)0x3E00));	
+				*((unsigned char *)0x4600) =0xff;
+				printf("*0x3E00:%x\n",*((unsigned char *)0x4600));	
 
 				// 开时钟：bit15
 				SYSCTL_MODEN1 |= SMB4_EN; 
 				//初始化	
-				*((unsigned char *)0x3D00) =0xff;
-				printf("*0x3D00:%x\n",*((unsigned char *)0x3D00));	
+				*((unsigned char *)0x4500) =0xff;
+				printf("*0x3D00:%x\n",*((unsigned char *)0x4500));	
 
 				// 开时钟：bit16
 				SYSCTL_MODEN1 |= CEC_EN; 
 				//初始化
+				//cec0
 				*((unsigned char *)0x4400) =0xff;
 				printf("*0x4400:%x\n",*((unsigned char *)0x4400));
+				//cec1
+				*((unsigned char *)0x4480) =0xff;
+				printf("*0x4480:%x\n",*((unsigned char *)0x4480));
 
 				// 开时钟：bit17
 				SYSCTL_MODEN1 |= OWI_EN; 
@@ -2163,7 +2218,27 @@ BYTE Moudle_test(void)
 				//初始化
 				*((unsigned char *)0x30800) =0xff;
 				printf("*0x30800:%x\n",*((unsigned char *)0x30800));
+				
+				//SYSCTL_MODEN1 |= DMA_EN; 
+				//初始化
+				*((unsigned char *)0x30C00) =0xff;
+				printf("*0x30C00:%x\n",*((unsigned char *)0x30C00));
 
+				//SYSCTL_MODEN1 |= SPIF_EMB_EN; 
+				//初始化
+				*((unsigned char *)0x33400) =0xff;
+				printf("*0x33400:%x\n",*((unsigned char *)0x33400));
+
+				//SYSCTL_MODEN1 |= MAIL_BOX_EN; 
+				//初始化
+				*((unsigned char *)0x32000) =0xff;
+				printf("*0x32000:%x\n",*((unsigned char *)0x32000));
+
+				//SYSCTL
+				//初始化
+				*((unsigned char *)0x30400) =0xff;
+				printf("*0x30400:%x\n",*((unsigned char *)0x30400));
+							
 				// 开时钟：bit19
 				SYSCTL_MODEN1 |= CACHE_EN; 
 				//初始化
@@ -2210,32 +2285,8 @@ BYTE Moudle_test(void)
 				// 开时钟：bit0
 				SYSCTL_MODEN0 |= SPIM_EN; 
 				//初始化
-				*((unsigned char *)0x7800) =0xff;
-				printf("*0x7800:%x\n",*((unsigned char *)0x7800));
-
-				// 开时钟：bit1
-				//SYSCTL_MODEN0 |= ; 保留
-				//初始化
-
-				// 开时钟：bit2
-				//SYSCTL_MODEN0 |= ; 保留
-				//初始化
-
-				// 开时钟：bit3
-				//SYSCTL_MODEN0 |= ; 保留
-				//初始化
-
-				// 开时钟：bit4
-				//SYSCTL_MODEN0 |= ; 保留
-				//初始化
-
-				// 开时钟：bit5
-				//SYSCTL_MODEN1 |= ; 保留
-				//初始化
-
-				// 开时钟：bit6
-				//SYSCTL_MODEN1 |= ; 保留
-				//初始化
+				*((unsigned char *)0x6000) =0xff;
+				printf("*0x6000:%x\n",*((unsigned char *)0x6000));
 
 				// 开时钟：bit7
 				SYSCTL_MODEN0 |= UART1_EN; 
@@ -2292,26 +2343,26 @@ BYTE Moudle_test(void)
 				// 开时钟：bit16
 				SYSCTL_MODEN0 |= SMB3_EN; 
 				//初始化
-				*((unsigned char *)0x3B00) =0xff;
-				printf("*0x3B00:%x\n",*((unsigned char *)0x3B00));
+				*((unsigned char *)0x4300) =0xff;
+				printf("*0x4300:%x\n",*((unsigned char *)0x4300));
 
 				// 开时钟：bit17
 				SYSCTL_MODEN0 |= SMB2_EN; 
 				//初始化
-				*((unsigned char *)0x3A00) =0xff;
-				printf("*0x3A00:%x\n",*((unsigned char *)0x3A00));
+				*((unsigned char *)0x4200) =0xff;
+				printf("*0x4200:%x\n",*((unsigned char *)0x4200));
 
 				// 开时钟：bit18
 				SYSCTL_MODEN0 |= SMB1_EN; 
 				//初始化
-				*((unsigned char *)0x3900) =0xff;
-				printf("*0x3900:%x\n",*((unsigned char *)0x3900));
+				*((unsigned char *)0x4100) =0xff;
+				printf("*0x4100:%x\n",*((unsigned char *)0x4100));
 
 				// 开时钟：bit19
 				SYSCTL_MODEN0 |= SMB0_EN; 
 				//初始化
-				*((unsigned char *)0x3800) =0xff;
-				printf("*0x3800:%x\n",*((unsigned char *)0x3800));
+				*((unsigned char *)0x4000) =0xff;
+				printf("*0x4000:%x\n",*((unsigned char *)0x4000));
 
 				// 开时钟：bit20
 				SYSCTL_MODEN0 |= GPIO_EN; 
@@ -2346,6 +2397,7 @@ BYTE Moudle_test(void)
 				// 开时钟：bit24
 				SYSCTL_MODEN0 |= PMCKBC_EN; 
 				//初始化
+				//pmc1-5
 				*((unsigned char *)0x2400) =0xff;
 				printf("*0x2400:%x\n",*((unsigned char *)0x2400));
 				*((unsigned char *)0x2410) =0xff;
@@ -2356,7 +2408,9 @@ BYTE Moudle_test(void)
 				printf("*0x2430:%x\n",*((unsigned char *)0x2430));
 				*((unsigned char *)0x2440) =0xff;
 				printf("*0x2440:%x\n",*((unsigned char *)0x2440));
-
+				//kbc
+				*((unsigned char *)0x2450) =0xff;
+				printf("*0x2450:%x\n",*((unsigned char *)0x2450));
 				// 开时钟：bit25
 				SYSCTL_MODEN0 |= ROMP_EN; 
 				//初始化
@@ -2408,28 +2462,36 @@ BYTE Moudle_test(void)
 				printf("start moudle reset\n");
 				//复位
 				SYSCTL_RST0 |=0xfffffeff;
-				//SYSCTL_RST1 |=0xffe039ff; //9,10,14,15,16,17,18,19,20, spif(bit8),efuse(bit11)会卡住
-				SYSCTL_RST1 |=0xffe030ff;
+				SYSCTL_RST1 |=0xff802fff; //bit16:chip使芯片全复位,bit12,spif_emb在用会卡住
 
 				printf("TIMER0_TLC0:%x\n",TIMER0_TLC0);
 				printf("ICTL0_INTEN0:%x\n",ICTL0_INTEN0);
 				printf("ICTL1_INTEN0:%x\n",ICTL1_INTEN0);
-				printf("*0x30000(spif):%x\n",*((unsigned char *)0x30000));
+				printf("*0x30004(spif):%x\n",*((unsigned char *)0x30004));
 				printf("*0x31000:%x\n",*((unsigned char *)0x31000));
 				printf("GPIO1_DR0:%x\n",GPIO1_DR0);
 				printf("*0x32000:%x\n",*((unsigned char *)0x32000));
 				printf("*0x32400:%x\n",*((unsigned char *)0x32400));
-				printf("*0x30C00:%x\n",*((unsigned char *)0x30C00));
 				printf("*0x30400(sysctl):%x\n",*((unsigned char *)0x30400));
 				printf("*0x33000:%x\n",*((unsigned char *)0x33000));
-				printf("*0x3E00:%x\n",*((unsigned char *)0x3E00));	
-				printf("*0x3D00:%x\n",*((unsigned char *)0x3D00));	
+				printf("*0x4E00:%x\n",*((unsigned char *)0x4E00));
+				printf("*0x4D00:%x\n",*((unsigned char *)0x4D00));
+				printf("*0x4700:%x\n",*((unsigned char *)0x4700));	
+				printf("*0x3E00:%x\n",*((unsigned char *)0x4600));
+				printf("*0x3D00:%x\n",*((unsigned char *)0x4500));
 				printf("*0x4400:%x\n",*((unsigned char *)0x4400));
+				printf("*0x4300:%x\n",*((unsigned char *)0x4300));
+				printf("*0x4200:%x\n",*((unsigned char *)0x4200));
+				printf("*0x4100:%x\n",*((unsigned char *)0x4100));
+				printf("*0x4000:%x\n",*((unsigned char *)0x4000));
+				printf("*0x4480:%x\n",*((unsigned char *)0x4480));
 				printf("*0x30800(IVT):%x\n",*((unsigned char *)0x30800));
+				printf("*0x30C00:%x\n",*((unsigned char *)0x30C00));
+				printf("*0x33400:%x\n",*((unsigned char *)0x33400));				
 				printf("*0x3F00:%x\n",*((unsigned char *)0x3F00));	
 				printf("*0x7C00:%x\n",*((unsigned char *)0x7C00));	
-				printf("*0x28000(RAM0):%x\n",*((unsigned char *)0x28000));
-				printf("*0x34000(RAM1):%x\n",*((unsigned char *)0x34000));
+				// printf("*0x28000(RAM0):%x\n",*((unsigned char *)0x28000));
+				// printf("*0x34000(RAM1):%x\n",*((unsigned char *)0x34000));
 				printf("*0x7800:%x\n",*((unsigned char *)0x7800));
 				printf("*0x5C00:%x\n",*((unsigned char *)0x5C00));
 				printf("*05800:%x\n",*((unsigned char *)0x5800));
@@ -2455,6 +2517,7 @@ BYTE Moudle_test(void)
 				printf("*0x2420:%x\n",*((unsigned char *)0x2420));
 				printf("*0x2430:%x\n",*((unsigned char *)0x2430));
 				printf("*0x2440:%x\n",*((unsigned char *)0x2440));
+				printf("*0x2450:%x\n",*((unsigned char *)0x2450));
 				printf("*0x2200(rompatch):%x\n",*((unsigned char *)0x2200));
 				printf("*2000:%x\n",*((unsigned char *)0x2000));
 				printf("*2100:%x\n",*((unsigned char *)0x2100));
@@ -2719,9 +2782,9 @@ BYTE Moudle_test(void)
 				dprint("test irq start\n");
 				
 				//ICTL0
-				ICTL0_INTEN0 |=0xfe; //使能中断 通道1-7
-				ICTL0_INTFORCE0 |=0xfe;//强制中断 通道0-7
-				ICTL0_INTMASK0 &=~(0xfe);//不屏蔽 通道0-7 
+				ICTL0_INTEN0 |=0xff; //使能中断 通道1-7
+				ICTL0_INTFORCE0 |=0xff;//强制中断 通道0-7
+				ICTL0_INTMASK0 &=~(0xff);//不屏蔽 通道0-7 
 
 				ICTL0_INTEN1 |=0xff; //使能中断 通道8-15
 				ICTL0_INTFORCE1 |=0xff;//强制中断 通道8-15
@@ -2747,40 +2810,40 @@ BYTE Moudle_test(void)
 				ICTL0_INTFORCE6 |=0xff;//强制中断 通道48-55
 				ICTL0_INTMASK6 &=~(0xff);//不屏蔽 通道48-55		
 
-				ICTL0_INTEN7 |=0xbf; //使能中断 通道56-63  //上边代码测试通道62
-				ICTL0_INTFORCE7 |=0xbf;//强制中断 通道56-63
-				ICTL0_INTMASK7 &=~(0xbf);//不屏蔽 通道56-63		
+				ICTL0_INTEN7 |=0xff; //使能中断 通道56-63  //上边代码测试通道62
+				ICTL0_INTFORCE7 |=0xff;//强制中断 通道56-63
+				ICTL0_INTMASK7 &=~(0xff);//不屏蔽 通道56-63		
 
-				//ICTL1 26 32-37 48 49 55-58
-				ICTL1_INTEN0 |=0xfe; //使能中断 通道1-7
-				ICTL1_INTEN1 |=0x7f; //使能中断 通道8-15
-				ICTL1_INTEN2 |=0x7f; //使能中断 通道16-23
+				
+				ICTL1_INTEN0 |=0xff; //使能中断 通道1-7
+				ICTL1_INTEN1 |=0xff; //使能中断 通道8-15
+				ICTL1_INTEN2 |=0xff; //使能中断 通道16-23
 
-				ICTL1_INTEN3 |=0xfb; //使能中断 通道24-31	
-				ICTL1_INTEN4 |=0xc0; //使能中断 通道32-39					
-				ICTL1_INTEN5 |=0x7f; //使能中断 通道40-47
+				ICTL1_INTEN3 |=0xbf; //使能中断 通道24-31	
+				ICTL1_INTEN4 |=0xcf; //使能中断 通道32-39					
+				ICTL1_INTEN5 |=0xff; //使能中断 通道40-47
 				ICTL1_INTEN6 |=0x7c; //使能中断 通道48-55
-				ICTL1_INTEN7 |=0xf8; //使能中断 通道56-63  
+				ICTL1_INTEN7 |=0x73; //使能中断 通道56-63  
 
-				ICTL1_INTFORCE0 |=0xfe;//强制中断 通道0-7
-				ICTL1_INTFORCE1 |=0x7f;//强制中断 通道8-15
-				ICTL1_INTFORCE2 |=0x7f;//强制中断 通道16-23
+				ICTL1_INTFORCE0 |=0xff;//强制中断 通道0-7
+				ICTL1_INTFORCE1 |=0xff;//强制中断 通道8-15
+				ICTL1_INTFORCE2 |=0xff;//强制中断 通道16-23
 
-				ICTL1_INTFORCE3 |=0xfb;//强制中断 通道24-31
-				ICTL1_INTFORCE4 |=0xc0;//强制中断 通道32-39
-				ICTL1_INTFORCE5 |=0x7f;//强制中断 通道40-47
+				ICTL1_INTFORCE3 |=0xbf;//强制中断 通道24-31
+				ICTL1_INTFORCE4 |=0xcf;//强制中断 通道32-39
+				ICTL1_INTFORCE5 |=0xff;//强制中断 通道40-47
 				ICTL1_INTFORCE6 |=0x7c;//强制中断 通道48-55
-				ICTL1_INTFORCE7 |=0xf8;//强制中断 通道56-63
+				ICTL1_INTFORCE7 |=0x73;//强制中断 通道56-63
 
-				ICTL1_INTMASK0 &=~(0xfe);//不屏蔽 通道0-7 
-				ICTL1_INTMASK1 &=~(0x7f);//不屏蔽 通道8-15
-				ICTL1_INTMASK2 &=~(0x7f);//不屏蔽 通道16-23	
+				ICTL1_INTMASK0 &=~(0xff);//不屏蔽 通道0-7 
+				ICTL1_INTMASK1 &=~(0xff);//不屏蔽 通道8-15
+				ICTL1_INTMASK2 &=~(0xff);//不屏蔽 通道16-23	
 
-				ICTL1_INTMASK3 &=~(0xfb);//不屏蔽 通道24-31	
-				ICTL1_INTMASK4 &=~(0xc0);//不屏蔽 通道32-39	
-				ICTL1_INTMASK5 &=~(0x7f);//不屏蔽 通道40-47
+				ICTL1_INTMASK3 &=~(0xbf);//不屏蔽 通道24-31	
+				ICTL1_INTMASK4 &=~(0xcf);//不屏蔽 通道32-39	
+				ICTL1_INTMASK5 &=~(0xff);//不屏蔽 通道40-47
 				ICTL1_INTMASK6 &=~(0x7c);//不屏蔽 通道48-55
-				ICTL1_INTMASK7 &=~(0xf8);//不屏蔽 通道56-63		
+				ICTL1_INTMASK7 &=~(0x73);//不屏蔽 通道56-63		
 			}
 			Mtimer_Cunt++;
 			if(Mtimer_Cunt >= 5000)
@@ -2874,6 +2937,164 @@ BYTE Moudle_test(void)
 			}
 			break;
 
+		case 37:
+			if(Prt_flag == 0)
+			{
+				if(Test_Clock_Disable)
+				{
+					SYSCTL_MODEN1 &=(~SMB6_EN);
+				}
+				sysctl_iomux_i2c6();
+				I2c_Channel_Init(I2C_CHANNEL_6, I2C7_SPEED, I2C_MASTER_ROLE, 0x4c, 1);
+				dprint("perpare SMBUS6\n");
+				dprint("completing the jumper, then send any key to start test\n");
+				Uart_Int_Disable(PRINTF_UART_SWITCH, 0);
+				REG8(Uart_base);
+				REG8(Uart_base);
+				REG8(Uart_base);
+				while(!(REG8(Uart_base + 0x5) & 0x1));
+				temp_data = REG8(Uart_base);
+				dprint("input 0x%x\n", temp_data);
+				Prt_flag = 1;
+				dprint("SMBUS6 start\n");
+			}
+			Mtimer_Cunt++;
+			if(Mtimer_Cunt % 1000 == 0)
+			{
+				get_temperature(6);
+			}
+			if(Mtimer_Cunt >= 10000)
+			{
+				REG8(Uart_base);     //清除掉打印串口接收FIFO
+				REG8(Uart_base);
+				REG8(Uart_base);
+				dprint("send the number of test module, otherwise enter next module\n");
+				do
+				{
+					timercunt++;
+					if(REG8(Uart_base + 0x5) & 0x1)
+					{
+						temp_data = REG8(Uart_base);
+						MCtrStep = temp_data;
+						Mtimer_Cunt = 0;
+						Prt_flag = 0;
+						dprint("start %d module test\n", MCtrStep);
+						return 1;
+					}
+				}
+				while(timercunt < 0xffffff);
+				MCtrStep += 1;
+				Mtimer_Cunt = 0;
+				Prt_flag = 0;
+				dprint("SMBUS6 over\n");
+			}
+			break;
+
+		case 38:
+			if(Prt_flag == 0)
+			{
+				if(Test_Clock_Disable)
+				{
+					SYSCTL_MODEN1 &=(~SMB7_EN);
+				}
+				sysctl_iomux_i2c7();
+				I2c_Channel_Init(I2C_CHANNEL_7, I2C7_SPEED, I2C_MASTER_ROLE, 0x4c, 1);
+				dprint("perpare SMBUS7\n");
+				dprint("completing the jumper, then send any key to start test\n");
+				Uart_Int_Disable(PRINTF_UART_SWITCH, 0);
+				REG8(Uart_base);
+				REG8(Uart_base);
+				REG8(Uart_base);
+				while(!(REG8(Uart_base + 0x5) & 0x1));
+				temp_data = REG8(Uart_base);
+				dprint("input 0x%x\n", temp_data);
+				Prt_flag = 1;
+				dprint("SMBUS7 start\n");
+			}
+			Mtimer_Cunt++;
+			if(Mtimer_Cunt % 1000 == 0)
+			{
+				get_temperature(7);
+			}
+			if(Mtimer_Cunt >= 10000)
+			{
+				REG8(Uart_base);     //清除掉打印串口接收FIFO
+				REG8(Uart_base);
+				REG8(Uart_base);
+				dprint("send the number of test module, otherwise enter next module\n");
+				do
+				{
+					timercunt++;
+					if(REG8(Uart_base + 0x5) & 0x1)
+					{
+						temp_data = REG8(Uart_base);
+						MCtrStep = temp_data;
+						Mtimer_Cunt = 0;
+						Prt_flag = 0;
+						dprint("start %d module test\n", MCtrStep);
+						return 1;
+					}
+				}
+				while(timercunt < 0xffffff);
+				MCtrStep += 1;
+				Mtimer_Cunt = 0;
+				Prt_flag = 0;
+				dprint("SMBUS7 over\n");
+			}
+			break;
+
+		case 39:
+			if(Prt_flag == 0)
+			{
+				if(Test_Clock_Disable)
+				{
+					SYSCTL_MODEN1 &=(~SMB8_EN);
+				}
+				sysctl_iomux_i2c8();
+				I2c_Channel_Init(I2C_CHANNEL_8, I2C8_SPEED, I2C_MASTER_ROLE, 0x4c, 1);
+				dprint("perpare SMBUS8\n");
+				dprint("completing the jumper, then send any key to start test\n");
+				Uart_Int_Disable(PRINTF_UART_SWITCH, 0);
+				REG8(Uart_base);
+				REG8(Uart_base);
+				REG8(Uart_base);
+				while(!(REG8(Uart_base + 0x5) & 0x1));
+				temp_data = REG8(Uart_base);
+				dprint("input 0x%x\n", temp_data);
+				Prt_flag = 1;
+				dprint("SMBUS8 start\n");
+			}
+			Mtimer_Cunt++;
+			if(Mtimer_Cunt % 1000 == 0)
+			{
+				get_temperature(8);
+			}
+			if(Mtimer_Cunt >= 10000)
+			{
+				REG8(Uart_base);     //清除掉打印串口接收FIFO
+				REG8(Uart_base);
+				REG8(Uart_base);
+				dprint("send the number of test module, otherwise enter next module\n");
+				do
+				{
+					timercunt++;
+					if(REG8(Uart_base + 0x5) & 0x1)
+					{
+						temp_data = REG8(Uart_base);
+						MCtrStep = temp_data;
+						Mtimer_Cunt = 0;
+						Prt_flag = 0;
+						dprint("start %d module test\n", MCtrStep);
+						return 1;
+					}
+				}
+				while(timercunt < 0xffffff);
+				MCtrStep += 1;
+				Mtimer_Cunt = 0;
+				Prt_flag = 0;
+				dprint("SMBUS8 over\n");
+			}
+			break;
 		default:
 			MCtrStep = 0;
 			Mtimer_Cunt = 0;
