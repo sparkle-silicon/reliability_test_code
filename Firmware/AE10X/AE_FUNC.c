@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-01-20 15:33:19
+ * @LastEditTime: 2024-12-14 17:22:10
  * @Description:
  *
  *
@@ -71,12 +71,14 @@ uint32_t NOINLINE measure_cpu_freq(register size_t n)
   do
   {
     start_mtime = mtime_lo(); // 获取计时器改变后的值（用的32K的时钟，时间相对比较久，判断新的开始）
-  } while (start_mtime == tmp);
+  }
+  while(start_mtime == tmp);
   uint32_t start_mcycle = read_csr(mcycle); // get Lower 32 bits of Cycle counter（周期计数器）//用于反映处理器执行了多少个时钟周期。只要处理器处于执行状态时，此计数器便会不断自增计数
   do
   {
     delta_mtime = mtime_lo() - start_mtime; // 判断走了n个计时器时钟
-  } while (delta_mtime < n);
+  }
+  while(delta_mtime < n);
   register uint32_t delta_mcycle = read_csr(mcycle) - start_mcycle; // 获取时钟周期差值
   disable_mcycle_minstret();
   // 24M时钟周期/32k时钟周期*预定32k的频率+24M时钟周期%32k时钟周期*预定32k频率/32K时钟频率
@@ -127,11 +129,11 @@ BYTE CPU_Int_Type_Read(BYTE type)
   uint32_t value1, value2;
   value1 = (read_csr(0xBD2) & (0x1 < type));
   value2 = (read_csr(0xBD3) & (0x1 < type));
-  if (value1 != 0 && value2 == 0)
+  if(value1 != 0 && value2 == 0)
   {
     return 0;
   }
-  else if (value1 == 0 && value2 != 0)
+  else if(value1 == 0 && value2 != 0)
   {
     return 1;
   }
@@ -222,6 +224,7 @@ void GLE01_RomCode_Transport(void)
   // GLE01_RomCode_Ptr = Load_Smfi_To_Dram(GLE01_RomCode_Transport_FlashToIRAM0, 0x200);
   // (*GLE01_RomCode_Ptr)(); // Do Function at malloc address
   Enable_Interrupt_Main_Switch();
+  SYSCTL_PIO5_UDCFG |= 1;
   dprint("GLE01 ROMCODE Transport Flash to IRAM0\n");
 }
 
