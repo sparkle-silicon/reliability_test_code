@@ -80,6 +80,7 @@ void __weak Hook_10msEventB(void)
 //-----------------------------------------------------------------------------
 void __weak Hook_50msEventA(void)
 {
+    #if 0
     //MAILBOX SMSha256 updata 测试用例
     if(REG8((SRAM_BASE_ADDR + 0x100))==0xAB)
     {
@@ -87,6 +88,15 @@ void __weak Hook_50msEventA(void)
         TaskParams Params;
 	    Add_Task((TaskFunction)GLE01_Flash_Update_Function,Params,&task_head);//sms update
     }
+    #endif
+    //子系统dram更新测试用例
+    #if 1
+    if(update_crypram_flag==1)
+    {
+        GLE01_Cryp_Update_Function();
+        update_crypram_flag = 0;
+    }
+    #endif
 }
 //-----------------------------------------------------------------------------
 void __weak Hook_50msEventB(void)

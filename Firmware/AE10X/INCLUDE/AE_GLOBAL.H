@@ -378,6 +378,16 @@ typedef struct _point
 extern int main();
 extern sMode Mode;
 // extern u_int32_t CHIP_CLOCK_SWITCH;
+
+typedef struct _CryptoFlashInfo
+{
+    uint8_t Firmware_ID[16]; // 识别码，确认安全验签位置，和开头识别码做区分
+    uint32_t Crc32Data;
+    uint8_t HASH_AES_ECB_RTL_KEY[64];
+    uint32_t Crypto_CopyStartAddr;
+    uint32_t Crypto_CopySize;
+} sCryptoFlashInfo;
+
 /*-------------------------------------set reg Information-------------------------------------*/
 
 #define SYSCTL_ESTAT_BOOTMODE_SYNC                              ((SYSCTL_ESTAT&0x00000003)>>0)//[1:0]
