@@ -1,7 +1,7 @@
 /*
  * @Author: dejavuwdh
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-11-25 15:51:45
+ * @LastEditTime: 2024-12-16 16:37:22
  * @Description:
  *
  *
@@ -111,7 +111,7 @@ USED sFixedFlashInfo Fix_flash_info = {
 	.DEBUG_PRINTF_STOP = 0,
 	.DEBUG_PRINTF_PE = 0,
 	.DEBUG_PRINTF_EPE = 0,
-	.DEBUGGER_BAUD_RATE = 0,
+	.DEBUGGER_BAUD_RATE = (UART_BAUD / 3200) - 1,
 	.DEBUGGER_DLS = 0b11,
 	.DEBUGGER_STOP = 0,
 	.DEBUGGER_PE = 0,
