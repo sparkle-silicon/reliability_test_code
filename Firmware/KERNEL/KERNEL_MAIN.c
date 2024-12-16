@@ -547,14 +547,7 @@ int __weak main(void)
 	// 若打开GLE01功能，则需要在GLE01主系统第一次启动时，将FLASH文件的256K后的固定32K代码搬运到IRAM0
 #if ((GLE01 == 1) && (FLASH_TO_IRAM0 == 1))
 	GLE01_RomCode_Transport();
-	E2CINFO7 = 0x5aa5;
-	while (C2EINFO7 != 0xa55a) // 等待子系统初始化完毕
-	{
-		E2CINFO7 = 0x5aa5;
-	}
 #endif
-	while(C2EINFO7 != 0xa55a); // 等待子系统初始化完毕
-	CheckClockFrequencyChange();//rom代码 暂时放这
 	TaskParams Params={(APB_UART1|APB_REQ),0,0};
 	Add_Task(Mailbox_APB2_Source_Alloc_Trigger,Params,&task_head);//分配串口1给子系统
 	//  3. jump loop

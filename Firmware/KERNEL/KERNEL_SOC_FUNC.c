@@ -196,12 +196,12 @@ void uart_init(void)
 // 	baud[3] = serial_init(UART3_CHANNEL, UART3_BAUD);
 // #endif
 #endif
-#ifdef UARTA_BAUD
+// #ifdef UARTA_BAUD
 	uarta_MoudleClock_EN;
 	sysctl_iomux_uarta();
 	flag |= BIT4;
-	baud[4] = serial_init(UARTA_CHANNEL, UARTA_BAUD);
-#endif
+	baud[4] = serial_init(UARTA_CHANNEL, 115200);
+// #endif
 #ifdef UARTB_BAUD
 	SMBUS3_UARTB_SEL;
 	uartb_MoudleClock_EN;
