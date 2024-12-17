@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-01-28 18:08:52
+ * @LastEditTime: 2024-12-17 15:40:53
  * @Description:
  *
  *
@@ -24,9 +24,9 @@
 #define sms_write(addr, value) ((*((volatile uint8_t *)(addr))) = (value))
 #define sms_read(addr) (*((volatile uint8_t *)(addr)))
 char uart_crtpram_updatebuffer[12];
-int uart_crypram_updateindex=0;
-char update_crypram_cmd[12]={0x64 ,0x72 ,0x61 ,0x6D ,0x30 ,0x2D ,0x75 ,0x70 ,0x64 ,0x61 ,0x74 ,0x65 };
-char update_crypram_flag=0;
+int uart_crypram_updateindex = 0;
+char update_crypram_cmd[12] = { 0x64 ,0x72 ,0x61 ,0x6D ,0x30 ,0x2D ,0x75 ,0x70 ,0x64 ,0x61 ,0x74 ,0x65 };
+char update_crypram_flag = 0;
 VBYTE check[32];
 FUNCT_PTR_V_V Cache2Ram_ptr = NULL;
 // 更新主函数
@@ -454,12 +454,12 @@ void SECTION(".update.function") Flash_Update_Function(void)
     #endif
     }
 #if 0
-    else if (SHAREMEM_UPDATE && !strcmp((const char *)(SRAM_BASE_ADDR + 0x100), "update firmware\0") && (eFlash_Forbid_Flag == 0))
-#else
-    else if (SHAREMEM_UPDATE && *((volatile uint8_t *)(SRAM_BASE_ADDR + 0x100)) == 0xAB && (eFlash_Forbid_Flag == 0))
-#endif
+    else if(SHAREMEM_UPDATE && !strcmp((const char *)(SRAM_BASE_ADDR + 0x100), "update firmware\0") && (eFlash_Forbid_Flag == 0))
+    #else
+    else if(SHAREMEM_UPDATE && *((volatile uint8_t *)(SRAM_BASE_ADDR + 0x100)) == 0xAB && (eFlash_Forbid_Flag == 0))
+    #endif
     {
-#if (GLE01 == 1)
+    #if (GLE01 == 1)
         {
             printf("jump mailbx update\n");
 
@@ -481,10 +481,10 @@ void SECTION(".update.function") Flash_Update_Function(void)
             mode = 0x1;
             Load_funVV_To_Dram(EC_SMS_Update, 0x400); // 加载func到dram
         }
-#endif
+    #endif
     }
 #if (GLE01 == 1)
-    else if (SHAREMEM_UPDATE && (*((volatile uint8_t *)(SRAM_BASE_ADDR + 0x100)) == 0xBB) && (eFlash_Forbid_Flag == 0))
+    else if(SHAREMEM_UPDATE && (*((volatile uint8_t *)(SRAM_BASE_ADDR + 0x100)) == 0xBB) && (eFlash_Forbid_Flag == 0))
     {
         mode = 0x1;
         printf("SinglePage Write\n");
@@ -495,7 +495,7 @@ void SECTION(".update.function") Flash_Update_Function(void)
         EC_SinglePage_Update();
     }
 #endif
-    else if (IO_UPDATE && update_mode == 0xdc && (eFlash_Forbid_Flag == 0))
+    else if(IO_UPDATE && update_mode == 0xdc && (eFlash_Forbid_Flag == 0))
     {
         mode = 0x2;
         Load_funVV_To_Dram(EC_IO_Update, 0x600);
@@ -552,7 +552,7 @@ void SECTION(".update.function") Flash_Update_Function(void)
 void ALIGNED(4) EC_SinglePage_Update(void)
 {
     BYTE Rewrite_cnt = 0;
-    while (*((volatile uint8_t *)(SRAM_BASE_ADDR + 0x100)) != 0xDD);
+    while(*((volatile uint8_t *)(SRAM_BASE_ADDR + 0x100)) != 0xDD);
 
     Rewrite_cnt = *((VBYTEP)(SRAM_BASE_ADDR + 0x107));
 
@@ -655,8 +655,8 @@ void ALIGNED(4) Mailbox_Update_Function(BYTE mode, DWORD fwsize, DWORD update_ad
 ALIGNED(4) void Go2Ram_WaitUpdate(void)
 {
     while(1)
-    {   
-        if(C2EINT==0x2)
+    {
+        if(C2EINT == 0x2)
         {
             if(C2EINFO0 == 0x13)
             {
@@ -666,10 +666,10 @@ ALIGNED(4) void Go2Ram_WaitUpdate(void)
                 PRINTF_TX = 'C';
                 PRINTF_TX = 'E';
                 PRINTF_TX = 'S';
-                SYSCTL_RST1|=BIT(16);//chip reset
+                SYSCTL_RST1 |= BIT(16);//chip reset
                 __nop;
-                SYSCTL_RST1&=~BIT(16);//release chip reset
-                goto *80084UL;
+                SYSCTL_RST1 &= ~BIT(16);//release chip reset
+                goto * 80084UL;
             }
         }
     }
@@ -678,20 +678,20 @@ ALIGNED(4) void Go2Ram_WaitUpdate(void)
 void GLE01_Flash_Update_Function(void)
 {
     uint32_t Update_Addr = 0;
-    uint32_t FM_size = (REG8((SRAM_BASE_ADDR + 0x104)))|(REG8((SRAM_BASE_ADDR + 0x105))<<8)|(REG8((SRAM_BASE_ADDR + 0x106))<<16)|(REG8((SRAM_BASE_ADDR + 0x107))<<24);
+    uint32_t FM_size = (REG8((SRAM_BASE_ADDR + 0x104))) | (REG8((SRAM_BASE_ADDR + 0x105)) << 8) | (REG8((SRAM_BASE_ADDR + 0x106)) << 16) | (REG8((SRAM_BASE_ADDR + 0x107)) << 24);
     uint8_t flashOption = REG8((SRAM_BASE_ADDR + 0x110));
-    printf("FM_size:%d\n",FM_size);
-    printf("flashOption:%x\n",flashOption);
-    if(SYSCTL_RST1&0x00000100)
+    printf("FM_size:%d\n", FM_size);
+    printf("flashOption:%x\n", flashOption);
+    if(SYSCTL_RST1 & 0x00000100)
     {
         SYSCTL_RST1 &= 0xfffffeff; // 释放复位
     }
-    sysctl_iomux_config(GPIOB,17,0x1);//wp
-    sysctl_iomux_config(GPIOB,20,0x1);//mosi
-    sysctl_iomux_config(GPIOB,21,0x1);//miso
-    sysctl_iomux_config(GPIOB,22,0x1);//cs0
-    sysctl_iomux_config(GPIOB,23,0x1);//clk
-    sysctl_iomux_config(GPIOB,30,0x1);//hold
+    sysctl_iomux_config(GPIOB, 17, 0x1);//wp
+    sysctl_iomux_config(GPIOB, 20, 0x1);//mosi
+    sysctl_iomux_config(GPIOB, 21, 0x1);//miso
+    sysctl_iomux_config(GPIOB, 22, 0x1);//cs0
+    sysctl_iomux_config(GPIOB, 23, 0x1);//clk
+    sysctl_iomux_config(GPIOB, 30, 0x1);//hold
     /* 中断屏蔽 */
     Disable_Interrupt_Main_Switch();
     E2CINFO0 = 0x13;
@@ -706,23 +706,23 @@ void GLE01_Flash_Update_Function(void)
 
 void Reset_Crypto_Cpu(void)
 {
-    uint32_t Clk_Div=0;
-    SYSCTL_RST1|=BIT(17);//crypto cpu reset
+    uint32_t Clk_Div = 0;
+    SYSCTL_RST1 |= BIT(17);//crypto cpu reset
     __nop;
-    SYSCTL_RST1&=~BIT(17);//release crypto cpu reset
+    SYSCTL_RST1 &= ~BIT(17);//release crypto cpu reset
     printf("crypto cpu reset\n");
     //修改时钟频率
     printf("modify clock frequency\n");
-    Clk_Div=SYSCTL_CLKDIV_OSC96M;
-    if(SYSCTL_ESTAT&BIT(24))
+    Clk_Div = SYSCTL_CLKDIV_OSC96M;
+    if(SYSCTL_ESTAT & BIT(24))
     {
         //由于fpga暂时跑不了
         //SYSCTL_CLKDIV_OSC96M=0;
-        SYSCTL_CLKDIV_OSC96M=3;
+        SYSCTL_CLKDIV_OSC96M = 3;
     }
     else
     {
-        SYSCTL_CLKDIV_OSC96M=3;
+        SYSCTL_CLKDIV_OSC96M = 3;
     }
 
     //等待子系统初始化完成
@@ -731,16 +731,21 @@ void Reset_Crypto_Cpu(void)
 
     //恢复时钟频率
     printf("modify clock frequency done\n");
-    SYSCTL_CLKDIV_OSC96M=Clk_Div;
+    SYSCTL_CLKDIV_OSC96M = Clk_Div;
 }
 
 void WaitCrypUpdate(void)
 {
     while(1)
-    {   
-        if(C2EINT==0x2)
+    {
+        if(C2EINT == 0x2)
         {
-            C2EINT|=0x2;
+            do
+            {
+                C2EINT = C2EINT;
+                nop;
+            }
+            while(C2EINT);
             if(C2EINFO0 == 0xaa)
             {
                 PRINTF_TX = 'S';
@@ -758,27 +763,27 @@ void WaitCrypUpdate(void)
                 switch(C2EINFO1)
                 {
                     case 0x11://crc32校验失败,回退备份成功
-                        PRINTF_TX = 'C';PRINTF_TX = 'R';PRINTF_TX = 'C';PRINTF_TX = '\n';
+                        PRINTF_TX = 'C'; PRINTF_TX = 'R'; PRINTF_TX = 'C'; PRINTF_TX = '\n';
                         Reset_Crypto_Cpu();
                         return;
                     case 0x22://哈希校验失败,回退备份成功
-                        PRINTF_TX = 'H';PRINTF_TX = 'A';PRINTF_TX = 'S';PRINTF_TX = 'H';PRINTF_TX = '\n';
+                        PRINTF_TX = 'H'; PRINTF_TX = 'A'; PRINTF_TX = 'S'; PRINTF_TX = 'H'; PRINTF_TX = '\n';
                         Reset_Crypto_Cpu();
                         return;
                     case 0x33://哈希校验失败,回退备份失败
-                        PRINTF_TX = 'H';PRINTF_TX = 'A';PRINTF_TX = 'S';PRINTF_TX = 'H';PRINTF_TX = 'E';PRINTF_TX = 'R';PRINTF_TX = '\n';
+                        PRINTF_TX = 'H'; PRINTF_TX = 'A'; PRINTF_TX = 'S'; PRINTF_TX = 'H'; PRINTF_TX = 'E'; PRINTF_TX = 'R'; PRINTF_TX = '\n';
                         Reset_Crypto_Cpu();
                         return;
                     case 0x44://哈希校验失败,无备份代码
-                        PRINTF_TX = 'H';PRINTF_TX = 'A';PRINTF_TX = 'S';PRINTF_TX = 'H';PRINTF_TX = 'N';PRINTF_TX = '\n';
+                        PRINTF_TX = 'H'; PRINTF_TX = 'A'; PRINTF_TX = 'S'; PRINTF_TX = 'H'; PRINTF_TX = 'N'; PRINTF_TX = '\n';
                         Reset_Crypto_Cpu();
                         return;
                     case 0x55://crc32校验失败,回退备份失败
-                        PRINTF_TX = 'C';PRINTF_TX = 'R';PRINTF_TX = 'C';PRINTF_TX = 'E';PRINTF_TX = '\n';
+                        PRINTF_TX = 'C'; PRINTF_TX = 'R'; PRINTF_TX = 'C'; PRINTF_TX = 'E'; PRINTF_TX = '\n';
                         Reset_Crypto_Cpu();
                         return;
                     case 0x66://crc32校验失败,无备份代码
-                        PRINTF_TX = 'C';PRINTF_TX = 'R';PRINTF_TX = 'C';PRINTF_TX = 'N';PRINTF_TX = '\n';
+                        PRINTF_TX = 'C'; PRINTF_TX = 'R'; PRINTF_TX = 'C'; PRINTF_TX = 'N'; PRINTF_TX = '\n';
                         Reset_Crypto_Cpu();
                         return;
                     default:
@@ -789,11 +794,11 @@ void WaitCrypUpdate(void)
     }
 }
 
-void storeFirmwareSizeInMem(uint8_t TransType,uint8_t *buffer)
+void storeFirmwareSizeInMem(uint8_t TransType, uint8_t *buffer)
 {
-    uint16_t rx_cnt=0;
-    uint32_t rx_timeout=0;
-    if(TransType==0x0)//uart update
+    uint16_t rx_cnt = 0;
+    uint32_t rx_timeout = 0;
+    if(TransType == 0x0)//uart update
     {
         while(rx_cnt < 256)
         {
@@ -802,15 +807,15 @@ void storeFirmwareSizeInMem(uint8_t TransType,uint8_t *buffer)
             rx_cnt++;
         }
     }
-    
+
 }
 
-void reportDone(uint8_t TransType,uint8_t data)
+void reportDone(uint8_t TransType, uint8_t data)
 {
-    if(TransType==0x0)//uart update
+    if(TransType == 0x0)//uart update
     {
         while(!(UARTA_LSR & UART_LSR_TEMP));
-        UARTA_TX =data;
+        UARTA_TX = data;
     }
 }
 
@@ -821,50 +826,60 @@ void GLE01_Cryp_Update_Function(void)
     Disable_Interrupt_Main_Switch();
 
     //通知子系统进入更新函数
-    E2CINFO0=0x14;
-    E2CINFO1=0x0;
-    E2CINT=0x2;
-    while(C2EINT!=0x2);
-    C2EINT|=0x2;
-    while(C2EINFO0!=0xcc);
-    while(C2EINFO1!=0x00);//子系统回复处理完毕
-    reportDone(0,0xAA);//回复上位机芯片已经进入更新函数
+    E2CINFO0 = 0x14;
+    E2CINFO1 = 0x0;
+    E2CINT = 0x2;
+    while(C2EINT != 0x2);
+    do
+    {
+        C2EINT = C2EINT;
+        nop;
+    }
+    while(C2EINT);
+    while(C2EINFO0 != 0xcc);
+    while(C2EINFO1 != 0x00);//子系统回复处理完毕
+    reportDone(0, 0xAA);//回复上位机芯片已经进入更新函数
     printf("send 0xaa to host\n");
 
-    uint32_t i=0;
+    uint32_t i = 0;
     uint8_t Temp_buffer[256];
     sCryptoFlashInfo CrypDramCodeinfo;
     //先接收CrypDramCodeinfo并拷贝到(SRAM_BASE_ADDR+0x100)地址上
-    storeFirmwareSizeInMem(0,Temp_buffer);
-    memcpy((void*)&CrypDramCodeinfo, (void*)Temp_buffer, sizeof(sCryptoFlashInfo));
-    printf("fm_size:%d CRC32:%08x\n",CrypDramCodeinfo.Crypto_CopySize,CrypDramCodeinfo.Crc32Data);
+    storeFirmwareSizeInMem(0, Temp_buffer);
+    memcpy((void *)&CrypDramCodeinfo, (void *)Temp_buffer, sizeof(sCryptoFlashInfo));
+    printf("fm_size:%d CRC32:%08x\n", CrypDramCodeinfo.Crypto_CopySize, CrypDramCodeinfo.Crc32Data);
     printf("hash:");
-    for(i=0;i<32;i++)
+    for(i = 0; i < 32; i++)
     {
-        printf("%02x",CrypDramCodeinfo.HASH_AES_ECB_RTL_KEY[i]);
+        printf("%02x", CrypDramCodeinfo.HASH_AES_ECB_RTL_KEY[i]);
     }
     printf("\n");
-    memcpy((void*)((uint8_t *)(SRAM_BASE_ADDR + 0x100)), (void*)Temp_buffer, sizeof(sCryptoFlashInfo));
-    E2CINFO0=0xcc;
-    E2CINFO1=0x1;//发送固件信息
-    E2CINT=0x2;//给子系统发送命令
-    while(C2EINT!=0x2);
-    C2EINT|=0x2;
-    while(C2EINFO0!=0xcc);
-    while(C2EINFO1!=0x01);//子系统回复处理完毕
-    E2CINFO0=0;E2CINFO1=0;//复位该寄存器值
-    reportDone(0,0xAA);//回复上位机获取固件信息命令处理完毕
+    memcpy((void *)((uint8_t *)(SRAM_BASE_ADDR + 0x100)), (void *)Temp_buffer, sizeof(sCryptoFlashInfo));
+    E2CINFO0 = 0xcc;
+    E2CINFO1 = 0x1;//发送固件信息
+    E2CINT = 0x2;//给子系统发送命令
+    while(C2EINT != 0x2);
+    do
+    {
+        C2EINT = C2EINT;
+        nop;
+    }
+    while(C2EINT);
+    while(C2EINFO0 != 0xcc);
+    while(C2EINFO1 != 0x01);//子系统回复处理完毕
+    E2CINFO0 = 0; E2CINFO1 = 0;//复位该寄存器值
+    reportDone(0, 0xAA);//回复上位机获取固件信息命令处理完毕
     printf("send 0xaa to host\n");
 
     //接收加密数据并拷贝到(SRAM_BASE_ADDR+0x100)地址上
-    for(i=0;i<CrypDramCodeinfo.Crypto_CopySize;i+=256)
+    for(i = 0; i < CrypDramCodeinfo.Crypto_CopySize; i += 256)
     {
-        storeFirmwareSizeInMem(0,Temp_buffer);
+        storeFirmwareSizeInMem(0, Temp_buffer);
         //打印接收到的数据
         // for (int i = 0; i < 256; i += 16) {
         // // 打印地址
         //     printf("%08X  ", i);
-            
+
         //     // 打印数据
         //     for (int j = 0; j < 16; j++) {
         //         if (i + j < 256) {
@@ -875,18 +890,23 @@ void GLE01_Cryp_Update_Function(void)
         //     }
         //     printf("\n");
         // }
-        memcpy((void*)((uint8_t *)(SRAM_BASE_ADDR + 0x100)), (void*)Temp_buffer, 256);
-        E2CINFO0=0xcc;
-        E2CINFO1=0x2;//发送code密文
-        E2CINT=0x2;//给子系统发送命令
-        while(C2EINT!=0x2);
-        C2EINT|=0x2;
-        while(C2EINFO0!=0xcc);
-        while(C2EINFO1!=0x2);//子系统回复处理完毕
-        E2CINFO0=0;E2CINFO1=0;//复位该寄存器值
-        reportDone(0,0xAA);//回复上位机一笔数据处理完毕
+        memcpy((void *)((uint8_t *)(SRAM_BASE_ADDR + 0x100)), (void *)Temp_buffer, 256);
+        E2CINFO0 = 0xcc;
+        E2CINFO1 = 0x2;//发送code密文
+        E2CINT = 0x2;//给子系统发送命令
+        while(C2EINT != 0x2);
+        do
+        {
+            C2EINT = C2EINT;
+            nop;
+        }
+        while(C2EINT);
+        while(C2EINFO0 != 0xcc);
+        while(C2EINFO1 != 0x2);//子系统回复处理完毕
+        E2CINFO0 = 0; E2CINFO1 = 0;//复位该寄存器值
+        reportDone(0, 0xAA);//回复上位机一笔数据处理完毕
         printf("send 0xaa to host\n");
-        printf("i:%d CopySize:%d\n",i+256,CrypDramCodeinfo.Crypto_CopySize);
+        printf("i:%d CopySize:%d\n", i + 256, CrypDramCodeinfo.Crypto_CopySize);
     }
     /* 进入ram跑代码 */
     WaitCrypUpdate();

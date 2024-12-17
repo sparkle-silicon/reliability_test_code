@@ -1,7 +1,7 @@
 /*
  * @Author: dejavuwdh
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-12-16 16:37:22
+ * @LastEditTime: 2024-12-17 15:56:02
  * @Description:
  *
  *
@@ -17,9 +17,9 @@
 
 #ifdef AE103
 // 填入绝对地址
-#define PATCH0_ADDR 0x10084
+#define PATCH0_ADDR 0x1000C
 #define PATCH0_DATA 0x80084 // 0x9F800//PATCH0_TRANSIT
-#define PATCH1_ADDR 0x10400
+#define PATCH1_ADDR 0x10010
 #define PATCH1_DATA 0x9F880 // PATCH1_TRANSIT
 #if 0
 #define PATCH2_ADDR 0x10084

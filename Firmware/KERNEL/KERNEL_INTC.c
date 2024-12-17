@@ -216,7 +216,7 @@ void intr0_gpio_a0(void)
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[32]++;
 #endif
-	if (GPIO0_INTSTATUS0 & (0x1 << 0)) // if int happened
+	if(GPIO0_INTSTATUS0 & (0x1 << 0)) // if int happened
 	{
 		// BRAM_EC_Read();
 		// BRAM_EC_Write();
@@ -1838,7 +1838,7 @@ void intr1_cec0(void) // 25
 
 	DWORD stat, int_stat;
 	stat = CEC_Read(CEC0_SR_OFFSET);
-	if ((stat & 0xF0) != 0)
+	if((stat & 0xF0) != 0)
 	{
 		irqprint("CEC statu : %#x\n", stat);
 		irqprint("statu erro ! \n");
@@ -1846,20 +1846,20 @@ void intr1_cec0(void) // 25
 	}
 	int_stat = CEC_Read(CEC0_ISR_OFFSET);
 #if CEC_mode_select // initiator
-	if (int_stat & CEC_intStatue_sbis)
+	if(int_stat & CEC_intStatue_sbis)
 	{
 	}
-	if (int_stat & CEC_intStatue_sfis)
+	if(int_stat & CEC_intStatue_sfis)
 	{
 	}
 #else // follower
-	if (int_stat & CEC_intStatue_rhis)
+	if(int_stat & CEC_intStatue_rhis)
 	{
 	}
-	if (int_stat & CEC_intStatue_rbis)
+	if(int_stat & CEC_intStatue_rbis)
 	{
 	}
-	if (int_stat & CEC_intStatue_rfis)
+	if(int_stat & CEC_intStatue_rfis)
 	{
 	}
 #endif
@@ -1884,7 +1884,7 @@ void intr1_cec1(void) // 26
 
 	DWORD stat, int_stat;
 	stat = CEC_Read(CEC1_SR_OFFSET);
-	if ((stat & 0xF0) != 0)
+	if((stat & 0xF0) != 0)
 	{
 		irqprint("CEC statu : %#x\n", stat);
 		irqprint("statu erro ! \n");
@@ -1892,20 +1892,20 @@ void intr1_cec1(void) // 26
 	}
 	int_stat = CEC_Read(CEC1_ISR_OFFSET);
 #if CEC_mode_select // initiator
-	if (int_stat & CEC_intStatue_sbis)
+	if(int_stat & CEC_intStatue_sbis)
 	{
 	}
-	if (int_stat & CEC_intStatue_sfis)
+	if(int_stat & CEC_intStatue_sfis)
 	{
 	}
 #else // follower
-	if (int_stat & CEC_intStatue_rhis)
+	if(int_stat & CEC_intStatue_rhis)
 	{
 	}
-	if (int_stat & CEC_intStatue_rbis)
+	if(int_stat & CEC_intStatue_rbis)
 	{
 	}
-	if (int_stat & CEC_intStatue_rfis)
+	if(int_stat & CEC_intStatue_rfis)
 	{
 	}
 #endif
@@ -1927,7 +1927,7 @@ void intr1_smbus4(void) // 27
 	BYTE abrt_source_l = I2c_Readb(I2C_TX_ABRT_SOURCE_OFFSET, I2C_CHANNEL_4);
 	BYTE abrt_source_h = I2c_Readb((I2C_TX_ABRT_SOURCE_OFFSET + 1), I2C_CHANNEL_4);
 	BYTE raw_int = I2c_Readb(I2C_RAW_INTR_STAT_OFFSET, I2C_CHANNEL_4);
-	if (raw_int & I2C_INTR_TX_ABRT)
+	if(raw_int & I2C_INTR_TX_ABRT)
 	{
 		dprint("smbus4 tx_abrt! addr is 0x%X data is 0x%X\n", SMB_Temp_Addr, SMB_Temp_Data);
 		dprint("tx_abrt_source:0x%x  \n", (WORD)(abrt_source_l | (abrt_source_h << 8)));
@@ -1939,38 +1939,38 @@ void intr1_smbus4(void) // 27
 	ic_stat = I2c_Readb(I2C_STATUS_OFFSET, I2C_CHANNEL_4);
 	int_stat = i2c_dw_read_clear_intrbits(I2C_CHANNEL_4); // clear interrupts
 	irqprint("int stat is %d \n", int_stat);
-	if (int_stat & I2C_INTR_TX_ABRT)
+	if(int_stat & I2C_INTR_TX_ABRT)
 	{
 		irqprint("iic send erro !!! \n");
 		i2c_dw_tx_abrt(I2C_CHANNEL_4);
 	}
-	if (int_stat & I2C_INTR_RX_FULL) // start req judge (set flags)
+	if(int_stat & I2C_INTR_RX_FULL) // start req judge (set flags)
 	{
-#if DEBUGGER_I2C_CHANNEL == 4
+	#if DEBUGGER_I2C_CHANNEL == 4
 		Debugger_Cmd_IRQ(I2c_Slave_Read_Byte(DEBUGGER_I2C_CHANNEL));
-#endif
+	#endif
 	}
-	if (int_stat & I2C_INTR_TX_EMPTY) // sFIFO almost empty
+	if(int_stat & I2C_INTR_TX_EMPTY) // sFIFO almost empty
 	{
-#if DEBUGGER_I2C_CHANNEL == 4
+	#if DEBUGGER_I2C_CHANNEL == 4
 		Debugger_I2c_Send(DEBUGGER_I2C_CHANNEL);
 		assert_print("iicFeedback %#x", iicFeedback);
 		F_Service_Debugger_Send = 1;
-#endif
+	#endif
 	}
-	if (int_stat & I2C_INTR_RD_REQ) // read request only once
+	if(int_stat & I2C_INTR_RD_REQ) // read request only once
 	{
-#if DEBUGGER_I2C_CHANNEL == 4
+	#if DEBUGGER_I2C_CHANNEL == 4
 		F_Service_Debugger_Rrq = 1;
 		I2C4_INTR_MASK &= ~0x20; // 屏蔽RD_REQ中断
-#endif
+	#endif
 	}
-	if (!(ic_stat & I2C_SLV_ACTIVITY))
+	if(!(ic_stat & I2C_SLV_ACTIVITY))
 	{
 		// irqprint("the iic of slave is dead! \n");
 		// I2c_Writeb(0, I2C_ENABLE_OFFSET,baseaddr);
 	}
-	if (!(ic_stat & I2C_MST_ACTIVITY))
+	if(!(ic_stat & I2C_MST_ACTIVITY))
 	{
 		// irqprint("the iic of master is dead! \n");
 		// I2c_Writeb(0, I2C_ENABLE_OFFSET,baseaddr);
@@ -1991,7 +1991,7 @@ void intr1_smbus5(void) // 28
 	BYTE abrt_source_l = I2c_Readb(I2C_TX_ABRT_SOURCE_OFFSET, I2C_CHANNEL_5);
 	BYTE abrt_source_h = I2c_Readb((I2C_TX_ABRT_SOURCE_OFFSET + 1), I2C_CHANNEL_5);
 	BYTE raw_int = I2c_Readb(I2C_RAW_INTR_STAT_OFFSET, I2C_CHANNEL_5);
-	if (raw_int & I2C_INTR_TX_ABRT)
+	if(raw_int & I2C_INTR_TX_ABRT)
 	{
 		dprint("smbus5 tx_abrt! addr is 0x%X data is 0x%X\n", SMB_Temp_Addr, SMB_Temp_Data);
 		dprint("tx_abrt_source:0x%x  \n", (WORD)(abrt_source_l | (abrt_source_h << 8)));
@@ -2003,38 +2003,38 @@ void intr1_smbus5(void) // 28
 	DWORD ic_stat, int_stat;
 	ic_stat = I2c_Readb(I2C_STATUS_OFFSET, I2C_CHANNEL_5);
 	int_stat = i2c_dw_read_clear_intrbits(I2C_CHANNEL_5); // clear interrupts
-	if (int_stat & I2C_INTR_TX_ABRT)
+	if(int_stat & I2C_INTR_TX_ABRT)
 	{
 		irqprint("iic send erro !!! \n");
 		i2c_dw_tx_abrt(I2C_CHANNEL_5);
 	}
-	if (int_stat & I2C_INTR_RX_FULL) // start req judge (set flags)
+	if(int_stat & I2C_INTR_RX_FULL) // start req judge (set flags)
 	{
-#if DEBUGGER_I2C_CHANNEL == 5
+	#if DEBUGGER_I2C_CHANNEL == 5
 		Debugger_Cmd_IRQ(I2c_Slave_Read_Byte(DEBUGGER_I2C_CHANNEL));
-#endif
+	#endif
 	}
-	if (int_stat & I2C_INTR_TX_EMPTY) // sFIFO almost empty
+	if(int_stat & I2C_INTR_TX_EMPTY) // sFIFO almost empty
 	{
-#if DEBUGGER_I2C_CHANNEL == 5
+	#if DEBUGGER_I2C_CHANNEL == 5
 		Debugger_I2c_Send(DEBUGGER_I2C_CHANNEL);
 		assert_print("iicFeedback %#x", iicFeedback);
 		F_Service_Debugger_Send = 1;
-#endif
+	#endif
 	}
-	if (int_stat & I2C_INTR_RD_REQ) // read request only once
+	if(int_stat & I2C_INTR_RD_REQ) // read request only once
 	{
-#if DEBUGGER_I2C_CHANNEL == 5
+	#if DEBUGGER_I2C_CHANNEL == 5
 		F_Service_Debugger_Rrq = 1;
 		I2C5_INTR_MASK &= ~0x20; // 屏蔽RD_REQ中断
-#endif
+	#endif
 	}
-	if (!(ic_stat & I2C_SLV_ACTIVITY))
+	if(!(ic_stat & I2C_SLV_ACTIVITY))
 	{
 		// irqprint("the iic of slave is dead! \n");
 		// I2c_Writeb(0, I2C_ENABLE_OFFSET,baseaddr);
 	}
-	if (!(ic_stat & I2C_MST_ACTIVITY))
+	if(!(ic_stat & I2C_MST_ACTIVITY))
 	{
 		// irqprint("the iic of master is dead! \n");
 		// I2c_Writeb(0, I2C_ENABLE_OFFSET,baseaddr);
@@ -2059,8 +2059,7 @@ void intr1_owi(void) // 29
 }
 
 void intr1_null30(void) // 30
-{
-}
+{}
 
 void intr1_peci(void) // 31
 {
@@ -2355,9 +2354,9 @@ void intr1_ps2_1(void) // 46
 	Intr_num[142]++;
 #endif
 #endif
-	if (MS_Main_CHN == 2)
+	if(MS_Main_CHN == 2)
 		Handle_Mouse(MS_Main_CHN - 1);
-	else if (KB_Main_CHN == 2)
+	else if(KB_Main_CHN == 2)
 		Handle_Kbd(KB_Main_CHN - 1);
 }
 #if defined(AE101)
@@ -2401,43 +2400,43 @@ void intr1_uart1(void)
 #endif
 #endif
 	register u8 iir = (UART1_IIR & 0xf);
-	if (iir == UART_IIR_RLS) // 奇偶校验、溢出、格式错误、失效中断
+	if(iir == UART_IIR_RLS) // 奇偶校验、溢出、格式错误、失效中断
 	{
 		register u8 lsr = UART1_LSR;
-		if (lsr & (UART_LSR_BI | UART_LSR_FE | UART_LSR_PE)) // 打断传输,格式错误，奇偶校验，
+		if(lsr & (UART_LSR_BI | UART_LSR_FE | UART_LSR_PE)) // 打断传输,格式错误，奇偶校验，
 		{
 			UART1_RX;					 // 读出异常值
 			irqprint("Receive error\n"); // 报错
-#if (defined(AE101) || defined(AE102))
+		#if (defined(AE101) || defined(AE102))
 			SYSCTL_PIO2_UDCFG |= BIT3;
-#endif
-#ifdef AE103
+		#endif
+		#ifdef AE103
 			SYSCTL_PIO1_UDCFG |= BIT3;
-#endif
+		#endif
 		} // 接收错误
 	}
 #if (ENABLE_COMMAND_SUPPORT && COMMAND_UART_SWITCH == 1)
-	if (F_Service_CMD == 1)
+	if(F_Service_CMD == 1)
 	{
 		char temp = UART1_RX;
-#if (!IRQC_DEBUG)
+	#if (!IRQC_DEBUG)
 		UNUSED_VAR(temp);
-#endif
+	#endif
 		irqprint("erro of CMD_RUN:%#x,%c\n", temp, temp);
 		return;
 	}
 	CMD_UART_BUFF[CMD_UART_CNT] = UART1_RX;
-	if (CMD_UART_BUFF[CMD_UART_CNT] == '\n' || CMD_UART_CNT == CMD_BUFF_MAX)
+	if(CMD_UART_BUFF[CMD_UART_CNT] == '\n' || CMD_UART_CNT == CMD_BUFF_MAX)
 	{
 		CMD_UART_BUFF[CMD_UART_CNT] = '\0';
-		if (CMD_UART_BUFF[CMD_UART_CNT - 1] == ' ')
+		if(CMD_UART_BUFF[CMD_UART_CNT - 1] == ' ')
 		{
 			CMD_UART_CNT--;
 			CMD_UART_BUFF[CMD_UART_CNT] = '\0';
 		}
 		F_Service_CMD = 1;
 	}
-	else if (CMD_UART_BUFF[CMD_UART_CNT] == '\r')
+	else if(CMD_UART_BUFF[CMD_UART_CNT] == '\r')
 		CMD_UART_BUFF[CMD_UART_CNT] = '\0';
 	else
 		CMD_UART_CNT++;
@@ -2493,14 +2492,14 @@ void intr1_spim(void)
 	Intr_num[146]++;
 #endif
 #endif
-	if ((SPIM_ISR & 0X10)) // fifo接收满中断
+	if((SPIM_ISR & 0X10)) // fifo接收满中断
 	{
-		if (SPI_Read_Start == 2) // 读命令完成准备读出
+		if(SPI_Read_Start == 2) // 读命令完成准备读出
 		{
-			while (!(SPIM_SR & 0x4))
+			while(!(SPIM_SR & 0x4))
 				;
 			data = SPIM_DA0;
-			if (data == 0xff)
+			if(data == 0xff)
 			{
 				// irqprint("data is %#x \n",data);
 			}
@@ -2511,14 +2510,14 @@ void intr1_spim(void)
 			}
 		}
 	}
-	if (SPIM_ISR & 0X8) // fifo接收溢出中断
+	if(SPIM_ISR & 0X8) // fifo接收溢出中断
 	{
 		SPIM_ISR |= 0x8; // 清除中断
 	}
-	if (SPIM_ISR & 0x2) // 发送fifo满中断
+	if(SPIM_ISR & 0x2) // 发送fifo满中断
 	{
 	}
-	if ((SPIM_ISR & 0x1) && (!(SPIM_IMSR & 0x1))) // 发送fifo空中断
+	if((SPIM_ISR & 0x1) && (!(SPIM_IMSR & 0x1))) // 发送fifo空中断
 	{
 		SPI_Block_Erase(0x0, 0);					 // 擦除
 		SPI_Page_Program(0, 256, SPI_Write_Buff, 0); // 写入
@@ -2550,7 +2549,7 @@ void intr1_smbus0(void)
 	BYTE abrt_source_l = I2c_Readb(I2C_TX_ABRT_SOURCE_OFFSET, I2C_CHANNEL_0);
 	BYTE abrt_source_h = I2c_Readb((I2C_TX_ABRT_SOURCE_OFFSET + 1), I2C_CHANNEL_0);
 	BYTE raw_int = I2c_Readb(I2C_RAW_INTR_STAT_OFFSET, I2C_CHANNEL_0);
-	if (raw_int & I2C_INTR_TX_ABRT)
+	if(raw_int & I2C_INTR_TX_ABRT)
 	{
 		dprint("smbus0 tx_abrt! addr is 0x%X data is 0x%X\n", SMB_Temp_Addr, SMB_Temp_Data);
 		dprint("tx_abrt_source:0x%x  \n", (WORD)(abrt_source_l | (abrt_source_h << 8)));
@@ -2579,41 +2578,41 @@ void intr1_smbus0(void)
 	ic_stat = I2c_Readb(I2C_STATUS_OFFSET, I2C_CHANNEL_0);
 	int_stat = i2c_dw_read_clear_intrbits(I2C_CHANNEL_0); // clear interrupts
 #if 1
-	if (int_stat & I2C_INTR_RX_FULL) // start req judge (set flags)
+	if(int_stat & I2C_INTR_RX_FULL) // start req judge (set flags)
 	{
-#if DEBUGGER_I2C_CHANNEL == 0
+	#if DEBUGGER_I2C_CHANNEL == 0
 		Debugger_Cmd_IRQ(I2c_Slave_Read_Byte(DEBUGGER_I2C_CHANNEL));
-#endif
+	#endif
 	}
-	if (int_stat & I2C_INTR_TX_EMPTY) // sFIFO almost empty
+	if(int_stat & I2C_INTR_TX_EMPTY) // sFIFO almost empty
 	{
-#if DEBUGGER_I2C_CHANNEL == 0
+	#if DEBUGGER_I2C_CHANNEL == 0
 		Debugger_I2c_Send(DEBUGGER_I2C_CHANNEL);
 		assert_print("iicFeedback %#x", iicFeedback);
 		F_Service_Debugger_Send = 1;
-#endif
+	#endif
 	}
-	if (int_stat & I2C_INTR_RD_REQ) // read request only once
+	if(int_stat & I2C_INTR_RD_REQ) // read request only once
 	{
-#if DEBUGGER_I2C_CHANNEL == 0
-		// assert_print("iicFeedback %#x", iicFeedback);
-		// Debugger_I2c_Req(DEBUGGER_I2C_CHANNEL);
-		// assert_print("iicFeedback %#x", iicFeedback);
+	#if DEBUGGER_I2C_CHANNEL == 0
+			// assert_print("iicFeedback %#x", iicFeedback);
+			// Debugger_I2c_Req(DEBUGGER_I2C_CHANNEL);
+			// assert_print("iicFeedback %#x", iicFeedback);
 		F_Service_Debugger_Rrq = 1;
 		I2C0_INTR_MASK &= ~0x20; // 屏蔽RD_REQ中断
-#endif
+	#endif
 	}
-	if (!(ic_stat & I2C_SLV_ACTIVITY))
+	if(!(ic_stat & I2C_SLV_ACTIVITY))
 	{
 		// irqprint("the iic of slave is dead! \n");
 		// I2c_Writeb(0, I2C_ENABLE_OFFSET,baseaddr);
 	}
-	if (!(ic_stat & I2C_MST_ACTIVITY))
+	if(!(ic_stat & I2C_MST_ACTIVITY))
 	{
 		// irqprint("the iic of master is dead! \n");
 		// I2c_Writeb(0, I2C_ENABLE_OFFSET,baseaddr);
 	}
-	if (int_stat & I2C_INTR_TX_ABRT)
+	if(int_stat & I2C_INTR_TX_ABRT)
 	{
 		// irqprint("iic send erro !!! \n");
 		// i2c_dw_tx_abrt(I2C_CHANNEL_0);
@@ -2645,7 +2644,7 @@ void intr1_smbus1(void)
 	BYTE abrt_source_l = I2c_Readb(I2C_TX_ABRT_SOURCE_OFFSET, I2C_CHANNEL_1);
 	BYTE abrt_source_h = I2c_Readb((I2C_TX_ABRT_SOURCE_OFFSET + 1), I2C_CHANNEL_1);
 	BYTE raw_int = I2c_Readb(I2C_RAW_INTR_STAT_OFFSET, I2C_CHANNEL_1);
-	if (raw_int & I2C_INTR_TX_ABRT)
+	if(raw_int & I2C_INTR_TX_ABRT)
 	{
 		dprint("smbus1 tx_abrt! addr is 0x%x data is 0x%x\n", SMB_Temp_Addr, SMB_Temp_Data);
 		dprint("tx_abrt_source:0x%x  \n", (WORD)(abrt_source_l | (abrt_source_h << 8)));
@@ -2655,39 +2654,39 @@ void intr1_smbus1(void)
 	DWORD ic_stat, int_stat;
 	ic_stat = I2c_Readb(I2C_STATUS_OFFSET, I2C_CHANNEL_1);
 	int_stat = i2c_dw_read_clear_intrbits(I2C_CHANNEL_1); // clear interrupts
-	if (int_stat & I2C_INTR_TX_ABRT)
+	if(int_stat & I2C_INTR_TX_ABRT)
 	{
 		irqprint("iic action erro !!! \n");
 		i2c_dw_tx_abrt(I2C_CHANNEL_1);
 		I2c_Writeb(0, I2C_INTR_MASK_OFFSET, I2C_CHANNEL_1);
 	}
-	if (int_stat & I2C_INTR_RX_FULL) // start req judge (set flags)
+	if(int_stat & I2C_INTR_RX_FULL) // start req judge (set flags)
 	{
-#if DEBUGGER_I2C_CHANNEL == 1
+	#if DEBUGGER_I2C_CHANNEL == 1
 		Debugger_Cmd_IRQ(I2c_Slave_Read_Byte(DEBUGGER_I2C_CHANNEL));
-#endif
+	#endif
 	}
-	if (int_stat & I2C_INTR_TX_EMPTY) // sFIFO almost empty
+	if(int_stat & I2C_INTR_TX_EMPTY) // sFIFO almost empty
 	{
-#if DEBUGGER_I2C_CHANNEL == 1
+	#if DEBUGGER_I2C_CHANNEL == 1
 		Debugger_I2c_Send(DEBUGGER_I2C_CHANNEL);
 		assert_print("iicFeedback %#x", iicFeedback);
 		F_Service_Debugger_Send = 1;
-#endif
+	#endif
 	}
-	if (int_stat & I2C_INTR_RD_REQ) // read request only once
+	if(int_stat & I2C_INTR_RD_REQ) // read request only once
 	{
-#if DEBUGGER_I2C_CHANNEL == 1
+	#if DEBUGGER_I2C_CHANNEL == 1
 		F_Service_Debugger_Rrq = 1;
 		I2C1_INTR_MASK &= ~0x20; // 屏蔽RD_REQ中断
-#endif
+	#endif
 	}
-	if (!(ic_stat & I2C_SLV_ACTIVITY))
+	if(!(ic_stat & I2C_SLV_ACTIVITY))
 	{
 		// irqprint("the iic of slave is dead! \n");
 		// I2c_Writeb(0, I2C_ENABLE_OFFSET,baseaddr);
 	}
-	if (!(ic_stat & I2C_MST_ACTIVITY))
+	if(!(ic_stat & I2C_MST_ACTIVITY))
 	{
 		// irqprint("the iic of master is dead! \n");
 		// I2c_Writeb(0, I2C_ENABLE_OFFSET,baseaddr);
@@ -2718,7 +2717,7 @@ void intr1_smbus2(void)
 	BYTE abrt_source_l = I2c_Readb(I2C_TX_ABRT_SOURCE_OFFSET, I2C_CHANNEL_2);
 	BYTE abrt_source_h = I2c_Readb((I2C_TX_ABRT_SOURCE_OFFSET + 1), I2C_CHANNEL_2);
 	BYTE raw_int = I2c_Readb(I2C_RAW_INTR_STAT_OFFSET, I2C_CHANNEL_2);
-	if (raw_int & I2C_INTR_TX_ABRT)
+	if(raw_int & I2C_INTR_TX_ABRT)
 	{
 		dprint("smbus2 tx_abrt! addr is 0x%X data is 0x%X\n", SMB_Temp_Addr, SMB_Temp_Data);
 		dprint("tx_abrt_source:0x%x  \n", (WORD)(abrt_source_l | (abrt_source_h << 8)));
@@ -2728,38 +2727,38 @@ void intr1_smbus2(void)
 	DWORD ic_stat, int_stat;
 	ic_stat = I2c_Readb(I2C_STATUS_OFFSET, I2C_CHANNEL_2);
 	int_stat = i2c_dw_read_clear_intrbits(I2C_CHANNEL_2); // clear interrupts
-	if (int_stat & I2C_INTR_TX_ABRT)
+	if(int_stat & I2C_INTR_TX_ABRT)
 	{
 		irqprint("iic action erro !!! \n");
 		i2c_dw_tx_abrt(I2C_CHANNEL_2);
 	}
-	if (int_stat & I2C_INTR_RX_FULL) // start req judge (set flags)
+	if(int_stat & I2C_INTR_RX_FULL) // start req judge (set flags)
 	{
-#if DEBUGGER_I2C_CHANNEL == 2
+	#if DEBUGGER_I2C_CHANNEL == 2
 		Debugger_Cmd_IRQ(I2c_Slave_Read_Byte(DEBUGGER_I2C_CHANNEL));
-#endif
+	#endif
 	}
-	if (int_stat & I2C_INTR_TX_EMPTY) // sFIFO almost empty
+	if(int_stat & I2C_INTR_TX_EMPTY) // sFIFO almost empty
 	{
-#if DEBUGGER_I2C_CHANNEL == 2
+	#if DEBUGGER_I2C_CHANNEL == 2
 		Debugger_I2c_Send(DEBUGGER_I2C_CHANNEL);
 		assert_print("iicFeedback %#x", iicFeedback);
 		F_Service_Debugger_Send = 1;
-#endif
+	#endif
 	}
-	if (int_stat & I2C_INTR_RD_REQ) // read request only once
+	if(int_stat & I2C_INTR_RD_REQ) // read request only once
 	{
-#if DEBUGGER_I2C_CHANNEL == 2
+	#if DEBUGGER_I2C_CHANNEL == 2
 		F_Service_Debugger_Rrq = 1;
 		I2C2_INTR_MASK &= ~0x20; // 屏蔽RD_REQ中断
-#endif
+	#endif
 	}
-	if (!(ic_stat & I2C_SLV_ACTIVITY))
+	if(!(ic_stat & I2C_SLV_ACTIVITY))
 	{
 		// irqprint("the iic of slave is dead! \n");
 		// I2c_Writeb(0, I2C_ENABLE_OFFSET,baseaddr);
 	}
-	if (!(ic_stat & I2C_MST_ACTIVITY))
+	if(!(ic_stat & I2C_MST_ACTIVITY))
 	{
 		// irqprint("the iic of master is dead! \n");
 		// I2c_Writeb(0, I2C_ENABLE_OFFSET,baseaddr);
@@ -2790,7 +2789,7 @@ void intr1_smbus3(void)
 	BYTE abrt_source_l = I2c_Readb(I2C_TX_ABRT_SOURCE_OFFSET, I2C_CHANNEL_3);
 	BYTE abrt_source_h = I2c_Readb((I2C_TX_ABRT_SOURCE_OFFSET + 1), I2C_CHANNEL_3);
 	BYTE raw_int = I2c_Readb(I2C_RAW_INTR_STAT_OFFSET, I2C_CHANNEL_3);
-	if (raw_int & I2C_INTR_TX_ABRT)
+	if(raw_int & I2C_INTR_TX_ABRT)
 	{
 		dprint("smbus3 tx_abrt! addr is 0x%X data is 0x%X\n", SMB_Temp_Addr, SMB_Temp_Data);
 		dprint("tx_abrt_source:0x%x  \n", (WORD)(abrt_source_l | (abrt_source_h << 8)));
@@ -2800,38 +2799,38 @@ void intr1_smbus3(void)
 	DWORD ic_stat, int_stat;
 	ic_stat = I2c_Readb(I2C_STATUS_OFFSET, I2C_CHANNEL_3);
 	int_stat = i2c_dw_read_clear_intrbits(I2C_CHANNEL_3); // clear interrupts
-	if (int_stat & I2C_INTR_TX_ABRT)
+	if(int_stat & I2C_INTR_TX_ABRT)
 	{
 		irqprint("iic action erro !!! \n");
 		i2c_dw_tx_abrt(I2C_CHANNEL_3);
 	}
-	if (int_stat & I2C_INTR_RX_FULL) // start req judge (set flags)
+	if(int_stat & I2C_INTR_RX_FULL) // start req judge (set flags)
 	{
-#if DEBUGGER_I2C_CHANNEL == 3
+	#if DEBUGGER_I2C_CHANNEL == 3
 		Debugger_Cmd_IRQ(I2c_Slave_Read_Byte(DEBUGGER_I2C_CHANNEL));
-#endif
+	#endif
 	}
-	if (int_stat & I2C_INTR_TX_EMPTY) // sFIFO almost empty
+	if(int_stat & I2C_INTR_TX_EMPTY) // sFIFO almost empty
 	{
-#if DEBUGGER_I2C_CHANNEL == 3
+	#if DEBUGGER_I2C_CHANNEL == 3
 		Debugger_I2c_Send(DEBUGGER_I2C_CHANNEL);
 		assert_print("iicFeedback %#x", iicFeedback);
 		F_Service_Debugger_Send = 1;
-#endif
+	#endif
 	}
-	if (int_stat & I2C_INTR_RD_REQ) // read request only once
+	if(int_stat & I2C_INTR_RD_REQ) // read request only once
 	{
-#if DEBUGGER_I2C_CHANNEL == 3
+	#if DEBUGGER_I2C_CHANNEL == 3
 		F_Service_Debugger_Rrq = 1;
 		I2C2_INTR_MASK &= ~0x20; // 屏蔽RD_REQ中断
-#endif
+	#endif
 	}
-	if (!(ic_stat & I2C_SLV_ACTIVITY))
+	if(!(ic_stat & I2C_SLV_ACTIVITY))
 	{
 		// irqprint("the iic of slave is dead! \n");
 		// I2c_Writeb(0, I2C_ENABLE_OFFSET,baseaddr);
 	}
-	if (!(ic_stat & I2C_MST_ACTIVITY))
+	if(!(ic_stat & I2C_MST_ACTIVITY))
 	{
 		// irqprint("the iic of master is dead! \n");
 		// I2c_Writeb(0, I2C_ENABLE_OFFSET,baseaddr);
@@ -2840,20 +2839,15 @@ void intr1_smbus3(void)
 }
 #if defined(AE101)
 void intr1_null53(void) // 53 55
-{
-}
+{}
 void intr1_null54(void) // 54 56
-{
-}
+{}
 void intr1_null55(void) // 55 57
-{
-}
+{}
 void intr1_null56(void) // 56 58
-{
-}
+{}
 void intr1_null57(void) // 57 59
-{
-}
+{}
 #elif (defined(AE102) || defined(AE103))
 void intr1_smbus6(void)
 {
@@ -2995,8 +2989,13 @@ void intr1_mailbox(void)
 #endif
 	// printf("c2e int\n");
 	Mailbox_Int_Store = C2EINT;
-	C2E_CMD=C2EINFO0;
-	C2EINT |= C2EINT; // 清除中断
+	C2E_CMD = C2EINFO0;
+	do
+	{
+		C2EINT = C2EINT;
+		nop;
+	}
+	while(C2EINT); // 清除中断
 	F_Service_Mailbox = 1;
 }
 #else
@@ -3032,7 +3031,7 @@ void intr1_espi(void)
 
 #ifdef ENABLE_eSPI_INT_QUICK_CTRL
 	/* Quick PWRGD_LO Control */
-	if (IS_eSPI_SLP_S3_LO() && IS_eSPI_SLP_S3_VALID())
+	if(IS_eSPI_SLP_S3_LO() && IS_eSPI_SLP_S3_VALID())
 	{
 		// ALL_SYS_PWRGD_LO();
 		// VCCST_PWRGD_OUT_EC_LO();
@@ -3041,14 +3040,14 @@ void intr1_espi(void)
 	eSPI_BUF_VWCTRL1 |= VWCTRL1;
 #if SUPPORT_HOOK_WARMBOOT
 	/* Process Warmboot Tag only */
-	if (VWCTRL1 & F_VWIDX3_UPDATED)
+	if(VWCTRL1 & F_VWIDX3_UPDATED)
 	{
-		if (VWIDX3 & F_IDX3_PLTRST_VALID)
+		if(VWIDX3 & F_IDX3_PLTRST_VALID)
 		{
-			if (VWIDX3 & F_IDX3_PLTRST)
+			if(VWIDX3 & F_IDX3_PLTRST)
 			{
 				/* VWire PLTRST Status - Hi */
-				if (eSPI_PLTRST_TAG == F_PLTRST_HI_TO_LO)
+				if(eSPI_PLTRST_TAG == F_PLTRST_HI_TO_LO)
 				{
 					/* 3: Detected Lo to Hi */
 					eSPI_PLTRST_TAG = F_PLTRST_LO_TO_HI;
@@ -3062,7 +3061,7 @@ void intr1_espi(void)
 			else
 			{
 				/* VWire PLTRST Status - Lo */
-				if (eSPI_PLTRST_TAG == F_PLTRST_HI_LEVEL)
+				if(eSPI_PLTRST_TAG == F_PLTRST_HI_LEVEL)
 				{
 					/* 2: Detected Hi To Lo */
 					eSPI_PLTRST_TAG = F_PLTRST_HI_TO_LO;
@@ -3073,88 +3072,88 @@ void intr1_espi(void)
 #endif
 	VWCTRL1 = 0xFF;
 	/*OOB-ERPMC Interrupt*/
-	if (REG32(0x330C0) && eRPMCSTS)
+	if(REG32(0x330C0) && eRPMCSTS)
 	{
 		TaskParams params;
 		REG32(0x330C0) |= eRPMCSTS;
-		RPMC_OOB_TempArr[14]=0xAA;//set default
-		if (eSPI_OOBReceive(RPMC_OOB_TempArr))
+		RPMC_OOB_TempArr[14] = 0xAA;//set default
+		if(eSPI_OOBReceive(RPMC_OOB_TempArr))
 		{
-			if (RPMC_OOB_TempArr[2] == 0) // receive message length is 0, means no message
+			if(RPMC_OOB_TempArr[2] == 0) // receive message length is 0, means no message
 			{
 				//异常处理
 				return;
 			}
 		}
-		switch (RPMC_OOB_TempArr[14]) // cmd type
-        {
-        case 0x0:                            // WriteRootKey
-            if (RPMC_OOB_TempArr[2] == 0x48) // WriteRootKey message1
-            {
-				memcpy(&eRPMC_WriteRootKey_m1, RPMC_OOB_TempArr, sizeof(eRPMC_WriteRootKey_m1));
-            }
-            else if (RPMC_OOB_TempArr[2] == 0x0B) // WriteRootKey message2
-            {
-				memcpy(&eRPMC_WriteRootKey_m2, RPMC_OOB_TempArr, sizeof(eRPMC_WriteRootKey_m2));
-                /*mailbox WriteRootKey trigger*/
-				task_head=Add_Task((TaskFunction)Mailbox_WriteRootKey_Trigger,params,&task_head);
-            }
-			else//payload length error
-			{
-				eRPMC_WriteRootKey_data.Extended_Status=0x04;
-				eSPI_OOBSend((BYTE*)&eRPMC_WriteRootKey_data);
-			}
-            break;
-        case 0x1:                            // UpdateHMACKey
-            if (RPMC_OOB_TempArr[2] == 0x32) // UpdateHMACKey message
-            {
-				memcpy(&eRPMC_UpdateHMACKey, RPMC_OOB_TempArr, sizeof(eRPMC_UpdateHMACKey));
-				task_head=Add_Task((TaskFunction)Mailbox_UpdateHMACKey_Trigger,params,&task_head);
-            }
-			else//payload length error
-			{
-				eRPMC_UpdateHMACKey_data.Extended_Status=0x04;
-				eSPI_OOBSend((BYTE*)&eRPMC_UpdateHMACKey_data);
-			}
-            break;
-        case 0x2:                            // IncrementCounter
-            if (RPMC_OOB_TempArr[2] == 0x32) // IncrementCounter message
-            {
-				memcpy(&eRPMC_IncrementCounter, RPMC_OOB_TempArr, sizeof(eRPMC_IncrementCounter));
-				task_head=Add_Task((TaskFunction)Mailbox_IncrementCounter_Trigger,params,&task_head);
-            }
-			else//payload length error
-			{
-				eRPMC_IncrementCounter_data.Extended_Status=0x04;
-				eSPI_OOBSend((BYTE*)&eRPMC_IncrementCounter_data);
-			}
-            break;
-        case 0x3:                            // RequestCounter
-            if (RPMC_OOB_TempArr[2] == 0x3A) // RequestCounter message
-            {
-				memcpy(&eRPMC_RequestCounter, RPMC_OOB_TempArr, sizeof(eRPMC_RequestCounter));
-				task_head=Add_Task((TaskFunction)Mailbox_RequestCounter_Trigger,params,&task_head);
-            }
-			else//payload length error
-			{
-				eRPMC_RequestCounter_data.Extended_Status=0x04;
-				eSPI_OOBSend((BYTE*)&eRPMC_RequestCounter_data);
-			}
-            break;
-        default:
-            break;
-        }
-		if(RPMC_OOB_TempArr[13]==0x9F)// ReadParameters
+		switch(RPMC_OOB_TempArr[14]) // cmd type
 		{
-			if (RPMC_OOB_TempArr[2] == 0x0B)
-            {
+			case 0x0:                            // WriteRootKey
+				if(RPMC_OOB_TempArr[2] == 0x48) // WriteRootKey message1
+				{
+					memcpy(&eRPMC_WriteRootKey_m1, RPMC_OOB_TempArr, sizeof(eRPMC_WriteRootKey_m1));
+				}
+				else if(RPMC_OOB_TempArr[2] == 0x0B) // WriteRootKey message2
+				{
+					memcpy(&eRPMC_WriteRootKey_m2, RPMC_OOB_TempArr, sizeof(eRPMC_WriteRootKey_m2));
+					/*mailbox WriteRootKey trigger*/
+					task_head = Add_Task((TaskFunction)Mailbox_WriteRootKey_Trigger, params, &task_head);
+				}
+				else//payload length error
+				{
+					eRPMC_WriteRootKey_data.Extended_Status = 0x04;
+					eSPI_OOBSend((BYTE *)&eRPMC_WriteRootKey_data);
+				}
+				break;
+			case 0x1:                            // UpdateHMACKey
+				if(RPMC_OOB_TempArr[2] == 0x32) // UpdateHMACKey message
+				{
+					memcpy(&eRPMC_UpdateHMACKey, RPMC_OOB_TempArr, sizeof(eRPMC_UpdateHMACKey));
+					task_head = Add_Task((TaskFunction)Mailbox_UpdateHMACKey_Trigger, params, &task_head);
+				}
+				else//payload length error
+				{
+					eRPMC_UpdateHMACKey_data.Extended_Status = 0x04;
+					eSPI_OOBSend((BYTE *)&eRPMC_UpdateHMACKey_data);
+				}
+				break;
+			case 0x2:                            // IncrementCounter
+				if(RPMC_OOB_TempArr[2] == 0x32) // IncrementCounter message
+				{
+					memcpy(&eRPMC_IncrementCounter, RPMC_OOB_TempArr, sizeof(eRPMC_IncrementCounter));
+					task_head = Add_Task((TaskFunction)Mailbox_IncrementCounter_Trigger, params, &task_head);
+				}
+				else//payload length error
+				{
+					eRPMC_IncrementCounter_data.Extended_Status = 0x04;
+					eSPI_OOBSend((BYTE *)&eRPMC_IncrementCounter_data);
+				}
+				break;
+			case 0x3:                            // RequestCounter
+				if(RPMC_OOB_TempArr[2] == 0x3A) // RequestCounter message
+				{
+					memcpy(&eRPMC_RequestCounter, RPMC_OOB_TempArr, sizeof(eRPMC_RequestCounter));
+					task_head = Add_Task((TaskFunction)Mailbox_RequestCounter_Trigger, params, &task_head);
+				}
+				else//payload length error
+				{
+					eRPMC_RequestCounter_data.Extended_Status = 0x04;
+					eSPI_OOBSend((BYTE *)&eRPMC_RequestCounter_data);
+				}
+				break;
+			default:
+				break;
+		}
+		if(RPMC_OOB_TempArr[13] == 0x9F)// ReadParameters
+		{
+			if(RPMC_OOB_TempArr[2] == 0x0B)
+			{
 				memcpy(&eRPMC_ReadParameters, RPMC_OOB_TempArr, sizeof(eRPMC_ReadParameters));
-				task_head=Add_Task((TaskFunction)Mailbox_ReadParameter_Trigger,params,&task_head);
-            }
+				task_head = Add_Task((TaskFunction)Mailbox_ReadParameter_Trigger, params, &task_head);
+			}
 			else//payload length error
 			{
-				eRPMC_ReadParameters_data.Extended_Status=0x04;
-				eSPI_OOBSend((BYTE*)&eRPMC_ReadParameters_data);
+				eRPMC_ReadParameters_data.Extended_Status = 0x04;
+				eSPI_OOBSend((BYTE *)&eRPMC_ReadParameters_data);
 			}
 		}
 	}
@@ -3168,98 +3167,98 @@ void intr1_null63(void)
 #endif
 /* Temporarily debug interrupt service used by AE102 due to macro issue  */
 const __weak FUNCT_PTR_V_V intr0_service[] =
-	{
-		intr0_gpio_a0,	// 0
-		intr0_gpio_a1,	// 1
-		intr0_gpio_a2,	// 2
-		intr0_gpio_a3,	// 3
-		intr0_gpio_a4,	// 4
-		intr0_gpio_a5,	// 5
-		intr0_gpio_a6,	// 6
-		intr0_gpio_a7,	// 7
-		intr0_gpio_a8,	// 8
-		intr0_gpio_a9,	// 9
-		intr0_gpio_a10, // 10
-		intr0_gpio_a11, // 11
-		intr0_gpio_a12, // 12
-		intr0_gpio_a13, // 13
-		intr0_gpio_a14, // 14
-		intr0_gpio_a15, // 15
-		intr0_gpio_a16, // 16
-		intr0_gpio_a17, // 17
-		intr0_gpio_a18, // 18
-		intr0_gpio_a19, // 19
-		intr0_gpio_a20, // 20
-		intr0_gpio_a21, // 21
-		intr0_gpio_a22, // 22
-		intr0_gpio_a23, // 23
-		intr0_gpio_a24, // 24
-		intr0_gpio_a25, // 25
-		intr0_gpio_a26, // 26
-		intr0_gpio_a27, // 27
-		intr0_gpio_a28, // 28
-		intr0_gpio_a29, // 29
-		intr0_gpio_a30, // 30
-		intr0_gpio_a31, // 31
-		intr0_gpio_b0,	// 32
-		intr0_gpio_b1,	// 33
-		intr0_gpio_b2,	// 34
-		intr0_gpio_b3,	// 35
-		intr0_gpio_b4,	// 36
-		intr0_gpio_b5,	// 37
-		intr0_gpio_b6,	// 38
-		intr0_gpio_b7,	// 39
-		intr0_gpio_b8,	// 40
-		intr0_gpio_b9,	// 41
-		intr0_gpio_b10, // 42
-		intr0_gpio_b11, // 43
-		intr0_gpio_b12, // 44
-		intr0_gpio_b13, // 45
-		intr0_gpio_b14, // 46
-		intr0_gpio_b15, // 47
-		intr0_gpio_b16, // 48
-		intr0_gpio_b17, // 49
-		intr0_gpio_b18, // 50
-		intr0_gpio_b19, // 51
-		intr0_gpio_b20, // 52
-		intr0_gpio_b21, // 53
-		intr0_gpio_b22, // 54
-		intr0_gpio_b23, // 55
-		intr0_gpio_b24, // 56
-		intr0_gpio_b25, // 57
-		intr0_gpio_b26, // 58
-		intr0_gpio_b27, // 59
-		intr0_gpio_b28, // 60
-		intr0_gpio_b29, // 61
-		intr0_gpio_b30, // 62
-		intr0_gpio_b31, // 63
+{
+	intr0_gpio_a0,	// 0
+	intr0_gpio_a1,	// 1
+	intr0_gpio_a2,	// 2
+	intr0_gpio_a3,	// 3
+	intr0_gpio_a4,	// 4
+	intr0_gpio_a5,	// 5
+	intr0_gpio_a6,	// 6
+	intr0_gpio_a7,	// 7
+	intr0_gpio_a8,	// 8
+	intr0_gpio_a9,	// 9
+	intr0_gpio_a10, // 10
+	intr0_gpio_a11, // 11
+	intr0_gpio_a12, // 12
+	intr0_gpio_a13, // 13
+	intr0_gpio_a14, // 14
+	intr0_gpio_a15, // 15
+	intr0_gpio_a16, // 16
+	intr0_gpio_a17, // 17
+	intr0_gpio_a18, // 18
+	intr0_gpio_a19, // 19
+	intr0_gpio_a20, // 20
+	intr0_gpio_a21, // 21
+	intr0_gpio_a22, // 22
+	intr0_gpio_a23, // 23
+	intr0_gpio_a24, // 24
+	intr0_gpio_a25, // 25
+	intr0_gpio_a26, // 26
+	intr0_gpio_a27, // 27
+	intr0_gpio_a28, // 28
+	intr0_gpio_a29, // 29
+	intr0_gpio_a30, // 30
+	intr0_gpio_a31, // 31
+	intr0_gpio_b0,	// 32
+	intr0_gpio_b1,	// 33
+	intr0_gpio_b2,	// 34
+	intr0_gpio_b3,	// 35
+	intr0_gpio_b4,	// 36
+	intr0_gpio_b5,	// 37
+	intr0_gpio_b6,	// 38
+	intr0_gpio_b7,	// 39
+	intr0_gpio_b8,	// 40
+	intr0_gpio_b9,	// 41
+	intr0_gpio_b10, // 42
+	intr0_gpio_b11, // 43
+	intr0_gpio_b12, // 44
+	intr0_gpio_b13, // 45
+	intr0_gpio_b14, // 46
+	intr0_gpio_b15, // 47
+	intr0_gpio_b16, // 48
+	intr0_gpio_b17, // 49
+	intr0_gpio_b18, // 50
+	intr0_gpio_b19, // 51
+	intr0_gpio_b20, // 52
+	intr0_gpio_b21, // 53
+	intr0_gpio_b22, // 54
+	intr0_gpio_b23, // 55
+	intr0_gpio_b24, // 56
+	intr0_gpio_b25, // 57
+	intr0_gpio_b26, // 58
+	intr0_gpio_b27, // 59
+	intr0_gpio_b28, // 60
+	intr0_gpio_b29, // 61
+	intr0_gpio_b30, // 62
+	intr0_gpio_b31, // 63
 };
 const __weak FUNCT_PTR_V_V intr1_service[] =
-	{
-		intr1_gpio_c0,	// 0
-		intr1_gpio_c1,	// 1
-		intr1_gpio_c2,	// 2
-		intr1_gpio_c3,	// 3
-		intr1_gpio_c4,	// 4
-		intr1_gpio_c5,	// 5
-		intr1_gpio_c6,	// 6
-		intr1_gpio_c7,	// 7
-		intr1_gpio_c8,	// 8
-		intr1_gpio_c9,	// 9
-		intr1_gpio_c10, // 10
-		intr1_gpio_c11, // 11
-		intr1_gpio_c12, // 12
-		intr1_gpio_c13, // 13
-		intr1_gpio_c14, // 14
-		intr1_gpio_c15, // 15
-		intr1_gpio_e16, // 16
-		intr1_gpio_e17, // 17
-		intr1_gpio_e18, // 18
-		intr1_gpio_e19, // 19
-		intr1_gpio_e20, // 20
-		intr1_gpio_e21, // 21
-		intr1_gpio_e22, // 22
-		intr1_gpio_e23, // 23
+{
+	intr1_gpio_c0,	// 0
+	intr1_gpio_c1,	// 1
+	intr1_gpio_c2,	// 2
+	intr1_gpio_c3,	// 3
+	intr1_gpio_c4,	// 4
+	intr1_gpio_c5,	// 5
+	intr1_gpio_c6,	// 6
+	intr1_gpio_c7,	// 7
+	intr1_gpio_c8,	// 8
+	intr1_gpio_c9,	// 9
+	intr1_gpio_c10, // 10
+	intr1_gpio_c11, // 11
+	intr1_gpio_c12, // 12
+	intr1_gpio_c13, // 13
+	intr1_gpio_c14, // 14
+	intr1_gpio_c15, // 15
+	intr1_gpio_e16, // 16
+	intr1_gpio_e17, // 17
+	intr1_gpio_e18, // 18
+	intr1_gpio_e19, // 19
+	intr1_gpio_e20, // 20
+	intr1_gpio_e21, // 21
+	intr1_gpio_e22, // 22
+	intr1_gpio_e23, // 23
 #if (GLE01 == 1)
 		intr1_dma,	// 24
 		intr1_cec0, // 25
@@ -3316,7 +3315,7 @@ BYTE Int_Control0_Enable(BYTE int_num)
 {
 	BYTE offset = int_num / 8;		  // 偏移
 	BYTE mask = 0x1 << (int_num % 8); // 掩码
-	if (offset <= (ICTL0_INTEN7_OFFSET - ICTL0_INTEN0_OFFSET))
+	if(offset <= (ICTL0_INTEN7_OFFSET - ICTL0_INTEN0_OFFSET))
 	{
 		INTC0_REG(ICTL0_INTEN0_OFFSET + offset) |= mask;
 	}
@@ -3331,7 +3330,7 @@ BYTE Int_Control1_Enable(BYTE int_num)
 {
 	BYTE offset = int_num / 8;		  // 偏移
 	BYTE mask = 0x1 << (int_num % 8); // 掩码
-	if (offset <= (ICTL1_INTEN7_OFFSET - ICTL1_INTEN0_OFFSET))
+	if(offset <= (ICTL1_INTEN7_OFFSET - ICTL1_INTEN0_OFFSET))
 	{
 		INTC1_REG(ICTL1_INTEN0_OFFSET + offset) |= mask;
 	}
@@ -3347,7 +3346,7 @@ BYTE Int_Control0_Disable(BYTE int_num)
 {
 	BYTE offset = int_num / 8;		  // 偏移
 	BYTE mask = 0x1 << (int_num % 8); // 掩码
-	if (offset <= (ICTL0_INTEN7_OFFSET - ICTL0_INTEN0_OFFSET))
+	if(offset <= (ICTL0_INTEN7_OFFSET - ICTL0_INTEN0_OFFSET))
 	{
 		INTC0_REG(ICTL0_INTEN0_OFFSET + offset) &= ~mask;
 	}
@@ -3362,7 +3361,7 @@ BYTE Int_Control1_Disable(BYTE int_num)
 {
 	BYTE offset = int_num / 8;		  // 偏移
 	BYTE mask = 0x1 << (int_num % 8); // 掩码
-	if (offset <= (ICTL1_INTEN7_OFFSET - ICTL1_INTEN0_OFFSET))
+	if(offset <= (ICTL1_INTEN7_OFFSET - ICTL1_INTEN0_OFFSET))
 	{
 		INTC1_REG(ICTL1_INTEN0_OFFSET + offset) &= ~mask;
 	}
@@ -3378,7 +3377,7 @@ BYTE Int_Control0_Mask(BYTE int_num)
 {
 	BYTE offset = int_num / 8;		  // 偏移
 	BYTE mask = 0x1 << (int_num % 8); // 掩码
-	if (offset <= (ICTL0_INTMASK7_OFFSET - ICTL0_INTMASK0_OFFSET))
+	if(offset <= (ICTL0_INTMASK7_OFFSET - ICTL0_INTMASK0_OFFSET))
 	{
 		INTC0_REG(ICTL0_INTMASK0_OFFSET + offset) |= mask;
 	}
@@ -3393,7 +3392,7 @@ BYTE Int_Control1_Mask(BYTE int_num)
 {
 	BYTE offset = int_num / 8;		  // 偏移
 	BYTE mask = 0x1 << (int_num % 8); // 掩码
-	if (offset <= (ICTL1_INTMASK7_OFFSET - ICTL1_INTMASK0_OFFSET))
+	if(offset <= (ICTL1_INTMASK7_OFFSET - ICTL1_INTMASK0_OFFSET))
 	{
 		INTC1_REG(ICTL1_INTMASK0_OFFSET + offset) |= mask;
 	}
@@ -3409,7 +3408,7 @@ BYTE Int_Control0_Unmask(BYTE int_num)
 {
 	BYTE offset = int_num / 8;		  // 偏移
 	BYTE mask = 0x1 << (int_num % 8); // 掩码
-	if (offset <= (ICTL0_INTMASK7_OFFSET - ICTL0_INTMASK0_OFFSET))
+	if(offset <= (ICTL0_INTMASK7_OFFSET - ICTL0_INTMASK0_OFFSET))
 	{
 		INTC0_REG(ICTL0_INTMASK0_OFFSET + offset) &= ~mask;
 	}
@@ -3424,7 +3423,7 @@ BYTE Int_Control1_Unmask(BYTE int_num)
 {
 	BYTE offset = int_num / 8;		  // 偏移
 	BYTE mask = 0x1 << (int_num % 8); // 掩码
-	if (offset <= (ICTL1_INTMASK7_OFFSET - ICTL1_INTMASK0_OFFSET))
+	if(offset <= (ICTL1_INTMASK7_OFFSET - ICTL1_INTMASK0_OFFSET))
 	{
 		INTC1_REG(ICTL1_INTMASK0_OFFSET + offset) &= ~mask;
 	}
@@ -3440,7 +3439,7 @@ BYTE Int_Control0_Status(BYTE int_num)
 {
 	BYTE offset = int_num / 8;		  // 偏移
 	BYTE mask = 0x1 << (int_num % 8); // 掩码
-	if (offset <= (ICTL0_MASKSTATUS7_OFFSET - ICTL0_MASKSTATUS0_OFFSET))
+	if(offset <= (ICTL0_MASKSTATUS7_OFFSET - ICTL0_MASKSTATUS0_OFFSET))
 	{
 		return (INTC0_REG(ICTL0_MASKSTATUS0_OFFSET + offset) & mask) != 0;
 	}
@@ -3454,7 +3453,7 @@ BYTE Int_Control1_Status(BYTE int_num)
 {
 	BYTE offset = int_num / 8;		  // 偏移
 	BYTE mask = 0x1 << (int_num % 8); // 掩码
-	if (offset <= (ICTL1_MASKSTATUS7_OFFSET - ICTL1_MASKSTATUS0_OFFSET))
+	if(offset <= (ICTL1_MASKSTATUS7_OFFSET - ICTL1_MASKSTATUS0_OFFSET))
 	{
 		return (INTC1_REG(ICTL1_MASKSTATUS0_OFFSET + offset) & mask) != 0;
 	}
@@ -3468,7 +3467,7 @@ BYTE Int_Control0_Enable_Read(BYTE int_num)
 {
 	BYTE offset = int_num / 8;		  // 偏移
 	BYTE mask = 0x1 << (int_num % 8); // 掩码
-	if (offset <= (ICTL0_INTEN7_OFFSET - ICTL0_INTEN0_OFFSET))
+	if(offset <= (ICTL0_INTEN7_OFFSET - ICTL0_INTEN0_OFFSET))
 	{
 		return (INTC0_REG(ICTL0_INTEN0_OFFSET + offset) & mask) != 0;
 	}
@@ -3482,7 +3481,7 @@ BYTE Int_Control1_Enable_Read(BYTE int_num)
 {
 	BYTE offset = int_num / 8;		  // 偏移
 	BYTE mask = 0x1 << (int_num % 8); // 掩码
-	if (offset <= (ICTL1_INTEN7_OFFSET - ICTL1_INTEN0_OFFSET))
+	if(offset <= (ICTL1_INTEN7_OFFSET - ICTL1_INTEN0_OFFSET))
 	{
 		return (INTC1_REG(ICTL1_INTEN0_OFFSET + offset) & mask) != 0;
 	}
@@ -3496,7 +3495,7 @@ BYTE Int_Control0_Mask_Read(BYTE int_num)
 {
 	BYTE offset = int_num / 8;		  // 偏移
 	BYTE mask = 0x1 << (int_num % 8); // 掩码
-	if (offset <= (ICTL0_INTMASK7_OFFSET - ICTL0_INTMASK0_OFFSET))
+	if(offset <= (ICTL0_INTMASK7_OFFSET - ICTL0_INTMASK0_OFFSET))
 	{
 		return (INTC0_REG(ICTL0_INTMASK0_OFFSET + offset) & mask) != 0;
 	}
@@ -3510,7 +3509,7 @@ BYTE Int_Control1_Mask_Read(BYTE int_num)
 {
 	BYTE offset = int_num / 8;		  // 偏移
 	BYTE mask = 0x1 << (int_num % 8); // 掩码
-	if (offset <= (ICTL1_INTMASK7_OFFSET - ICTL1_INTMASK0_OFFSET))
+	if(offset <= (ICTL1_INTMASK7_OFFSET - ICTL1_INTMASK0_OFFSET))
 	{
 		return (INTC1_REG(ICTL1_INTMASK0_OFFSET + offset) & mask) != 0;
 	}
