@@ -1,7 +1,7 @@
 /*
  * @Author: dejavuwdh
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-12-17 15:56:02
+ * @LastEditTime: 2024-12-17 16:03:50
  * @Description:
  *
  *
@@ -92,7 +92,7 @@ USED sFixedFlashInfo Fix_flash_info = {
 
 	.EXIT_ReBOOT_Switch = 1, // （安全失败后一段时间）0休眠 1自动重启（默认）
 							 // 模块
-	.PATCH_Disable = 0,		 // 0:打开ROM PATCH，1：关闭rom patch（默认）
+	.PATCH_Disable = 1,		 // 0:打开ROM PATCH，1：关闭rom patch（默认）
 	.LPC_Enable = 1,		 // 0：ESPI口 1：LPC口
 // 调试手段
 
