@@ -1,7 +1,7 @@
 /*
  * @Author: dejavuwdh
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-11-26 20:46:18
+ * @LastEditTime: 2024-12-19 16:24:58
  * @Description:
  *
  *
@@ -192,7 +192,7 @@ typedef struct _DynamicFlashInfo
 
 #define SYSCTL_RAM_CTRL FLASH_RAM_CTRL(SYSCTL_RESERVER)//开启这位的时候下列配置生效，否则按内部FLASH配置进行使用否则
 #define SPACE_OFFSET_VAR 1
-#define Firmware_nKsize 512
+#define Firmware_nKsize 128
 
 #define MIRROR_ADDR 0x0
 typedef struct _FixedFlashInfo
