@@ -797,7 +797,6 @@ void WaitCrypUpdate(void)
 void storeFirmwareSizeInMem(uint8_t TransType, uint8_t *buffer)
 {
     uint16_t rx_cnt = 0;
-    uint32_t rx_timeout = 0;
     if(TransType == 0x0)//uart update
     {
         while(rx_cnt < 256)
