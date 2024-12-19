@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-06-14 10:48:56
+ * @LastEditTime: 2024-12-19 15:00:00
  * @Description:
  *
  *
@@ -287,7 +287,7 @@ __udivsi3://A/B=C//A=a0,B=a1
 	blez	a2,.L2//if (a2<=0)li	a0,0 else slli	a2,a2,0x1//此处判断B是否被分析完，如果B=0则退出C=0
 	slli	a2,a2,0x1//a2<<=1;//B*=2
 	slli	a3,a3,0x1//a3<<=1;//a3*=2
-	bgtu	a1,a2,.L1//if(a2<a1)blez	a2,__udivsi3+0x1a else a0=0、、此处判断Ba2要×多少个2的n次方才能超过被除数a3作为计数
+	bgtu	a1,a2,.L1//if(a1>a2)blez	a2,__udivsi3+0x1a else a0=0、、此处判断Ba2要×多少个2的n次方才能超过被除数a3作为计数
 .L2:
 	li	a0,0//C=0
 .L3:
@@ -545,7 +545,7 @@ __ltsf2:
 	.global  __fixunsdfdi
 	.type __fixunsdfdi, @function
 __fixunsdfdi:
-	la a1 0
+	la a1,0
 	.global __fixsfsi
 	.type __fixsfsi, @function
 __fixsfsi:
