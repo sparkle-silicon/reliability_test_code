@@ -1,7 +1,7 @@
 #############################################################
 # Configuration
 #############################################################
-SHELL := $(shell which bash)
+#SHELL := $(shell which bash)
 OS ?= $(shell uname)
 ifeq ($(OS),Linux)
 BUILD_DATE := $(shell date +'%y%m%d')#'%Y%m%d'
