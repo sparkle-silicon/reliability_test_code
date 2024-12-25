@@ -1,7 +1,7 @@
 /*
  * @Author: dejavuwdh
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-12-19 16:25:14
+ * @LastEditTime: 2024-12-25 15:25:11
  * @Description:
  *
  *
@@ -99,7 +99,7 @@ USED sFixedFlashInfo Fix_flash_info = {
 	.EJTAG_Enable = 1,
 	.EJTAG_Switch = 1,
 	.CRYPTO_EJTAG_Switch = 1,
-	.DEBUG_PRINTF_Enable = 0,
+	.DEBUG_PRINTF_Enable = 1,
 	.Uartn_Print_SWitch = PRINTF_UART_SWITCH,
 	.DEBUGGER_Enable = 1,
 	.DEBUGGER_UART_Enable = 1,
