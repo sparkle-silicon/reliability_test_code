@@ -26,7 +26,7 @@
 char uart_crtpram_updatebuffer[12];
 int uart_crypram_updateindex = 0;
 char update_crypram_cmd[12] = { 0x64 ,0x72 ,0x61 ,0x6D ,0x30 ,0x2D ,0x75 ,0x70 ,0x64 ,0x61 ,0x74 ,0x65 };
-char update_crypram_flag = 0;
+uint8_t update_crypram_flag = 0;
 VBYTE check[32];
 FUNCT_PTR_V_V Cache2Ram_ptr = NULL;
 // 更新主函数
@@ -799,7 +799,7 @@ void storeFirmwareSizeInMem(uint8_t TransType, uint8_t *buffer)
     uint16_t rx_cnt = 0;
     if(TransType == 0x0)//uart update
     {
-        while(rx_cnt < 256)
+        while(rx_cnt < 257)
         {
             while(!(UARTA_LSR & UART_LSR_DR));
             buffer[rx_cnt] = UARTA_RX;
@@ -816,6 +816,30 @@ void reportDone(uint8_t TransType, uint8_t data)
         while(!(UARTA_LSR & UART_LSR_TEMP));
         UARTA_TX = data;
     }
+}
+
+// CRC-8常用参数：
+// 多项式 (x^8 + x^2 + x + 1) => 0x07
+// 初始值 0x00
+// 输出 XOR 值 0x00
+// 数据输入是字节（8位）
+uint8_t CRC8(const uint8_t *data, size_t length) {
+    uint8_t crc = 0x00;  // 初始值
+    uint8_t polynomial = 0x07;  // CRC-8多项式：x^8 + x^2 + x + 1 (0x07)
+
+    for (size_t i = 0; i < length; i++) {
+        crc ^= data[i];  // 将当前字节与 CRC 值异或
+
+        // 对每一位执行 CRC 计算
+        for (int j = 0; j < 8; j++) {
+            if (crc & 0x80) {  // 如果 CRC 的最高位为1
+                crc = (crc << 1) ^ polynomial;  // 左移并异或多项式
+            } else {
+                crc <<= 1;  // 否则仅左移
+            }
+        }
+    }
+    return crc;  // 返回最终的 CRC 值
 }
 
 void GLE01_Cryp_Update_Function(void)
@@ -841,10 +865,32 @@ void GLE01_Cryp_Update_Function(void)
     printf("send 0xaa to host\n");
 
     uint32_t i = 0;
-    uint8_t Temp_buffer[256];
+    uint8_t Temp_buffer[257];
     sCryptoFlashInfo CrypDramCodeinfo;
     //先接收CrypDramCodeinfo并拷贝到(SRAM_BASE_ADDR+0x100)地址上
-    storeFirmwareSizeInMem(0, Temp_buffer);
+    for(int i = 0; i < 10; i++)
+    {
+        storeFirmwareSizeInMem(0,Temp_buffer);
+        if(CRC8(Temp_buffer,256)!=Temp_buffer[256])
+        {
+            reportDone(0,0xEE);//回复上位机接收错误
+            printf("header crc error send 0xee to host\n");
+            while((UARTA_LSR & UART_LSR_DR))//清空接收缓存
+            {
+                UARTA_RX;
+            }
+            reportDone(0,0xAA);//下位机准备完成可以接收数据
+        }
+        else
+        {
+            while((UARTA_LSR & UART_LSR_DR))//清空接收缓存
+            {
+                UARTA_RX;
+            }
+            break;
+        }
+    }
+    
     memcpy((void *)&CrypDramCodeinfo, (void *)Temp_buffer, sizeof(sCryptoFlashInfo));
     printf("fm_size:%d CRC32:%08x\n", CrypDramCodeinfo.Crypto_CopySize, CrypDramCodeinfo.Crc32Data);
     printf("hash:");
@@ -871,9 +917,30 @@ void GLE01_Cryp_Update_Function(void)
     printf("send 0xaa to host\n");
 
     //接收加密数据并拷贝到(SRAM_BASE_ADDR+0x100)地址上
-    for(i = 0; i < CrypDramCodeinfo.Crypto_CopySize; i += 256)
+    for(i=0;i<CrypDramCodeinfo.Crypto_CopySize;i+=256)
     {
-        storeFirmwareSizeInMem(0, Temp_buffer);
+        for(int i = 0; i < 10; i++)
+        {
+            storeFirmwareSizeInMem(0,Temp_buffer);
+            if(CRC8(Temp_buffer,256)!=Temp_buffer[256])
+            {
+                reportDone(0,0xEE);//回复上位机接收错误
+                printf("data crc error send 0xee to host\n");
+                while((UARTA_LSR & UART_LSR_DR))//清空接收缓存
+                {
+                    UARTA_RX;
+                }
+                reportDone(0,0xAA);//下位机准备完成可以接收数据
+            }
+            else
+            {
+                while((UARTA_LSR & UART_LSR_DR))//清空接收缓存
+                {
+                    UARTA_RX;
+                }
+                break;
+            }
+        }
         //打印接收到的数据
         // for (int i = 0; i < 256; i += 16) {
         // // 打印地址

@@ -26,7 +26,7 @@
 extern char uart_crtpram_updatebuffer[12];
 extern int uart_crypram_updateindex;
 extern char update_crypram_cmd[12];
-extern char update_crypram_flag;
+extern uint8_t update_crypram_flag;
 // update config
 #define UART_UPDATE 1
 #define SHAREMEM_UPDATE 1 & SUPPORT_SHAREMEM_PNP
