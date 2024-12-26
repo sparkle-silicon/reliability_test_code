@@ -695,7 +695,11 @@ void __interrupt SECTION(".interrupt.UARTA_HANDLER") UARTA_HANDLER(void)
 		uart_crypram_updateindex=0;
 		uart_crtpram_updatebuffer[0]=0;
 	}
-	
+	else if(uart_crtpram_updatebuffer[0]!=0x64)
+	{
+		uart_crypram_updateindex=0;
+		update_crypram_flag=0;
+	}
 
 }
 void __interrupt SECTION(".interrupt.UARTB_HANDLER") UARTB_HANDLER(void)
