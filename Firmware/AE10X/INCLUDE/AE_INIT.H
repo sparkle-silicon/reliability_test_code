@@ -27,7 +27,7 @@
 #include "CUSTOM_INIT.H"
 #define DoubleBoot_DEF_ADDR 0xA0084
 
-#define AE_UPDATE_NO_INIT_FUNCTION {if(SYSCTL_RESERVED & 0x8) {\
+#define AE_UPDATE_NO_INIT_FUNCTION {if(SYSCTL_CFG & 0x8) {\
 set_csr(mstatus, MSTATUS_MIE); return; \
 }};
 extern void exit(int __status);

@@ -376,7 +376,7 @@ void ALIGNED(4) OPTIMIZE0 clear_internel_flash(void)
 }
 void earse_internel_flash(void)
 {
-	if(SYSCTL_PIO4_UDCFG & BIT1)
+	if(SYSCTL_PIO_CFG & BIT1)
 	{
 		FUNCT_PTR_V_V funct_ptr = Load_funVV_To_Dram(clear_internel_flash, 0x400);
 		(*funct_ptr)();

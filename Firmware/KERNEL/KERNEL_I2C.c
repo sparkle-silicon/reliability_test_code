@@ -140,11 +140,11 @@ void I2c_Write_Short(WORD value, WORD regoffset, WORD i2c_channel)
 void I2c_Mux_set(BYTE model)
 {
 #if (defined(AE101) || defined(AE102))
-	SYSCTL_RESERVED &= ~(3 << 9); // I2C_Mux: bit9~10  clear default: model: 0
-	SYSCTL_RESERVED |= (model << 9);
+	SYSCTL_CFG &= ~(3 << 9); // I2C_Mux: bit9~10  clear default: model: 0
+	SYSCTL_CFG |= (model << 9);
 #elif (defined(AE103))
-	SYSCTL_RESERVED &= ~(7 << 16); // I2C_Mux: bit9~10  clear default: model: 0
-	SYSCTL_RESERVED |= (model << 16);
+	SYSCTL_CFG &= ~(7 << 16); // I2C_Mux: bit9~10  clear default: model: 0
+	SYSCTL_CFG |= (model << 16);
 #endif
 	return;
 }
@@ -167,7 +167,7 @@ void I2c_Master_Set_Tar(WORD TAR, WORD REGADDR_BIT, WORD i2c_channel)
 	{
 		// I2c_Writeb(I2C_REGADDR_7BIT, I2C_TAR_OFFSET + 1, i2c_channel);
 		// I2c_Writeb(TAR & 0x7f, I2C_TAR_OFFSET, i2c_channel);  // Set TAR
-	I2c_Write_Short((TAR & 0x7f) & 0x007f, I2C_TAR_OFFSET, i2c_channel);
+		I2c_Write_Short((TAR & 0x7f) & 0x007f, I2C_TAR_OFFSET, i2c_channel);
 	}
 	else if(REGADDR_BIT == I2C_REGADDR_10BIT)
 	{
@@ -491,14 +491,14 @@ BYTE I2c_Master_Read_Byte(BYTE reg, WORD i2c_channel)
 	{
 		// I2c_Writeb(I2C_READ | I2C_STOP, I2C_DATA_CMD_RWDIR, i2c_channel);
 		// printf("I2C_DATA_CMD_OFFSET:%x\n",REG16(REG_ADDR(I2c_Channel_Baseaddr(i2c_channel), I2C_DATA_CMD_OFFSET)));
-		I2c_Write_Short(((I2C_READ | I2C_STOP)<<8), I2C_DATA_CMD_OFFSET, i2c_channel);
+		I2c_Write_Short(((I2C_READ | I2C_STOP) << 8), I2C_DATA_CMD_OFFSET, i2c_channel);
 	}
 	// read the data from slave
 	if(0 == I2c_Check_RFNE(i2c_channel))
 	{
 		// data = I2c_Readb(I2C_DATA_CMD_OFFSET, i2c_channel) & 0xff;
 		// printf("I2C_DATA_CMD_OFFSET:%x\n",REG16(REG_ADDR(I2c_Channel_Baseaddr(i2c_channel), I2C_DATA_CMD_OFFSET)));
-		data = I2c_Read_Short(I2C_DATA_CMD_OFFSET,i2c_channel) & 0xff;
+		data = I2c_Read_Short(I2C_DATA_CMD_OFFSET, i2c_channel) & 0xff;
 	}
 	I2c_Check_MST_ACTIVITY(i2c_channel);
 	return data;
@@ -844,7 +844,7 @@ void I2c_Master_Controller_Init(WORD i2c_channel, DWORD speed, BYTE spklen)
 	// ic_con = I2c_Readb(I2C_CON_OFFSET, i2c_channel);
 	// hcnt = (((HIGHT_CHIP_CLOCK / speed + 1) / 2 * 1) - 9 - spklen); // PCLK/(SMBUS_HZ/2(H or L) /USER_FREQ)
 	// lcnt = (((HIGHT_CHIP_CLOCK / speed + 1) / 2 * 1) - 3); // PCLK/(SMBUS_HZ/2(H or L) /USER_FREQ)
-	I2c_Write_Short(DISABLE,I2C_ENABLE_OFFSET,i2c_channel);
+	I2c_Write_Short(DISABLE, I2C_ENABLE_OFFSET, i2c_channel);
 	ic_con = I2c_Read_Short(I2C_CON_OFFSET, i2c_channel);
 	hcnt = (((HIGHT_CHIP_CLOCK / speed + 1) / 2 * 1) - 9 - spklen); // PCLK/(SMBUS_HZ/2(H or L) /USER_FREQ)
 	lcnt = (((HIGHT_CHIP_CLOCK / speed + 1) / 2 * 1) - 3); // PCLK/(SMBUS_HZ/2(H or L) /USER_FREQ)	
@@ -929,7 +929,7 @@ void I2c_Slave_Init(WORD i2c_channel, DWORD speed, BYTE spklen)
 	/*Disable*/
 
 	// I2c_Writeb(DISABLE, I2C_ENABLE_OFFSET, i2c_channel);
-	I2c_Write_Short(DISABLE,I2C_ENABLE_OFFSET,i2c_channel);
+	I2c_Write_Short(DISABLE, I2C_ENABLE_OFFSET, i2c_channel);
 
 	// ic_con = I2c_Readb(I2C_CON_OFFSET, i2c_channel);
 	ic_con = I2c_Read_Short(I2C_CON_OFFSET, i2c_channel);
@@ -988,7 +988,7 @@ void I2c_Slave_Init(WORD i2c_channel, DWORD speed, BYTE spklen)
 	// I2c_Writeb(15, I2C_TX_TL_OFFSET, i2c_channel);
 	I2c_Write_Short(0, I2C_RX_TL_OFFSET, i2c_channel);
 	I2c_Write_Short(15, I2C_TX_TL_OFFSET, i2c_channel);
-	
+
 	/* Mask Interrupt */
 	// I2c_Writeb(I2C_INTR_RD_REQ | I2C_INTR_TX_ABRT, I2C_INTR_MASK_OFFSET, i2c_channel);
 	I2c_Write_Short(I2C_INTR_RD_REQ | I2C_INTR_TX_ABRT, I2C_INTR_MASK_OFFSET, i2c_channel);

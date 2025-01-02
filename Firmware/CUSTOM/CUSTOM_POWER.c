@@ -1628,9 +1628,9 @@ void AutoON_Check_AfterUpdate(void)
 //-----------------------------------------------------------------------------
 void CHIPRESET_Check_AfterUpdate(void)
 {
-    if(SYSCTL_RESERVED & BIT3)
+    if(SYSCTL_CFG & BIT3)
     {
-        SYSCTL_RESERVED &= (~BIT3);
+        SYSCTL_CFG &= (~BIT3);
         SYSCTL_RST1 |= 0x00010000;
         vDelayXms(5);
         SYSCTL_RST1 &= ~(0x00010000); // EC CHIP RESET
@@ -1641,9 +1641,9 @@ void CHIPRESET_Check_AfterUpdate(void)
 //-----------------------------------------------------------------------------
 BYTE Set_AutoON_AfterUpdate(void)
 {
-    if(SYSCTL_RESERVED & BIT3)
+    if(SYSCTL_CFG & BIT3)
     {
-        SYSCTL_RESERVED &= (~BIT3);
+        SYSCTL_CFG &= (~BIT3);
         SYSCTL_RST1 |= 0x00010000;
         vDelayXms(5);
         SYSCTL_RST1 &= ~(0x00010000); // EC CHIP RESET

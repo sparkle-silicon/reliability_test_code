@@ -313,15 +313,15 @@ void sysctl_iomux_disable_uart0()
 #define uart1_PIN_SEL 1
 void sysctl_iomux_uart1()
 {
-	#if uart1_PIN_SEL==1
-		#if (defined(AE102) || defined(AE103))
-		sysctl_iomux_config(GPIOB, 1, 1);//tx
-		sysctl_iomux_config(GPIOB, 3, 1);//rx
-		#endif
-	#elif uart1_PIN_SEL==2
-		sysctl_iomux_config(GPIOE, 14, 3);//rx
-		sysctl_iomux_config(GPIOE, 15, 3);//tx
-	#endif
+#if uart1_PIN_SEL==1
+#if (defined(AE102) || defined(AE103))
+	sysctl_iomux_config(GPIOB, 1, 1);//tx
+	sysctl_iomux_config(GPIOB, 3, 1);//rx
+#endif
+#elif uart1_PIN_SEL==2
+	sysctl_iomux_config(GPIOE, 14, 3);//rx
+	sysctl_iomux_config(GPIOE, 15, 3);//tx
+#endif
 }
 void sysctl_iomux_disable_uart1()
 {
@@ -410,13 +410,13 @@ void sysctl_iomux_disable_uart3()
 #define uarta_PIN_SEL 1
 void sysctl_iomux_uarta()
 {
-	#if uarta_PIN_SEL==1
-		sysctl_iomux_config(GPIOA, 8, 2);//rx
-		sysctl_iomux_config(GPIOA, 9, 2);//tx
-	#elif uarta_PIN_SEL==2
+#if uarta_PIN_SEL==1
+	sysctl_iomux_config(GPIOA, 8, 2);//rx
+	sysctl_iomux_config(GPIOA, 9, 2);//tx
+#elif uarta_PIN_SEL==2
 	sysctl_iomux_config(GPIOA, 23, 2);//rx
 	sysctl_iomux_config(GPIOB, 6, 3);//tx
-	#endif
+#endif
 }
 void sysctl_iomux_disable_uarta()
 {
@@ -471,34 +471,34 @@ void sysctl_iomux_disable_uartb()
 #define PS21_PIN_SEL 1
 BYTE sysctl_iomux_ps2_0()
 {
-	#if PS20_PIN_SEL==1
+#if PS20_PIN_SEL==1
 	sysctl_iomux_config(GPIOB, 8, 1);
 	sysctl_iomux_config(GPIOB, 9, 1);
 	return 0x1;
-	#elif PS20_PIN_SEL==2 //如果PS2_0选用该引脚需注意 PS2_1引脚只能使用GPIOB12,13 
+#elif PS20_PIN_SEL==2 //如果PS2_0选用该引脚需注意 PS2_1引脚只能使用GPIOB12,13 
 	sysctl_iomux_config(GPIOB, 10, 1);
 	sysctl_iomux_config(GPIOB, 11, 1);
 	return 0x2;
-	#elif PS20_PIN_SEL==3
+#elif PS20_PIN_SEL==3
 	sysctl_iomux_config(GPIOB, 27, 1);
 	sysctl_iomux_config(GPIOB, 28, 1);
 	return 0x4;
-	#endif
+#endif
 	return 0x0;
 }
 BYTE sysctl_iomux_ps2_1()
 {
-	#if PS21_PIN_SEL==1
+#if PS21_PIN_SEL==1
 	sysctl_iomux_config(GPIOB, 12, 1);
 	sysctl_iomux_config(GPIOB, 13, 1);
 	return 0x10;
-	#elif PS21_PIN_SEL==2
-	#if PS20_PIN_SEL!=2
+#elif PS21_PIN_SEL==2
+#if PS20_PIN_SEL!=2
 	sysctl_iomux_config(GPIOB, 10, 3);
 	sysctl_iomux_config(GPIOB, 11, 3);
 	return 0x20;
-	#endif
-	#endif
+#endif
+#endif
 	return 0x0;
 }
 //*****************************************************************************
@@ -516,24 +516,24 @@ BYTE sysctl_iomux_ps2_1()
 void sysctl_iomux_spim()
 {
 	sysctl_iomux_config(GPIOA, 6, 2);  // spim_sck
-	#if iomux_spim_PIN_SEL==1
+#if iomux_spim_PIN_SEL==1
 	sysctl_iomux_config(GPIOA, 19, 2); // spim_mosi
 	sysctl_iomux_config(GPIOA, 21, 2); // spim_miso
-	#elif iomux_spim_PIN_SEL==2
+#elif iomux_spim_PIN_SEL==2
 	sysctl_iomux_config(GPIOA, 22, 2); // spim_mosi
 	sysctl_iomux_config(GPIOA, 20, 3); // spim_miso
-	#endif
+#endif
 }
 #define spim_cs_PIN_SEL 2
 void sysctl_iomux_spim_cs()
 {
-	#if spim_cs_PIN_SEL==1
+#if spim_cs_PIN_SEL==1
 	sysctl_iomux_config(GPIOB, 18, 2); // csn0
 	sysctl_iomux_config(GPIOB, 4, 2); // csn1
-	#elif spim_cs_PIN_SEL==2
+#elif spim_cs_PIN_SEL==2
 	sysctl_iomux_config(GPIOC, 15, 1); // csn0
 	sysctl_iomux_config(GPIOB, 31, 1); // csn1
-	#endif
+#endif
 }
 
 //*****************************************************************************
@@ -593,22 +593,22 @@ void sysctl_iomux_pwm7()
 #define tach0_PIN_SEL 2
 void sysctl_iomux_tach0()
 {
-	#if tach0_PIN_SEL==1
+#if tach0_PIN_SEL==1
 	sysctl_iomux_config(GPIOA, 30, 1); // tach0
-	#elif tach0_PIN_SEL==2
+#elif tach0_PIN_SEL==2
 	sysctl_iomux_config(GPIOA, 22, 1); // tach0
-	#endif
+#endif
 }
 #define tach1_PIN_SEL 3
 void sysctl_iomux_tach1()
-{	
-	#if tach1_PIN_SEL==1
+{
+#if tach1_PIN_SEL==1
 	sysctl_iomux_config(GPIOA, 31, 1); // tach1
-	#elif tach1_PIN_SEL==2
+#elif tach1_PIN_SEL==2
 	sysctl_iomux_config(GPIOC, 9, 2); // tach1
-	#elif tach1_PIN_SEL==3
+#elif tach1_PIN_SEL==3
 	sysctl_iomux_config(GPIOC, 14, 1); // tach1
-	#endif
+#endif
 }
 void sysctl_iomux_tach2()
 {
@@ -617,11 +617,11 @@ void sysctl_iomux_tach2()
 #define tach3_PIN_SEL 2
 void sysctl_iomux_tach3()
 {
-	#if tach3_PIN_SEL==1
+#if tach3_PIN_SEL==1
 	sysctl_iomux_config(GPIOC, 9, 1);
-	#elif tach3_PIN_SEL==2
+#elif tach3_PIN_SEL==2
 	sysctl_iomux_config(GPIOC, 11, 2); // tach3
-	#endif
+#endif
 }
 //*****************************************************************************
 //
@@ -637,13 +637,13 @@ void sysctl_iomux_tach3()
 #define i2c0_PIN_SEL 1
 void sysctl_iomux_i2c0()
 {
-	#if i2c0_PIN_SEL==1
+#if i2c0_PIN_SEL==1
 	sysctl_iomux_config(GPIOA, 11, 1);//clk
 	sysctl_iomux_config(GPIOA, 12, 1);
-	#elif i2c0_PIN_SEL==2
+#elif i2c0_PIN_SEL==2
 	sysctl_iomux_config(GPIOB, 10, 2);//clk
 	sysctl_iomux_config(GPIOB, 11, 2);
-	#endif	
+#endif	
 }
 void sysctl_iomux_i2c1()
 {
@@ -653,13 +653,13 @@ void sysctl_iomux_i2c1()
 #define i2c2_PIN_SEL 1
 void sysctl_iomux_i2c2()
 {
-	#if i2c2_PIN_SEL==1
+#if i2c2_PIN_SEL==1
 	sysctl_iomux_config(GPIOA, 23, 3);//clk
 	sysctl_iomux_config(GPIOB, 15, 1);
-	#elif i2c0_PIN_SEL==2
+#elif i2c0_PIN_SEL==2
 	sysctl_iomux_config(GPIOB, 14, 1);//clk
 	sysctl_iomux_config(GPIOB, 15, 1);
-	#endif
+#endif
 }
 void sysctl_iomux_i2c3()
 {
@@ -971,7 +971,7 @@ BYTE GPIO_Pullup_Config(BYTE GPIO, BYTE Num)
 		default:
 			dprint("参数选择错误\n");
 			break;
-	}
+}
 #endif
 #if (defined(AE101) || defined(AE102))
 	switch(GPIO)
@@ -1127,9 +1127,9 @@ int GPIO_Config(int GPIO, int gpio_no, int mode, int op_val, int int_lv, int pol
 			{
 				if(op_val > 0)
 				{
-					if(gpio_no==8)//piod8
+					if(gpio_no == 8)//piod8
 					{
-						GPIOC_REG((0xd)) |=0x1;
+						GPIOC_REG((0xd)) |= 0x1;
 						GPIOC_REG((0x11)) |= 0x1;
 					}
 					else
@@ -1140,7 +1140,7 @@ int GPIO_Config(int GPIO, int gpio_no, int mode, int op_val, int int_lv, int pol
 				}
 				else
 				{
-					if(gpio_no==8)
+					if(gpio_no == 8)
 					{
 						GPIOC_REG((0xd)) &= ~(0x1); // 配置输出值
 						GPIOC_REG((0x11)) |= 0x1;   // 配置输出模式						
@@ -1155,7 +1155,7 @@ int GPIO_Config(int GPIO, int gpio_no, int mode, int op_val, int int_lv, int pol
 			}
 			else if(mode == 0) // input
 			{
-				if(gpio_no==8)
+				if(gpio_no == 8)
 				{
 					GPIOC_REG(0x11) &= (~(0x1)); // 配置输入模式	
 				}
@@ -1308,11 +1308,11 @@ void GPIO_Input_EN(int GPIO, int gpio_no, char sw)
 		case GPIOC:
 			if(sw == ENABLE)
 			{
-				SYSCTL_CLKDIV_SPIS |= (0x1 << gpio_no);
+				SYSCTL_CLKDIV_I3C |= (0x1 << gpio_no);
 			}
 			else
 			{
-				SYSCTL_CLKDIV_SPIS &= ~(0x1 << gpio_no);
+				SYSCTL_CLKDIV_I3C &= ~(0x1 << gpio_no);
 			}
 			break;
 		case GPIOD:
@@ -1399,7 +1399,7 @@ void GPIO_Input_EN(int GPIO, int gpio_no, char sw)
 		case GPIOE:
 			if(sw == ENABLE)
 			{
-				SYSCTL_CLKDIV_SPIS |= (0x1 << (gpio_no));
+				SYSCTL_CLKDIV_I3C |= (0x1 << (gpio_no));
 			}
 			else
 			{
@@ -1580,7 +1580,7 @@ char GPIOAutoTest(void)//102
 	}
 	for(int i = 0; i < 24; i++)
 	{
-			GPIO_Config(GPIOE, i, 1, flag, 0, 0);
+		GPIO_Config(GPIOE, i, 1, flag, 0, 0);
 	}
 	gpa0 = GPIO0_EXT0;
 	gpa1 = GPIO0_EXT1;
@@ -1605,11 +1605,11 @@ char GPIOAutoTest(void)//102
 		gpa3 |= 0x3;//uart0
 		gpb2 |= 0x9;//pb16 pb19用作电源
 		gpc1 |= 0x4;//pc10用作电源
-			
+
 		printf("\n");
 		dprint("GPIO0: 0x%x 0x%x 0x%x 0x%x\n", gpa0, gpa1, gpa2, gpa3);
 		dprint("GPIO1: 0x%x 0x%x 0x%x 0x%x\n", gpb0, gpb1, gpb2, gpb3);
-		dprint("GPIO2: 0x%x 0x%x 0x%x 0x%x\n", gpc0, gpc1, gpc2,gpc3);
+		dprint("GPIO2: 0x%x 0x%x 0x%x 0x%x\n", gpc0, gpc1, gpc2, gpc3);
 		dprint("GPIO3: 0x%x 0x%x 0x%x\n", gpd0, gpd1, gpd2);
 		gpa0z = ~gpa0;
 		gpa1z = ~gpa1;
@@ -1646,7 +1646,7 @@ char GPIOAutoTest(void)//102
 		printf("\n");
 		dprint("GPIO0: 0x%x 0x%x 0x%x 0x%x\n", gpa0, gpa1, gpa2, gpa3);
 		dprint("GPIO1: 0x%x 0x%x 0x%x 0x%x\n", gpb0, gpb1, gpb2, gpb3);
-		dprint("GPIO2: 0x%x 0x%x 0x%x 0x%x\n", gpc0, gpc1, gpc2,gpc3);
+		dprint("GPIO2: 0x%x 0x%x 0x%x 0x%x\n", gpc0, gpc1, gpc2, gpc3);
 		dprint("GPIO3: 0x%x 0x%x 0x%x\n", gpd0, gpd1, gpd2);
 		//gpa0 gpa1...全部加起来不等于0
 		if((gpa0 + gpa1 + gpa2 + gpa3 + gpb0 + gpb1 + gpb2 + gpb3 + gpc0 + gpc1 + gpc2 + gpd0 + gpd1 + gpd2))

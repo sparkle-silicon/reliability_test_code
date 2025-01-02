@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-05-31 16:09:12
+ * @LastEditTime: 2025-01-02 18:12:04
  * @Description: GPIO custom configuration
  *
  *
@@ -161,9 +161,14 @@ sGetGPIOMuxInfo aGetGPIOMuxInfo[] =
     {&SYSCTL_PIO3_CFG, &SYSCTL_PIO3_CFG_Value},
     {&SYSCTL_PIO3_UDCFG, &SYSCTL_PIO3_UDCFG_Value},
     {&SYSCTL_PIO4_CFG, &SYSCTL_PIO4_CFG_Value},
+#if (defined(AE101)||defined(AE102))
     {&SYSCTL_PIO4_UDCFG, &SYSCTL_PIO4_UDCFG_Value},
+#endif
+
     {&SYSCTL_PIO5_CFG, &SYSCTL_PIO5_CFG_Value},
+#if (defined(AE101)||defined(AE102))
     {&SYSCTL_PIO5_UDCFG, &SYSCTL_PIO5_UDCFG_Value},
+#endif
 };
 //-----------------------------------------------------------------------------
 // The function of pin register init.

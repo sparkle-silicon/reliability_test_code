@@ -532,7 +532,7 @@ int __weak main(void)
 #endif
 	// 2. print Operational information
 #ifdef AE103
-	if(SYSCTL_PIO4_UDCFG & BIT1)
+	if(SYSCTL_PIO_CFG & BIT1)
 	{
 		// earse_internel_flash();
 		dprint("This is external flash main\n");
@@ -548,8 +548,8 @@ int __weak main(void)
 #if ((GLE01 == 1) && (FLASH_TO_IRAM0 == 1))
 	GLE01_RomCode_Transport();
 #endif
-	TaskParams Params={(APB_UART1|APB_REQ),0,0};
-	Add_Task(Mailbox_APB2_Source_Alloc_Trigger,Params,&task_head);//分配串口1给子系统
+	TaskParams Params = { (APB_UART1 | APB_REQ),0,0 };
+	Add_Task(Mailbox_APB2_Source_Alloc_Trigger, Params, &task_head);//分配串口1给子系统
 	//  3. jump loop
 	main_loop();
 	return 0;

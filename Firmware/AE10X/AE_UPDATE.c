@@ -201,7 +201,7 @@ void ALIGNED(4) OPTIMIZE0 SECTION(".update.uart") EC_UART_Update(void)
     /********发送重启指令****/
     while(!(UPDATE_LSR & UART_LSR_TEMP));
     UPDATE_TX = 'Z'; // 结束//等待重启
-    SYSCTL_RESERVED |= BIT3;
+    SYSCTL_CFG |= BIT3;
     goto * 0x80084UL;
 }
 void ALIGNED(4) OPTIMIZE0 SECTION(".update.sms")  EC_SMS_Update(void)
@@ -281,7 +281,7 @@ void ALIGNED(4) OPTIMIZE0 SECTION(".update.sms")  EC_SMS_Update(void)
     WDT_TORR = 0xffff; // 设置最长延时
     WDT_CR |= 0x02;    // 进入wdt中断
     WDT_CRR = 0x76;    // 重启计数器
-    SYSCTL_RESERVED |= BIT3;
+    SYSCTL_CFG |= BIT3;
     goto * 0x80084UL;
 }
 void ALIGNED(4) OPTIMIZE0 SECTION(".update.io")   EC_IO_Update(void)
@@ -406,7 +406,7 @@ void ALIGNED(4) OPTIMIZE0 SECTION(".update.io")   EC_IO_Update(void)
             WDT_TORR = 0xffff; // 设置最长延时
             WDT_CR |= 0x02; // 进入wdt中断
             WDT_CRR = 0x76;    // 重启计数器
-            SYSCTL_RESERVED |= (1 << 3);
+            SYSCTL_CFG |= (1 << 3);
             goto * 0x80084UL;
             //update_debug
         }
@@ -599,7 +599,7 @@ void ALIGNED(4) Mailbox_4KSMS_UPDATE(BYTE mode, DWORD fw_size, DWORD start_addr)
         WDT_TORR = 0xffff; // 设置最长延时
         WDT_CR |= 0x02;    // 进入wdt中断
         WDT_CRR = 0x76;    // 重启计数器
-        SYSCTL_RESERVED |= BIT3;
+        SYSCTL_CFG |= BIT3;
     }
     else if(C2EINFO1 == 0x2)
         // printf("更新失败\n");
@@ -823,18 +823,24 @@ void reportDone(uint8_t TransType, uint8_t data)
 // 初始值 0x00
 // 输出 XOR 值 0x00
 // 数据输入是字节（8位）
-uint8_t CRC8(const uint8_t *data, size_t length) {
+uint8_t CRC8(const uint8_t *data, size_t length)
+{
     uint8_t crc = 0x00;  // 初始值
     uint8_t polynomial = 0x07;  // CRC-8多项式：x^8 + x^2 + x + 1 (0x07)
 
-    for (size_t i = 0; i < length; i++) {
+    for(size_t i = 0; i < length; i++)
+    {
         crc ^= data[i];  // 将当前字节与 CRC 值异或
 
         // 对每一位执行 CRC 计算
-        for (int j = 0; j < 8; j++) {
-            if (crc & 0x80) {  // 如果 CRC 的最高位为1
+        for(int j = 0; j < 8; j++)
+        {
+            if(crc & 0x80)
+            {  // 如果 CRC 的最高位为1
                 crc = (crc << 1) ^ polynomial;  // 左移并异或多项式
-            } else {
+            }
+            else
+            {
                 crc <<= 1;  // 否则仅左移
             }
         }
@@ -870,16 +876,16 @@ void GLE01_Cryp_Update_Function(void)
     //先接收CrypDramCodeinfo并拷贝到(SRAM_BASE_ADDR+0x100)地址上
     for(int i = 0; i < 10; i++)
     {
-        storeFirmwareSizeInMem(0,Temp_buffer);
-        if(CRC8(Temp_buffer,256)!=Temp_buffer[256])
+        storeFirmwareSizeInMem(0, Temp_buffer);
+        if(CRC8(Temp_buffer, 256) != Temp_buffer[256])
         {
-            reportDone(0,0xEE);//回复上位机接收错误
+            reportDone(0, 0xEE);//回复上位机接收错误
             printf("header crc error send 0xee to host\n");
             while((UARTA_LSR & UART_LSR_DR))//清空接收缓存
             {
                 UARTA_RX;
             }
-            reportDone(0,0xAA);//下位机准备完成可以接收数据
+            reportDone(0, 0xAA);//下位机准备完成可以接收数据
         }
         else
         {
@@ -890,7 +896,7 @@ void GLE01_Cryp_Update_Function(void)
             break;
         }
     }
-    
+
     memcpy((void *)&CrypDramCodeinfo, (void *)Temp_buffer, sizeof(sCryptoFlashInfo));
     printf("fm_size:%d CRC32:%08x\n", CrypDramCodeinfo.Crypto_CopySize, CrypDramCodeinfo.Crc32Data);
     printf("hash:");
@@ -917,20 +923,20 @@ void GLE01_Cryp_Update_Function(void)
     printf("send 0xaa to host\n");
 
     //接收加密数据并拷贝到(SRAM_BASE_ADDR+0x100)地址上
-    for(i=0;i<CrypDramCodeinfo.Crypto_CopySize;i+=256)
+    for(i = 0; i < CrypDramCodeinfo.Crypto_CopySize; i += 256)
     {
         for(int i = 0; i < 10; i++)
         {
-            storeFirmwareSizeInMem(0,Temp_buffer);
-            if(CRC8(Temp_buffer,256)!=Temp_buffer[256])
+            storeFirmwareSizeInMem(0, Temp_buffer);
+            if(CRC8(Temp_buffer, 256) != Temp_buffer[256])
             {
-                reportDone(0,0xEE);//回复上位机接收错误
+                reportDone(0, 0xEE);//回复上位机接收错误
                 printf("data crc error send 0xee to host\n");
                 while((UARTA_LSR & UART_LSR_DR))//清空接收缓存
                 {
                     UARTA_RX;
                 }
-                reportDone(0,0xAA);//下位机准备完成可以接收数据
+                reportDone(0, 0xAA);//下位机准备完成可以接收数据
             }
             else
             {

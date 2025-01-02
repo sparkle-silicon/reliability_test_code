@@ -224,7 +224,7 @@ void GLE01_RomCode_Transport(void)
   // GLE01_RomCode_Ptr = Load_Smfi_To_Dram(GLE01_RomCode_Transport_FlashToIRAM0, 0x200);
   // (*GLE01_RomCode_Ptr)(); // Do Function at malloc address
   Enable_Interrupt_Main_Switch();
-  SYSCTL_PIO5_UDCFG |= 1;
+  SYSCTL_CRYPTODBG_FLAG |= 1;
   dprint("GLE01 ROMCODE Transport Flash to IRAM0\n");
 }
 
