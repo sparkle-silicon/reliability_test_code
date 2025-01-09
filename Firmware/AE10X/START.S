@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-09-04 12:40:14
+ * @LastEditTime: 2025-01-09 15:49:26
  * @Description: 
  * 
  * 
@@ -163,7 +163,7 @@ __scatterload_shareram://将SRAM的空间清零
 	sw zero, (a0)
 	addi a0, a0, 4
 	bltu a0, a1, 1b
- #if 1//将FLASH中ROM的内容拷贝到SRAM（FPGA 中将ROM看作可写的RAN空间）中
+ #if 0//将FLASH中ROM的内容拷贝到SRAM（FPGA 中将ROM看作可写的RAN空间）中
 #if (defined(AE103)||defined(GLE01))&&(!defined(DUBLE_FIRMWARE2))   
 __scatterload_rom:
 2:
