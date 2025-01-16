@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-10-02 16:06:40
+ * @LastEditTime: 2025-01-16 11:42:42
  * @Description:
  *
  *
@@ -532,6 +532,8 @@ int __weak main(void)
 #endif
 	// 2. print Operational information
 #ifdef AE103
+	extern void write_efuse_data(uint32_t * data);
+	write_efuse_data(NULL);
 	if(SYSCTL_PIO_CFG & BIT1)
 	{
 		// earse_internel_flash();
