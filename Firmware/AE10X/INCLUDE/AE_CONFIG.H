@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-11-20 18:04:59
+ * @LastEditTime: 2025-01-16 15:43:09
  * @Description:
  *
  *
@@ -27,7 +27,7 @@
 
 // GLE01主系统相关控制宏
 #define GLE01 1                      // GLE01打开关闭
-#define FLASH_TO_IRAM0 1             // 打开crypto代码从flash搬运到IRAM0功能
+#define FLASH_TO_IRAM0 0             // 打开crypto代码从flash搬运到IRAM0功能
 #define MAILBOX_SMS_UPDATE_SUPPORT 1 // 打开4K SMS方式验证更新
 #define secure_area 0x80000          // 不能更新的安全区域 512K
 
