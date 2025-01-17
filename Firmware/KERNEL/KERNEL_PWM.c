@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-05-20 17:07:54
+ * @LastEditTime: 2025-01-17 16:58:49
  * @Description:
  *
  *
@@ -338,7 +338,7 @@ BYTE  TACH_Init_Channel(BYTE channel, BYTE mode, BYTE tach_int)
 	mode &= 0x3;
 	BYTE shift = (channel << 1) + 8;
 	TACH_CTRL |= ((0x1 << channel) | (mode << shift));
-	printf("TACH_CTRL:%x\n",TACH_CTRL);
+	printf("TACH_CTRL:%x\n", TACH_CTRL);
 	if(tach_int)
 		TACH_INT |= (0x11 << channel);//clear irq and en irq
 	else
@@ -346,7 +346,7 @@ BYTE  TACH_Init_Channel(BYTE channel, BYTE mode, BYTE tach_int)
 		TACH_INT |= (0x10 << channel);//clear irq and en irq
 		TACH_INT &= ~(0x01 << channel);//clear irq and en irq
 	}
-	printf("TACH_INT:%x\n",TACH_INT);
+	printf("TACH_INT:%x\n", TACH_INT);
 	return 0;
 }
 
@@ -366,7 +366,7 @@ BYTE  TACH_Init_Channel(BYTE channel, BYTE mode, BYTE tach_int)
 BYTE  TACH_Clear_IRQ(BYTE  channel)
 {
 	channel &= 0x3;
-	TACH_INT |= (0x10 << channel);
+	TACH_INT = ((TACH_INT & 0xf) | (0x10 << channel));
 	return 0;
 }
 //*****************************************************************************
