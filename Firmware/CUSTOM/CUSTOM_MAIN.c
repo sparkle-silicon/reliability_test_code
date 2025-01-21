@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-10-02 11:45:21
+ * @LastEditTime: 2025-01-21 11:50:16
  * @Description: Custom function support
  *
  *
@@ -80,42 +80,38 @@ void __weak Hook_10msEventB(void)
 //-----------------------------------------------------------------------------
 void __weak Hook_50msEventA(void)
 {
-    #if 0
-    //MAILBOX SMSha256 updata 测试用例
-    if(REG8((SRAM_BASE_ADDR + 0x100))==0xAB)
+#if 0
+//MAILBOX SMSha256 updata 测试用例
+    if(REG8((SRAM_BASE_ADDR + 0x100)) == 0xAB)
     {
         printf("准备更新固件\n");
         TaskParams Params;
-	    Add_Task((TaskFunction)GLE01_Flash_Update_Function,Params,&task_head);//sms update
+        Add_Task((TaskFunction)GLE01_Flash_Update_Function, Params, &task_head);//sms update
     }
-    #endif
-    //子系统dram更新测试用例
-    #if 1
-    if(update_crypram_flag==1)
+#endif
+//子系统dram更新测试用例
+#if 1
+    if(update_crypram_flag == 1)
     {
         GLE01_Cryp_Update_Function();
         update_crypram_flag = 0;
     }
-    #endif
+#endif
 }
 //-----------------------------------------------------------------------------
 void __weak Hook_50msEventB(void)
-{
-}
+{}
 //-----------------------------------------------------------------------------
 void __weak Hook_50msEventC(void)
-{
-}
+{}
 //-----------------------------------------------------------------------------
 // Oem 100ms Events/Hook Here
 //-----------------------------------------------------------------------------
 void __weak Hook_100msEventA(void)
-{
-}
+{}
 //-----------------------------------------------------------------------------
 void __weak Hook_100msEventB(void)
-{
-}
+{}
 //-----------------------------------------------------------------------------
 void __weak Hook_100msEventC(void)
 {
@@ -125,12 +121,10 @@ void __weak Hook_100msEventC(void)
 // Oem 500ms Events/Hook Here
 //-----------------------------------------------------------------------------
 void __weak Hook_500msEventA(void)
-{
-}
+{}
 //-----------------------------------------------------------------------------
 void __weak Hook_500msEventB(void)
-{
-}
+{}
 //-----------------------------------------------------------------------------
 void __weak Hook_500msEventC(void)
 {
@@ -151,7 +145,7 @@ void __weak Hook_1secEventA(void) // get all temp
     // printf("C2EINT:%x,C2EINFO0:%x,C2EINFO1:%x\n", C2EINT, C2EINFO0, C2EINFO1);
 
 #if (GLE01 == 1)
-    if (*((VBYTE *)(0x203B9)) == 1)
+    if(*((VBYTE *)(0x203B9)) == 1)
     {
         // printf("0x203B9:%x\n", *((VBYTE *)(0x203B9)));
         *((VBYTE *)(0x203B9)) = 0;
@@ -164,25 +158,25 @@ void __weak Hook_1secEventA(void) // get all temp
         //  Mailbox_Read_EFUSE_Trigger();
         Mailbox_WriteRootKey_Trigger();
     }
-    if (*((VBYTE *)(0x203B9)) == 2)
+    if(*((VBYTE *)(0x203B9)) == 2)
     {
         *((VBYTE *)(0x203B9)) = 0;
         Mailbox_UpdateHMACKey_Trigger();
     }
 
-    if (*((VBYTE *)(0x203B9)) == 3)
+    if(*((VBYTE *)(0x203B9)) == 3)
     {
         *((VBYTE *)(0x203B9)) = 0;
         //Mailbox_IncrementCounter_Trigger(0x3FFE);
     }
 
-    if (*((VBYTE *)(0x203B9)) == 4)
+    if(*((VBYTE *)(0x203B9)) == 4)
     {
         *((VBYTE *)(0x203B9)) = 0;
         Mailbox_RequestCounter_Trigger();
     }
 
-    if (*((VBYTE *)(0x203B9)) == 5)
+    if(*((VBYTE *)(0x203B9)) == 5)
     {
         *((VBYTE *)(0x203B9)) = 0;
         Mailbox_ReadParameter_Trigger();
@@ -195,9 +189,9 @@ void __weak Hook_1secEventB(void) // get fan rpm
 {
 #if SUPPORT_FAN1 || SUPPORT_FAN2
     DWORD Polling0 = TACH_Get_Polling(0);
-    if (Polling0 != -1)
+    if(Polling0 != -1)
     {
-        TACH0_Speed = (DWORD)6000000 / Polling0;
+        TACH0_Speed = (DWORD)TACH_RPM(Polling0);
         dprint("FAN2 RPM is %u\n", TACH0_Speed);
     }
 #endif
@@ -206,12 +200,12 @@ void __weak Hook_1secEventB(void) // get fan rpm
 u32 RunTimeStamp = 0;
 char adc_cnt = 0;
 char mode_en = 0;
-char compare=0;
-char counter=0;
-char flag=0;
+char compare = 0;
+char counter = 0;
+char flag = 0;
 
 extern void ADC_Cont_Sample_Init_Single(uint8_t channelx, u_int8_t ADC_Databuffer_channelx, uint8_t mode);
-extern void ADC_Cont_Sample_Init_Multi(uint8_t mode,uint8_t Data_Select,uint8_t Chanal_8_mode);
+extern void ADC_Cont_Sample_Init_Multi(uint8_t mode, uint8_t Data_Select, uint8_t Chanal_8_mode);
 extern uint8_t MatchADCChannelToData(uint8_t channelx, uint16_t ADC_Databuffer_channelx);
 
 void __weak Hook_1secEventC(void) // update new rpm
@@ -310,7 +304,7 @@ void __weak Hook_1secEventC(void) // update new rpm
 
     // *(unsigned short *)0x4848 =0xa5a5;
     // printf("0x4848:%x\n",*(unsigned short *)0x4848);
-    
+
     // *(unsigned short *)0x484a =0xa5a5;
     // printf("0x484a:%x\n",*(unsigned short *)0x484a);
 
@@ -335,7 +329,7 @@ void __weak Hook_1secEventC(void) // update new rpm
         //     adc_cnt = 0;
         //     mode_en ^= 1;
         // }
-    
+
         // 软件
         // if(counter<10)
         // {
@@ -431,10 +425,10 @@ void __weak Hook_1minEvent(void)
 
 #if SUPPORT_8042DEBUG_OUTPUT
     MinuteCnt++;
-    if (MinuteCnt >= 2)
+    if(MinuteCnt >= 2)
     {
         MinuteCnt = 0;
-        for (int i = 0; i <= Debug_Num; i++)
+        for(int i = 0; i <= Debug_Num; i++)
         {
             dprint("Cnt:%d,Data:%x\n", i, Debug_8042[Debug_Num]);
             Debug_8042[Debug_Num] = 0;
@@ -451,15 +445,14 @@ void __weak Hook_1minEvent(void)
 //
 //-----------------------------------------------------------------------------
 void Service_WaitPS2_Handle(void)
-{
-}
+{}
 /* ----------------------------------------------------------------------------
  * FUNCTION: Service_LPCRST
  * LPC RESET
  * ------------------------------------------------------------------------- */
 void Service_LPCRST(void)
 {
-    if (F_Service_LPCRST == 1)
+    if(F_Service_LPCRST == 1)
     {
         F_Service_LPCRST = 0;
         A20GATE_ON(); // FIXME xia

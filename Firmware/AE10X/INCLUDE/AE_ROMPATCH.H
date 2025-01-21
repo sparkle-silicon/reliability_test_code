@@ -1,7 +1,7 @@
 /*
  * @Author: dejavuwdh
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-12-19 16:24:58
+ * @LastEditTime: 2025-01-16 17:28:21
  * @Description:
  *
  *
@@ -213,8 +213,8 @@ typedef struct _FixedFlashInfo
             uint32_t LAST8M_DISABLE : 1;//0:从后8M开始读取 1: 全16M
             uint32_t LowAddr_OFFSET : 2;//低4位选择0:只MIRROR上次地址，1:64k为间隔，2:16k查找范围，3:4k查找范围（默认）
             uint32_t HighAddr_SPACE : 3;//外部FLASH查找地址最高位FLASH_HighAddr_SPACE+17（小于它）,最高只查到0xffffff为止
-            uint32_t MUST_MIRROR_DISABLE : 1;//0：无论是否不同，必MIRROR，1：不同才MIRROR
-            uint32_t NOCARE : 8;//SYSCTL_RESERVERD 高8位//并不关心
+            uint32_t MUST_MIRROR_DISABLE : 1;//0：无论是否不同，必MIRROR，1：不同才MIRROR(无效)
+            uint32_t NOCARE : 8;//SYSCTL_RESERVERD 高8位//并不关心，位对齐用，因为涉及
             uint32_t PWM_Enable : 1;//MIRROR期间 0：关闭pwm闪烁，1：开启pwm闪烁
             uint32_t PWMn_Switch : 1;//启用后mirror期间pwm n闪烁(n== 0/1)
             uint32_t SPI_Switch : 1;//0:quad 四线SPI 1:dual 二线SPI

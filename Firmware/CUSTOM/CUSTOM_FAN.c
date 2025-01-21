@@ -130,6 +130,7 @@ static BYTE ReadLastDCR(BYTE channel)
 }
 static BYTE FAN_Update_PWM_DCR(BYTE channel, BYTE dcr, BYTE step)
 {
+
 	/* 引脚复用 */
 	sysctl_iomux_config(GPIOA, channel, 1);
 	/* 极性检查 */

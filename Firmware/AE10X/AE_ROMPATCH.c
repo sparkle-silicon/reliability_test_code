@@ -1,7 +1,7 @@
 /*
  * @Author: dejavuwdh
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-01-16 11:42:30
+ * @LastEditTime: 2025-01-16 17:46:59
  * @Description:
  *
  *
@@ -486,7 +486,7 @@ void write_efuse_data(uint32_t *data)
 		efuse_data.efuse_info.crypto_jtag_disable = 0x0;
 		efuse_data.efuse_info.jtag_disable = 0x0;
 		efuse_data.efuse_info.security = 0x1;
-		efuse_data.efuse_info.speedup = 0x0;
+		efuse_data.efuse_info.speedup = 0x1;
 		efuse_data.efuse_info.reserved1 = 0x0;
 	}
 	else

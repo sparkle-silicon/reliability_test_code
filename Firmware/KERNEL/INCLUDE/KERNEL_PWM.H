@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2023-12-29 10:04:17
+ * @LastEditTime: 2025-01-21 11:50:02
  * @Description:
  *
  *
@@ -80,6 +80,13 @@
 #define Tach_Int_Enable(channel)	(TACH_INT |= (0x1 << channel))
 #define Tach_Int_Disable(channel)	(TACH_INT &= ~(0x1 << channel))
 #define Tach_Int_Enable_Read(channel)		((TACH_INT & (0x1 << channel)) != 0)
+
+#define TACH_CLK_PRESCALE 480
+#define TACH_CLK (HIGHT_CHIP_CLOCK/TACH_CLK_PRESCALE)
+#define TACH_MINUTE 60
+#define TACH_HOUR 3600
+#define TACH_DAY 86400
+#define TACH_RPM(tach_cycle) ((TACH_MINUTE*(TACH_CLK))/(tach_cycle))
 //*****************************************************************************
 // pwm registers struct
 //*****************************************************************************
