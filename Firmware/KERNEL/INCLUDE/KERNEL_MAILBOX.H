@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-01-20 17:34:22
+ * @LastEditTime: 2025-01-21 17:39:19
  * @Description:
  *
  *
@@ -63,7 +63,7 @@ extern volatile bool command_processed;
 #define MAILBOX_CRYPTO_INT C2EINT
 #define MAILBOX_CRYPTO_INTEN C2EINTEN
 
-#ifdef crypto_subsystem0
+#ifdef crypto_subsystem
 #define MAILBOX_SELF_CMD MAILBOX_CRYPTO_CMD
 #define MAILBOX_SELF_INFO1 MAILBOX_CRYPTO_INFO1
 #define MAILBOX_SELF_INFO2 MAILBOX_CRYPTO_INFO2
