@@ -115,8 +115,8 @@
 #define ICTL_MODULE_EN 1
 #define I2C_MODULE_EN 1
 #define PS2_MODULE_EN 1
-#define KBS_MODULE_EN 1
-#define SPI_MODULE_EN 0
+#define KBS_MODULE_EN 0
+#define SPI_MODULE_EN 1
 #define WDT_MODULE_EN 0
 #define PWM_MODULE_EN 1
 #define TACH_MODULE_EN 0
@@ -147,7 +147,7 @@
 /* ACPI EC SCI Interrupt Response Timing ( 8-16uSec).*/
 #define ACPI_SCI_Response 0
 
-#define KBD_8_n_SWITCH 18 // n:8*n
+#define KBD_8_n_SWITCH 16 // n:8*n
 //#define KBD_SN1211        // kbd demo code if nos's run sn1211 please undef
 #if (KBD_8_n_SWITCH == 16)
 #define KBD_8_16

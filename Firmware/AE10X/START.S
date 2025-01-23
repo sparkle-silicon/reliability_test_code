@@ -163,7 +163,7 @@ __scatterload_shareram://将SRAM的空间清零
 	sw zero, (a0)
 	addi a0, a0, 4
 	bltu a0, a1, 1b
- #if 0//将FLASH中ROM的内容拷贝到SRAM（FPGA 中将ROM看作可写的RAN空间）中
+ #if 0//将FLASH中ROM的内容拷贝到SRAM（FPGA 中将ROM看作可写的RAN空间）中 
 #if (defined(AE103)||defined(GLE01))&&(!defined(DUBLE_FIRMWARE2))   
 __scatterload_rom:
 2:

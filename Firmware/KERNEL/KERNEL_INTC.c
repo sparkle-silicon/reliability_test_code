@@ -272,6 +272,7 @@ void intr0_gpio_a3(void)
 #endif
 	GPIO0_EOI0 |= (0x1 << 3); // clear int
 #if SUPPORT_GPIO_WAKEUP
+	printf("intr0_gpio_a3 exit low power mode\n");
 	Exit_LowPower_Mode();
 #endif
 #if TEST_INTC
@@ -394,6 +395,8 @@ void intr0_gpio_a11(void)
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[43]++;
 #endif
+
+
 #if TEST_INTC
 #if INTC_MODE
 	printf("intr0_gpio_a11 mask\n");
@@ -968,6 +971,8 @@ void intr0_gpio_b17(void)
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[81]++;
 #endif
+GPIO1_EOI2 |= 0x1 << 1; //clear interrupt
+Exit_LowPower_Mode();
 #if TEST_INTC
 #if INTC_MODE
 	printf("intr0_gpio_b17 mask\n");
@@ -2498,7 +2503,7 @@ void intr1_spim(void)
 		{
 			while(!(SPIM_SR & 0x4))
 				;
-			data = SPIM_DA0;
+			data = SPIM_DA;
 			if(data == 0xff)
 			{
 				// irqprint("data is %#x \n",data);
@@ -2506,7 +2511,7 @@ void intr1_spim(void)
 			else
 			{
 				// irqprint("data is %#x \n", data);
-				SPIM_DA0 = 0xff;
+				SPIM_DA = 0xff;
 			}
 		}
 	}
