@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-01-21 17:39:19
+ * @LastEditTime: 2025-02-08 18:58:06
  * @Description:
  *
  *
@@ -135,7 +135,7 @@ while(MAILBOX_OTHER_INT&MAILBOX_IRQ_BIT(irq_number)); \
 
 #define MAILBOX_CMD_CRYPTO_SELFCHECK 0x1//子系统自检
 // #define MAILBOX_CMD_SECURE_STORAGE 0x2//安全区域设置
-// #define MAILBOX_CMD_FIRMWARE_EXTENSION 0x3//固件扩展
+#define MAILBOX_CMD_FIRMWARE_EXTENSION 0x3//固件扩展
 // #define MAILBOX_CMD_FIRMWARE_EXTENSION 0x01000000//固件扩展
 #define MAILBOX_CMD_APB_RESOURCE_ALLOC 0x4//APB资源分配
 #define MAILBOX_CMD_READ_FLASHUID 0x5//读EFLASHID

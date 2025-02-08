@@ -45,30 +45,46 @@ void Process_Tasks(void)
 
 void mailbox_init(void)
 {
-    E2CINTEN |= 0xFFFFFFFF; // 打开主系统到子系统32个mailbox中断使能
+    MAILBOX_SELF_CMD =
+        MAILBOX_SELF_INFO1 =
+        MAILBOX_SELF_INFO2 =
+        MAILBOX_SELF_INFO3 =
+        MAILBOX_SELF_INFO4 =
+        MAILBOX_SELF_INFO5 =
+        MAILBOX_SELF_INFO6 =
+        MAILBOX_SELF_INFO7 =
+        MAILBOX_SELF_INT =
+        MAILBOX_SELF_INTEN = 0x00000000;
+    MAILBOX_SELF_INTEN = 0xffffffff; // 使能所有中断(后续改为有轮询效中断)
+    do
+    {
+        MAILBOX_OTHER_INT = MAILBOX_OTHER_INT; // 清除所有中断
+        nop;
+    }
+    while(MAILBOX_OTHER_INT);
 }
 
 void Mailbox_ExecuteFirmwareUpdate(void *param)
 {
     TaskParams *params = (TaskParams *)param;
-    E2CINFO0 = 0x10;                              // 命令字
-    E2CINFO1 = params->E2C_INFO1;                 // 固件更新模式
-    E2CINFO2 = params->E2C_INFO2;                 // 更新大小
-    E2CINFO3 = params->E2C_INFO3;                 // 目标地址
-    E2CINFO4 = params->E2C_INFO4;                 // 起始地址
-    if(((BYTE)E2CINFO1==0x1)||((BYTE)E2CINFO1==0x2))// 配置外部flash复用功能
+    MAILBOX_SELF_CMD = MAILBOX_CMD_FIRMWARE_UPDATE;                              // 命令字
+    MAILBOX_SELF_INFO1 = params->E2C_INFO1;                 // 固件更新模式
+    MAILBOX_SELF_INFO2 = params->E2C_INFO2;                 // 更新大小
+    MAILBOX_SELF_INFO3 = params->E2C_INFO3;                 // 目标地址
+    MAILBOX_SELF_INFO4 = params->E2C_INFO4;                 // 起始地址
+    if(((BYTE)MAILBOX_SELF_INFO1 == 0x1) || ((BYTE)MAILBOX_SELF_INFO1 == 0x2))// 配置外部flash复用功能
     {
-        sysctl_iomux_config(GPIOB,17,0x1);//wp
-        sysctl_iomux_config(GPIOB,20,0x1);//mosi
-        sysctl_iomux_config(GPIOB,21,0x1);//miso
-        sysctl_iomux_config(GPIOB,22,0x1);//cs0
-        sysctl_iomux_config(GPIOB,23,0x1);//clk
-        sysctl_iomux_config(GPIOB,30,0x1);//hold
-        if(SYSCTL_RST1&0x00000100)
+        sysctl_iomux_config(GPIOB, 17, 0x1);//wp
+        sysctl_iomux_config(GPIOB, 20, 0x1);//mosi
+        sysctl_iomux_config(GPIOB, 21, 0x1);//miso
+        sysctl_iomux_config(GPIOB, 22, 0x1);//cs0
+        sysctl_iomux_config(GPIOB, 23, 0x1);//clk
+        sysctl_iomux_config(GPIOB, 30, 0x1);//hold
+        if(SYSCTL_RST1 & 0x00000100)
         {
             SYSCTL_RST1 &= 0xfffffeff; // 释放复位
         }
-        if (SPIF_STATUS & BIT4)               // 0:2线，1:4线
+        if(SPIF_STATUS & BIT4)               // 0:2线，1:4线
         {
             SPIF_CTRL0 |= BIT1; // 成功则使用4线模式
         }
@@ -77,55 +93,55 @@ void Mailbox_ExecuteFirmwareUpdate(void *param)
             SPIF_CTRL0 &= ~BIT1; // 失败使用二线模式
         }
     }
-    E2CINT = 0x2;                                 // 触发对应中断
+    MAILBOX_SET_IRQ(MAILBOX_Firmware_IRQ_NUMBER);                                 // 触发对应中断
     command_processed = false;
 }
 
 void Mailbox_FW_Extension_Trigger(void)
 {
-    E2CINFO0 = 0x3;       // 命令字
-    E2CINFO1 = 0x1070800; // 扩展固件信息
-    E2CINT = 0x1;         // 触发子系统中断
+    MAILBOX_SELF_CMD = MAILBOX_CMD_FIRMWARE_EXTENSION;       // 命令字
+    MAILBOX_SELF_INFO1 = 0x1070800; // 扩展固件信息
+    MAILBOX_SET_IRQ(MAILBOX_Control_IRQ_NUMBER);         // 触发子系统中断
     command_processed = false;
 }
 
 void Mailbox_Read_EFUSE_Trigger(void)
 {
-    E2CINFO0 = 0x20; // 命令字
-    E2CINT = 0x4;    // 触发子系统中断
+    MAILBOX_SELF_CMD = MAILBOX_CMD_READ_EFUSE; // 命令字
+    MAILBOX_SET_IRQ(MAILBOX_Efuse_IRQ_NUMBER);    // 触发子系统中断
     command_processed = false;
 }
 
 void Mailbox_Read_FLASHID_Trigger(void)
 {
-    E2CINFO0 = 0x5; // 命令字
-    E2CINT = 0x1;   // 触发子系统中断
+    MAILBOX_SELF_CMD = MAILBOX_CMD_READ_FLASHUID; // 命令字
+    MAILBOX_SET_IRQ(MAILBOX_Control_IRQ_NUMBER);   // 触发子系统中断
     command_processed = false;
 }
 
 void Mailbox_Read_FLASHUID_Trigger(void)
 {
     dprint("Read_FLASHUID_Trigger\n");
-    E2CINFO0 = 0x8; // 命令字
-    E2CINT = 0x1;   // 触发子系统中断
+    MAILBOX_SELF_CMD = MAILBOX_CMD_READ_FLASHUUID; // 命令字
+    MAILBOX_SET_IRQ(MAILBOX_Control_IRQ_NUMBER);   // 触发子系统中断
     command_processed = false;
 }
 
 void Mailbox_APB2_Source_Alloc_Trigger(void *param)
 {
     TaskParams *params = (TaskParams *)param;
-    E2CINFO0 = 0x4; // 命令字
-    E2CINFO1 = params->E2C_INFO1;
-    E2CINT = 0x1; // 触发子系统中断
+    MAILBOX_SELF_CMD = MAILBOX_CMD_APB_RESOURCE_ALLOC; // 命令字
+    MAILBOX_SELF_INFO1 = params->E2C_INFO1;
+    MAILBOX_SET_IRQ(MAILBOX_Control_IRQ_NUMBER); // 触发子系统中断
     command_processed = false;
 }
 
 void Mailbox_Cryp_Selfcheck(void *param)
 {
     TaskParams *params = (TaskParams *)param;
-    E2CINFO1 = params->E2C_INFO1;
-    E2CINFO0 = 0x1;
-    E2CINT = 0x1;
+    MAILBOX_SELF_INFO1 = params->E2C_INFO1;
+    MAILBOX_SELF_CMD = MAILBOX_CMD_CRYPTO_SELFCHECK;
+    MAILBOX_SET_IRQ(MAILBOX_Control_IRQ_NUMBER);
     command_processed = false;
 }
 
@@ -133,9 +149,9 @@ void Mailbox_SetClockFrequency(void *param)
 {
     TaskParams *params = (TaskParams *)param;
     // CHIP_CLOCK_SWITCH = params->E2C_INFO1;//设置多少分频
-    E2CINFO1 = params->E2C_INFO1;//通知子系统设置多少分频
-    E2CINFO0 = 0x06;
-    E2CINT = 0x1;
+    MAILBOX_SELF_INFO1 = params->E2C_INFO1;//通知子系统设置多少分频
+    MAILBOX_SELF_CMD = MAILBOX_CMD_FREQ_SYNC;
+    MAILBOX_SET_IRQ(MAILBOX_Control_IRQ_NUMBER);
     command_processed = false;
 }
 
@@ -152,7 +168,7 @@ void AwaitCrypSelfcheck(void)
         Service_Mailbox();
     }
     EFUSE_Avail = 0;
-    if((C2EINFO1 & BIT3) != 0)//crypto need selfcheck
+    if((MAILBOX_OTHER_INFO1 & BIT3) != 0)//crypto need selfcheck
     {
         Params.E2C_INFO1 = 0x0;
         task_head = Add_Task(Mailbox_Cryp_Selfcheck, Params, &task_head);//子系统自检命令触发
@@ -197,7 +213,7 @@ void CheckClockFrequencyChange(void)
         Service_Mailbox();
     }
     EFUSE_Avail = 0;
-    if(((C2EINFO2 & BIT(29)) != 0) && (CHIP_CLOCK_SWITCH != 1))//clock frequency need set
+    if(((MAILBOX_OTHER_INFO2 & BIT(29)) != 0) && (CHIP_CLOCK_SWITCH != 1))//clock frequency need set
     {
         // CHIP_CLOCK_SWITCH = 1;//设置全局分频变量
         SYSCTL_CLKDIV_OSC96M = (CHIP_CLOCK_SWITCH - 1);//96M
@@ -220,7 +236,7 @@ void Transfer_IntFlashToExtFlash(uint32_t destAddr, uint32_t srcAddr, size_t dat
     Params.E2C_INFO2 = dataSize;
     Params.E2C_INFO3 = destAddr;
     Params.E2C_INFO4 = srcAddr;
-    Add_Task(Mailbox_ExecuteFirmwareUpdate,Params,&task_head);
+    Add_Task(Mailbox_ExecuteFirmwareUpdate, Params, &task_head);
 }
 
 void Transfer_ExtFlashToIntFlash(uint32_t destAddr, uint32_t srcAddr, size_t dataSize)
@@ -230,7 +246,7 @@ void Transfer_ExtFlashToIntFlash(uint32_t destAddr, uint32_t srcAddr, size_t dat
     Params.E2C_INFO2 = dataSize;
     Params.E2C_INFO3 = destAddr;
     Params.E2C_INFO4 = srcAddr;
-    Add_Task(Mailbox_ExecuteFirmwareUpdate,Params,&task_head);
+    Add_Task(Mailbox_ExecuteFirmwareUpdate, Params, &task_head);
 }
 /*************************************eRPMC Mailbox***************************************/
 #define OP1_Code 0x9B
@@ -308,12 +324,12 @@ void Mailbox_WriteRootKey_Trigger(void)
         pTarget[i / 4] = data;
     }
 
-    E2CINFO0 = 0x30;       // 命令字
-    E2CINFO1 = eRPMC_WriteRootKey_m1.Opcode
+    MAILBOX_SELF_CMD = MAILBOX_CMD_WRITE_ROOTKEY;       // 命令字
+    MAILBOX_SELF_INFO1 = eRPMC_WriteRootKey_m1.Opcode
         | (eRPMC_WriteRootKey_m1.Cmd_Type << 8)
         | (eRPMC_WriteRootKey_m1.Counter_Addr << 16)
         | (eRPMC_WriteRootKey_m1.Rsvd << 24);
-    E2CINT = 0x8;          // 触发子系统中断
+    MAILBOX_SET_IRQ(MAILBOX_eRPMC_IRQ_NUMBER);          // 触发子系统中断
     command_processed = false;
     eRPMC_Busy_Status = 1;
 }
@@ -355,13 +371,13 @@ void Mailbox_UpdateHMACKey_Trigger(void)
         pTarget[i / 4] = data;
     }
 
-    E2CINFO0 = 0x31;       // 命令字
-    E2CINFO1 = eRPMC_UpdateHMACKey.Opcode
+    MAILBOX_SELF_CMD = MAILBOX_CMD_UPDATE_HMACKEY;       // 命令字
+    MAILBOX_SELF_INFO1 = eRPMC_UpdateHMACKey.Opcode
         | (eRPMC_UpdateHMACKey.Cmd_Type << 8)
         | (eRPMC_UpdateHMACKey.Counter_Addr << 16)
         | (eRPMC_UpdateHMACKey.Rsvd << 24);
-    printf("E2CINFO1:0x%x\n", E2CINFO1);
-    E2CINT = 0x8;          // 触发子系统中断
+    printf("E2CINFO1:0x%x\n", MAILBOX_SELF_INFO1);
+    MAILBOX_SET_IRQ(MAILBOX_eRPMC_IRQ_NUMBER);           // 触发子系统中断
     command_processed = false;
     eRPMC_Busy_Status = 1;
 }
@@ -402,13 +418,13 @@ void Mailbox_IncrementCounter_Trigger(void)
         pTarget[i / 4] = data;
     }
 
-    E2CINFO0 = 0x32;       // 命令字
-    E2CINFO1 = eRPMC_IncrementCounter.Opcode
+    MAILBOX_SELF_CMD = MAILBOX_CMD_INCREMENT_COUNTER;       // 命令字
+    MAILBOX_SELF_INFO1 = eRPMC_IncrementCounter.Opcode
         | (eRPMC_IncrementCounter.Cmd_Type << 8)
         | (eRPMC_IncrementCounter.Counter_Addr << 16)
         | (eRPMC_IncrementCounter.Rsvd << 24);
-    printf("E2CINFO1:0x%x\n", E2CINFO1);
-    E2CINT = 0x8;          // 触发子系统中断
+    printf("E2CINFO1:0x%x\n", MAILBOX_SELF_INFO1);
+    MAILBOX_SET_IRQ(MAILBOX_eRPMC_IRQ_NUMBER);           // 触发子系统中断
     command_processed = false;
     eRPMC_Busy_Status = 1;
 }
@@ -450,12 +466,12 @@ void Mailbox_RequestCounter_Trigger(void)
         pTarget[i / 4] = data;
     }
 
-    E2CINFO0 = 0x33;       // 命令字
-    E2CINFO1 = eRPMC_RequestCounter.Opcode
+    MAILBOX_SELF_CMD = MAILBOX_CMD_REQUEST_COUNTER;       // 命令字
+    MAILBOX_SELF_INFO1 = eRPMC_RequestCounter.Opcode
         | (eRPMC_RequestCounter.Cmd_Type << 8)
         | (eRPMC_RequestCounter.Counter_Addr << 16)
         | (eRPMC_RequestCounter.Rsvd << 24);
-    E2CINT = 0x8;          // 触发子系统中断
+    MAILBOX_SET_IRQ(MAILBOX_eRPMC_IRQ_NUMBER);          // 触发子系统中断
     command_processed = false;
     eRPMC_Busy_Status = 1;
 }
@@ -471,9 +487,9 @@ void Mailbox_ReadParameter_Trigger(void)
         return;
     }
     // RequestCounter命令  往SRAM的0x31800后填入对应eRPMC数据
-    E2CINFO0 = 0x33;       // 命令字
-    E2CINFO1 = eRPMC_ReadParameters.Opcode;
-    E2CINT = 0x8;          // 触发子系统中断
+    MAILBOX_SELF_CMD = MAILBOX_CMD_REQUEST_COUNTER;       // 命令字
+    MAILBOX_SELF_INFO1 = eRPMC_ReadParameters.Opcode;
+    MAILBOX_SET_IRQ(MAILBOX_eRPMC_IRQ_NUMBER);          // 触发子系统中断
     command_processed = false;
     eRPMC_Busy_Status = 1;
 }
@@ -485,29 +501,29 @@ void Mailbox_eRPMC_Trigger(void)
     {
         if(eRPMC_CMD == Cmd_WriteRootKey)
         {
-            E2CINFO0 = 0x30; // 命令字
-            E2CINFO1 = (eSPI_OOB_WriteRootKet_MESSAGE1.Rsvd << 24) + (eSPI_OOB_WriteRootKet_MESSAGE1.Counter_Addr << 16) + (eSPI_OOB_WriteRootKet_MESSAGE1.Cmd_Type << 8) + eSPI_OOB_WriteRootKet_MESSAGE1.Opcode;
+            MAILBOX_SELF_CMD = MAILBOX_CMD_WRITE_ROOTKEY; // 命令字
+            MAILBOX_SELF_INFO1 = (eSPI_OOB_WriteRootKet_MESSAGE1.Rsvd << 24) + (eSPI_OOB_WriteRootKet_MESSAGE1.Counter_Addr << 16) + (eSPI_OOB_WriteRootKet_MESSAGE1.Cmd_Type << 8) + eSPI_OOB_WriteRootKet_MESSAGE1.Opcode;
         }
         else if(eRPMC_CMD == Cmd_UpdateHmacKey)
         {
-            E2CINFO0 = 0x31; // 命令字
-            E2CINFO1 = (eSPI_OOB_WriteRootKet_MESSAGE1.Rsvd << 24) + (eSPI_OOB_UpdateHMACKey.Counter_Addr << 16) + (eSPI_OOB_UpdateHMACKey.Cmd_Type << 8) + eSPI_OOB_UpdateHMACKey.Opcode;
+            MAILBOX_SELF_CMD = MAILBOX_CMD_UPDATE_HMACKEY; // 命令字
+            MAILBOX_SELF_INFO1 = (eSPI_OOB_WriteRootKet_MESSAGE1.Rsvd << 24) + (eSPI_OOB_UpdateHMACKey.Counter_Addr << 16) + (eSPI_OOB_UpdateHMACKey.Cmd_Type << 8) + eSPI_OOB_UpdateHMACKey.Opcode;
         }
         else if(eRPMC_CMD == Cmd_IncrementMonotonicCounter)
         {
-            E2CINFO0 = 0x32; // 命令字
-            E2CINFO1 = (eSPI_OOB_WriteRootKet_MESSAGE1.Rsvd << 24) + (eSPI_OOB_IncrementCounter.Counter_Addr << 16) + (eSPI_OOB_IncrementCounter.Cmd_Type << 8) + eSPI_OOB_IncrementCounter.Opcode;
+            MAILBOX_SELF_CMD = MAILBOX_CMD_INCREMENT_COUNTER; // 命令字
+            MAILBOX_SELF_INFO1 = (eSPI_OOB_WriteRootKet_MESSAGE1.Rsvd << 24) + (eSPI_OOB_IncrementCounter.Counter_Addr << 16) + (eSPI_OOB_IncrementCounter.Cmd_Type << 8) + eSPI_OOB_IncrementCounter.Opcode;
         }
         else if(eRPMC_CMD == Cmd_RequestMonotonicCounter)
         {
-            E2CINFO0 = 0x33; // 命令字
-            E2CINFO1 = (eSPI_OOB_WriteRootKet_MESSAGE1.Rsvd << 24) + (eSPI_OOB_RequestCounter.Counter_Addr << 16) + (eSPI_OOB_RequestCounter.Cmd_Type << 8) + eSPI_OOB_RequestCounter.Opcode;
+            MAILBOX_SELF_CMD = MAILBOX_CMD_REQUEST_COUNTER; // 命令字
+            MAILBOX_SELF_INFO1 = (eSPI_OOB_WriteRootKet_MESSAGE1.Rsvd << 24) + (eSPI_OOB_RequestCounter.Counter_Addr << 16) + (eSPI_OOB_RequestCounter.Cmd_Type << 8) + eSPI_OOB_RequestCounter.Opcode;
         }
     }
     else if(eRPMC_OPCode == OP2_Code)
     {
-        E2CINFO0 = 0x34; // 命令字
-        E2CINFO1 = eSPI_OOB_ReadParameters.Opcode;
+        MAILBOX_SELF_CMD = MAILBOX_CMD_READ_PARAMETER; // 命令字
+        MAILBOX_SELF_INFO1 = eSPI_OOB_ReadParameters.Opcode;
     }
     else
     {
@@ -557,17 +573,17 @@ void Mailbox_eRPMC_Trigger(void)
     *((VDWORD *)0x31838) = 0x00010203;
 #endif
 
-    E2CINFO0 = 0x30;       // 命令字
-    E2CINFO1 = 0x0000009B; // WriteRootKey模拟测试
-    E2CINT = 0x8;          // 触发子系统中断
+    MAILBOX_SELF_CMD = MAILBOX_CMD_WRITE_ROOTKEY;       // 命令字
+    MAILBOX_SELF_INFO1 = 0x0000009B; // WriteRootKey模拟测试
+    MAILBOX_SET_IRQ(MAILBOX_eRPMC_IRQ_NUMBER);          // 触发子系统中断
     command_processed = false;
 }
 /*************************************eRPMC Mailbox***************************************/
 void Mailbox_Control(void)
 {
-    if(C2E_CMD == 0x1)
+    if(C2E_CMD == MAILBOX_CMD_CRYPTO_SELFCHECK)
     {
-        Cry_SelfCheck_Flag = C2EINFO1;
+        Cry_SelfCheck_Flag = MAILBOX_OTHER_INFO1;
         /*子系统自检结果反馈*/
         if((BYTE)(Cry_SelfCheck_Flag & 0xff) == 0x1)
             printf("Crypto SelfCheck Pass\n");
@@ -576,17 +592,17 @@ void Mailbox_Control(void)
             printf("Crypto SelfCheck error\n");
         }
     }
-    else if(C2E_CMD == 0x3)
+    else if(C2E_CMD == MAILBOX_CMD_FIRMWARE_EXTENSION)
     {
         /* 固件扩展结果反馈 */
-        if((BYTE)(C2EINFO1 & 0xff) == 0x1)
+        if((BYTE)(MAILBOX_OTHER_INFO1 & 0xff) == 0x1)
             printf("固件扩展完毕\n");
-        else if((BYTE)(C2EINFO1 & 0xff) == 0x2)
+        else if((BYTE)(MAILBOX_OTHER_INFO1 & 0xff) == 0x2)
             printf("固件扩展失败\n");
     }
-    else if(C2E_CMD == 0x4)
+    else if(C2E_CMD == MAILBOX_CMD_APB_RESOURCE_ALLOC)
     {
-        DWORD APB_ShareMod_temp = C2EINFO1;
+        DWORD APB_ShareMod_temp = MAILBOX_OTHER_INFO1;
         if(APB_ShareMod_temp & APB_ERR) // 子系统返回失败
         {
             APB_ShareMod_temp &= ~APB_ERR;
@@ -599,19 +615,19 @@ void Mailbox_Control(void)
             printf("apb_share_mod_cry:0x%x\n", APB_ShareMod_Cry);
         }
     }
-    else if(C2E_CMD == 0x5)
+    else if(C2E_CMD == MAILBOX_CMD_READ_FLASHUID)
     {
         /* 读取内部FLASH ID */
-        if((BYTE)(C2EINFO1 & 0xff) == 0x1)
+        if((BYTE)(MAILBOX_OTHER_INFO1 & 0xff) == 0x1)
         {
-            Flash_Capacity = (1 << ((C2EINFO1 >> 24) & 0xff));
+            Flash_Capacity = (1 << ((MAILBOX_OTHER_INFO1 >> 24) & 0xff));
             printf("flash capacity:%d BYTES\n", Flash_Capacity);
-            printf("flash 9f cmd return id:0x%x\n", (C2EINFO1 >> 8));
+            printf("flash 9f cmd return id:0x%x\n", (MAILBOX_OTHER_INFO1 >> 8));
         }
-        else if((BYTE)(C2EINFO1 & 0xff) == 0x2)
+        else if((BYTE)(MAILBOX_OTHER_INFO1 & 0xff) == 0x2)
             printf("read flash failed\n");
     }
-    else if(C2E_CMD == 0x6)
+    else if(C2E_CMD == MAILBOX_CMD_FREQ_SYNC)
     {
         /* 响应子系统降频 */
         // if(CHIP_CLOCK_SWITCH == 0)
@@ -621,12 +637,12 @@ void Mailbox_Control(void)
             Module_init();//暂时保留，后续根据实际情况是否需要调用初始化
         eFlash_Forbid_Flag = 1;   // 降频到48MHz后，设置eFlash禁止主系统访问标志
     }
-    else if(C2E_CMD == 0x8)
+    else if(C2E_CMD == MAILBOX_CMD_READ_FLASHUUID)
     {
         /* 读取内部FLASH ID */
-        if((BYTE)(C2EINFO1 & 0x1) == 0x1)
-            printf("flash 9fcmd return id:0x%x 0x%x 0x%x 0x%x\n", C2EINFO5, C2EINFO4, C2EINFO3, C2EINFO2);
-        else if((BYTE)(C2EINFO1 & 0x2) == 0x2)
+        if((BYTE)(MAILBOX_OTHER_INFO1 & 0x1) == 0x1)
+            printf("flash 9fcmd return id:0x%x 0x%x 0x%x 0x%x\n", MAILBOX_OTHER_INFO5, MAILBOX_OTHER_INFO4, MAILBOX_OTHER_INFO3, MAILBOX_OTHER_INFO2);
+        else if((BYTE)(MAILBOX_OTHER_INFO1 & 0x2) == 0x2)
             printf("read flash failed\n");
     }
 }
@@ -634,11 +650,11 @@ void Mailbox_Control(void)
 void Mailbox_Firmware(void)
 {
 
-    if (C2E_CMD == 0x10)
+    if(C2E_CMD == MAILBOX_CMD_FIRMWARE_UPDATE)
     {
         /* code */
     }
-    else if(C2E_CMD == 0x11)
+    else if(C2E_CMD == MAILBOX_CMD_PAGE_DATA_CHANGE)
     {
         /* code */
     }
@@ -650,25 +666,25 @@ void Mailbox_Firmware(void)
 
 void Mailbox_Efuse(void)
 {
-    if(C2E_CMD == 0x20)
+    if(C2E_CMD == MAILBOX_CMD_READ_EFUSE)
     {
         EFUSE_Avail = 1;
-        printf("efuse:%x,%x,%x,%x,%x,%x,%x\n", C2EINFO1, C2EINFO2, C2EINFO3, C2EINFO4, C2EINFO5, C2EINFO6, C2EINFO7);
+        printf("efuse:%x,%x,%x,%x,%x,%x,%x\n", MAILBOX_OTHER_INFO1, MAILBOX_OTHER_INFO2, MAILBOX_OTHER_INFO3, MAILBOX_OTHER_INFO4, MAILBOX_OTHER_INFO5, MAILBOX_OTHER_INFO6, MAILBOX_OTHER_INFO7);
     }
 }
 
 void Mailbox_eRPMC(void)
 {
     eRPMC_Busy_Status = 0; // 清除rpmc device busy状态
-    if(C2E_CMD == 0x30)
+    if(C2E_CMD == MAILBOX_CMD_WRITE_ROOTKEY)
         eRPMC_WriteRootKey_Response();
-    else if(C2E_CMD == 0x31)
+    else if(C2E_CMD == MAILBOX_CMD_UPDATE_HMACKEY)
         eRPMC_UpdateHMACKey_Response();
-    else if(C2E_CMD == 0x32)
+    else if(C2E_CMD == MAILBOX_CMD_INCREMENT_COUNTER)
         eRPMC_IncrementCounter_Response();
-    else if(C2E_CMD == 0x33)
+    else if(C2E_CMD == MAILBOX_CMD_REQUEST_COUNTER)
         eRPMC_RequestCounter_Response();
-    else if(C2E_CMD == 0x34)
+    else if(C2E_CMD == MAILBOX_CMD_READ_PARAMETER)
         eRPMC_ReadParameter_Response();
     eRPMC_Busy_Status = 0;
 }
