@@ -86,3 +86,13 @@ extern void SPI_Send_RWcmd(uint8_t cmd, uint32_t read_addr, uint8_t cs_select);
 #define	Spim_Int_Mask_Read(type)	((SPIM_IMSR & (0x1<<type)) == 0)
 #define Spim_Int_Status(type)		((SPIM_ISR & (0x1<<type)) != 0)
 #endif /* _SPI_FLASH_H_ */
+
+extern void SPI_Write_Byte(uint8_t send_data);
+extern void spi3wireprogram(int addr,int csn);
+extern void spi3wireread(int addr,unsigned short* data,int num,int csn);
+
+extern void spim_rw_dual(int csn,int no);
+extern void spidualread(int addr,unsigned short* data,int num,int csn);
+extern void spiquadprogram(int addr,unsigned short* data,int num,int csn);
+extern void spiquadread(int addr,unsigned short* data,int num,int csn);
+extern void spim_rw_quad(int csn,int no);

@@ -465,8 +465,22 @@ void main_service(void)
 void main_loop(void)
 {
 	dprint("Enter main_service \n");
+	printf("E2CINFO7:%x\n",E2CINFO7);
 	while(1)
 	{
+		if (E2CINFO7 & 0x1) 
+		{
+			E2CINFO7 = 0x0;
+			Enter_LowPower_Mode();
+		}
+		// *(volatile uint32_t *)0x30480 = 0x1;
+		// uint32_t *cache = (uint32_t *)FLASH_BASE_ADDR;
+		// uint32_t i;
+		// for(i=0;i<=256*1024;i+=4)
+		// {
+		// 	printf("FLASH CACHE ADDR(%#05x)=%#08x",cache,*cache);
+		// 	cache++;
+		// }
 		main_service();
 	}
 }
@@ -552,6 +566,20 @@ int __weak main(void)
 	TaskParams Params = { (APB_UART1 | APB_REQ),0,0 };
 	Add_Task(Mailbox_APB2_Source_Alloc_Trigger, Params, &task_head);//分配串口1给子系统
 	//  3. jump loop
+	// SPI_Read_ID0();
+    // SPI_Block_Erase(0x0, 0);
+    // uint8_t write_data[256];
+    // uint8_t read_data[256]; 
+    // for (int i = 0; i < 256; i++) 
+	// {
+    //     write_data[i] = i;
+    // }
+    // SPI_Page_Program(0, 256, write_data, 0);
+    // SPI_Send_Cmd_Addr(read_data, 0, 256, 0);
+    // for (int i = 0; i < 256; i++)
+	// {
+    //     printf("read data buff is 0x%x\n", read_data[i]);
+    // }
 	main_loop();
 	return 0;
 }

@@ -524,12 +524,12 @@ void sysctl_iomux_spim()
 	sysctl_iomux_config(GPIOA, 20, 3); // spim_miso
 #endif
 }
-#define spim_cs_PIN_SEL 2
+#define spim_cs_PIN_SEL 1
 void sysctl_iomux_spim_cs()
 {
 #if spim_cs_PIN_SEL==1
 	sysctl_iomux_config(GPIOB, 18, 2); // csn0
-	sysctl_iomux_config(GPIOB, 4, 2); // csn1
+	sysctl_iomux_config(GPIOB, 31, 1); // csn1
 #elif spim_cs_PIN_SEL==2
 	sysctl_iomux_config(GPIOC, 15, 1); // csn0
 	sysctl_iomux_config(GPIOB, 31, 1); // csn1
