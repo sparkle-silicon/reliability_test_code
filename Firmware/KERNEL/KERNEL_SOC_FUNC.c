@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-07-17 14:28:14
+ * @LastEditTime: 2025-01-23 20:18:31
  * @Description: This is about the  national crypto algorithm implementation
  *
  *
@@ -143,7 +143,7 @@ void cec_pull_up(void)
 }
 void kbs_pull_up(void)
 {
-	for (register unsigned char i = 8; i <= 31; i++)
+	for(register unsigned char i = 8; i <= 31; i++)
 		GPIO_Pullup_Config(GPIOE, i); // gpe all pull up
 #if (KBD_8_n_SWITCH == 17 || KBD_8_n_SWITCH == 18)
 	GPIO_Pullup_Config(GPIOA, 19); // C3 kso 16
@@ -209,9 +209,9 @@ void uart_init(void)
 	flag |= BIT5;
 	baud[5] = serial_init(UARTB_CHANNEL, UARTB_BAUD);
 #endif
-	for (cnt = 0; cnt < 6; cnt++)
+	for(cnt = 0; cnt < 6; cnt++)
 	{
-		if (flag & BIT(cnt))
+		if(flag & BIT(cnt))
 		{
 			dprint("Actual baud rate of the serial port %X == %d\n", ((cnt < 4) ? cnt : ((cnt == 5) ? 0xB : 0xA)), baud[cnt]);
 		}
@@ -225,7 +225,7 @@ void smbus_init(void)
 #if I2C0_EN_Init
 	smbus0_MoudleClock_EN;
 	sysctl_iomux_i2c0();
-	printf("0x30454:%x\n",*(unsigned int *)0x30454);
+	printf("0x30454:%x\n", *(unsigned int *)0x30454);
 	//i2c0_pull_up();
 #if (DEBUGGER_OUTPUT_SWITCH == 1)
 #if (DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0)
@@ -587,7 +587,7 @@ void time_init(void)
 	timer3_MoudleClock_EN;			 // us delay
 	TIMER_Init(TIMER3, 1, 0x0, 0x1); // delay~=0.083us
 
-	while ((TIMER_TRIS & 0xf) != 0xf)
+	while((TIMER_TRIS & 0xf) != 0xf)
 		;
 	TIMER_TEOI; // clear all interrupt
 	dprint("Timer init done\n");
@@ -607,6 +607,7 @@ void time_init(void)
 	WDT_FeedDog();
 #endif
 }
+
 void __weak SECTION(".init.module") Module_init(void)
 {
 
@@ -653,7 +654,6 @@ void __weak SECTION(".init.module") Module_init(void)
 	// adc_init();
 	// 18. Initialize The timer and The watch dog
 	time_init();
-
 	// 19.Initialize The Mailboxs
 #if (GLE01 == 1)
 	mailbox_init();
@@ -661,6 +661,7 @@ void __weak SECTION(".init.module") Module_init(void)
 	SPIF_Init();
 	sysctl_iomux_lpc();
 #endif
+
 
 	dprint("End init \n");
 	return;
@@ -673,7 +674,7 @@ void exit(int __status)
 NORETURN USED void _exit(int __status)
 {
 	dprint("exit status doc %d\n", __status);
-	while (1)
+	while(1)
 		;
 }
 #endif

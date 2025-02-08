@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-01-21 11:50:02
+ * @LastEditTime: 2025-02-08 16:08:18
  * @Description:
  *
  *
@@ -116,6 +116,7 @@ extern BYTE  PWM_Enable(BYTE  pwm_no);
 extern BYTE  PWM_Disable(BYTE  pwm_no);
 extern void  PWM_CLOCK_Init(void);
 extern BYTE  PWM_Init_channel(BYTE channel, BYTE polarity, BYTE clk, BYTE ctr, BYTE dcr, BYTE step);
+extern BYTE  PWM_ReInit_channel(BYTE channel, BYTE dcr, BYTE step);
 extern BYTE  PWM_Get(spwm_str *pwm_ptr);
 extern BYTE  TACH_Enable(BYTE  tach_no);
 extern BYTE  TACH_Disable(BYTE  tach_no);

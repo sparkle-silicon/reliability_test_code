@@ -1,7 +1,7 @@
 /*
  * @Author: Maple
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-02-07 12:41:14
+ * @LastEditTime: 2025-02-08 16:09:35
  * @Description:
  *
  *
@@ -20,6 +20,51 @@
 #include "TEST_AUTOMATIC.H"
 #include "KERNEL_INCLUDE.H"
 #if TEST
+
+// void BBLED_TEST(void)//在32k的情况下运行的数据
+// {
+// 	uint8_t pwm_led_mode = 0;
+// 	{//进入低功耗模式(具体可配置未知，目的只是为了输出pwm led)
+// 		SYSCTL_SWITCH_PLL = 0;//0x304D4=sleep mode,32K clock,32.768K clock
+// 		SYSCTL_PMUCSR |= BIT(20);//0x30498 = enable WFI
+// 	}
+// //配置TIMER2定时器中断2sec唤醒一次
+// 	SYSCTL_CLKDIV_TMR2 = TIMER2_Division;//配置TMR2分频=0
+// 	timer2_MoudleClock_EN;//enable TMR2 mode
+// 	TIMER_Init(TIMER2, (LOW_CHIP_CLOCK / (2 << TIMER2_Division)/*clock=*/ * 2/*sec*/), 0x1/*loop*/, 0x0/**/);
+// 	//配置PWM波输出
+// 	pwm_MoudleClock_EN;
+// 	PWM_CTRL |= PRESCALE_4;//4分频32000/4=8000
+// 		/* pwm_scale */
+// 	PWM_SCALER0 = 0;//8000/1=8000
+// 	PWM_SCALER1 = 0;//8000/1=8000
+// 	PWM_SCALER2 = 0;//8000/1=8000
+// 	PWM_SCALER3 = 0;//8000/1=8000
+// 	PWM_CTR0_1 = 0x3f3f;//CTR=64-1
+// 	PWM_CTR2_3 = 0x3f3f;//CTR=64-1
+// 	sysctl_iomux_pwm0();
+
+// 	// printf("wfi\n");//uart 输出，可屏蔽
+// 	PWM_Init_channel(PWM_CHANNEL0, PWM_LOW, PWM_CLK0, PWM_CTR0, pwm_led_mode, 1);//一次步进1，步进64次
+// 	while(1)//被TIMER2中断唤醒后继续跑，重新进入低功耗
+// 	{
+// 		// printf("pwm_led_mode = %#x\n", pwm_led_mode);//uart 输出，可屏蔽
+// 		// while(!(PRINTF_LSR & UART_LSR_TEMP));//uart 输出，可屏蔽
+// 		PWM_ReInit_channel(PWM_CHANNEL0, pwm_led_mode, 1);
+// 		asm volatile("wfi");//进入低功耗模式
+// 		pwm_led_mode = (~pwm_led_mode) & 0x3f;//0/0x3f
+// 	}
+// 	// printf("exit wfi\n");//uart 输出，可屏蔽
+// //退出低功耗模式(恢复现场)
+// 	// PWM_CLOCK_Init();
+// 	// sysctl_iomux_pwm0();
+// 	// PWM_Init_channel(PWM_CHANNEL0, PWM_LOW, PWM_CLK0, PWM_CTR0, 98, 0);
+
+// 	// TIMER_Init(TIMER2, TIMER2_1ms, 0x1, 0x0); // 1ms service计时函数
+// 	pwm_led_mode = 0;
+// 	return;
+// }
+
 extern lpc_mon lpc_stat;
 extern BYTE Write_buff[256];
 extern BYTE Read_buff[256];
@@ -209,24 +254,34 @@ void test_service(void)
 //----------------------------------------------------------------------------
 extern BYTE RPMC_OOB_TempArr[80];
 // 将一个字符转换为对应的十六进制值
-unsigned char hexCharToValue(char c) {
-    if (c >= '0' && c <= '9') {
-        return c - '0';
-    } else if (c >= 'a' && c <= 'f') {
-        return c - 'a' + 10;
-    } else if (c >= 'A' && c <= 'F') {
-        return c - 'A' + 10;
-    } else {
-        return 0; // 如果不是合法的十六进制字符，返回0
-    }
+unsigned char hexCharToValue(char c)
+{
+	if(c >= '0' && c <= '9')
+	{
+		return c - '0';
+	}
+	else if(c >= 'a' && c <= 'f')
+	{
+		return c - 'a' + 10;
+	}
+	else if(c >= 'A' && c <= 'F')
+	{
+		return c - 'A' + 10;
+	}
+	else
+	{
+		return 0; // 如果不是合法的十六进制字符，返回0
+	}
 }
 
 // 将十六进制字符串转换为字节数组
-void hexStringToByteArray(const char* hexString, unsigned char* byteArray, int byteArraySize) {
-    for (int i = 0; i < byteArraySize; i++) {
-        // 每两个字符组成一个字节
-        byteArray[i] = (hexCharToValue(hexString[i * 2]) << 4) | hexCharToValue(hexString[i * 2 + 1]);
-    }
+void hexStringToByteArray(const char *hexString, unsigned char *byteArray, int byteArraySize)
+{
+	for(int i = 0; i < byteArraySize; i++)
+	{
+// 每两个字符组成一个字节
+		byteArray[i] = (hexCharToValue(hexString[i * 2]) << 4) | hexCharToValue(hexString[i * 2 + 1]);
+	}
 }
 int test_loop(void)
 {

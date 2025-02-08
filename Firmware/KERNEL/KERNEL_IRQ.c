@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-07-17 14:43:08
+ * @LastEditTime: 2025-01-23 20:43:03
  * @Description:
  *
  *
@@ -517,46 +517,46 @@ void __interrupt SECTION(".interrupt.ADC_HANDLER") ADC_HANDLER(void)
 	Intr_num[20]++;
 #endif
 	irqprint(irq_string, __FUNCTION__, 20);
-	BYTE ADC_ValidStatus_1 = ADC_INTSTAT&0xff;
-	BYTE ADC_ValidStatus_2 = (ADC_INTSTAT>>8)&0xff;
+	BYTE ADC_ValidStatus_1 = ADC_INTSTAT & 0xff;
+	BYTE ADC_ValidStatus_2 = (ADC_INTSTAT >> 8) & 0xff;
 	// dprint("ADC_INTSTAT_int:%x\n",ADC_INTSTAT);
 	// dprint("ADC_ValidStatus_1 is 0x%x\n",ADC_ValidStatus_1);
 	// dprint("ADC_ValidStatus_2 is 0x%x\n",ADC_ValidStatus_2);
-	for(short i=0;i<8;i++)
+	for(short i = 0; i < 8; i++)
 	{
-		if(ADC_ValidStatus_1 & (1<<i))
+		if(ADC_ValidStatus_1 & (1 << i))
 		{
 			// printf("i:======%x\n",i);
 			(&ADC_Data0)[i] = ADC_ReadData(i);
-			ADC_INTSTAT |=1<<i;		//清除中断
-			dprint("ADC%d:0x%x\n",i,(&ADC_Data0)[i]);
+			ADC_INTSTAT |= 1 << i;		//清除中断
+			dprint("ADC%d:0x%x\n", i, (&ADC_Data0)[i]);
 		}
-		if(ADC_ValidStatus_2 &(1<<i))
+		if(ADC_ValidStatus_2 & (1 << i))
 		{
-			if(i<3 && i>=0)
+			if(i < 3 && i >= 0)
 			{
-				ADC_INTSTAT|=1<<(i+8);		//清除中断
-				printf("compare%d: compare failed\n",i);
+				ADC_INTSTAT |= 1 << (i + 8);		//清除中断
+				printf("compare%d: compare failed\n", i);
 			}
 		}
 	}
-	#if TEST_10TIMES
-		if((((ADC_CTRL>>7)&0x3)==0x2) || (((ADC_CTRL>>7)&0x3)==0x3) || (((ADC_CTRL>>7)&0x3)==0x1) )//连续触发 auto samp
-		// if((((ADC_CTRL>>7)&0x3)==0x2))
+#if TEST_10TIMES
+	if((((ADC_CTRL >> 7) & 0x3) == 0x2) || (((ADC_CTRL >> 7) & 0x3) == 0x3) || (((ADC_CTRL >> 7) & 0x3) == 0x1))//连续触发 auto samp
+	// if((((ADC_CTRL>>7)&0x3)==0x2))
+	{
+		//在此测试连续，
+		if(counter_1 < 10)
 		{
-			//在此测试连续，
-			if(counter_1<10)
-			{
-				counter_1++;
-				printf("counter_1:%x\n",counter_1);
-			}
-			else
-			{
-				counter_1=0;
-				ADC__TriggerMode_Config(SW_SAMPLE); //停止连续模式
-			}
+			counter_1++;
+			printf("counter_1:%x\n", counter_1);
 		}
-	#endif
+		else
+		{
+			counter_1 = 0;
+			ADC__TriggerMode_Config(SW_SAMPLE); //停止连续模式
+		}
+	}
+#endif
 }
 void __interrupt SECTION(".interrupt.UART0_HANDLER") UART0_HANDLER(void)
 {
@@ -680,25 +680,25 @@ void __interrupt SECTION(".interrupt.UARTA_HANDLER") UARTA_HANDLER(void)
 #endif
 #endif
 #endif
-	uart_crtpram_updatebuffer[uart_crypram_updateindex++]=UARTA_RX;
-	if((uart_crtpram_updatebuffer[0]==0x64)&&(uart_crypram_updateindex>=12))
+	uart_crtpram_updatebuffer[uart_crypram_updateindex++] = UARTA_RX;
+	if((uart_crtpram_updatebuffer[0] == 0x64) && (uart_crypram_updateindex >= 12))
 	{
-		for(int i=0;i<12;i++)
+		for(int i = 0; i < 12; i++)
 		{
-			if(uart_crtpram_updatebuffer[i]!=update_crypram_cmd[i])
+			if(uart_crtpram_updatebuffer[i] != update_crypram_cmd[i])
 			{
-				update_crypram_flag=-1;
+				update_crypram_flag = -1;
 				break;
 			}
 		}
-		update_crypram_flag=1;
-		uart_crypram_updateindex=0;
-		uart_crtpram_updatebuffer[0]=0;
+		update_crypram_flag = 1;
+		uart_crypram_updateindex = 0;
+		uart_crtpram_updatebuffer[0] = 0;
 	}
-	else if(uart_crtpram_updatebuffer[0]!=0x64)
+	else if(uart_crtpram_updatebuffer[0] != 0x64)
 	{
-		uart_crypram_updateindex=0;
-		update_crypram_flag=0;
+		uart_crypram_updateindex = 0;
+		update_crypram_flag = 0;
 	}
 
 }
@@ -790,18 +790,18 @@ void __interrupt SECTION(".interrupt.TIMER0_HANDLER") TIMER0_HANDLER(void)
 #endif
 
 #if MOUDLE_TEST
-	int static num=0;
-	if((GPIO1_DR0)&(0x1<<0))//pb0翻转
+	int static num = 0;
+	if((GPIO1_DR0) & (0x1 << 0))//pb0翻转
 	{
-		GPIO1_DR0 &=(0x0<<0);//GPIO输出寄存器原为1时清0
+		GPIO1_DR0 &= (0x0 << 0);//GPIO输出寄存器原为1时清0
 	}
 	else
 	{
-		GPIO1_DR0 |=(0x1<<0);//GPIO输出寄存器原为0时置1
+		GPIO1_DR0 |= (0x1 << 0);//GPIO输出寄存器原为0时置1
 	}
-	if(num++==100)
+	if(num++ == 100)
 	{
-		num=0;
+		num = 0;
 		printf("TIMER0\n");
 	}
 #endif
@@ -819,18 +819,18 @@ void __interrupt SECTION(".interrupt.TIMER1_HANDLER") TIMER1_HANDLER(void)
 #endif
 
 #if MOUDLE_TEST
-	int static num=0;
-	if((GPIO1_DR0)&(0x1<<1))//pb1翻转
+	int static num = 0;
+	if((GPIO1_DR0) & (0x1 << 1))//pb1翻转
 	{
-		GPIO1_DR0 &=(0x0<<1);//GPIO输出寄存器原为1时清0
+		GPIO1_DR0 &= (0x0 << 1);//GPIO输出寄存器原为1时清0
 	}
 	else
 	{
-		GPIO1_DR0 |=(0x1<<1);//GPIO输出寄存器原为0时置1
+		GPIO1_DR0 |= (0x1 << 1);//GPIO输出寄存器原为0时置1
 	}
-	if(num++==100)
+	if(num++ == 100)
 	{
-		num=0;
+		num = 0;
 		printf("TIMER1\n");
 	}
 #endif
@@ -881,20 +881,20 @@ void __interrupt SECTION(".interrupt.TIMER3_HANDLER") TIMER3_HANDLER(void)
 #endif
 
 #if MOUDLE_TEST
-	int static num=0;
-	if((GPIO1_DR0)&(0x1<<3))//pb1翻转
+	int static num = 0;
+	if((GPIO1_DR0) & (0x1 << 3))//pb1翻转
 	{
-		GPIO1_DR0 &=(0x0<<3);//GPIO输出寄存器原为1时清0
+		GPIO1_DR0 &= (0x0 << 3);//GPIO输出寄存器原为1时清0
 	}
 	else
 	{
-		GPIO1_DR0 |=(0x1<<3);//GPIO输出寄存器原为0时置1
+		GPIO1_DR0 |= (0x1 << 3);//GPIO输出寄存器原为0时置1
 	}
-	if(num++==100)
+	if(num++ == 100)
 	{
-		num=0;
+		num = 0;
 		printf("TIMER3\n");
-	}
+}
 #endif
 
 	// irqprint ("%s","--------Begin TIMER3 handler----Vector mode\n");

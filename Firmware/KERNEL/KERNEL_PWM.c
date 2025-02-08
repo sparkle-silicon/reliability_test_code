@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-01-17 16:58:49
+ * @LastEditTime: 2025-02-08 16:07:45
  * @Description:
  *
  *
@@ -243,6 +243,19 @@ void  PWM_CLOCK_Init(void)
 	PWM_CTR0_1 = PWM_CTR01;
 	PWM_CTR2_3 = PWM_CTR23;
 }
+BYTE  PWM_ReInit_channel(BYTE channel, BYTE dcr, BYTE step)
+{
+	register BYTE offset = 0;
+	register BYTE shift = 0;
+	channel &= 0x7;
+	dcr &= 0xff;
+	offset = PWM_DCR0_1_OFFSET + ((channel & 0x06));
+	shift = ((channel & 0x1) << 3);
+	PWM_REG(offset) &= ~(0xFF << shift);
+	PWM_REG(offset) |= (dcr << shift);
+	return 0;
+}
+
 //*****************************************************************************
 //
 //  To enable tach channel [x] 

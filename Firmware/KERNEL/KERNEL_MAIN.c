@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-01-16 11:42:42
+ * @LastEditTime: 2025-02-08 16:07:05
  * @Description:
  *
  *
@@ -523,7 +523,6 @@ VBYTEP OPTIMIZE0 USED SPIF_Read_Interface(register DWORD size, register DWORD ad
 int __weak main(void)
 {
 	AutoON_Check_AfterUpdate(); // 检查更新后重启设定标志
-								// 1. print Main interface msg
 #if DEBUG
 	printr(printf_instructions_msg);
 	printr("Core Version AE%d\n", CORE_Version);
