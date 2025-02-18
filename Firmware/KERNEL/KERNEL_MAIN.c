@@ -565,21 +565,13 @@ int __weak main(void)
 #endif
 	TaskParams Params = { (APB_UART1 | APB_REQ),0,0 };
 	Add_Task(Mailbox_APB2_Source_Alloc_Trigger, Params, &task_head);//分配串口1给子系统
+	// SPI_Init(0, SPIM_CPOL_LOW, SPIM_CPHA_FE, SPIM_MSB, 0x7, 0);
+	// sysctl_iomux_spim_cs();
+	// sysctl_iomux_spim();
+	// spim_rw_quad(0,16);//quad mode
+	// spim_rw_dual(0,16);//dual mode
+	// spim_rw_3wire(0,64);//3 wire mode
 	//  3. jump loop
-	// SPI_Read_ID0();
-    // SPI_Block_Erase(0x0, 0);
-    // uint8_t write_data[256];
-    // uint8_t read_data[256]; 
-    // for (int i = 0; i < 256; i++) 
-	// {
-    //     write_data[i] = i;
-    // }
-    // SPI_Page_Program(0, 256, write_data, 0);
-    // SPI_Send_Cmd_Addr(read_data, 0, 256, 0);
-    // for (int i = 0; i < 256; i++)
-	// {
-    //     printf("read data buff is 0x%x\n", read_data[i]);
-    // }
 	main_loop();
 	return 0;
 }
