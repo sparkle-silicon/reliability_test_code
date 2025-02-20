@@ -234,9 +234,10 @@ BYTE Wait_PS2_Device_Ack_Timeout(BYTE channel)
 	BYTE result;
 	BYTE receive_id_ack[3];
 	BYTE cnt = 0;
+	BYTE ms_cnt=0;
 	result = 0x1;
-	TIMER_Disable(TIMER1);
-	TIMER_Init(TIMER1, 0xc03f, 0x0, 0x1);
+	TIMER_Init(TIMER1, TIMER1_1ms, 0x1, 0x1);
+	Timer_Int_Clear(TIMER1);
 	do
 	{ // Wait PS2 transaction Done Status
 		BYTE status = PS2_PortN_Read_Status(channel);
@@ -255,40 +256,60 @@ BYTE Wait_PS2_Device_Ack_Timeout(BYTE channel)
 						if(channel == 0)
 						{
 							PS2_PORT0_FLAG = PORT0_DEVICE_IS_KEYBOARD;
+							result = 0x0;
+							break;
 						}
 						else if(channel == 1)
 						{
 							PS2_PORT1_FLAG = PORT1_DEVICE_IS_KEYBOARD;
+							result = 0x0;
+							break;
 						}
 						else
+						{
 							dprint("channel error\n");
+							break;
+						}
 					}
 					else
 					{
 						if(channel == 0)
 						{
 							PS2_PORT0_FLAG = PORT0_DEVICE_IS_MOUSE;
+							result = 0x0;
+							break;
 						}
 						else if(channel == 1)
 						{
 							PS2_PORT1_FLAG = PORT1_DEVICE_IS_MOUSE;
+							result = 0x0;
+							break;
 						}
 						else
+						{
 							dprint("channel error\n");
+							break;
+						}
 					}
 				}
 				cnt++;
-				result = 0x0;
 			}
 			else
 			{
 				dprint("ack data error\n");
 			}
 		}
-	}
-	while((TIMER_TRIS & 0x2) != 0x2); // waitting for overflow flag
+		if ((TIMER_TRIS & 0x2)==0x2) 
+		{
+			ms_cnt++;
+			Timer_Int_Clear(TIMER1); // clear timer interrupt flag
+    	}
+	}while(ms_cnt<=10); // 10ms timeout
 	TIMER_Disable(TIMER1);
-	dprint("PS2_PORT0_FLAG:%x,PS2_PORT1_FLAG:%x\n", PS2_PORT0_FLAG, PS2_PORT1_FLAG);
+	if(ms_cnt>=10)
+	{
+		dprint("PS2 device not response\n");
+	}
 	return (result);
 }
 //-----------------------------------------------------------------
@@ -615,7 +636,6 @@ BYTE PS2_DevScan(void)
 #if 0
 	PowerChange_Var_Clear();
 #endif
-	dprint("init ps2 modules\n");
 	if(0 != AE10x_PS2_Init())
 	{
 		dprint("init ps2 failed");

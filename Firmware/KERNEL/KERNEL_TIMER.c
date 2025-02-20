@@ -200,6 +200,31 @@ BYTE Timer_Int_Status(BYTE channel)
 			return -1;
 	}
 }
+
+/**
+ * @brief 清除timer中断状态
+ *
+ * @param channel        timer0-3选择  可选参数：TIMER0 TIMER1 TIMER2 TIMER3 分别对应timer0-3选择
+ *
+ */
+void Timer_Int_Clear(BYTE channel)
+{
+	switch(channel)
+	{
+		case TIMER0:
+			TIMER0_TEOI;
+			break;
+		case TIMER1:
+			TIMER1_TEOI;
+			break;
+		case TIMER2:
+			TIMER2_TEOI;
+			break;
+		case TIMER3:
+			TIMER3_TEOI;
+			break;
+	}	
+}
 //-----------------------------------------------------------------------------
 // Delay 1ms function use timer 1
 //-----------------------------------------------------------------------------

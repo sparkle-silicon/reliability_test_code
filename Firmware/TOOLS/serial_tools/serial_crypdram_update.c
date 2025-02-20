@@ -287,6 +287,15 @@ int send_file_data(int fd, const char *file_path)
         fclose(file);
         return -1;
     }
+    //打印哈希值
+    printf("HASH_AES_ECB_RTL_KEY: ");
+    for(int i = 0; i < 32; i++)
+    {
+        printf("%02X", CrypDramCodeinfo.HASH_AES_ECB_RTL_KEY[i]);
+    }
+    printf("\n");
+
+
 
     // 计算文件的CRC32
     char *file_data = malloc(file_size);
@@ -354,12 +363,15 @@ anew:
             {
                 read(fd, &response, 1);
                 send_data(fd, &ERR_CODE, 1);
+                printf("receive data error.send err code\n");
             }
+            // 清空接收缓冲区
+            tcflush(fd, TCIFLUSH);
             printf("Received ERR_ACK: 0x%02X\n", response);
             if(response == ERR_BYTE)
             {
                 while(wait_for_ack(fd));
-                printf("block %d retry\n", block_count);
+                printf("Sending block %d again current block crc8: 0x%x\n", block_count+1, buffer[BLOCK_SIZE]);
                 goto anew;
             }
         }

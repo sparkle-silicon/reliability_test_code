@@ -1194,7 +1194,7 @@ void KBC_Variable_Clear(void)
     TP_ACK_CUNT = 0;
     CLEAR_MASK(KBC_STA, KBC_STA_GPF);
     CLEAR_MASK(SYSTEM_MISC1, ACPI_OS);
-    Host_Flag = 0x3;
+    Host_Flag = 0x0;
     Host_Flag_INTR_KEY = 1;
     Host_Flag_INTR_AUX = 1;
     Host_Flag_SYS_FLAG = 0;
