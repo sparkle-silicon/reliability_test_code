@@ -67,7 +67,7 @@ void mailbox_init(void)
 void Mailbox_ExecuteFirmwareUpdate(void *param)
 {
     TaskParams *params = (TaskParams *)param;
-    MAILBOX_SELF_CMD = MAILBOX_CMD_FIRMWARE_UPDATE;                              // 命令字
+    MAILBOX_SELF_CMD = MAILBOX_CMD_FIRMWARE_MIRROR;                              // 命令字
     MAILBOX_SELF_INFO1 = params->E2C_INFO1;                 // 固件更新模式
     MAILBOX_SELF_INFO2 = params->E2C_INFO2;                 // 更新大小
     MAILBOX_SELF_INFO3 = params->E2C_INFO3;                 // 目标地址
@@ -650,7 +650,7 @@ void Mailbox_Control(void)
 void Mailbox_Firmware(void)
 {
 
-    if(C2E_CMD == MAILBOX_CMD_FIRMWARE_UPDATE)
+    if(C2E_CMD == MAILBOX_CMD_FIRMWARE_MIRROR)
     {
         /* code */
     }
