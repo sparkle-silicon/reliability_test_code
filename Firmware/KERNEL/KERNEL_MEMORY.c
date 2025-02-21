@@ -51,7 +51,7 @@ void SECTION(".init.mem") Specific_Mem_init(void)
         KBPendingRXCount = 0;
         TP_ACK_CUNT = 0;
         NumLockKey = 1;
-        Host_Flag = 0x3;
+        Host_Flag = 0x0;
         Host_Flag_INTR_KEY = 1;
         Host_Flag_INTR_AUX = 1;
         PowerSequence_Step = 1;

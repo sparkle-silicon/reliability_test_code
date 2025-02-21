@@ -513,15 +513,24 @@ BYTE sysctl_iomux_ps2_1()
 //
 //*****************************************************************************
 #define iomux_spim_PIN_SEL 1
+#define QPI 1
 void sysctl_iomux_spim()
 {
 	sysctl_iomux_config(GPIOA, 6, 2);  // spim_sck
 #if iomux_spim_PIN_SEL==1
 	sysctl_iomux_config(GPIOA, 19, 2); // spim_mosi
 	sysctl_iomux_config(GPIOA, 21, 2); // spim_miso
+	#if QPI
+	sysctl_iomux_config(GPIOB, 4, 2); // spim_io2
+	sysctl_iomux_config(GPIOC, 14, 2); // spim_io3
+	#endif
 #elif iomux_spim_PIN_SEL==2
 	sysctl_iomux_config(GPIOA, 22, 2); // spim_mosi
 	sysctl_iomux_config(GPIOA, 20, 3); // spim_miso
+	#if QPI
+	sysctl_iomux_config(GPIOB, 4, 2); // spim_io2
+	sysctl_iomux_config(GPIOC, 14, 2); // spim_io3
+	#endif
 #endif
 }
 #define spim_cs_PIN_SEL 1

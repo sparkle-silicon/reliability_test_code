@@ -716,9 +716,7 @@ void Reset_Crypto_Cpu(void)
     Clk_Div = SYSCTL_CLKDIV_OSC96M;
     if(SYSCTL_ESTAT & BIT(24))
     {
-        //由于fpga暂时跑不了
-        //SYSCTL_CLKDIV_OSC96M=0;
-        SYSCTL_CLKDIV_OSC96M = 3;
+        SYSCTL_CLKDIV_OSC96M=0;
     }
     else
     {
@@ -928,10 +926,26 @@ void GLE01_Cryp_Update_Function(void)
         for(int i = 0; i < 10; i++)
         {
             storeFirmwareSizeInMem(0, Temp_buffer);
-            if(CRC8(Temp_buffer, 256) != Temp_buffer[256])
+            uint8_t crc = CRC8(Temp_buffer, 256);
+            if(crc != Temp_buffer[256])
             {
                 reportDone(0, 0xEE);//回复上位机接收错误
-                printf("data crc error send 0xee to host\n");
+                //打印接收到的数据
+                for (int i = 0; i < 256; i += 16) {
+                // 打印地址
+                    printf("%08X  ", i);
+
+                    // 打印数据
+                    for (int j = 0; j < 16; j++) {
+                        if (i + j < 256) {
+                            printf("%02X ", Temp_buffer[i + j]);
+                        } else {
+                            printf("   "); // 对于不足的地方，填充空格
+                        }
+                    }
+                    printf("\n");
+                }
+                printf("c crc:%02x  r crc:%02x  send 0xee to host\n", crc, Temp_buffer[256]);
                 while((UARTA_LSR & UART_LSR_DR))//清空接收缓存
                 {
                     UARTA_RX;
@@ -947,21 +961,6 @@ void GLE01_Cryp_Update_Function(void)
                 break;
             }
         }
-        //打印接收到的数据
-        // for (int i = 0; i < 256; i += 16) {
-        // // 打印地址
-        //     printf("%08X  ", i);
-
-        //     // 打印数据
-        //     for (int j = 0; j < 16; j++) {
-        //         if (i + j < 256) {
-        //             printf("%02X ", Temp_buffer[i + j]);
-        //         } else {
-        //             printf("   "); // 对于不足的地方，填充空格
-        //         }
-        //     }
-        //     printf("\n");
-        // }
         memcpy((void *)((uint8_t *)(SRAM_BASE_ADDR + 0x100)), (void *)Temp_buffer, 256);
         E2CINFO0 = 0xcc;
         E2CINFO1 = 0x2;//发送code密文
