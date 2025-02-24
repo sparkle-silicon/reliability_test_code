@@ -1,3 +1,7 @@
+[submodule "crypto_sys"]
+	path = crypto_sys
+	url = git@github.com:sparkle-silicon/encryption_fw.git
 [submodule "ROM"]
 	path = ROM
 	url = git@github.com:sparkle-silicon/GLE01ROM.git
+
