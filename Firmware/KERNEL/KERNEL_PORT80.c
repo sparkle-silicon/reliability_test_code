@@ -42,3 +42,51 @@ void Port80_Bram_PNP_Config(void)
 	sysctl_iomux_config(GPIOB, 7, 1); //select llat
 #endif
 }
+
+void Port80_Config(uint16_t addr0,uint8_t addr1,uint32_t offset,uint8_t rgn_en)
+{
+	PNP_LD_EN |= HOST_P80_EN; //enable Port80 logic device
+	P80_Idx=0;Current_P80_Idx=0;Last_P80_Idx=0;Total_P80_Idx=0;
+	offset = offset>>6;//base:sram+0ffset<<6
+	REG32(0x304e8) &= ~0xffffff;
+	REG32(0x304e8) |= (addr0) | (addr1 << 16) | BIT(24) | BIT(25);
+	REG32(0x304e8) &= ~BIT(26);
+	REG32(0x304e8) |=rgn_en << 26;
+	SYSCTL_ESPI_P80_CFG &= ~0xf;
+	SYSCTL_ESPI_P80_CFG|=(offset&0xf);
+	SYSCTL_ESPI_P80_CFG &=~BIT(6);//interrupt enable
+}
+
+char Get_Port80_Bufferdata(uint32_t *p_data)
+{
+	uint8_t pbuf_idx=0;
+	if((P80_Idx==0) && (Total_P80_Idx==0))
+		return 1;
+	if(Total_P80_Idx>=16)
+	{
+		pbuf_idx=P80_Idx*4;
+		for(int i=0;i<16;i++)
+		{
+			if(pbuf_idx==0)
+				pbuf_idx=64;
+			pbuf_idx-=4;
+			p_data[i]=(REG8(SRAM_BASE_ADDR+((SYSCTL_ESPI_P80_CFG&0x0f)<<6)+pbuf_idx))|
+				(REG8(SRAM_BASE_ADDR+((SYSCTL_ESPI_P80_CFG&0x0f)<<6)+pbuf_idx+1)<<8)|
+				(REG8(SRAM_BASE_ADDR+((SYSCTL_ESPI_P80_CFG&0x0f)<<6)+pbuf_idx+2)<<16);
+		}
+	}
+	else
+	{
+		pbuf_idx=P80_Idx*4;
+		for(int i=0;i<Total_P80_Idx;i++)
+		{
+			if(pbuf_idx==0)
+				pbuf_idx=64;
+			pbuf_idx-=4;
+			p_data[i]=(REG8(SRAM_BASE_ADDR+((SYSCTL_ESPI_P80_CFG&0x0f)<<6)+pbuf_idx))|
+				(REG8(SRAM_BASE_ADDR+((SYSCTL_ESPI_P80_CFG&0x0f)<<6)+pbuf_idx+1)<<8)|
+				(REG8(SRAM_BASE_ADDR+((SYSCTL_ESPI_P80_CFG&0x0f)<<6)+pbuf_idx+2)<<16);
+		}
+	}
+	return 0;
+}

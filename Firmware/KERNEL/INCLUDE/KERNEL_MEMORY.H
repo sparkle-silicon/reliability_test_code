@@ -334,14 +334,15 @@
 #define CMD_UART_CNT (*(VBYTEP)(UART0_Membase + 0x7))
 #define print_number (*(VDWORDP)(UART0_Membase + 0x8))
 #define g_uart_base (*(VDWORDP)(UART0_Membase + 0xC))
-// CAN
-#define CAN_Membase ((UART0_Membase + MEMORY_016SIZE)) // 0x201E0
-#define CAN0_ReadFlag (*(VBYTEP)(CAN_Membase + 0x0))   // 接收完毕标志
-#define CAN1_ReadFlag (*(VBYTEP)(CAN_Membase + 0x1))   // 接收完毕标志
-#define CAN2_ReadFlag (*(VBYTEP)(CAN_Membase + 0x2))   // 接收完毕标志
-#define CAN3_ReadFlag (*(VBYTEP)(CAN_Membase + 0x3))   // 接收完毕标志
+// P80
+#define P80_Membase ((UART0_Membase + MEMORY_016SIZE)) // 0x201E0
+#define P80_Idx (*(VBYTEP)(P80_Membase + 0x0))
+#define Current_P80_Idx (*(VBYTEP)(P80_Membase + 0x1))
+#define Last_P80_Idx (*(VBYTEP)(P80_Membase + 0x2))
+#define Total_P80_Idx (*(VDWORDP)(P80_Membase + 0x4))
+
 /*WDT Module*/
-#define WDT_Membase ((CAN_Membase + MEMORY_008SIZE)) // 0x201E8
+#define WDT_Membase ((P80_Membase + MEMORY_008SIZE)) // 0x201E8
 /*ADC Interface*/
 #define ADC_MemBase (WDT_Membase + MEMORY_008SIZE)   // 0x201F0
 #define ADC_Data0 (*(short *)((ADC_MemBase) + 0x0))

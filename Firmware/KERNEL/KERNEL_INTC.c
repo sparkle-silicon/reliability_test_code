@@ -2064,7 +2064,28 @@ void intr1_owi(void) // 29
 }
 
 void intr1_null30(void) // 30
-{}
+{
+	uint8_t data_cnt=0;
+	if(SYSCTL_ESPI_P80_CFG&BIT(7))
+	{
+		P80_Idx=((SYSCTL_ESPI_P80_CFG&0x0f00)>>8);
+		SYSCTL_ESPI_P80_CFG|=BIT(7);
+
+		// 如果 P80_idx 自增，且发生了溢出
+		Current_P80_Idx=P80_Idx;
+		if (Current_P80_Idx <= Last_P80_Idx) {
+			// 每次溢出表示已经接收了16个数字
+			data_cnt=(16 - Last_P80_Idx + Current_P80_Idx);
+			Total_P80_Idx += data_cnt;
+		} else if (Current_P80_Idx > Last_P80_Idx) {
+			// 否则，接收到的数字为 Current_P80_Idx - Last_P80_Idx
+			data_cnt=(Current_P80_Idx - Last_P80_Idx);
+			Total_P80_Idx += data_cnt;
+		}
+		// 更新 Last_P80_Idx
+		Last_P80_Idx = Current_P80_Idx;
+	}
+}
 
 void intr1_peci(void) // 31
 {

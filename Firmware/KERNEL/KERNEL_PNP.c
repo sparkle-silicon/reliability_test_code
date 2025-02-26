@@ -94,7 +94,7 @@ void Config_PNP_Read(BYTE idx, BYTE ldn)
 {
 	int wdata, rdata, pnpdata;
 	int e2pnp_reg_rc;
-	unsigned long timeout, timeout1 = PNP_Timeout;
+	volatile unsigned int timeout = PNP_Timeout, timeout1 = PNP_Timeout;
 	// send read request
 	wdata = ((idx << 24) | (ldn << 16) | E2PNP_ReadREQ);
 	PNP_CTRL1 = wdata;
