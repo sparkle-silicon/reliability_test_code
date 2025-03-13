@@ -513,7 +513,7 @@ BYTE sysctl_iomux_ps2_1()
 //
 //*****************************************************************************
 #define iomux_spim_PIN_SEL 1
-#define QPI 1
+#define QPI 0
 void sysctl_iomux_spim()
 {
 	sysctl_iomux_config(GPIOA, 6, 2);  // spim_sck

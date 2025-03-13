@@ -1229,3 +1229,251 @@ void i2c_dw_tx_abrt(WORD i2c_channel)
 {
 	dprint("Enter txabrt, source = %#x %#x\n", I2c_Readb(I2C_TX_ABRT_SOURCE_OFFSET, i2c_channel), I2c_Readb(I2C_TX_ABRT_SOURCE_H, i2c_channel));
 }
+
+//I3C
+/********************************************************************/
+/********************************************************************/
+
+DWORD I3c_Master_Slave_Baseaddr(WORD i3c_Master_Or_Slave)
+{
+	switch(i3c_Master_Or_Slave)
+	{
+		case 0:
+			return I3C_SLAVE0_BASE_ADDR;
+		case 1:
+			return I3C_MASTER0_BASE_ADDR;
+		default:
+			dprint("Slave or Master error \n");
+			return 0;
+	}
+}
+
+DWORD I3c_Read_Word(WORD regoffset, WORD i3c_Master_Or_Slave)
+{
+	return REG32(REG_ADDR(I3c_Master_Slave_Baseaddr(i3c_Master_Or_Slave), regoffset));
+}
+
+//*****************************************************************************
+//  I2C register write by byte function
+//
+//  parameter :
+//      value : value need to be write by byte
+//      regoffset : Offset register
+//		baseaddr : baseaddr of I2C channel
+//
+//  return :
+//      none
+//*****************************************************************************
+void I3c_WriteWord(DWORD value,WORD regoffset, WORD i3c_Master_Or_Slave)
+{
+	REG32(REG_ADDR(I3c_Master_Slave_Baseaddr(i3c_Master_Or_Slave), regoffset)) = value;
+}
+
+//*****************************************************************************
+//  
+//
+//  parameter :
+//   
+//
+//  return :
+//      
+//*****************************************************************************
+//void I2c_Channel_Init(BYTE channel, DWORD speed, BYTE role, BYTE addr, BYTE spklen)
+
+//后续需要优化
+extern void I3C_Init(BYTE addr);
+void I3C_Init(BYTE addr) 
+{
+	DWORD rdata=0;
+	DWORD wdata=0;
+	DEVICE_CTRL = 0x1<<31|0x1<<28; //31:enable I3c 28:enable DMA;	
+	DEV_ADDR_TABLE_LOC1 = addr;	
+	SCL_I3C_OD_TIMING = 0x4|(0x4<<16);	
+	SCL_I3C_PP_TIMING = 0x4|(0x4<<16);	
+	DEVICE_CTRL |=(0x1<<31)|(0x1<<7)|(0x1<<28);//31:enable I3c 28:enable DMA; 7:I2c slave present
+	DEV_ADDR_TABLE_LOC1 = addr | 1<<31;
+	INTR_STATUS_EN = 1<<3 | 0x3;
+	DATA_BUFFER_THLD_CTRL = 0x0;
+	
+//写0
+	unsigned int cmd_attr = 0x1; //位段：0-2
+	unsigned int dl =1;
+	wdata = dl<<16 | cmd_attr;
+	COMMAND_QUEUE_PORT = wdata;
+	rdata = INTR_STATUS;
+
+	while((rdata & 0x08)==0)
+	{
+		vDelayXus(3);
+		rdata = INTR_STATUS;
+	}
+	cmd_attr=0;
+	uint8_t tid=0x8;
+	uint8_t toc=0x1;
+
+	wdata =0;
+	wdata =toc<<30 | tid<<3;
+	COMMAND_QUEUE_PORT = wdata;
+#ifdef DMA_EN
+// TX_DATA_PORT = 0x0; // 0x38014
+#else
+	TX_DATA_PORT = 0x0; // 0x38014
+#endif
+	TX_DATA_PORT = 0x0; // 0x38014
+	rdata = DATA_BUFFER_STATUS_LEVEL;
+	vDelayXus(2);
+	cmd_attr=1;
+	dl=1;
+	wdata = 0;
+	wdata = dl<<16 | cmd_attr;
+	COMMAND_QUEUE_PORT = wdata;
+	rdata = INTR_STATUS;
+	while((rdata & 0x08)==0)
+	{
+		vDelayXus(3);
+		rdata = INTR_STATUS;
+	}
+
+//读0
+	cmd_attr=0;
+	tid=0x8;
+	unsigned int rnw =1;
+	toc =1;
+
+	wdata = 0;
+	wdata =toc<<30 | rnw<<28 |tid<<3;
+	COMMAND_QUEUE_PORT = wdata;
+	rdata = INTR_STATUS;
+	// while((rdata & 0x02)==0)
+	// {
+	// 	vDelayXus(3);
+	// 	rdata =I3c_Read_Word(INTR_STATUS_OFFSET,I3C_Master);
+	// }
+	rdata = RX_DATA_PORT;
+
+//写1
+	cmd_attr = 0x1; //位段：0-2
+	dl =1;
+	wdata = dl<<16 | cmd_attr;
+	COMMAND_QUEUE_PORT = wdata;
+	rdata = INTR_STATUS; 
+	while((rdata & 0x08)==0)
+	{
+		rdata = INTR_STATUS; 
+	}
+	cmd_attr=0;
+	tid=0x8;
+	toc=0x1;
+
+	wdata =0;
+	wdata =toc<<30 | tid<<3;
+	COMMAND_QUEUE_PORT = wdata;
+	TX_DATA_PORT = 0x1;
+	rdata =  DATA_BUFFER_STATUS_LEVEL;
+
+//读：
+
+	cmd_attr=1;
+	dl=1;
+	wdata = 0;
+	wdata = dl<<16 | cmd_attr;
+	COMMAND_QUEUE_PORT = wdata;
+	rdata =  INTR_STATUS;
+	while((rdata & 0x08)==0)
+	{
+		vDelayXus(3);
+		rdata = INTR_STATUS;
+	}
+	vDelayXus(1);
+	cmd_attr=0;
+	tid=0x8;
+	rnw =1;
+	toc =1;
+
+	wdata = 0;
+	wdata =toc<<30 | rnw<<28 |tid<<3;
+	COMMAND_QUEUE_PORT = wdata;
+	rdata =INTR_STATUS;
+	rdata = RX_DATA_PORT; //RX
+
+// //写1
+// 	cmd_attr = 0x1; //位段：0-2
+// 	//unsigned int db =0;
+// 	dl =1;
+// 	wdata = dl<<16 | cmd_attr;
+// 	printf("wdata:%x\n",wdata);
+// 	I3c_WriteWord(wdata,COMMAND_QUEUE_PORT_OFFSET,I3C_Master);
+// 	printf("COMMAND_QUEUE_PORT_OFFSET:%x\n",REG32(I3C_MASTER0_BASE_ADDR+COMMAND_QUEUE_PORT_OFFSET));
+// 	printf("rdata:%x\n",rdata);
+// 	rdata =I3c_Read_Word(INTR_STATUS_OFFSET,I3C_Master);
+// 	printf("rdata:%x\n",rdata);
+
+// 	while((rdata & 0x08)==0)
+// 	{
+// 		vDelayXus(3);
+// 		rdata =I3c_Read_Word(INTR_STATUS_OFFSET,I3C_Master);
+// 		printf("rdata:%x\n",rdata);
+// 	}
+// 	vDelayXus(1);
+
+
+// 	cmd_attr=0;
+// 	tid=0x8;
+// 	toc=0x1;
+
+// 	wdata =0;
+// 	wdata =toc<<30 | tid<<3;
+// 	printf("wdata:%x\n",wdata);
+// 	I3c_WriteWord(wdata,COMMAND_QUEUE_PORT_OFFSET,I3C_Master);
+// 	printf("COMMAND_QUEUE_PORT_OFFSET:%x\n",REG32(I3C_MASTER0_BASE_ADDR+COMMAND_QUEUE_PORT_OFFSET));
+// 	//delay_1000ns();
+// 	//vDelayXus(1);
+// 	I3c_WriteWord(0x10,TX_DATA_PORT_OFFSET,I3C_Master);
+// 	printf("TX_DATA_PORT_OFFSET:%x\n",REG32(I3C_MASTER0_BASE_ADDR+TX_DATA_PORT_OFFSET));
+// 	rdata=I3c_Read_Word(DATA_BUFFER_STATUS_LEVEL_OFFSET,I3C_Master);
+// 	vDelayXus(2);
+
+// //读：
+
+// 	cmd_attr=1;
+// 	//db=0;
+// 	dl=1;
+// 	wdata = 0;
+// 	wdata = dl<<16 | cmd_attr;
+// 	printf("wdata:%x\n",wdata);
+// 	I3c_WriteWord(wdata,COMMAND_QUEUE_PORT_OFFSET,I3C_Master);
+// 	printf("COMMAND_QUEUE_PORT_OFFSET:%x\n",REG32(I3C_MASTER0_BASE_ADDR+COMMAND_QUEUE_PORT_OFFSET));
+// 	rdata =I3c_Read_Word(INTR_STATUS_OFFSET,I3C_Master);
+// 	printf("rdata:%x\n",rdata);
+
+// 	while((rdata & 0x08)==0)
+// 	{
+// 		vDelayXus(3);
+// 		rdata =I3c_Read_Word(INTR_STATUS_OFFSET,I3C_Master);
+// 	}
+
+
+// 	vDelayXus(1);
+
+// 	cmd_attr=0;
+// 	tid=0x8;
+// 	rnw =1;
+// 	toc =1;
+
+// 	wdata = 0;
+// 	wdata =toc<<30 | rnw<<28 |tid<<3;
+// 	printf("wdata:%x\n",wdata);
+// 	I3c_WriteWord(wdata,COMMAND_QUEUE_PORT_OFFSET,I3C_Master);	
+
+// 	rdata =I3c_Read_Word(INTR_STATUS_OFFSET,I3C_Master);
+// 	printf("rdata:%x\n",rdata);
+
+// 	// while((rdata & 0x02)==0)
+// 	// {
+// 	// 	vDelayXus(3);
+// 	// 	rdata =I3c_Read_Word(INTR_STATUS_OFFSET,I3C_Master);
+// 	// }
+// 	rdata =I3c_Read_Word(RX_DATA_PORT_OFFSET,I3C_Master);
+// 	vDelayXus(2);
+
+}

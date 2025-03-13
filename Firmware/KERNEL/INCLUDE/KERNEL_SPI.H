@@ -99,4 +99,8 @@ extern void spim_rw_dual(int csn,int no);
 extern void spidualread(int addr,uint16_t* data,int num,int csn);
 extern void spiquadprogram(int addr,uint16_t* data,int num,int csn);
 extern void spiquadread(int addr,uint16_t* data,int num,int csn);
+extern void sendcmd4b(unsigned char cmd,unsigned char* addr,uint8_t* data,unsigned int num,int csn);
+extern void spibyteprogram(int addr,uint8_t* data,int num,int csn);
+extern void spiread(int addr,uint8_t* data,int num,int csn);
+extern void spim_rw(int csn,int no);
 extern void spim_rw_quad(int csn,int no);

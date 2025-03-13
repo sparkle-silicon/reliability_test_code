@@ -225,7 +225,7 @@ void smbus_init(void)
 #if I2C0_EN_Init
 	smbus0_MoudleClock_EN;
 	sysctl_iomux_i2c0();
-	printf("0x30454:%x\n", *(unsigned int *)0x30454);
+	// printf("0x30454:%x\n", *(unsigned int *)0x30454);
 	//i2c0_pull_up();
 #if (DEBUGGER_OUTPUT_SWITCH == 1)
 #if (DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0)
@@ -254,6 +254,7 @@ void smbus_init(void)
 	smbus2_MoudleClock_EN;
 	sysctl_iomux_i2c2();
 	i2c2_pull_up();
+	GPIO_Pullup_Config(GPIOA, 23);
 #if (DEBUGGER_OUTPUT_SWITCH == 1)
 #if (DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_2)
 	I2c_Channel_Init(I2C_CHANNEL_2, I2C2_SPEED, I2C_SLAVE_ROLE, 0x00, 1);

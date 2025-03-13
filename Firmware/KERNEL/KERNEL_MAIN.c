@@ -568,6 +568,7 @@ int __weak main(void)
 	// SPI_Init(0, SPIM_CPOL_LOW, SPIM_CPHA_FE, SPIM_MSB, 0x7, 0);
 	// sysctl_iomux_spim_cs();
 	// sysctl_iomux_spim();
+	// spim_rw(0,8);//16bit 
 	// spim_rw_quad(0,16);//quad mode
 	// spim_rw_dual(0,16);//dual mode
 	// spim_rw_3wire(0,64);//3 wire mode

@@ -82,24 +82,27 @@ void SPI_Init(BYTE dly, BYTE cpol, BYTE cpha, BYTE lsb, BYTE dssp, BYTE cpsr)
     uint16_t reg_value = 0;
     BYTE dma_rd_en,dma_wr_en;
 /*
-dma_rd_en:发送FIFO的DMA传输使能位1：enable;0:disable
-dma_wr_en：接收FIFO的DMA传输使能位1：enable;0:disable
+dma_rd_en:接收FIFO的DMA传输使能位1：enable;0:disable
+dma_wr_en：发送FIFO的DMA传输使能位1：enable;0:disable
 */
-    dma_rd_en = 0;
-    dma_wr_en = 0; //测试DMA功能需要配置
-    reg_value |= (cpha & 0x01) << 0;      // bit0: CPHA
-    reg_value |= (cpol & 0x01) << 1;      // bit1: CPOL
+    dma_rd_en = 0x0; //接收DMA使能
+    dma_wr_en = 0x0; //测试DMA功能需要配置
+    reg_value |= (cpha & 0x1) << 0;      // bit0: CPHA
+    reg_value |= (cpol & 0x1) << 1;      // bit1: CPOL
     reg_value |= 0x1 << 2;       // bit2: SPE
     reg_value |= (dly & 0x07) << 3;   // bit[5:3]: DLY_SEL
-    reg_value |= (dma_rd_en & 0x01) << 6; // bit6: DMA_RD_EN
-    reg_value |= (dma_wr_en & 0x01) << 7; // bit7: DMA_WR_EN
-    reg_value |= (dssp & 0x0F) << 8;      // bit[11:8]: DSSP
-    reg_value |= (lsb & 0x01) << 12;      // bit12: LSP
+    reg_value |= (dma_rd_en & 0x1) << 6; // bit6: DMA_RD_EN
+    reg_value |= (dma_wr_en & 0x1) << 7; // bit7: DMA_WR_EN
+    reg_value |= (dssp & 0xF) << 8;      // bit[11:8]: DSSP
+    reg_value |= (lsb & 0x1) << 12;      // bit12: LSP
     SPIM_CTRL = reg_value;
+    // printf("SPI_CTRL = 0x%x\n", SPIM_CTRL);
+    // SPIM_CTRL = 0x6754;
     SPIM_CPSR = cpsr;                                                // 时钟分频
-    SPIM_TXFTLR = 0x1;                                              // 发送fifo为1
-    SPIM_RXFTLR = 0x1;                                              // 接收fifo为1
-    SPI_IRQ_Config(txeim | txoim | rxuim | rxoim | rxfim, DISABLE); // 屏蔽所有中断
+    // SPIM_TXFTLR = 0x10;                                              // 发送fifo为1
+    // SPIM_RXFTLR = 0x10;                                              // 接收fifo为1
+    // SPI_IRQ_Config(txeim | txoim | rxuim | rxoim | rxfim, DISABLE); // 屏蔽所有中断
+    SPIM_IMSR = 0x1f;
 }
 /**
  * 用于四线模式
@@ -507,6 +510,24 @@ static uint8_t spibyte(uint8_t byte)
   return(REG8(0x6012));
 }
 
+//DMA接收函数
+static void spibyte_exp(uint8_t byte);
+static void spibyte_exp(uint8_t byte)
+{
+    // 等待 TX FIFO 非满
+    while((SPIM_SR&0x1)==0x0);//wait tx_fifo not full
+
+    // 写入 SPI 数据寄存器
+    REG16(0x6012)=byte;
+
+    // 等待 RX FIFO 非空
+    while((SPIM_SR&0x4)==0x0);//wait rx_fifo not empty
+
+    // 不读取 SPI 数据，而是启动 DMA 传输
+    DMA_ChEnReg = (0x1|0x1<<8);
+  }
+
+
 //双byte发送函数
 void spi2byte_w(uint16_t data)
 {
@@ -533,6 +554,7 @@ static uint8_t spiwip(int csn)
   uint8_t sts;
   // 发送命令0x05，检查SPI接口是否空闲
   SPIM_MODE = 0x0; // 切回常规四线模式，识别命令
+  // SPIM_CTRL  = 0x6754;
   sts=sendcmd1b(0x05,csn);
   return(sts&0x1);
 }
@@ -544,6 +566,7 @@ void sectorerase(int addr,int csn)
   ad[0]=(addr>>16)&0xff;
   ad[1]=(addr>>8)&0xff;
   ad[2]=(addr)&0xff;
+  // SPIM_CTRL  = 0x6754;
   SPI_Flash_CS_Low(csn);
   spibyte(0x06);
   SPI_Flash_CS_High(csn);
@@ -585,7 +608,7 @@ static uint8_t spi3wirewip(int csn)
   spi2byte_w(CMD_READ_STATUS1);
   spibusy();
   printf("====wait busy over=====\n");  
- SPIM_RDNUM = 1;
+  SPIM_RDNUM = 1;
   while ((SPIM_SR&SPI_RFNE)==0x0);//wait rx_fifo not empty
   sts = REG16(0x6012);
   SPI_Flash_CS_High(csn);
@@ -772,7 +795,8 @@ void spiquadprogram(int addr,uint16_t* data,int num,int csn)
   printf("wait busy\n");
   spibusy();
   SPI_Flash_CS_High(csn);
-  SPIM_CTRL = 0x6704;
+  // SPIM_CTRL = 0x6704;
+  SPIM_CTRL = 0x6754;
   while(spiwip(csn));
 }
 
@@ -839,4 +863,97 @@ void spim_rw_quad(int csn,int no)
    printf("send is 0x%x\n",s_data[i]);
    printf("read is 0x%x\n",d_data[i]);
   }
+}
+
+void spibyteprogram(int addr,uint8_t* data,int num,int csn)
+{
+  unsigned char ad[3];
+  ad[0]=(addr>>16)&0xff;
+  ad[1]=(addr>>8)&0xff;
+  ad[2]=(addr)&0xff;
+  // SPIM_CTRL = 0x6704;//dssp 8 bit
+  SPI_Flash_CS_Low(csn);
+  spibyte(0x6);//写使能
+  SPI_Flash_CS_High(csn);
+  printf("flash csn%x byte program\n",csn);  
+  SPI_Flash_CS_Low(csn);
+  spibyte(0x02);
+  spibyte(ad[0]);
+  spibyte(ad[1]);
+  spibyte(ad[2]);
+  //发送数据
+  SPIM_CTRL = 0x6704;//dssp 16 bit
+  while(num--)
+    spibyte(*data++);
+    SPI_Flash_CS_High(csn);
+    printf("wait spi wip\n");
+  while(spiwip(csn));
+}
+
+
+void sendcmd4b(unsigned char cmd,unsigned char* addr,uint8_t* data,unsigned int num,int csn)
+{
+  SPI_Flash_CS_Low(csn);
+  // SPIM_CTRL = 0x6794;//dssp 8 bit
+  spibyte(cmd);
+  spibyte(*addr++);
+  spibyte(*addr++);
+  spibyte(*addr);
+
+  //接收数据
+  for(;num>0;num--){
+    *data++=spibyte(0xff);
+  }
+    SPIM_CTRL = 0x6f54;//dssp 8 bit
+  //使用DMA接收数据
+  // for(;num>0;num--){
+  //   spibyte_exp(0xff);
+// }
+  SPI_Flash_CS_High(csn);
+}
+
+void spiread(int addr,uint8_t* data,int num,int csn)
+{
+  unsigned char ad[3];
+  ad[0]=(addr>>16)&0xff;
+  ad[1]=(addr>>8)&0xff;
+  ad[2]=(addr)&0xff;
+  // SPIM_CTRL = 0x6754;//dssp 8 bit
+  sendcmd4b(0x03,ad,data,num,csn);
+}
+
+
+//四线模式测试函数
+void spim_rw(int csn,int no)
+{
+  uint8_t s_data[256];
+  uint8_t d_data[256];
+  uint8_t rdata,rdata2;
+  int i;
+  for(i=0;i<no;i++)
+    s_data[i]=0xaaf1+i;
+
+  sectorerase(0x8000,csn);
+  SPI_Flash_CS_Low(csn);
+  // SPIM_CTRL = 0x6704;//dssp 8 bit
+  spibyte(0x6);//写使能
+  SPI_Flash_CS_High(csn);
+  
+  spibyteprogram(0x8000,s_data,no,csn);
+  SPIM_CTRL = 0x6704;//dssp 8 bit
+  spiread(0x8000,d_data,no*2,csn);
+
+  //check
+  for(i=0;i<no;i++)
+  {
+    rdata=s_data[i];
+    rdata2=d_data[i];
+    if(rdata!=rdata2)
+      printf("ERROR :4wire\n");
+    else
+      printf("PASS :4wire\n");
+    printf("send is 0x%x,d_data is %x\n",s_data[i],d_data[i]);
+  }
+
+  // printf("PASS :4wire :spim csn%x, BYTE write/read OK\n",csn);
 }
