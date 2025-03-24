@@ -486,7 +486,7 @@ void write_efuse_data(uint32_t *data)
 		efuse_data.efuse_info.crypto_jtag_disable = 0x0;
 		efuse_data.efuse_info.jtag_disable = 0x0;
 		efuse_data.efuse_info.security = 0x1;
-		efuse_data.efuse_info.speedup = 0x1;
+		efuse_data.efuse_info.speedup = 0x0;
 		efuse_data.efuse_info.reserved1 = 0x0;
 	}
 	else

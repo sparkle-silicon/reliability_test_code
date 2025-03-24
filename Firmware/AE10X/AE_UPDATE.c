@@ -23,10 +23,12 @@
 /***********************************************************************/
 #define sms_write(addr, value) ((*((volatile uint8_t *)(addr))) = (value))
 #define sms_read(addr) (*((volatile uint8_t *)(addr)))
-char uart_crtpram_updatebuffer[12];
+char uart_crtpram_updatebuffer[16];
 int uart_crypram_updateindex = 0;
 char update_crypram_cmd[12] = { 0x64 ,0x72 ,0x61 ,0x6D ,0x30 ,0x2D ,0x75 ,0x70 ,0x64 ,0x61 ,0x74 ,0x65 };
+char update_intflash_cmd[16] = { 0x75 ,0x70 ,0x64 ,0x61 ,0x74 ,0x65 ,0x20 ,0x66 ,0x69 ,0x6d ,0x77 ,0x61 ,0x72 ,0x65 ,0x2D ,0x69};
 uint8_t update_crypram_flag = 0;
+uint8_t update_intflash_flag = 0;
 VBYTE check[32];
 FUNCT_PTR_V_V Cache2Ram_ptr = NULL;
 // 更新主函数
@@ -744,7 +746,8 @@ void WaitCrypUpdate(void)
                 nop;
             }
             while(C2EINT);
-            if(C2EINFO0 == 0xaa)
+            while((C2EINFO0!=0x14));
+            if(C2EINFO1 == 0xaa)
             {
                 PRINTF_TX = 'S';
                 PRINTF_TX = 'U';
@@ -756,7 +759,7 @@ void WaitCrypUpdate(void)
                 Reset_Crypto_Cpu();
                 return;
             }
-            else if(C2EINFO0 == 0xee)//失败
+            else//失败
             {
                 switch(C2EINFO1)
                 {
@@ -863,7 +866,7 @@ void GLE01_Cryp_Update_Function(void)
         nop;
     }
     while(C2EINT);
-    while(C2EINFO0 != 0xcc);
+    while(C2EINFO0 != 0x14);
     while(C2EINFO1 != 0x00);//子系统回复处理完毕
     reportDone(0, 0xAA);//回复上位机芯片已经进入更新函数
     printf("send 0xaa to host\n");
@@ -904,7 +907,7 @@ void GLE01_Cryp_Update_Function(void)
     }
     printf("\n");
     memcpy((void *)((uint8_t *)(SRAM_BASE_ADDR + 0x100)), (void *)Temp_buffer, sizeof(sCryptoFlashInfo));
-    E2CINFO0 = 0xcc;
+    E2CINFO0 = 0x14;
     E2CINFO1 = 0x1;//发送固件信息
     E2CINT = 0x2;//给子系统发送命令
     while(C2EINT != 0x2);
@@ -914,7 +917,7 @@ void GLE01_Cryp_Update_Function(void)
         nop;
     }
     while(C2EINT);
-    while(C2EINFO0 != 0xcc);
+    while(C2EINFO0 != 0x14);
     while(C2EINFO1 != 0x01);//子系统回复处理完毕
     E2CINFO0 = 0; E2CINFO1 = 0;//复位该寄存器值
     reportDone(0, 0xAA);//回复上位机获取固件信息命令处理完毕
@@ -962,7 +965,7 @@ void GLE01_Cryp_Update_Function(void)
             }
         }
         memcpy((void *)((uint8_t *)(SRAM_BASE_ADDR + 0x100)), (void *)Temp_buffer, 256);
-        E2CINFO0 = 0xcc;
+        E2CINFO0 = 0x14;
         E2CINFO1 = 0x2;//发送code密文
         E2CINT = 0x2;//给子系统发送命令
         while(C2EINT != 0x2);
@@ -972,7 +975,7 @@ void GLE01_Cryp_Update_Function(void)
             nop;
         }
         while(C2EINT);
-        while(C2EINFO0 != 0xcc);
+        while(C2EINFO0 != 0x14);
         while(C2EINFO1 != 0x2);//子系统回复处理完毕
         E2CINFO0 = 0; E2CINFO1 = 0;//复位该寄存器值
         reportDone(0, 0xAA);//回复上位机一笔数据处理完毕
@@ -982,5 +985,205 @@ void GLE01_Cryp_Update_Function(void)
     /* 进入ram跑代码 */
     WaitCrypUpdate();
     Enable_Interrupt_Main_Switch();
+}
+
+
+char GLE01_IntFlash_Update_Function(void)
+{
+    printf("GLE01_IntFlash_Update_Function\n");
+    /* 中断屏蔽 */
+    Disable_Interrupt_Main_Switch();
+	uint8_t Crc_fail_flag = 0;
+	uint8_t Crc8_fail_cnt = 0;
+	uint32_t looplimit = (CHIP_CLOCK_INT_HIGH / 15) / (SYSCTL_CLKDIV_OSC96M + 1); 
+	uint32_t Fm_Size=0;
+	uint32_t Sram_idx=0;
+	uint32_t Copy_Addr=0;
+	uint32_t Backup_Addr=0;
+	uint32_t Backup_Fw_Size=0;
+	uint32_t Fw_crc32=0;
+	uint8_t Backup_En=0;
+	uint8_t Temp_buffer[257];
+	uint8_t Err_Sta=0,Ack_Sta=0;
+	reportDone(0,0xAA);//回复上位机进入更新函数
+	printf("chip enter update func send 0xaa to host\n");
+	//先接收更新地址与文件大小信息
+	for(int i = 0; i < 10; i++)
+	{
+		storeFirmwareSizeInMem(0,Temp_buffer);
+		if(CRC8(Temp_buffer, 256) != Temp_buffer[256])
+		{
+			printf("fifo crc8 error again\n");
+			reportDone(0,0xEE);
+			//清空接收缓存
+			while(UARTA_LSR & UART_LSR_DR)
+			{
+				UARTA_RX;
+			}
+			reportDone(0,0xAA);
+			Crc8_fail_cnt++;
+			if(Crc8_fail_cnt >= 10)
+			{
+				Crc8_fail_cnt=0;
+				Crc_fail_flag = 1;
+			}
+		}
+		else
+		{
+			Crc8_fail_cnt = 0;
+			//清空接收缓存
+			while(UARTA_LSR & UART_LSR_DR)
+			{
+				UARTA_RX;
+			}
+            break;
+
+		}
+	}
+
+	Fm_Size=(uint32_t)(Temp_buffer[0] | (Temp_buffer[1] << 8) | (Temp_buffer[2] << 16) | (Temp_buffer[3] << 24));
+	Copy_Addr=(uint32_t)(Temp_buffer[4] | (Temp_buffer[5] << 8) | (Temp_buffer[6] << 16) | (Temp_buffer[7] << 24));
+	Backup_Fw_Size=(uint32_t)(Temp_buffer[8] | (Temp_buffer[9] << 8) | (Temp_buffer[10] << 16) | (Temp_buffer[11] << 24));
+	Backup_Addr=(uint32_t)(Temp_buffer[12] | (Temp_buffer[13] << 8) | (Temp_buffer[14] << 16) | (Temp_buffer[15] << 24));
+	Fw_crc32=(uint32_t)(Temp_buffer[16] | (Temp_buffer[17] << 8) | (Temp_buffer[18] << 16) | (Temp_buffer[19] << 24));
+	Backup_En=Temp_buffer[20];
+	//向上4k对齐
+	if(Fm_Size % 4096 != 0)
+	{
+		Fm_Size = Fm_Size + (4096 - (Fm_Size % 4096));
+	}
+	printf("Fm_Size:%d Copy_Addr:%08x Backup_Addr:%08x Backup_Fw_Size:%d Backup_En:%d\n",Fm_Size,Copy_Addr,Backup_Addr,Backup_Fw_Size,Backup_En);
+
+	//擦除flash
+	E2CINFO1=0x1;				//选择内部flash
+	E2CINFO2=Copy_Addr;     	//更新flash的起始地址
+	E2CINFO3=Fm_Size;       	//更新flash的大小
+	E2CINFO4=Backup_Addr;     	//备份区flash的起始地址
+	E2CINFO5=Backup_Fw_Size;  	//备份程序的大小
+	E2CINFO6=Backup_En;       	//备份使能状态
+	E2CINFO7=Fw_crc32;			//固件内容crc校验码
+	E2CINFO0=0x13;				//通知子系统更新命令
+	E2CINT=0x2;					//通知子系统更新命令
+	//等待子系统收到数据后回应
+	while(C2EINT != 0x2);
+	do
+	{
+		C2EINT = C2EINT;
+		nop;
+	}
+	while(C2EINT);
+	while((C2EINFO0!=0x13));
+	Ack_Sta=(C2EINFO1&0xff);
+	Err_Sta=(C2EINFO1>>8)&0xff;
+	printf("Ack_Sta:0x%x Err_Sta:0x%x\n",Ack_Sta,Err_Sta);
+	if(Ack_Sta==0x2)
+    {
+        if(Err_Sta<4)
+		{
+			DEBUGER_putchar(0xCC);
+			printf("Parameter input does not match the actual situation Err_Sta:0x%x\n",Err_Sta);
+			return 1;
+		}
+    }
+	else
+		reportDone(0,0xAA);//回复上位机获取更新地址信息命令处理完毕
+	printf("s 0xaa\n");
+
+	//接收固件数据并写入flash
+	for(uint32_t i = 0; i < Fm_Size; i+=256)
+	{
+		for(int j = 0; j < 10; j++)
+		{
+			storeFirmwareSizeInMem(0,Temp_buffer);
+			if(CRC8(Temp_buffer, 256) != Temp_buffer[256])
+			{
+				printf("%d crc8 error again\n",i/256);
+				reportDone(0,0xEE);
+				//清空接收缓存
+				while(UARTA_LSR & UART_LSR_DR)
+				{
+					UARTA_RX;
+				}
+				reportDone(0,0xAA);
+				Crc8_fail_cnt++;
+				if(Crc8_fail_cnt >= 10)
+				{
+					Crc8_fail_cnt = 0;
+					Crc_fail_flag = 1;
+				}
+			}
+			else
+			{
+				Crc8_fail_cnt = 0;
+				//清空接收缓存
+				while(UARTA_LSR & UART_LSR_DR)
+				{
+					UARTA_RX;
+				}
+				break;
+
+			}
+		}
+		printf("spif write block:%d addr:%08x\n",i/256,Copy_Addr+i);
+		printf("s 0xaa\n");
+		memcpy((void *)(SRAM_BASE_ADDR+Sram_idx),Temp_buffer,256);
+		Sram_idx+=256;
+		if(Sram_idx >= 4096)
+		{
+			Sram_idx=0;
+			//通知子系统进行烧录
+			E2CINFO1=0x2;
+			E2CINFO0=0x13;
+			E2CINT=0x2;
+			//等待子系统烧录完成
+			printf("wait cry write over\n");
+			while(C2EINT != 0x2);
+			do
+			{
+				C2EINT = C2EINT;
+				nop;
+			}
+			while(C2EINT);
+			while((C2EINFO0!=0x13)||(C2EINFO1!=0x03))
+            {
+                printf("C2EINFO0:%x C2EINFO1:%x\n",C2EINFO0,C2EINFO1);
+            }
+		}
+		reportDone(0,0xAA);//回复上位机一笔数据处理完毕
+		nop;nop;nop;nop;nop;
+	}
+	//回复子系统上位机到EC数据校验结果
+	E2CINFO1=Crc_fail_flag;     //通知子系统校验结果
+	E2CINFO0=0x13;				//通知子系统更新命令
+	E2CINT=0x2;					//通知子系统更新命令
+	//等待子系统回复更新结果
+	while(C2EINT != 0x2);
+	do
+	{
+		C2EINT = C2EINT;
+		nop;
+	}
+	while(C2EINT);
+	while((C2EINFO0!=0x13));
+	Ack_Sta=(C2EINFO1&0xff);
+	Err_Sta=(C2EINFO1>>8)&0xff;
+	if(Ack_Sta==0x2)
+		if(Err_Sta==0x4)
+			Crc_fail_flag=1;
+
+	//主系统校验处理
+	if(Crc_fail_flag)
+	{
+		printf("update fail\n");
+		return 1;
+	}
+	else
+	{
+		for(volatile uint32_t counter = looplimit; (!(UARTA_LSR & UART_LSR_TEMP)) && counter; counter--);
+		printf("update success\n");
+        while(1)
+		Reset_Crypto_Cpu();
+	}
+	return 1;
 }
 #endif

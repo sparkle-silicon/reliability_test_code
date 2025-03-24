@@ -125,14 +125,14 @@ void *calloc(size_t num, size_t size) // 初始化malloc
 }
 int memcmp(const void *mem1, const void *mem2, size_t cnt)
 {
-	DWORD i = cnt;
+	DWORD i = cnt-1;
 	while(*((char *)mem1 + i) == *((char *)mem2 + i))
 	{
 		if(i == 0)
 			break;
 		i--;
 	}
-	return cnt;
+	return i;
 }
 void *memset(void *str, int c, size_t n)
 {

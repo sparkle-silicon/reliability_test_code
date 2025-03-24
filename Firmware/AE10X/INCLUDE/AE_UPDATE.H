@@ -23,10 +23,12 @@
 #include "KERNEL_UART.H"
 #include "KERNEL_GPIO.H"
 #include "KERNEL_SPIF.H"
-extern char uart_crtpram_updatebuffer[12];
+extern char uart_crtpram_updatebuffer[16];
+extern char update_intflash_cmd[16];
 extern int uart_crypram_updateindex;
 extern char update_crypram_cmd[12];
 extern uint8_t update_crypram_flag;
+extern uint8_t update_intflash_flag;
 // update config
 #define UART_UPDATE 1
 #define SHAREMEM_UPDATE 1 & SUPPORT_SHAREMEM_PNP
