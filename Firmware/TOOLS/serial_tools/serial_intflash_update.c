@@ -15,10 +15,10 @@
  * 2.只支持输入bin文件，不支持输入hex文件
  *
  * 使用：
- * 1. 编译：gcc -o serial_extflash_update serial_extflash_update.c
- * 2. 运行：./serial_extflash_update [bin文件] [flash起始地址]
+ * 1. 编译：gcc -o serial_intflash_update serial_intflash_update.c
+ * 2. 运行：./serial_intflash_update [bin文件] [flash起始地址]
  * 如果需要备份则在运行时加上参数-b例如：
- * ./serial_extflash_update [bin文件] [flash起始地址] -b
+ * ./serial_intflash_update [bin文件] [flash起始地址] -b
 */
 
 #define SERIAL_PORT "/dev/ttyUSB0"  // 串口设备文件
@@ -330,7 +330,7 @@ int send_file_data(int fd, const char *file_path)
     }
 
     //发送开始进行更新的命令
-    char update_cmd[16] = { 0x75 ,0x70 ,0x64 ,0x61 ,0x74 ,0x65 ,0x20 ,0x66 ,0x69 ,0x6d ,0x77 ,0x61 ,0x72 ,0x65 ,0x2D ,0x65};
+    char update_cmd[16] = { 0x75 ,0x70 ,0x64 ,0x61 ,0x74 ,0x65 ,0x20 ,0x66 ,0x69 ,0x6d ,0x77 ,0x61 ,0x72 ,0x65 ,0x2D ,0x69};
     if(send_data(fd, update_cmd, sizeof(update_cmd)) < 0)
     {
         printf("Failed to send update command\n");

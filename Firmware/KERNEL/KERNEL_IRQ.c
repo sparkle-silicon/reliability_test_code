@@ -680,25 +680,34 @@ void __interrupt SECTION(".interrupt.UARTA_HANDLER") UARTA_HANDLER(void)
 #endif
 #endif
 #endif
-	uart_crtpram_updatebuffer[uart_crypram_updateindex++] = UARTA_RX;
+	uart_crtpram_updatebuffer[uart_crypram_updateindex] = UARTA_RX;
+	printf("%d rx:%x\n",uart_crypram_updateindex,uart_crtpram_updatebuffer[uart_crypram_updateindex]);
+	uart_crypram_updateindex++;
 	if((uart_crtpram_updatebuffer[0] == 0x64) && (uart_crypram_updateindex >= 12))
 	{
-		for(int i = 0; i < 12; i++)
+		printf("crt update\n");
+		if(memcmp(update_crypram_cmd,uart_crtpram_updatebuffer,sizeof(update_crypram_cmd))==0)
 		{
-			if(uart_crtpram_updatebuffer[i] != update_crypram_cmd[i])
-			{
-				update_crypram_flag = -1;
-				break;
-			}
+			update_crypram_flag = 1;
+			uart_crypram_updateindex = 0;
+			uart_crtpram_updatebuffer[0] = 0;
 		}
-		update_crypram_flag = 1;
-		uart_crypram_updateindex = 0;
-		uart_crtpram_updatebuffer[0] = 0;
 	}
-	else if(uart_crtpram_updatebuffer[0] != 0x64)
+	else if(uart_crtpram_updatebuffer[0] == 0x75 && (uart_crypram_updateindex >= 16))
+	{
+		printf("intf update\n");
+		if(memcmp(update_intflash_cmd,uart_crtpram_updatebuffer,sizeof(update_intflash_cmd))==0)
+		{
+			update_intflash_flag = 1;
+			uart_crypram_updateindex = 0;
+			uart_crtpram_updatebuffer[0] = 0;
+		}
+	}
+	else if((uart_crtpram_updatebuffer[0] != 0x64)&&(uart_crtpram_updatebuffer[0] != 0x75))
 	{
 		uart_crypram_updateindex = 0;
 		update_crypram_flag = 0;
+		update_intflash_flag=0;
 	}
 
 }

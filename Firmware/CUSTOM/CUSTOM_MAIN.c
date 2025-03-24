@@ -96,6 +96,11 @@ void __weak Hook_50msEventA(void)
         GLE01_Cryp_Update_Function();
         update_crypram_flag = 0;
     }
+    if(update_intflash_flag == 1)
+    {
+        GLE01_IntFlash_Update_Function();
+        update_intflash_flag = 0;
+    }
 #endif
 }
 //-----------------------------------------------------------------------------
