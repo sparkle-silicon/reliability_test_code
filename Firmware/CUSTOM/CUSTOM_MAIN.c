@@ -98,7 +98,7 @@ void __weak Hook_50msEventA(void)
     }
     if(update_intflash_flag == 1)
     {
-        GLE01_IntFlash_Update_Function();
+        GLE01_ExtFlash_Update_Function();
         update_intflash_flag = 0;
     }
 #endif

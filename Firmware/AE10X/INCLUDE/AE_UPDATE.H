@@ -24,7 +24,7 @@
 #include "KERNEL_GPIO.H"
 #include "KERNEL_SPIF.H"
 extern char uart_crtpram_updatebuffer[16];
-extern char update_intflash_cmd[16];
+extern char update_extflash_cmd[16];
 extern int uart_crypram_updateindex;
 extern char update_crypram_cmd[12];
 extern uint8_t update_crypram_flag;
@@ -71,5 +71,6 @@ extern void Mailbox_Update_Function(BYTE mode, DWORD fwsize, DWORD update_addr);
 extern void ALIGNED(4) EC_SinglePage_Update(void);
 extern void GLE01_Flash_Update_Function(void);
 extern void GLE01_Cryp_Update_Function(void);
+char GLE01_ExtFlash_Update_Function(void);
 #define WRITE_READ_CHECK 0
 #endif
