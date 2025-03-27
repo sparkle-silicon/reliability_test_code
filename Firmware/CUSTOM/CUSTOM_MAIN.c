@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-01-21 11:50:16
+ * @LastEditTime: 2025-03-27 21:34:15
  * @Description: Custom function support
  *
  *
@@ -98,6 +98,7 @@ void __weak Hook_50msEventA(void)
     }
     if(update_intflash_flag == 1)
     {
+        extern char GLE01_IntFlash_Update_Function(void);
         GLE01_IntFlash_Update_Function();
         update_intflash_flag = 0;
     }

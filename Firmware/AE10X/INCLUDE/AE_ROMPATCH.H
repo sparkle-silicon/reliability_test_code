@@ -1,7 +1,7 @@
 /*
  * @Author: dejavuwdh
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-01-16 17:28:21
+ * @LastEditTime: 2025-03-27 22:00:48
  * @Description:
  *
  *
@@ -215,11 +215,11 @@ typedef struct _FixedFlashInfo
             uint32_t HighAddr_SPACE : 3;//外部FLASH查找地址最高位FLASH_HighAddr_SPACE+17（小于它）,最高只查到0xffffff为止
             uint32_t MUST_MIRROR_DISABLE : 1;//0：无论是否不同，必MIRROR，1：不同才MIRROR(无效)
             uint32_t NOCARE : 8;//SYSCTL_RESERVERD 高8位//并不关心，位对齐用，因为涉及
-            uint32_t PWM_Enable : 1;//MIRROR期间 0：关闭pwm闪烁，1：开启pwm闪烁
-            uint32_t PWMn_Switch : 1;//启用后mirror期间pwm n闪烁(n== 0/1)
+            uint32_t PWM_Enable : 1;//无效 MIRROR期间 0：关闭pwm闪烁，1：开启pwm闪烁
+            uint32_t PWMn_Switch : 3;//无效 启用后mirror期间pwm n闪烁(n== 0/1)
             uint32_t SPI_Switch : 1;//0:quad 四线SPI 1:dual 二线SPI
-            uint32_t WP_Switch : 1;//0:8528pin2pin 1:5571pin2pin(default)
-            uint32_t HOLD_Switch : 1;//0:8528pin2pin 1:5571pin2pin(default)
+            uint32_t WP_Switch : 2;//0:piob17 1:piob29(default) 2:piod8
+            uint32_t CS_Switch : 1;//0:fspi_csn0(piob22)(default) 1:fspi_csn1(pioa16)
             uint32_t Firmware_4KSector : 7;//按4k为单位，MIRROR按这个大小进行拷贝//最大512k//实际大小为该值+1，因此要求除了flashinfo以外又有内容都在512k以内
             // uint32_t RESERVED : 16;//无效位
             // uint32_t RESERVED : 24;//无效位也就相当于这个RESERVED
@@ -229,6 +229,7 @@ typedef struct _FixedFlashInfo
     uint32_t MainFrequency : 6;// 主频分频系数 
     uint32_t SECVER_Enable : 1; // 1：安全验签(默认)，0：EFUSE打开则安全验签，否则进行hash校验
     uint32_t SECVER_VERIFY_Switch : 1; // 1：RSA验签（默认），0：ECC验签//无效
+
     uint32_t SECVER_AES_Enable : 1; // 1：AES加密，0：不加密（默认）//无效
     uint32_t SECVER_HASH_Switch : 2;// 0:SHA224 1：SHA256（默认） 2：SHA384 3：SHA512
     uint32_t SECVER_BIT_Switch : 2; // 0:ECC192 ECC256（默认） ECC384 ECC512//无效
@@ -244,16 +245,18 @@ typedef struct _FixedFlashInfo
     uint32_t EJTAG_Switch : 1;//0：PIOE[13:10]为KBS则配置PIOB[30:27]为ejtag口, 1：PIOE[13:10]（默认）
     uint32_t CRYPTO_EJTAG_Switch : 1;//0：PIOE[13:10]配置为CRYPTO口, 1：PIOE[13:10]保留默认配置
     uint32_t DEBUG_PRINTF_Enable : 1; // 0：关闭调试串口，1：打开调试口
-    uint32_t DEBUGGER_Enable : 1; // 0：关闭调试器功能，
     //24
+    uint32_t DEBUGGER_Enable : 1; // 0：关闭调试器功能，
     uint32_t Uartn_Print_SWitch : 2;//该口作为调试输出口选择（UART 01AB），剩余接口作为调试器
     uint32_t DEBUGGER_UART_Enable : 1; // 0：关闭调试器口，1：打开所有调试口
-    uint32_t DEBUGGER_SMBUS_Enable : 1; //暂时无效 0：关闭DEBUGGER SMBUS调试口（GPIO） 1：debugger SMBUS功能生效
-    uint32_t SMBUS_CLOCK_Switch : 1; //0:高速时钟400k 1: 低速100k //暂时无效
-
+    uint32_t UART1_TXD_SWITCHE : 1; //0：pioe15 1：piob1(default)
+    uint32_t UART1_RXD_SWITCHE : 1; //0:pioe14 1: piob3(default)
+    uint32_t UARTA_TXD_SWITCHE : 1; // 0:PIOB6 1:PIOA9(default)
+    uint32_t UARTA_RXD_SWITCHE : 1; // 0:PIOA23 1:PIOA8(default)
+    //32
     uint32_t DEBUG_BAUD_RATE : 7; // debug输出波特率(3200倍数，0)
     uint32_t DEBUG_LEVEL : 1; //0:更详细的过程参数1:关闭仅输出过程位置
-
+    //40
     uint32_t DEBUG_PRINTF_DLS : 2; // 数据位(3)
     uint32_t DEBUG_PRINTF_STOP : 1; // 停止位(0)
     uint32_t DEBUG_PRINTF_PE : 1; // 校验位（0）

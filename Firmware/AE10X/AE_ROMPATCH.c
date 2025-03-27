@@ -1,7 +1,7 @@
 /*
  * @Author: dejavuwdh
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-01-16 17:46:59
+ * @LastEditTime: 2025-03-27 21:25:24
  * @Description:
  *
  *
@@ -57,8 +57,8 @@ USED sFixedFlashInfo Fix_flash_info = {
 	.EXTERNAL_FLASH_CTRL.PWM_Enable = 0b1,
 	.EXTERNAL_FLASH_CTRL.PWMn_Switch = 0b0,
 	.EXTERNAL_FLASH_CTRL.SPI_Switch = 0b1,	// 4线
-	.EXTERNAL_FLASH_CTRL.WP_Switch = 0b1,	// 5571pin
-	.EXTERNAL_FLASH_CTRL.HOLD_Switch = 0b1, // 5571pin
+	.EXTERNAL_FLASH_CTRL.WP_Switch = 0b11,	// piob29
+	.EXTERNAL_FLASH_CTRL.CS_Switch = 0b0, // fspi_csn0
 	.EXTERNAL_FLASH_CTRL.Firmware_4KSector = (Firmware_nKsize / 4 - 1),
 
 	// FLASH	地址
@@ -103,8 +103,10 @@ USED sFixedFlashInfo Fix_flash_info = {
 	.Uartn_Print_SWitch = PRINTF_UART_SWITCH,
 	.DEBUGGER_Enable = 1,
 	.DEBUGGER_UART_Enable = 1,
-	.DEBUGGER_SMBUS_Enable = 1,
-	.SMBUS_CLOCK_Switch = 1,
+	.UART1_TXD_SWITCHE = 1,//piob1
+	.UART1_RXD_SWITCHE = 1,//piob3
+	.UARTA_TXD_SWITCHE = 1,//PIOA9
+	.UARTA_RXD_SWITCHE = 1,//PIOA8
 	.DEBUG_BAUD_RATE = (UART_BAUD / 3200) - 1,
 	.DEBUG_LEVEL = 1,
 	.DEBUG_PRINTF_DLS = 0b11,
