@@ -696,7 +696,7 @@ void __interrupt SECTION(".interrupt.UARTA_HANDLER") UARTA_HANDLER(void)
 	else if(uart_crtpram_updatebuffer[0] == 0x75 && (uart_crypram_updateindex >= 16))
 	{
 		printf("intf update\n");
-		if(memcmp(update_intflash_cmd,uart_crtpram_updatebuffer,sizeof(update_intflash_cmd))==0)
+		if(memcmp(update_extflash_cmd,uart_crtpram_updatebuffer,sizeof(update_extflash_cmd))==0)
 		{
 			update_intflash_flag = 1;
 			uart_crypram_updateindex = 0;

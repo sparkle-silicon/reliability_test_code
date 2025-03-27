@@ -17,8 +17,8 @@
  * 使用：
  * 1. 编译：gcc -o serial_extflash_update serial_extflash_update.c
  * 2. 运行：./serial_extflash_update [bin文件] [flash起始地址]
- * 如果需要备份则在运行时加上参数-b例如：
- * ./serial_extflash_update [bin文件] [flash起始地址] -b
+ * 如果需要备份则在运行时加上参数-b 需要更新后复位加上参数-r例如：
+ * ./serial_extflash_update [bin文件] [flash起始地址] -b -r
 */
 
 #define SERIAL_PORT "/dev/ttyUSB0"  // 串口设备文件
@@ -31,6 +31,7 @@
 #define TIMEOUT_USEC 50000         // 50ms读一次下位机回应
 
 int backup_enabled = 0;
+int rest_flag=0;
 unsigned int backup_addr = 0;
 unsigned int backup_size = 0;
 
@@ -42,6 +43,7 @@ typedef struct Flash_Firmware_Info
     unsigned int Flash_CopyAddr;
     unsigned int Fw_CRC32;
     unsigned char Back_En;
+    unsigned char Rest_Flag;
 } sFlash_Firmware_Info;
 sFlash_Firmware_Info flashAndFWInfo;
 
@@ -403,14 +405,28 @@ int main(int argc, char *argv[])
 // 检查命令行参数
     if(argc < 3)
     {
-        fprintf(stderr, "Usage: %s <path_to_bin_file> <flash_copy_address> [-b <backup_addr> <backup_size>]\n", argv[0]);
+        fprintf(stderr, "Usage: %s <path_to_bin_file> <flash_copy_address>\n", argv[0]);
         return -1;
     }
-    // 检查是否启用备份功能
-    if(argc >= 4 && strcmp(argv[3], "-b") == 0)
+    // 检查是否启用备份功能/更新后复位cpu功能
+    if(argc >= 4 && argc<=5)
     {
-        backup_enabled = 1;
-        printf("Backup enabled.\n");
+        rest_flag=0;
+        backup_enabled=0;
+        for (int i = 3; i < (argc); i++)
+        {
+            if (strcmp(argv[i], "-r") == 0)
+            {
+                rest_flag = 1;
+                printf("Reset cpu after update.\n");
+            }
+            if(strcmp(argv[i], "-b") == 0)
+            {
+                backup_enabled = 1;
+                printf("Backup enabled.\n");
+            }
+        }
+        
         // backup_addr = strtol(argv[4], NULL, 16);
         // backup_size = strtol(argv[5], NULL, 16);
         // flashAndFWInfo.Backup_CopyAddr=backup_addr;
@@ -420,11 +436,14 @@ int main(int argc, char *argv[])
     else
     {
         backup_enabled=0;
+        rest_flag=0;
         printf("Backup disabled.\n");
     }
     flashAndFWInfo.Back_En=backup_enabled;
+    flashAndFWInfo.Rest_Flag=rest_flag;
     const char *file_path = argv[1];  // 从命令行参数获取文件路径
     unsigned int flash_copy_addr = strtol(argv[2], NULL, 16);
+    flash_copy_addr&=0xFFFFF000;//4k对齐
     printf("Flash copy address: 0x%08x\n", flash_copy_addr);
     flashAndFWInfo.Flash_CopyAddr = flash_copy_addr;
 
