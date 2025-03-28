@@ -395,6 +395,23 @@ int send_file_data(int fd, const char *file_path)
         }
         block_count++;
     }
+    //等待回复更新结果
+    char ack_status=0;
+    ack_status=wait_for_ack(fd);
+    if(ack_status)
+    {
+        if(response == ERR_BYTE)
+        {
+            printf("Update failed.\n");
+        }
+    }
+    else
+    {
+        if(response == ACK_BYTE)
+        {
+            printf("Update success.\n");
+        }
+    }
     free(file_data);
     fclose(file);
     return 0;

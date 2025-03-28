@@ -107,7 +107,7 @@ int main() {
         return 1;
     }
 
-    unsigned char send_byte = 0x99;
+    unsigned char send_byte = 0x66;
     unsigned char response;
     unsigned char version[4];
     ssize_t n;
@@ -127,8 +127,11 @@ int main() {
             return 1;
         }
 
-        if (n > 0 && response == 0x66) {
-            printf("Received 0x66, proceeding to receive version\n");
+        if (n > 0 && (response == 0x66||response==0xEE)) {
+            if(response==0x66)
+                printf("Received 0x66, proceeding to receive version\n");
+            else if(response==0xEE)
+                printf("Failed to exit debugging mode. If it is after internal or external flash updates, it cannot be exited\n");
             break;
         }
 

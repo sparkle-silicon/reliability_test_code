@@ -201,7 +201,7 @@ int wait_for_ack(int fd)
     {
         printf("Max retries reached, no valid response received.\n");
         //close(fd);
-        return 1;
+        return -1;
     }
 }
 
@@ -376,6 +376,49 @@ anew:
             }
         }
         block_count++;
+    }
+    // 等待回复更新情况
+    char loop_done=0;
+    while((wait_for_ack(fd)>0)&&(!loop_done))
+    {
+        switch (response)
+        {
+        case 0x1:
+            printf("Update Failed CRC32校验失败,回退备份成功\n");
+            loop_done=1;
+            break;
+        case 0x2:
+            printf("Update Failed 哈希校验失败,回退备份成功\n");
+            loop_done=1;
+            break;
+        case 0x3:
+            printf("Update Failed 哈希校验失败,回退备份失败\n");
+            loop_done=1;
+            break;
+        case 0x4:
+            printf("Update Failed 哈希校验失败,无备份代码\n");
+            loop_done=1;
+            break;
+        case 0x5:
+            printf("Update Failed CRC32校验失败,回退备份失败\n");
+            loop_done=1;
+            break;
+        case 0x6:
+            printf("Update Failed CRC32校验失败,无备份代码\n");
+            loop_done=1;
+            break;
+        case 0x7:
+            printf("未知错误\n");
+            loop_done=1;
+            break;
+        
+        default:
+            break;
+        }
+    }
+    if(response==ACK_BYTE)
+    {
+        printf("Update Success\n");
     }
     free(file_data);
     fclose(file);
