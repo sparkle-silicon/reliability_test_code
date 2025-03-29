@@ -19,6 +19,7 @@
  * 2. 运行：./serial_extflash_update [bin文件] [flash起始地址]
  * 如果需要备份则在运行时加上参数-b 需要更新后复位加上参数-r例如：
  * ./serial_extflash_update [bin文件] [flash起始地址] -b -r
+ * 3.新增参数-cs0/1 -wp0/1/2，用于选择外部flash的cs与wp引脚
 */
 
 #define SERIAL_PORT "/dev/ttyUSB0"  // 串口设备文件
@@ -32,6 +33,8 @@
 
 int backup_enabled = 0;
 int rest_flag=0;
+int wp_value = -1;  // 默认无效值
+int cs_value = -1;  // 默认无效值
 unsigned int backup_addr = 0;
 unsigned int backup_size = 0;
 
@@ -44,6 +47,8 @@ typedef struct Flash_Firmware_Info
     unsigned int Fw_CRC32;
     unsigned char Back_En;
     unsigned char Rest_Flag;
+    unsigned char Wp_Sel;
+    unsigned char Cs_Sel;
 } sFlash_Firmware_Info;
 sFlash_Firmware_Info flashAndFWInfo;
 
@@ -218,7 +223,7 @@ int wait_for_ack(int fd)
     {
         printf("Max retries reached, no valid response received.\n");
         //close(fd);
-        return 1;
+        return -1;
     }
 }
 
@@ -395,6 +400,24 @@ int send_file_data(int fd, const char *file_path)
         }
         block_count++;
     }
+    //等待回复更新结果
+    char ack_status=0x0;
+    ack_status=wait_for_ack(fd);
+    if(ack_status)
+    {
+        if(response == ERR_BYTE)
+        {
+            printf("Update failed.\n");
+        }
+    }
+    else
+    {
+        if(response == ACK_BYTE)
+        {
+            printf("Update success.\n");
+        }
+    }
+
     free(file_data);
     fclose(file);
     return 0;
@@ -409,38 +432,69 @@ int main(int argc, char *argv[])
         return -1;
     }
     // 检查是否启用备份功能/更新后复位cpu功能
-    if(argc >= 4 && argc<=5)
+    if(argc >= 4 && argc<=9)
     {
         rest_flag=0;
         backup_enabled=0;
-        for (int i = 3; i < (argc); i++)
-        {
-            if (strcmp(argv[i], "-r") == 0)
-            {
+        for (int i = 3; i < argc; i++) {
+            if (strcmp(argv[i], "-r") == 0) {
                 rest_flag = 1;
-                printf("Reset cpu after update.\n");
-            }
-            if(strcmp(argv[i], "-b") == 0)
-            {
+                printf("Reset CPU after update.\n");
+            } else if (strcmp(argv[i], "-b") == 0) {
                 backup_enabled = 1;
                 printf("Backup enabled.\n");
+            } else if (strncmp(argv[i], "-wp", 3) == 0) {
+                // 处理WP参数
+                char* wp_str = argv[i] + 3;
+                if (*wp_str == '\0') {
+                    fprintf(stderr, "Error: -wp requires a value (0,1,2)\n");
+                    exit(EXIT_FAILURE);
+                }
+                
+                char* endptr;
+                long wp = strtol(wp_str, &endptr, 10);
+                if (*endptr != '\0' || wp < 0 || wp > 2) {
+                    fprintf(stderr, "Invalid -wp value '%s'. Valid values: 0,1,2\n", wp_str);
+                    exit(EXIT_FAILURE);
+                }
+                wp_value = (int)wp;
+                printf("WP set to %d\n", wp_value);
+            } else if (strncmp(argv[i], "-cs", 3) == 0) {
+                // 处理CS参数
+                char* cs_str = argv[i] + 3;
+                if (*cs_str == '\0') {
+                    fprintf(stderr, "Error: -cs requires a value (0,1)\n");
+                    exit(EXIT_FAILURE);
+                }
+                
+                char* endptr;
+                long cs = strtol(cs_str, &endptr, 10);
+                if (*endptr != '\0' || cs < 0 || cs > 1) {
+                    fprintf(stderr, "Invalid -cs value '%s'. Valid values: 0,1\n", cs_str);
+                    exit(EXIT_FAILURE);
+                }
+                cs_value = (int)cs;
+                printf("CS set to %d\n", cs_value);
+            } else {
+                fprintf(stderr, "Unknown option: %s\n", argv[i]);
+                exit(EXIT_FAILURE);
             }
         }
-        
-        // backup_addr = strtol(argv[4], NULL, 16);
-        // backup_size = strtol(argv[5], NULL, 16);
-        // flashAndFWInfo.Backup_CopyAddr=backup_addr;
-        // flashAndFWInfo.Backup_Fw_Size=backup_size;
-        //printf("Backup enabled. Backup address: 0x%08x, Backup size: 0x%08x\n", backup_addr, backup_size);
     }
     else
     {
-        backup_enabled=0;
-        rest_flag=0;
-        printf("Backup disabled.\n");
+        printf("Parameter filling error\n");
     }
     flashAndFWInfo.Back_En=backup_enabled;
     flashAndFWInfo.Rest_Flag=rest_flag;
+    flashAndFWInfo.Wp_Sel=0xFF;
+    flashAndFWInfo.Cs_Sel=0xFF;
+    if (wp_value != -1) {
+        flashAndFWInfo.Wp_Sel = wp_value;
+    }
+    if (cs_value != -1) {
+        flashAndFWInfo.Wp_Sel = cs_value;
+    }
     const char *file_path = argv[1];  // 从命令行参数获取文件路径
     unsigned int flash_copy_addr = strtol(argv[2], NULL, 16);
     flash_copy_addr&=0xFFFFF000;//4k对齐

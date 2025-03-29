@@ -747,7 +747,7 @@ void WaitCrypUpdate(void)
             }
             while(C2EINT);
             while((C2EINFO0!=0x14));
-            if(C2EINFO1 == 0xaa)
+            if(C2EINFO1 == 0x1)
             {
                 PRINTF_TX = 'S';
                 PRINTF_TX = 'U';
@@ -761,29 +761,35 @@ void WaitCrypUpdate(void)
             }
             else//失败
             {
-                switch(C2EINFO1)
+                switch((C2EINFO1>>8)&0xff)
                 {
-                    case 0x11://crc32校验失败,回退备份成功
+                    case 0x01://crc32校验失败,回退备份成功
+                        reportDone(0, 0x01);//回复上位机一笔数据处理完毕
                         PRINTF_TX = 'C'; PRINTF_TX = 'R'; PRINTF_TX = 'C'; PRINTF_TX = '\n';
                         Reset_Crypto_Cpu();
                         return;
-                    case 0x22://哈希校验失败,回退备份成功
+                    case 0x02://哈希校验失败,回退备份成功
+                        reportDone(0, 0x02);//回复上位机一笔数据处理完毕
                         PRINTF_TX = 'H'; PRINTF_TX = 'A'; PRINTF_TX = 'S'; PRINTF_TX = 'H'; PRINTF_TX = '\n';
                         Reset_Crypto_Cpu();
                         return;
-                    case 0x33://哈希校验失败,回退备份失败
+                    case 0x03://哈希校验失败,回退备份失败
+                        reportDone(0, 0x03);//回复上位机一笔数据处理完毕
                         PRINTF_TX = 'H'; PRINTF_TX = 'A'; PRINTF_TX = 'S'; PRINTF_TX = 'H'; PRINTF_TX = 'E'; PRINTF_TX = 'R'; PRINTF_TX = '\n';
                         Reset_Crypto_Cpu();
                         return;
-                    case 0x44://哈希校验失败,无备份代码
+                    case 0x04://哈希校验失败,无备份代码
+                        reportDone(0, 0x04);//回复上位机一笔数据处理完毕
                         PRINTF_TX = 'H'; PRINTF_TX = 'A'; PRINTF_TX = 'S'; PRINTF_TX = 'H'; PRINTF_TX = 'N'; PRINTF_TX = '\n';
                         Reset_Crypto_Cpu();
                         return;
-                    case 0x55://crc32校验失败,回退备份失败
+                    case 0x05://crc32校验失败,回退备份失败
+                        reportDone(0, 0x05);//回复上位机一笔数据处理完毕
                         PRINTF_TX = 'C'; PRINTF_TX = 'R'; PRINTF_TX = 'C'; PRINTF_TX = 'E'; PRINTF_TX = '\n';
                         Reset_Crypto_Cpu();
                         return;
-                    case 0x66://crc32校验失败,无备份代码
+                    case 0x06://crc32校验失败,无备份代码
+                        reportDone(0, 0x06);//回复上位机一笔数据处理完毕
                         PRINTF_TX = 'C'; PRINTF_TX = 'R'; PRINTF_TX = 'C'; PRINTF_TX = 'N'; PRINTF_TX = '\n';
                         Reset_Crypto_Cpu();
                         return;
