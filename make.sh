@@ -3,7 +3,7 @@
  # @Author: daweslinyu daowes.ly@qq.com
  # @Date: 2024-05-31 14:37:40
  # @LastEditors: daweslinyu daowes.ly@qq.com
- # @LastEditTime: 2024-11-05 11:22:17
+ # @LastEditTime: 2025-03-31 15:38:53
  # @FilePath: /SPK32AE103/Firmware/make.sh
  # @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 ### 
@@ -26,12 +26,12 @@ make compile -j4 DOWNLOAD=iram0
 cp ./encrypt_iram0.bin ../
 # sleep 2
 make clean -j4
-make compile -j4 DOWNLOAD=rom
-cp ./encrypt_rom.bin ../
-# sleep 2
-make clean -j4
 make compile -j4 DOWNLOAD=dram0
 cp ./encrypt_dram0.bin ../
+# sleep 2
+make clean -j4
+make compile -j4 DOWNLOAD=rom
+cp ./encrypt_rom.bin ../
 cd ..
 # sleep 2
 cd ROM
