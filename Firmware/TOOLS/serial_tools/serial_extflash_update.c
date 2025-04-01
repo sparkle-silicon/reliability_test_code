@@ -481,7 +481,7 @@ int main(int argc, char *argv[])
             }
         }
     }
-    else
+    else if(argc>10)
     {
         printf("Parameter filling error\n");
     }
