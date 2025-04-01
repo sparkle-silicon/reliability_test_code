@@ -193,6 +193,11 @@ int wait_for_ack(int fd)
             printf("Received ERR_BYTE: 0x%02X\n", response);
             return 2;
         }
+        else if(n > 0&&(response<0x8))
+        {
+            printf("Received byte: 0x%02X\n", response);
+            return 3;
+        }
 
         retries++;
         //printf("No response received, retrying... (%d/%d)\n", retries, MAX_RETRIES);
@@ -378,40 +383,34 @@ anew:
         block_count++;
     }
     // 等待回复更新情况
-    char loop_done=0;
-    while((wait_for_ack(fd)>0)&&(!loop_done))
+    char ack_status=0x0;
+    ack_status=wait_for_ack(fd);
+    printf("ack_status:%d\n",ack_status);
+    if(ack_status>0)
     {
         switch (response)
         {
         case 0x1:
             printf("Update Failed CRC32校验失败,回退备份成功\n");
-            loop_done=1;
             break;
         case 0x2:
             printf("Update Failed 哈希校验失败,回退备份成功\n");
-            loop_done=1;
             break;
         case 0x3:
             printf("Update Failed 哈希校验失败,回退备份失败\n");
-            loop_done=1;
             break;
         case 0x4:
             printf("Update Failed 哈希校验失败,无备份代码\n");
-            loop_done=1;
             break;
         case 0x5:
             printf("Update Failed CRC32校验失败,回退备份失败\n");
-            loop_done=1;
             break;
         case 0x6:
             printf("Update Failed CRC32校验失败,无备份代码\n");
-            loop_done=1;
             break;
         case 0x7:
             printf("未知错误\n");
-            loop_done=1;
             break;
-        
         default:
             break;
         }
