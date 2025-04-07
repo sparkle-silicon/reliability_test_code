@@ -493,7 +493,7 @@ int main(int argc, char *argv[])
         flashAndFWInfo.Wp_Sel = wp_value;
     }
     if (cs_value != -1) {
-        flashAndFWInfo.Wp_Sel = cs_value;
+        flashAndFWInfo.Cs_Sel = cs_value;
     }
     const char *file_path = argv[1];  // 从命令行参数获取文件路径
     unsigned int flash_copy_addr = strtol(argv[2], NULL, 16);

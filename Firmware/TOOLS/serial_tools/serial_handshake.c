@@ -174,12 +174,24 @@ int main()
     }
 
     // 等待接收 4 个字节的版本号
-    n = receive_data(fd, version, 4);
-    if(n < 0 || n != 4)
+    int total_received = 0;
+    while(total_received < 4)
     {
-        perror("Failed to receive version data");
-        close(fd);
-        return 1;
+        n = receive_data(fd, version + total_received, 4 - total_received);
+        if(n < 0)
+        {
+            perror("Failed to receive version data");
+            close(fd);
+            return 1;
+        }
+        // 如果没有新数据则可以适当休眠或继续循环等待
+        if(n == 0)
+        {
+            // 例如，使用usleep来避免忙等待
+            usleep(TIMEOUT_USEC);
+            continue;
+        }
+        total_received += n;
     }
 
     printf("Received version: ");
