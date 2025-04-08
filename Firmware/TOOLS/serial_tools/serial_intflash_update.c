@@ -37,6 +37,7 @@ unsigned int backup_size = 0;
 
 unsigned char ERR_CODE = 0xff;  // 错误码
 unsigned char response;
+unsigned char err_cnt=0;
 typedef struct Flash_Firmware_Info
 {
     unsigned int Flash_Fw_Size;
@@ -261,7 +262,11 @@ again:
         {
             while(wait_for_ack(fd));
             printf("header send retry\n");
-            goto again;
+            err_cnt++;
+            if(err_cnt<=9)
+                goto again;
+            else
+                while(wait_for_ack(fd));
         }
     }
     if(response == STP_BYTE)
@@ -269,7 +274,7 @@ again:
         printf("stop update\n");
         return -1;
     }
-
+    err_cnt=0;
     return 0;
 }
 
@@ -390,9 +395,14 @@ int send_file_data(int fd, const char *file_path)
             {
                 while(wait_for_ack(fd));
                 printf("block %d retry\n", block_count+1);
-                goto anew;
+                err_cnt++;
+                if(err_cnt<=9)
+                    goto anew;
+                else
+                    while(wait_for_ack(fd));
             }
         }
+        err_cnt=0;
         block_count++;
     }
     //等待回复更新结果
