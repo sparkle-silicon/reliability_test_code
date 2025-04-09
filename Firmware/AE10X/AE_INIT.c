@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-04-09 11:25:03
+ * @LastEditTime: 2025-04-09 17:12:03
  * @Description:
  *
  *
@@ -56,10 +56,10 @@ void SECTION(".init.dbinit") DoubleBoot_Init(void)
 }
 #define X0_ZERO (0x0)
 #define X1_RA (0x1)
-#define JAL_RD(rd) ((rd & 0x1f) << 7)
+#define JAL_RD(rd) (((rd) & 0x1f) << 7)
 #define JAL_OPCODE (0x6f)
-#define JAL_ADDR_OFFSET(pc_addr, jp_addr) (jp_addr - pc_addr)
-#define JAL_IMM(imm) (((imm & 0x7fe) << 20) | ((imm & 0x800) << 9) | (imm & 0xff000) | ((imm & 0x100000) << 11))
+#define JAL_ADDR_OFFSET(pc_addr, jp_addr) ((jp_addr) - (pc_addr))
+#define JAL_IMM(imm) ((((imm) & 0x7fe) << 20) | (((imm) & 0x800) << 9) | ((imm) & 0xff000) | (((imm) & 0x100000) << 11))
 #define JAL_CODE(rd, pc_addr, jp_addr) (JAL_OPCODE | JAL_RD(rd) | JAL_IMM(JAL_ADDR_OFFSET(pc_addr, jp_addr)))
 void trap_entry();
 /************************************Init*************************************
