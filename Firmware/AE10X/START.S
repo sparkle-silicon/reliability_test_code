@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-01-09 15:49:26
+ * @LastEditTime: 2025-04-10 15:00:44
  * @Description: 
  * 
  * 
@@ -56,7 +56,11 @@ vector_base:
     .word  TIMER3_HANDLER//29
     .word  INTR0_HANDLER//30
     .word  INTR1_HANDLER//31
-    j trap_entry//跳转硬件错误处理函数
+    j (trap_entry+0x80080-0x30880)//j trap_entry//跳转硬件错误处理函数//由于IVT导致此处偏移有问题；
+	/*原计算公式：offset = trap_entr -0x80080
+	需求计算公式：offset = trap_entr -0x30880
+	因此推导出需求关系和原公式关系可用：offset =trap_entr-0x30880+0x80080-0x80080= （trap_entr+ 0x80080-0x30880）-0x80080
+	*/
 /*********************************INTERRUPT_VECTOR_TABLE.S*********************************/
 /*********************************START.S*********************************/
 /****************************************************************************
