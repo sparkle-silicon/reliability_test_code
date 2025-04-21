@@ -200,6 +200,9 @@ void __weak Hook_1secEventB(void) // get fan rpm
         dprint("FAN2 RPM is %u\n", TACH0_Speed);
     }
 #endif
+// GPIO1_DDR0 |=0x1; 
+// GPIO1_DR0 |=0x1;
+// GPIO1_DR0 &=~0x1;
 }
 //-----------------------------------------------------------------------------
 u32 RunTimeStamp = 0;

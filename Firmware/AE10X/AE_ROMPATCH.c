@@ -54,7 +54,7 @@ USED sFixedFlashInfo Fix_flash_info = {
 	.EXTERNAL_FLASH_CTRL.LowAddr_OFFSET = 0b11,		// 4k（内部为准）
 	.EXTERNAL_FLASH_CTRL.HighAddr_SPACE = 0b111,	//[23:x]（内部为准）
 	.EXTERNAL_FLASH_CTRL.MUST_MIRROR_DISABLE = 0b1, // ，一般关闭，需要强制更新时候开启（外部为准）
-	.EXTERNAL_FLASH_CTRL.PWM_Enable = 0b1,
+	.EXTERNAL_FLASH_CTRL.PWM_Enable = 0b1,//MIRROR期间 0：关闭pwm闪烁，1：开启pwm闪烁
 	.EXTERNAL_FLASH_CTRL.PWMn_Switch = 0b0,
 	.EXTERNAL_FLASH_CTRL.SPI_Switch = 0b1,	// 4线
 	.EXTERNAL_FLASH_CTRL.WP_Switch = 0b11,	// piob29
@@ -76,12 +76,12 @@ USED sFixedFlashInfo Fix_flash_info = {
 		[1].last = 0,
 	},
 	// 主频
-	.MainFrequency = CHIP_CLOCK_SWITCH,
+	.MainFrequency = CHIP_CLOCK_SWITCH,// 主频分频系数 
 	// 验签
 	.SECVER_Enable = 1,		 // 0：EFUSE决定，1：安全验签测试输出（默认）
 	// .SECVER_VERIFY_Switch = 1,//RSA//无效
 	// .SECVER_AES_Enable = 0,//disable aes//无效
-	.SECVER_HASH_Switch = 1,//SHA256
+	.SECVER_HASH_Switch = 1,// 0:SHA224 1：SHA256（默认） 2：SHA384 3：SHA512
 	// .SECVER_BIT_Switch = 1,//rsa 2048bit//无效,ecc的时候生效
 	// .SECVER_AES_MODE_Switch = 3,//aes-256-ecb//无效
 
@@ -96,28 +96,28 @@ USED sFixedFlashInfo Fix_flash_info = {
 	.LPC_Enable = 1,		 // 0：ESPI口 1：LPC口
 // 调试手段
 
-	.EJTAG_Enable = 1,
-	.EJTAG_Switch = 1,
-	.CRYPTO_EJTAG_Switch = 1,
-	.DEBUG_PRINTF_Enable = 1,
-	.Uartn_Print_SWitch = PRINTF_UART_SWITCH,
-	.DEBUGGER_Enable = 1,
-	.DEBUGGER_UART_Enable = 1,
+	.EJTAG_Enable = 1,//0：关闭EJTAG，1:开启ejtag（默认）
+	.EJTAG_Switch = 1,//0：PIOE[13:10]为KBS则配置PIOB[30:27]为ejtag口, 1：PIOE[13:10]（默认）
+	.CRYPTO_EJTAG_Switch = 1,//0：PIOE[13:10]配置为CRYPTO口, 1：PIOE[13:10]保留默认配置
+	.DEBUG_PRINTF_Enable = 1,// 0：关闭调试串口，1：打开调试口
+	.Uartn_Print_SWitch = PRINTF_UART_SWITCH,//该口作为调试输出口选择（UART 01AB），剩余接口作为调试器
+	.DEBUGGER_Enable = 1,// 0：关闭调试器功能，
+	.DEBUGGER_UART_Enable = 1,// 0：关闭调试器口，1：打开所有调试口
 	.UART1_TXD_SWITCHE = 0,//piob1
 	.UART1_RXD_SWITCHE = 0,//piob3
 	.UARTA_TXD_SWITCHE = 1,//PIOA9
 	.UARTA_RXD_SWITCHE = 1,//PIOA8
-	.DEBUG_BAUD_RATE = (UART_BAUD / 3200) - 1,
-	.DEBUG_LEVEL = 1,
-	.DEBUG_PRINTF_DLS = 0b11,
-	.DEBUG_PRINTF_STOP = 0,
-	.DEBUG_PRINTF_PE = 0,
-	.DEBUG_PRINTF_EPE = 0,
-	.DEBUGGER_BAUD_RATE = (UART_BAUD / 3200) - 1,
-	.DEBUGGER_DLS = 0b11,
-	.DEBUGGER_STOP = 0,
-	.DEBUGGER_PE = 0,
-	.DEBUGGER_EPE = 0,
+	.DEBUG_BAUD_RATE = (UART_BAUD / 3200) - 1,// debug输出波特率(3200倍数，0)
+	.DEBUG_LEVEL = 1,//0:更详细的过程参数1:关闭仅输出过程位置
+	.DEBUG_PRINTF_DLS = 0b11,// 数据位(3)
+	.DEBUG_PRINTF_STOP = 0,// 停止位(0)
+	.DEBUG_PRINTF_PE = 0,// 校验位（0）
+	.DEBUG_PRINTF_EPE = 0,//奇偶校验选择（0奇校验）
+	.DEBUGGER_BAUD_RATE = (UART_BAUD / 3200) - 1,// debugger波特率(3200倍数)
+	.DEBUGGER_DLS = 0b11,// 数据位(3)
+	.DEBUGGER_STOP = 0,//  停止位(0)
+	.DEBUGGER_PE = 0,// 校验位（0）
+	.DEBUGGER_EPE = 0,//奇偶校验选择（0）
 };
 // SECTION(".FlashInfo.Dynamic")
 // USED sDynamicFlashInfo Dy_flash_info = {

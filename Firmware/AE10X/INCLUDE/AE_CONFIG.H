@@ -279,7 +279,7 @@
 #define SPIM_CS_EN 1
 #endif
 // PWM TACH 初始化
-#define PWM0_EN_Init 0 & PWM_CLOCK_EN
+#define PWM0_EN_Init 1 & PWM_CLOCK_EN
 #define PWM1_EN_Init 0 & PWM_CLOCK_EN
 #define PWM2_EN_Init 0 & PWM_CLOCK_EN
 #define PWM3_EN_Init 0 & PWM_CLOCK_EN
