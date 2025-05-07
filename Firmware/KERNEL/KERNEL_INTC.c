@@ -271,9 +271,9 @@ void intr0_gpio_a3(void)
 	Intr_num[35]++;
 #endif
 	GPIO0_EOI0 |= (0x1 << 3); // clear int
-#if SUPPORT_GPIO_WAKEUP
-	printf("intr0_gpio_a3 exit low power mode\n");
 	Exit_LowPower_Mode();
+#if SUPPORT_GPIO_WAKEUP
+
 #endif
 #if TEST_INTC
 #if INTC_MODE
@@ -406,6 +406,9 @@ void intr0_gpio_a11(void)
 	ICTL0_INTEN1 &= ~(0x1 << 3);
 #endif
 #endif
+// printf("intr0_gpio_a11\n");
+// Exit_LowPower_Mode();
+GPIO0_EOI1 |= (0x1 << 3); // clear int
 }
 void intr0_gpio_a12(void)
 {

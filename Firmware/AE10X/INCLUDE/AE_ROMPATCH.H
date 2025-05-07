@@ -218,7 +218,7 @@ typedef struct _FixedFlashInfo
             uint32_t PWM_Enable : 1;//无效 MIRROR期间 0：关闭pwm闪烁，1：开启pwm闪烁
             uint32_t PWMn_Switch : 3;//无效 启用后mirror期间pwm n闪烁(n== 0/1)
             uint32_t SPI_Switch : 1;//0:quad 四线SPI 1:dual 二线SPI
-            uint32_t WP_Switch : 2;//0:piob17 1:piob29(default) 2:piod8
+            uint32_t WP_Switch : 2;//0:piob17 1:piob29(default) 2:piod8 3:piob29
             uint32_t CS_Switch : 1;//0:fspi_csn0(piob22)(default) 1:fspi_csn1(pioa16)
             uint32_t Firmware_4KSector : 7;//按4k为单位，MIRROR按这个大小进行拷贝//最大512k//实际大小为该值+1，因此要求除了flashinfo以外又有内容都在512k以内
             // uint32_t RESERVED : 16;//无效位

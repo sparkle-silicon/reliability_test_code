@@ -43,5 +43,11 @@ extern void Enter_LowPower_Mode(void);
 extern void Exit_LowPower_Mode(void);
 extern void AE103_Sleep(void);
 extern void AE103_Deep_Sleep(void);
+extern void GLE_Sleep(void);
+extern void GLE_Deep_Sleep(void);   
+#if 0
+extern void GLE_Deep_Sleep2(void);   
+#endif
+extern void GLE_Hibernation(void);
 extern void Test_OSC32K(void);
 #endif
