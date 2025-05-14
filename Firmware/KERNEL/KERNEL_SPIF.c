@@ -212,6 +212,42 @@ ALIGNED(4) void SPIF_Read(DWORD addr, BYTEP read_buff, WORD length)
    while(!(SPIF_READY & SPIF_RDY));
    PRINTF_TX = 'd';
 }
+
+void ExtFlash_Deep_Power_Down(void)
+{
+#if (!SPIF_CLOCK_EN)
+   printf("SPIF_CLOCK is not enable\n");
+   return;
+#endif
+   while(!(SPIF_READY & SPIF_RDY));
+   while(SPIF_STATUS & 0xf);
+   SPIF_FIFO_TOP = 0xb9;
+   for(int i=0;i<1000;i++)
+   {
+      nop;
+   }
+   while(!(SPIF_READY & SPIF_RDY));
+   while(SPIF_STATUS & 0xb);
+   while(!(SPIF_READY & SPIF_RDY));
+}
+
+void ExtFlash_Exit_Power_Down(void)
+{
+#if (!SPIF_CLOCK_EN)
+   printf("SPIF_CLOCK is not enable\n");
+   return;
+#endif
+   while(!(SPIF_READY & SPIF_RDY));
+   SPIF_FIFO_TOP = 0xab;
+   for(int i=0;i<1000;i++)
+   {
+      nop;
+   }
+   while(!(SPIF_READY & SPIF_RDY));
+   while(SPIF_STATUS & 0xb);
+   while(!(SPIF_READY & SPIF_RDY));
+}
+
 void Smfi_Ram_Code(void)
 {
    int i, j = 0;
