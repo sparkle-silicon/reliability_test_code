@@ -1477,3 +1477,336 @@ void I3C_Init(BYTE addr)
 // 	vDelayXus(2);
 
 }
+
+//--------------------------- I3C Master ---------------------------//
+extern void I3C_Master_Init(BYTE addr);
+void I3C_Master_Init(BYTE addr) 
+{
+   	DEVICE_CTRL = 0x1<<31|0x0<<28; //31:enable I3c 28:enable DMA;
+	DEV_ADDR_TABLE_LOC1 = addr;	
+	SCL_I3C_PP_TIMING = 0x4|(0x4<<16);
+	DEVICE_CTRL |=(0x1<<31)|(0x1<<7)|(0x0<<28);//31:enable I3c 28:enable DMA; 7:I2c slave present
+	DEV_ADDR_TABLE_LOC1 = addr | 1<<31;
+	// INTR_STATUS_EN = 1<<3 | 0x3;
+	INTR_STATUS_EN = 0x3<<2 | 0x3;
+	// DATA_BUFFER_THLD_CTRL = 0x0;
+	QUEUE_THLD_CTRL = (0x3<<8)|0x1; ////DMA  master1 resp thld
+	DATA_BUFFER_THLD_CTRL = (0x0<<8)|0x0;
+}
+extern void I3C_Master_Write(uint32_t data);
+void I3C_Master_Write(uint32_t data)
+ {
+    // 1. 发送写命令
+    uint32_t cmd = (1 << 16) | 0x1; // TOC=1, TID=0x8
+    COMMAND_QUEUE_PORT = cmd;
+    // 2. 等待传输完成
+	while ((INTR_STATUS & 0x08) == 0)
+	{
+	}
+    INTR_STATUS = 0x08; // 清除中断标志
+	COMMAND_QUEUE_PORT = (1 << 30) | (0x8 << 3); // TOC=1, TID=0x8
+	while (INTR_STATUS & (0x1)==0)
+	{
+	}
+	// //3.发送数据
+	TX_DATA_PORT = data;
+
+}
+extern uint8_t I3C_Master_Read();
+uint8_t I3C_Master_Read() 
+{
+    // 1. 发送读命令
+	uint8_t rdata = 0;
+    COMMAND_QUEUE_PORT = (31 << 16) | 0x1; // DL=1, CMD_ATTR=1
+    while ((INTR_STATUS & 0x08) == 0) // 等待CMD_COMPLETE中断
+	{
+	}
+	COMMAND_QUEUE_PORT |= (1 << 30) | (1 << 28) | (0x8 << 3); // TOC=1, RNW=1, TID=0x8
+    while(INTR_STATUS  & (0x1<<1)==0)
+	{
+	}
+	vDelayXus(30);
+	// 3. 读取数据
+	rdata = RX_DATA_PORT;
+    return rdata;
+}
+
+extern void I3c_init_slave();
+void I3c_init_slave()
+{
+    CONFIG |=(0x5a<<25);//静态地址
+	INTSET =(0x1<<11);//中断使能
+}
+
+extern void I3c_test();
+void I3c_test()
+{
+	sysctl_iomux_config(GPIOC,11,3);//i3c_scl0 master0
+	sysctl_iomux_config(GPIOC,12,3);//i3c_sda0
+
+	sysctl_iomux_config(GPIOB,2,3);//scl2 slave0
+	sysctl_iomux_config(GPIOB,3,3);//sda2
+
+	sysctl_iomux_config(GPIOC,13,3);//i3c_scl1 master1
+	sysctl_iomux_config(GPIOB,1,3);//sda1
+
+	sysctl_iomux_config(GPIOB,8,3);//scl3 slave1
+	sysctl_iomux_config(GPIOB,9,3);//sda3
+
+	I3C_Master_Init(0x5a);
+	
+	I3c_init_slave();
+
+for (int i = 0; i < 0xf; i++)
+{
+	BYTE tx_data = 0xf+i;
+	I3C_Master_Write(tx_data);
+
+	vDelayXus(20);
+
+	BYTE rx_data = I3C_Master_Read();
+}
+}
+
+void DMA_INIT()
+{
+//DAM_I3C测试
+uint32_t rdata1,wdata1;
+uint32_t rd[512],wd[512];
+uint32_t addr,tmp;
+
+//dma config
+uint8_t dst_tr_width,src_tr_width,dst_msize,src_msize,tt_fc,ch_prior,dest_per,src_per;
+uint8_t dinc,sinc;
+uint8_t	int_en,dst_scatter_en,src_gather_en,llp_dst_en,llp_src_en,done,ch_susp,hs_sel_src,hs_sel_dst;
+uint16_t blk_ts;
+
+//i3c config
+uint32_t  rdata,wdata;
+uint8_t cmd_attr,byte_strb;
+uint8_t tid;
+uint8_t cp,roc,sdap,rnw,toc;
+//1.prepare data
+// for (int i = 0; i < 32; i++)
+// {
+// 	REG32(0x28000+i*4) = (i*4+3)<<24|(i*4+2)<<16|(i*4+1)<<8|i*4;
+// 	// REG32(0x28000+i*4) = (i*4+3)<<24|(i*4+2)<<16|(0x0)<<8|i*4;
+// 	// REG32(0x28000+i*4)= 0xaa+i;
+// 	printf("iram0 data 0x2800%x:%x\n",i*4,REG32(0x28000+i*4));
+// }
+//2.iomux config
+sysctl_iomux_config(GPIOC,11,3);//i3c_scl0 master0
+sysctl_iomux_config(GPIOC,12,3);//i3c_sda0
+
+sysctl_iomux_config(GPIOB,2,3);//scl2 slave0
+sysctl_iomux_config(GPIOB,3,3);//sda2
+
+sysctl_iomux_config(GPIOC,13,3);//i3c_scl1 master1
+sysctl_iomux_config(GPIOB,1,3);//sda1
+
+sysctl_iomux_config(GPIOB,8,3);//scl3 slave1
+sysctl_iomux_config(GPIOB,9,3);//sda3
+
+I3c_init_slave();
+
+I3C_Master_Init(0x5a);
+
+// for (int i = 0; i < 16; i++)
+// {
+// 	I3C_Master_Write((i*4+3)<<24|(i*4+2)<<16|(i*4+1)<<8|i*4);
+// }
+
+
+////////////////////////////
+//CTLx
+//////////////////////////////                                       
+	int_en=0;
+	dst_tr_width=2;//0:8bit 目标地址传输宽度
+	src_tr_width=2;//2:32bit 源地址传输宽度
+	dinc=0;        //0：目标地址增加 1：目标地址减少 2: 目标地址no change
+	sinc=2;        //0：源地址增加 1：源地址减少 2：源地址no change
+	dst_msize=0; //I3C0
+	// dst_msize = 1; //I3C3
+	src_msize=0;
+	dst_scatter_en=0;
+	src_gather_en=0;
+	tt_fc=2;       //1：内存到外设  2：外设到内存
+	llp_dst_en=0;
+	llp_src_en=0;
+	wdata1=llp_src_en<<28|llp_dst_en<<27|tt_fc<<20|dst_scatter_en<<18|src_gather_en<<17|src_msize<<14|dst_msize<<11|sinc<<9|dinc<<7|src_tr_width<<4|dst_tr_width<<1|int_en;
+	DMA_CTL0_low = wdata1;  //配置CTL0的低32位[0:31]    0x10 0120 
+	done=1;
+	blk_ts=31;
+	wdata1=done<<12|blk_ts;
+	rdata1 = DMA_CTL0_high;           // 把BLOCK_TS[32:35]清零
+	rdata1 &= ~(0xf);   
+	DMA_CTL0_high = rdata1 | wdata1;   //把0x1004写入高32位[32:63]，那现在实际block_ts大小为4
+//////////////////////////////	
+//CFG
+//////////////////////////////
+	ch_prior=0;
+	ch_susp=0;
+	hs_sel_src=0;//hw handshake
+	hs_sel_dst=0;
+	wdata1 = (hs_sel_src << 11) | (hs_sel_dst << 10) | (ch_susp << 8) | (ch_prior << 5);
+	rdata1 = DMA_CFG0_low;
+	rdata1 &= ~((0x1 << 11) | (0x1 << 10));      //源和目标设备都设置为硬件握手
+	DMA_CFG0_low = (rdata1 | wdata1);
+#if DMA_EN	
+	// src_per=0;//i3c0_rx 
+	src_per = 6;//i3c3_rx
+	// REG32(0x30500) = 0x1;//dma sel i3c0_rx
+	REG32(0x30500) = (0x1<<6);//dma sel i3c0_rx
+	rdata1 = DMA_CFG0_high;
+	DMA_CFG0_high = (rdata1 | (src_per << 7));
+	// DMA_SAR0 = &TX_DATA_PORT; //源地址
+	DMA_SAR0 = &RDATAB;
+	DMA_DAR0 = 0x28000;  //目标地址
+#else
+	// dest_per = 1; //i3c0_tx
+	// REG32(0x30500) = 0x1;//dma sel i3c0_tx
+	// // REG32(0x30500) = (0x1<<7);//dma sel i3c3_tx
+	// dest_per = 7; //i3c3_tx
+	// rdata1 = DMA_CFG0_high;
+	// DMA_CFG0_high = (rdata1 | (dest_per << 11));
+	// DMA_SAR0 = 0x28000; //源地址
+	// DMA_DAR0 = &TX_DATA_PORT;  //目标地址
+	// DMA_DAR0 = &WDATAB; //I3C3 目标地址
+
+		src_per=0;//i3c0_rx 
+		// REG32(0x30500) = (0x1<<6);//dma sel i3c3_rx
+		// src_per = 6;//i3c3_rx
+		REG32(0x30500) = 0x1;//dma sel i3c0_rx
+		rdata1 = DMA_CFG0_high;
+		DMA_CFG0_high = (rdata1 | (src_per << 7));
+		DMA_SAR0 = &RX_DATA_PORT; //源地址
+		// DMA_SAR0 = &RDATAB;
+		DMA_DAR0 = 0x28000;  //目标地址
+#endif
+	DMA_DmaCfgReg = 0x1;//DMA使能
+	wdata1 = (0x1 | (0x1<<8));
+	DMA_ChEnReg  = wdata1;
+	// DMACTRL = (0x1<<2); //slave TX DMA使能
+	// DMACTRL = 0x2; //slave RX DMA使能
+	// vDelayXms(10);
+	// WDATAB =(0x1<<8)|0x1f;
+	for (int i = 0; i < 32; i++)
+	{
+		// BYTE rx_data = I3C_Master_Read();
+		// BYTE rx_data = RX_DATA_PORT;
+		// TX_DATA_PORT = (i*4+4)<<24|(i*4+3)<<16|(i*4+2)<<8|i*4+1;
+		if(i==31)
+		{
+			WDATAB =(0x1<<8)|0x1f;
+		}
+		else
+		{
+		    WDATAB = (i*4+3)<<24|(i*4+2)<<16|(0x0)<<8|i*4;
+		}
+		// BYTE rx_data = RDATAB;
+		// printf("rx data:%x\n",rx_data);
+		// printf("iram0 data:%x\n",REG32(0x28400+i*4));
+	}
+
+	COMMAND_QUEUE_PORT = (0x20<<16)|0x1;
+	while ((INTR_STATUS & 0x08) == 0)
+	{
+	}
+	// COMMAND_QUEUE_PORT =(0x1<<30)|(0x0<<27)|(0x0<<21)|0x0;
+	COMMAND_QUEUE_PORT = (0x1<<30)|(0x1<<28)|(0x0<<27)|(0x0<<21)|0x0;
+	while (INTR_STATUS & (0x1)==0)
+	{
+	}
+	// printf("STATUS00:%x\n",STATUS);
+	// vDelayXms(50);
+	for (int i = 0; i < 32; i++)
+	{
+		// BYTE rx_data = I3C_Master_Read();
+		// BYTE rx_data = RX_DATA_PORT;
+		// TX_DATA_PORT = (i*4+4)<<24|(i*4+3)<<16|(i*4+2)<<8|i*4+1;
+		// BYTE rx_data = RDATAB;
+		// printf("rx data:%x\n",rx_data);
+		printf("iram0 data:%x\n",REG32(0x28400+i*4));
+	}
+
+	// while (DMA_ChEnReg & (0x1)==1)
+	// {
+	// }
+
+	// for (int i = 0; i < 32; i++)
+	// {
+	// 	// BYTE rx_data = I3C_Master_Read();
+	// 	// BYTE rx_data = RX_DATA_PORT;
+	// 	// TX_DATA_PORT = (i*4+4)<<24|(i*4+3)<<16|(i*4+2)<<8|i*4+1;
+	// 	// BYTE rx_data = RDATAB;
+	// 	printf("iram0 data11:%x\n",REG32(0x28000+i*4));
+	// 	// printf("STATUS11:%x\n",STATUS);
+	// }
+
+
+
+
+	//验证master0通过DMA将master的RX数据寄存器中的数据写入到iram0中
+	////////////////////////////
+	//CTLx
+	//////////////////////////////                                       
+// 	int_en=0;
+// 	dst_tr_width=2;//0:8bit 目标地址传输宽度
+// 	src_tr_width=2;//2:32bit 源地址传输宽度
+// 	dinc=0;        //0：目标地址增加 1：目标地址减少 2: 目标地址no change
+// 	sinc=2;        //0：源地址增加 1：源地址减少 2：源地址no change
+// 	dst_msize=0;
+// 	src_msize=0;
+// 	dst_scatter_en=0;
+// 	src_gather_en=0;
+// 	tt_fc=2;       //1：内存到外设  2：外设到内存
+// 	llp_dst_en=0;
+// 	llp_src_en=0;
+// 	wdata1=llp_src_en<<28|llp_dst_en<<27|tt_fc<<20|dst_scatter_en<<18|src_gather_en<<17|src_msize<<14|dst_msize<<11|sinc<<9|dinc<<7|src_tr_width<<4|dst_tr_width<<1|int_en;
+// 	DMA_CTL0_low = wdata1;  //配置CTL0的低32位[0:31]    0x10 0120 
+// 	done=1;
+// 	blk_ts=16;
+// 	wdata1=done<<12|blk_ts;
+// 	rdata1 = DMA_CTL0_high;           // 把BLOCK_TS[32:35]清零
+// 	rdata1 &= ~(0xf);   
+// 	DMA_CTL0_high = rdata1 | wdata1;   //把0x1004写入高32位[32:63]，那现在实际block_ts大小为4
+// //////////////////////////////	
+// //CFG
+// //////////////////////////////
+// ch_prior=0;
+// ch_susp=0;
+// hs_sel_src=0;//hw handshake
+// hs_sel_dst=0;
+// wdata1 = (hs_sel_src << 11) | (hs_sel_dst << 10) | (ch_susp << 8) | (ch_prior << 5);
+// rdata1 = DMA_CFG0_low;
+// rdata1 &= ~((0x1 << 11) | (0x1 << 10));      //源和目标设备都设置为硬件握手
+// DMA_CFG0_low = (rdata1 | wdata1);
+
+// src_per=0;//i3c0_rx 
+// REG32(0x30500) = 0x1; //DMA_sel
+// rdata1 = DMA_CFG0_high;
+// DMA_CFG0_high = (rdata1 | (src_per << 7));
+// DMA_SAR0 = &RX_DATA_PORT; //源地址
+// DMA_DAR0 = 0x28080;  //目标地址
+// DMA_DmaCfgReg = 0x1;//DMA使能
+// wdata1 = (0x1 | (0x1<<8));
+// DMA_ChEnReg  = wdata1;
+
+// for (int i = 0; i < 64; i++)
+// {
+// 	WDATAB = 0x20 + i; //从机回数据给主机
+// }
+// 	COMMAND_QUEUE_PORT = (0x40<<16)|0x1;
+// 	while ((INTR_STATUS & 0x08) == 0)
+// 	{
+// 	}
+// 	// vDelayXms(10);
+// 	COMMAND_QUEUE_PORT =(0x1<<30)|(0x1<<28)|(0x0<<27)|(0x0<<21)|0x0;
+// 	vDelayXms(70);
+// 	for (int i = 0; i < 8; i++)
+// 	{
+// 		printf("RX iram0 data:%x\n",REG32(0x28080+i*4));
+// 	}
+
+
+}
