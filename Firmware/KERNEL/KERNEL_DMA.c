@@ -1,107 +1,107 @@
-#include "KERNEL_DMA.H"
-void DMA_INIT()
-{
-//DAM_I3C测试
-uint32_t rdata1,wdata1;
-uint32_t rd[512],wd[512];
-uint32_t addr,tmp;
+// #include "KERNEL_DMA.H"
+// void DMA_INIT()
+// {
+// //DAM_I3C测试
+// uint32_t rdata1,wdata1;
+// uint32_t rd[512],wd[512];
+// uint32_t addr,tmp;
 
-//dma config
-uint8_t dst_tr_width,src_tr_width,dst_msize,src_msize,tt_fc,ch_prior,dest_per,src_per;
-uint8_t dinc,sinc;
-uint8_t	int_en,dst_scatter_en,src_gather_en,llp_dst_en,llp_src_en,done,ch_susp,hs_sel_src,hs_sel_dst;
-uint16_t blk_ts;
+// //dma config
+// uint8_t dst_tr_width,src_tr_width,dst_msize,src_msize,tt_fc,ch_prior,dest_per,src_per;
+// uint8_t dinc,sinc;
+// uint8_t	int_en,dst_scatter_en,src_gather_en,llp_dst_en,llp_src_en,done,ch_susp,hs_sel_src,hs_sel_dst;
+// uint16_t blk_ts;
 
-//i3c config
-uint32_t  rdata,wdata;
-uint8_t cmd_attr,byte_strb;
-uint8_t tid;
-uint8_t cp,roc,sdap,rnw,toc;
-//1.prepare data
-for (int i = 0; i < 4; i++)
-{
-	REG32(0x28000+i*4) = i+1;
-}
-//2.iomux config
-sysctl_iomux_config(GPIOC,11,3);//i3c_scl0 master0
-sysctl_iomux_config(GPIOC,12,3);//i3c_sda0
+// //i3c config
+// uint32_t  rdata,wdata;
+// uint8_t cmd_attr,byte_strb;
+// uint8_t tid;
+// uint8_t cp,roc,sdap,rnw,toc;
+// //1.prepare data
+// for (int i = 0; i < 4; i++)
+// {
+// 	REG32(0x28000+i*4) = i+1;
+// }
+// //2.iomux config
+// sysctl_iomux_config(GPIOC,11,3);//i3c_scl0 master0
+// sysctl_iomux_config(GPIOC,12,3);//i3c_sda0
 
-sysctl_iomux_config(GPIOC,13,3);//i3c_scl1 master1
-sysctl_iomux_config(GPIOB,1,3);//i3c_sda1
+// sysctl_iomux_config(GPIOC,13,3);//i3c_scl1 master1
+// sysctl_iomux_config(GPIOB,1,3);//i3c_sda1
 
-I3C_Init(0x4c);
-// 读
-cmd_attr=0;
-tid=0x8;
-rnw =1;
-toc =1;
-wdata = 0;
-wdata =toc<<30 | rnw<<28 |tid<<3;
-COMMAND_QUEUE_PORT = wdata;
+// I3C_Init(0x4c);
+// // 读
+// cmd_attr=0;
+// tid=0x8;
+// rnw =1;
+// toc =1;
+// wdata = 0;
+// wdata =toc<<30 | rnw<<28 |tid<<3;
+// COMMAND_QUEUE_PORT = wdata;
 
-////////////////////////////
-//CTLx
-//////////////////////////////                                       
-	int_en=0;
-	dst_tr_width=0;//0:8bit 目标地址传输宽度
-	src_tr_width=0;//2:32bit 源地址传输宽度
-#if DMA_EN
-	dinc=0;        //0：目标地址增加 1：目标地址减少 2: 目标地址no change
-	sinc=2;        //0：源地址增加 1：源地址减少 2：源地址no change
-#else
-	dinc=2;        //0：目标地址增加 1：目标地址减少 2: 目标地址no change
-	sinc=0;        //0：源地址增加 1：源地址减少 2：源地址no change
-#endif
-	dst_msize=0;
-	src_msize=0;
-	dst_scatter_en=0;
-	src_gather_en=0;
-#if DMA_EN
-	tt_fc=2;       //1：内存到外设  2：外设到内存
-#else
-	tt_fc=1;       //1：内存到外设  2：外设到内存
-#endif
-	llp_dst_en=0;
-	llp_src_en=0;
-	wdata1=llp_src_en<<28|llp_dst_en<<27|tt_fc<<20|dst_scatter_en<<18|src_gather_en<<17|src_msize<<14|dst_msize<<11|sinc<<9|dinc<<7|src_tr_width<<4|dst_tr_width<<1|int_en;
-	DMA_CTL0_low = wdata1;  //配置CTL0的低32位[0:31]    0x10 0120 
-	done=1;
-	blk_ts=1;
-	wdata1=done<<12|blk_ts;
-	rdata1 = DMA_CTL0_high;           // 把BLOCK_TS[32:35]清零
-	rdata1 &= ~(0xf);   
-	DMA_CTL0_high = rdata1 | wdata1;   //把0x1004写入高32位[32:63]，那现在实际block_ts大小为4
-//////////////////////////////	
-//CFG
-//////////////////////////////
-	ch_prior=0;
-	ch_susp=0;
-	hs_sel_src=0;//hw handshake
-	hs_sel_dst=0;
-	wdata1 = (hs_sel_src << 11) | (hs_sel_dst << 10) | (ch_susp << 8) | (ch_prior << 5);
-	rdata1 = DMA_CFG0_low;
-	rdata1 &= ~((0x1 << 11) | (0x1 << 10));      //源和目标设备都设置为硬件握手
-	DMA_CFG0_low = (rdata1 | wdata1);
-#if DMA_EN	
-	src_per=0;//i3c0_rx 
-	REG32(0x30500) = 0x1;
-	rdata1 = DMA_CFG0_high;
-	DMA_CFG0_high = (rdata1 | (src_per << 7));
-	DMA_SAR0 = &TX_DATA_PORT; //源地址
-	DMA_DAR0 = 0x28000;  //目标地址
-#else
-	dest_per = 1;
-	rdata1 = DMA_CFG0_high;
-	DMA_CFG0_high = (rdata1 | (dest_per << 11));
-	DMA_SAR0 = 0x28000; //源地址
-	DMA_DAR0 = &TX_DATA_PORT;  //目标地址
-#endif
-	DMA_DmaCfgReg = 0x1;//DMA使能
-	wdata1 = (0x1 | (0x1<<8));
-	DMA_ChEnReg  = wdata1;
-	vDelayXms(10);
-	printf("iram0 data 0x28000:%x\n",REG32(0x28000));
-}
+// ////////////////////////////
+// //CTLx
+// //////////////////////////////                                       
+// 	int_en=0;
+// 	dst_tr_width=0;//0:8bit 目标地址传输宽度
+// 	src_tr_width=0;//2:32bit 源地址传输宽度
+// #if DMA_EN
+// 	dinc=0;        //0：目标地址增加 1：目标地址减少 2: 目标地址no change
+// 	sinc=2;        //0：源地址增加 1：源地址减少 2：源地址no change
+// #else
+// 	dinc=2;        //0：目标地址增加 1：目标地址减少 2: 目标地址no change
+// 	sinc=0;        //0：源地址增加 1：源地址减少 2：源地址no change
+// #endif
+// 	dst_msize=0;
+// 	src_msize=0;
+// 	dst_scatter_en=0;
+// 	src_gather_en=0;
+// #if DMA_EN
+// 	tt_fc=2;       //1：内存到外设  2：外设到内存
+// #else
+// 	tt_fc=1;       //1：内存到外设  2：外设到内存
+// #endif
+// 	llp_dst_en=0;
+// 	llp_src_en=0;
+// 	wdata1=llp_src_en<<28|llp_dst_en<<27|tt_fc<<20|dst_scatter_en<<18|src_gather_en<<17|src_msize<<14|dst_msize<<11|sinc<<9|dinc<<7|src_tr_width<<4|dst_tr_width<<1|int_en;
+// 	DMA_CTL0_low = wdata1;  //配置CTL0的低32位[0:31]    0x10 0120 
+// 	done=1;
+// 	blk_ts=1;
+// 	wdata1=done<<12|blk_ts;
+// 	rdata1 = DMA_CTL0_high;           // 把BLOCK_TS[32:35]清零
+// 	rdata1 &= ~(0xf);   
+// 	DMA_CTL0_high = rdata1 | wdata1;   //把0x1004写入高32位[32:63]，那现在实际block_ts大小为4
+// //////////////////////////////	
+// //CFG
+// //////////////////////////////
+// 	ch_prior=0;
+// 	ch_susp=0;
+// 	hs_sel_src=0;//hw handshake
+// 	hs_sel_dst=0;
+// 	wdata1 = (hs_sel_src << 11) | (hs_sel_dst << 10) | (ch_susp << 8) | (ch_prior << 5);
+// 	rdata1 = DMA_CFG0_low;
+// 	rdata1 &= ~((0x1 << 11) | (0x1 << 10));      //源和目标设备都设置为硬件握手
+// 	DMA_CFG0_low = (rdata1 | wdata1);
+// #if DMA_EN	
+// 	src_per=0;//i3c0_rx 
+// 	REG32(0x30500) = 0x1;
+// 	rdata1 = DMA_CFG0_high;
+// 	DMA_CFG0_high = (rdata1 | (src_per << 7));
+// 	DMA_SAR0 = &TX_DATA_PORT; //源地址
+// 	DMA_DAR0 = 0x28000;  //目标地址
+// #else
+// 	dest_per = 1;
+// 	rdata1 = DMA_CFG0_high;
+// 	DMA_CFG0_high = (rdata1 | (dest_per << 11));
+// 	DMA_SAR0 = 0x28000; //源地址
+// 	DMA_DAR0 = &TX_DATA_PORT;  //目标地址
+// #endif
+// 	DMA_DmaCfgReg = 0x1;//DMA使能
+// 	wdata1 = (0x1 | (0x1<<8));
+// 	DMA_ChEnReg  = wdata1;
+// 	vDelayXms(10);
+// 	printf("iram0 data 0x28000:%x\n",REG32(0x28000));
+// }
 
 // // //DMA_SPIM测试
 // 	uint32_t rdata1,wdata1;

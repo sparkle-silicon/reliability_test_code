@@ -41,6 +41,8 @@ extern VBYTE *Tmp_code_pointer;
 extern VBYTE *Tmp_XPntr;
 extern void SPIF_Init(void);
 extern void SPIF_READ_ID(void);
+extern void ExtFlash_Deep_Power_Down(void);
+extern void ExtFlash_Exit_Power_Down(void);
 extern FUNCT_PTR_V_D_BP_L Load_Fla_If_To_Ram(FUNCT_PTR_V_D_BP_L funcpoint, const int malloc_size);
 extern void Transport_Update_To_iram1(FUNCT_PTR_B_D_D funcpoint, const int malloc_size);
 extern void Transport_Func_To_iram1(FUNCT_PTR_V_V funcpoint, const int malloc_size);

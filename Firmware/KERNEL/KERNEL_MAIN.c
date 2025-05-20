@@ -573,6 +573,8 @@ int __weak main(void)
 	// spim_rw_dual(0,16);//dual mode
 	// spim_rw_3wire(0,64);//3 wire mode
 	//  3. jump loop
+	// I3c_test();
+	// DMA_INIT();
 	main_loop();
 	return 0;
 }

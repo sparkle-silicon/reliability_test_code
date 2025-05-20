@@ -30,6 +30,7 @@
 unsigned char ERR_CODE = 0xff;  // 错误码
 
 unsigned char response;
+unsigned char err_cnt=0;
 typedef struct _CryptoFlashInfo
 {
     unsigned char Firmware_ID[16]; // 识别码，确认安全验签位置，和开头识别码做区分
@@ -250,7 +251,11 @@ again:
         {
             while(wait_for_ack(fd));
             printf("header send retry\n");
-            goto again;
+            err_cnt++;
+            if(err_cnt<=9)
+                goto again;
+            else
+                while(wait_for_ack(fd));
         }
     }
 
@@ -377,7 +382,11 @@ anew:
             {
                 while(wait_for_ack(fd));
                 printf("Sending block %d again current block crc8: 0x%x\n", block_count+1, buffer[BLOCK_SIZE]);
-                goto anew;
+                err_cnt++;
+                if(err_cnt<=9)
+                    goto anew;
+                else
+                    while(wait_for_ack(fd));
             }
         }
         block_count++;
