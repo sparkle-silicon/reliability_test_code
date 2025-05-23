@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-05-21 18:22:32
+ * @LastEditTime: 2025-05-21 18:34:53
  * @Description:
  *
  *
@@ -970,14 +970,14 @@ void __interrupt SECTION(".interrupt.INTR1_HANDLER") INTR1_HANDLER(void)
 	if(intr1_service[(num)] == &intr1_uart1)
 	{
 	}
-#elif ((DEBUG_UART_SWITCH == 2))
-	if(intr1_service[(num)] == &intr1_uart2)
-	{
-	}
-#elif ((DEBUG_UART_SWITCH == 3))
-	if(intr1_service[(num)] == &intr1_uart3)
-	{
-	}
+// #elif ((DEBUG_UART_SWITCH == 2))
+// 	if(intr1_service[(num)] == &intr1_uart2)
+// 	{
+// 	}
+// #elif ((DEBUG_UART_SWITCH == 3))
+// 	if(intr1_service[(num)] == &intr1_uart3)
+// 	{
+// 	}
 #else
 	if(FALSE)
 	{
@@ -987,14 +987,14 @@ void __interrupt SECTION(".interrupt.INTR1_HANDLER") INTR1_HANDLER(void)
 	else if(intr1_service[(num)] == &intr1_uart1)
 	{
 	}
-#elif ((COMMAND_UART_SWITCH == 2))
-	else if(intr1_service[(num)] == &intr1_uart2)
-	{
-	}
-#elif ((COMMAND_UART_SWITCH == 3))
-	else if(intr1_service[(num)] == &intr1_uart3)
-	{
-	}
+// #elif ((COMMAND_UART_SWITCH == 2))
+// 	else if(intr1_service[(num)] == &intr1_uart2)
+// 	{
+// 	}
+// #elif ((COMMAND_UART_SWITCH == 3))
+// 	else if(intr1_service[(num)] == &intr1_uart3)
+// 	{
+// 	}
 #else
 	else if(FALSE)
 	{
@@ -1002,11 +1002,11 @@ void __interrupt SECTION(".interrupt.INTR1_HANDLER") INTR1_HANDLER(void)
 #endif
 #if ((PRINTF_UART_SWITCH == 1))
 	else if(intr1_service[(num)] != &intr1_uart1)
-	#elif ((PRINTF_UART_SWITCH == 2))
-	else if(intr1_service[(num)] != &intr1_uart2)
-	#elif ((PRINTF_UART_SWITCH == 3))
-	else if(intr1_service[(num)] != &intr1_uart3)
-	#else
+	// #elif ((PRINTF_UART_SWITCH == 2))
+	// else if(intr1_service[(num)] != &intr1_uart2)
+	// #elif ((PRINTF_UART_SWITCH == 3))
+	// else if(intr1_service[(num)] != &intr1_uart3)
+	// #else
 	else if(TRUE)
 	#endif
 	#endif
