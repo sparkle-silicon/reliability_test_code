@@ -24,6 +24,7 @@
 #include "CUSTOM_ANX7447_PORT.H"
 #include "AE_UPDATE.H"
 #include "KERNEL_SLEEP_RESET.H"
+#include "KERNEL_INCLUDE.H"
 /*-----------------------------------------------------------------------------
  * Local Parameter Definition
  *---------------------------------------------------------------------------*/

@@ -297,6 +297,23 @@ extern void Vtable_Tansport(void);
 #else
 #define wdt_MoudleClock_EN SYSCTL_MODEN0 &= (~WDT_EN);
 #endif
+#ifdef GLE01
+#if SMBUS8_CLOCK_EN
+#define smbus8_MoudleClock_EN SYSCTL_MODEN0 |= SMB8_EN;
+#else
+#define smbus8_MoudleClock_EN SYSCTL_MODEN0 &= (~SMB8_EN);
+#endif
+#if SMBUS7_CLOCK_EN
+#define smbus7_MoudleClock_EN SYSCTL_MODEN0 |= SMB7_EN;
+#else
+#define smbus7_MoudleClock_EN SYSCTL_MODEN0 &= (~SMB7_EN);
+#endif
+#if SMBUS6_CLOCK_EN
+#define smbus6_MoudleClock_EN SYSCTL_MODEN0 |= SMB6_EN;
+#else
+#define smbus6_MoudleClock_EN SYSCTL_MODEN0 &= (~SMB6_EN);
+#endif
+#endif 
 #ifdef AE103
 #if SMBUS5_CLOCK_EN
 #define smbus5_MoudleClock_EN SYSCTL_MODEN1 |= SMB5_EN;

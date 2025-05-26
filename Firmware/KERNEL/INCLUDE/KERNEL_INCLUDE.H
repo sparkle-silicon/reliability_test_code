@@ -58,6 +58,8 @@
 #include "KERNEL_ESPI.H"
 #if (GLE01 == 1)
 #include "KERNEL_MAILBOX.H"
+#include "KERNEL_DMA.H"
+#include "KERNEL_I3C.H"
 #endif
 
 #endif

@@ -110,6 +110,27 @@ void i2c5_pull_up(void)
 	GPIO_Pullup_Config(GPIOB, 7);
 #endif
 }
+void i2c6_pull_up(void)
+{
+#if (defined(GLE01))
+	GPIO_Pullup_Config(GPIOA, 24);  //SMCLK6
+	GPIO_Pullup_Config(GPIOA, 25);  //SMDAT6
+#endif
+}
+void i2c7_pull_up(void)
+{
+#if (defined(GLE01))
+	GPIO_Pullup_Config(GPIOA, 10);  //SMCLK7
+	GPIO_Pullup_Config(GPIOB, 24);  //SMDAT7
+#endif
+}
+void i2c8_pull_up(void)
+{
+#if (defined(GLE01))
+	GPIO_Pullup_Config(GPIOA, 13);  //SMCLK8
+	GPIO_Pullup_Config(GPIOC, 14);  //SMDAT8
+#endif
+}
 
 void tach0_pull_up(void)
 {
@@ -181,7 +202,6 @@ void uart_init(void)
 	sysctl_iomux_uart1();
 	flag |= BIT1;
 	baud[1] = serial_init(UART1_CHANNEL, UART1_BAUD);
-
 #endif
 // #ifdef UART2_BAUD
 // 	uart2_MoudleClock_EN;
@@ -302,6 +322,49 @@ void smbus_init(void)
 #endif
 #else
 	I2c_Channel_Init(I2C_CHANNEL_5, I2C5_SPEED, I2C_NO_ROLE, 0x00, 1);
+#endif
+#endif
+#endif
+#ifdef GLE01
+#if I2C6_EN_Init
+	smbus6_MoudleClock_EN;
+	sysctl_iomux_i2c6();
+	i2c6_pull_up();
+#if (DEBUGGER_OUTPUT_SWITCH == 1)
+#if (DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_6)
+	I2c_Channel_Init(I2C_CHANNEL_6, I2C6_SPEED, I2C_SLAVE_ROLE, 0x00, 1);
+	I2C6_INTR_MASK |= I2C_INTR_RX_FULL;
+#endif
+#else
+	I2c_Channel_Init(I2C_CHANNEL_6, I2C6_SPEED, I2C_SLAVE_ROLE, 0x6A, 1);
+	// I2c_Channel_Init(I2C_CHANNEL_6, I2C6_SPEED, I2C_MASTER_ROLE, 0x6a, 1);
+#endif
+#endif
+#if I2C7_EN_Init
+	smbus7_MoudleClock_EN;
+	sysctl_iomux_i2c7();
+	i2c7_pull_up();
+#if (DEBUGGER_OUTPUT_SWITCH == 1)
+#if (DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_7)
+	I2c_Channel_Init(I2C_CHANNEL_7, I2C7_SPEED, I2C_SLAVE_ROLE, 0x00, 1);
+	I2C7_INTR_MASK |= I2C_INTR_RX_FULL;
+#endif
+#else
+	// I2c_Channel_Init(I2C_CHANNEL_7, I2C7_SPEED, I2C_SLAVE_ROLE, 0x6A, 1);
+	I2c_Channel_Init(I2C_CHANNEL_7, I2C7_SPEED, I2C_MASTER_ROLE, 0x6a, 1);
+#endif
+#endif
+#if I2C8_EN_Init
+	smbus8_MoudleClock_EN;
+	sysctl_iomux_i2c8();
+	i2c8_pull_up();
+#if (DEBUGGER_OUTPUT_SWITCH == 1)
+#if (DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_8)
+	I2c_Channel_Init(I2C_CHANNEL_8, I2C8_SPEED, I2C_SLAVE_ROLE, 0x00, 1);
+	I2C8_INTR_MASK |= I2C_INTR_RX_FULL;
+#endif
+#else
+	I2c_Channel_Init(I2C_CHANNEL_8, I2C8_SPEED, I2C_MASTER_ROLE, 0x6a, 1);
 #endif
 #endif
 #endif

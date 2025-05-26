@@ -2156,27 +2156,30 @@ void intr1_i3c2(void) // 34
 	ICTL1_INTEN4 &= ~(0x1 << 2);
 #endif
 #endif
-uint8_t slave_rx_data = 0;
-if (INTMASKED & (1 << 11)) 
-{
-	// 1. 读取接收数据
-	slave_rx_data = RDATAB;
-	printf("00:%x\n",slave_rx_data);
-	INTSET |=(0x1<<12);
-	//2.清除中断
-	// INTCLR = (1 << 11);
-}
+//回环测试
+// uint8_t slave_rx_data = 0;
+// if (INTMASKED_0 & (1 << 11))    ////接收FIFO满
+// {
+// 	// 1. 读取接收数据
+// 	slave_rx_data = RDATAB_0;
+// 	printf("RX:%x\n",slave_rx_data);
 
-if (INTMASKED & (1 << 12)) 
-{ // 检查接收中断状态	
-	// 2. 回传数据到主机
-	INTR_STATUS_EN |=(0x1<<1);
-	WDATAB = slave_rx_data; // 将接收的数据写回	
-	printf("11:%x\n",slave_rx_data);
-	// WDATAB|=(0x1<<8);
-	// 3. 清除中断标志
-	INTCLR = (1 << 12);
-}
+
+// 	INTSET_0 |=(0x1<<12);   //主机请求数据时，如果tx空，则触发该中断
+
+// }
+
+// if (INTMASKED_0 & (1 << 12)) 
+// { // 检查接收中断状态	
+// 	// 2. 回传数据到主机
+// 	INTR_STATUS_EN_0 |=(0x1<<1);
+
+// 	WDATAB_0 = slave_rx_data; // 将接收的数据写回	
+// 	printf("TX:%x\n",slave_rx_data);
+
+// 	// 3. 清除中断标志
+// 	INTCLR_0 = (1 << 12);
+// }
 	irqprint("null 34\n");
 }
 void intr1_i3c3(void) // 35
@@ -2194,27 +2197,28 @@ void intr1_i3c3(void) // 35
 	ICTL1_INTEN4 &= ~(0x1 << 3);
 #endif
 #endif
-uint8_t slave_rx_data = 0;
-if (INTMASKED & (1 << 11)) 
-{
-	// 1. 读取接收数据
-	slave_rx_data = RDATAB;
-	printf("RX:%x\n",slave_rx_data);
+//回环测试
+// uint8_t slave_rx_data = 0;
+// if (INTMASKED_1 & (1 << 11))    //接收FIFO满
+// {
+// 	// 1. 读取接收数据
+// 	slave_rx_data = RDATAB_1;
+// 	printf("RX:%x\n",slave_rx_data);
 	
-	// INTCLR = (1 << 11);
-	// INTSET |=(0x1<<12);
-}
+// 	INTSET_1 |=(0x1<<12);    //主机请求数据时，如果tx空，则触发该中断
+// }
 
-if (INTMASKED & (1 << 12)) 
-{ // 检查接收中断状态	
-	// 2. 回传数据到主机
-	INTR_STATUS_EN |=(0x1<<1);
-	printf("TX:%x\n",slave_rx_data);
-	WDATAB = slave_rx_data; // 将接收的数据写回	
-	// WDATAB|=(0x1<<8);
-	// 3. 清除中断标志
-	INTCLR = (1 << 12);
-}
+
+// if (INTMASKED_1 & (1 << 12))     //发送空中断
+// { 
+// 	// 2. 回传数据到主机
+// 	INTR_STATUS_EN_1 |=(0x1<<1);
+// 	printf("TX:%x\n",slave_rx_data);
+// 	WDATAB_1 = slave_rx_data; // 将接收的数据写回	
+
+// 	// 3. 清除中断标志
+// 	INTCLR_1 = (1 << 12);
+// }
 	irqprint("null 35\n");
 }
 void intr1_null36(void) // 36

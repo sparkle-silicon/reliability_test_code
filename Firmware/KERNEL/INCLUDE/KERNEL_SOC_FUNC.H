@@ -46,5 +46,15 @@ extern void cec_init(void);
 extern void adc_init(void);
 extern void gpio_init(void);
 extern void time_init(void);
+
+extern void i2c0_pull_up(void);
+extern void i2c1_pull_up(void);
+extern void i2c2_pull_up(void);
+extern void i2c3_pull_up(void);
+extern void i2c4_pull_up(void);
+extern void i2c5_pull_up(void);
+extern void i2c6_pull_up(void);
+extern void i2c7_pull_up(void);
+extern void i2c8_pull_up(void);
 __END_DECLS
 #endif

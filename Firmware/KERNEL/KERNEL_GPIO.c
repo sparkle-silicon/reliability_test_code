@@ -715,6 +715,41 @@ void sysctl_iomux_i2c8()
 #endif
 //*****************************************************************************
 //
+//  To setup i3c iomux
+//
+//  parameter :
+//      none
+//
+//  return :
+//      none
+//
+//*****************************************************************************
+#if (GLE01==1)
+void sysctl_iomux_master0()
+{
+	sysctl_iomux_config(GPIOC,11,3);//i3c0_scl
+    sysctl_iomux_config(GPIOC,12,3);//i3c0_sda
+}
+void sysctl_iomux_master1()
+{
+	sysctl_iomux_config(GPIOC,13,3);//i3c1_scl
+    sysctl_iomux_config(GPIOB,1,3); //i3c1_sda
+}
+void sysctl_iomux_slave0()   
+{
+	sysctl_iomux_config(GPIOB,2,3);//i3c2_scl
+	sysctl_iomux_config(GPIOB,3,3);//i3c2_sda
+}
+void sysctl_iomux_slave1()
+{
+	sysctl_iomux_config(GPIOB,8,3);//i3c3_scl
+    sysctl_iomux_config(GPIOB,9,3);//i3c3_sda
+}
+#endif
+
+
+//*****************************************************************************
+//
 //  To setup pmc iomux
 //
 //  parameter :
