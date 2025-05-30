@@ -85,8 +85,8 @@ void SPI_Init(BYTE dly, BYTE cpol, BYTE cpha, BYTE lsb, BYTE dssp, BYTE cpsr)
 dma_rd_en:接收FIFO的DMA传输使能位1：enable;0:disable
 dma_wr_en：发送FIFO的DMA传输使能位1：enable;0:disable
 */
-  dma_rd_en = 0x0; //接收DMA使能
-  dma_wr_en = 0x0; //测试DMA功能需要配置
+  dma_rd_en = 0x0; 
+  dma_wr_en = 0x0; 
   reg_value |= (cpha & 0x1) << 0;      // bit0: CPHA
   reg_value |= (cpol & 0x1) << 1;      // bit1: CPOL
   reg_value |= 0x1 << 2;       // bit2: SPE
@@ -96,13 +96,15 @@ dma_wr_en：发送FIFO的DMA传输使能位1：enable;0:disable
   reg_value |= (dssp & 0xF) << 8;      // bit[11:8]: DSSP
   reg_value |= (lsb & 0x1) << 12;      // bit12: LSP
   SPIM_CTRL = reg_value;
-  // printf("SPI_CTRL = 0x%x\n", SPIM_CTRL);
+  printf("SPI_CTRL = 0x%x\n", SPIM_CTRL);
   // SPIM_CTRL = 0x6754;
+  // SPIM_CTRL = 0x6794;
   SPIM_CPSR = cpsr;                                                // 时钟分频
   // SPIM_TXFTLR = 0x10;                                              // 发送fifo为1
   // SPIM_RXFTLR = 0x10;                                              // 接收fifo为1
-  // SPI_IRQ_Config(txeim | txoim | rxuim | rxoim | rxfim, DISABLE); // 屏蔽所有中断
-  SPIM_IMSR = 0x1f;
+  SPI_IRQ_Config(errm | rdovm | txeim | txoim | rxuim | rxoim | rxfim, DISABLE); // 屏蔽所有中断
+  printf("SPI_IMSR = 0x%x\n", SPIM_IMSR);
+  // SPIM_IMSR = 0xff;
 }
 /**
  * 用于四线模式
@@ -273,6 +275,7 @@ uint8_t SPI_Send_Cmd(uint8_t cmd, uint8_t cs_select)
  */
 uint8_t SPI_Busy(uint8_t cs_select)
 {
+  SPIM_MODE = SPI_Standard; // 标准SPIM
   FLASH_SR = 0;
   FLASH_SR = SPI_Send_Cmd(CMD_READ_STATUS1, cs_select);
   return (FLASH_SR & 0x1);
@@ -361,13 +364,14 @@ void SPI_Send_Cmd_Addr(uint8_t *pbuffer, uint32_t read_addr, uint16_t num_byte_t
   dprint("read flash data completed!\n");
 }
 /**
- * @brief  擦除SPI Flash所选扇区（大小为4KB）
+ * @brief  擦除SPI Flash所选扇区（大小为4KB）,仅使用于标准SPIM模式
  * @param  address: 需要擦除的扇区地址
  * @param  cs_select: 选择SPI控制器
  * @retval 无
  */
 void SPI_Block_Erase(uint32_t address, uint8_t cs_select)
 {
+  SPIM_MODE = 0x0;   //标准模式
   dprint("block erase start!\n");
   SPI_Write_Enable(cs_select); // 擦除扇区之前要执行写启用指令,位置必须在CS为0之前
   SPI_Flash_CS_Low(cs_select);
@@ -492,6 +496,26 @@ void SPI_Flash_Test(void)
   }*/
 }
 
+/**
+ * @brief 查看SPI状态寄存器来判断SPI是否忙碌
+ *
+ * @return 返回SPI控制器的状态，0表示空闲，1表示忙碌
+ *
+ * @note 此函数用于判断指定SPI控制器选中的flash是否忙碌,适用全双工的四线
+ */
+void spibusy(void)
+{
+  SPI_Timeout = 1000000;
+  while((SPIM_SR & SPI_BSY) == 0x10)//wait busy
+  {
+    SPI_Timeout--;
+    if(SPI_Timeout == 0)
+    {
+      dprint("spi等待空闲超时\n");
+    }
+  }
+}
+
 
 /*
 *
@@ -499,269 +523,186 @@ void SPI_Flash_Test(void)
 *
 */
 
-//等待非四线模式下SPI空闲
-void spibusy(void)
+
+/**
+ * 
+ * @brief 半双工模式下双byte发送函数
+ *
+ * @param send_data 要发送的数据
+ *
+ * @note 此函数适用于三线，Quad，Dual模式，不适用于四线模式，只发送两字节数据，不读取接收数据
+ */
+void SPI_Send_2byte(uint16_t send_data)
 {
-  while((SPIM_SR & 0x10) == 0x10);//wait busy
-}
-//单byte发送函数
-static uint8_t spibyte(uint8_t byte)
-{
-  while((SPIM_SR & 0x1) == 0x0);//wait tx_fifo not full
-  REG16(0x6012) = byte;
-  while((SPIM_SR & 0x4) == 0x0);//wait rx_fifo not empty
-  return(REG8(0x6012));
-}
-
-//DMA接收函数
-// static void spibyte_exp(uint8_t byte);
-// static void spibyte_exp(uint8_t byte)
-// {
-//     // 等待 TX FIFO 非满
-//   while((SPIM_SR & 0x1) == 0x0);//wait tx_fifo not full
-
-//   // 写入 SPI 数据寄存器
-//   REG16(0x6012) = byte;
-
-//   // 等待 RX FIFO 非空
-//   while((SPIM_SR & 0x4) == 0x0);//wait rx_fifo not empty
-
-//   // 不读取 SPI 数据，而是启动 DMA 传输
-//   DMA_ChEnReg = (0x1 | 0x1 << 8);
-// }
-
-
-//双byte发送函数
-void spi2byte_w(uint16_t data)
-{
-  while((SPIM_SR & 0x1) == 0x0);//wait tx_fifo not full
-  REG16(0x6012) = data;
+  SPI_Timeout = 100000;
+  while((SPIM_SR & SPI_TFNF) == 0x0)//wait tx_fifo not full
+  {
+    SPI_Timeout--;
+    if(SPI_Timeout == 0)
+    {
+      dprint("spi等待发送超时\n");
+    }
+  }
+  SPIM_DA = send_data;
 }
 
-//发送一个字节的命令函数
-static uint8_t sendcmd1b(uint8_t cmd, int csn);
-static uint8_t sendcmd1b(uint8_t cmd, int csn)
-{
-  uint8_t data;
-  SPI_Flash_CS_Low(csn);
-  spibyte(cmd);
-  data = spibyte(0xff);
-  SPI_Flash_CS_High(csn);
-  return(data);
-}
-
-//除3线模式以外的状态判断
-static uint8_t spiwip(int csn);
-static uint8_t spiwip(int csn)
-{
-  uint8_t sts;
-  // 发送命令0x05，检查SPI接口是否空闲
-  SPIM_MODE = 0x0; // 切回常规四线模式，识别命令
-  // SPIM_CTRL  = 0x6754;
-  sts = sendcmd1b(0x05, csn);
-  return(sts & 0x1);
-}
-
-//擦除扇区
-void sectorerase(int addr, int csn)
-{
-  uint8_t ad[3];
-  ad[0] = (addr >> 16) & 0xff;
-  ad[1] = (addr >> 8) & 0xff;
-  ad[2] = (addr) & 0xff;
-  // SPIM_CTRL  = 0x6754;
-  SPI_Flash_CS_Low(csn);
-  spibyte(0x06);
-  SPI_Flash_CS_High(csn);
-  SPI_Flash_CS_Low(csn);
-  printf("flash csn%x sectorerase\n", csn);
-  spibyte(0x20);
-  spibyte(ad[0]);
-  spibyte(ad[1]);
-  spibyte(ad[2]);
-  SPI_Flash_CS_High(csn);
-  printf("wait spi wip\n");
-  while(spiwip(csn));
-}
-
-//quad enable set
-void spiqe(int csn)
+/**
+ * 
+ * @brief Quad模式使能函数
+ *
+ * @param csn 片选
+ *
+ * @note 此函数用于使能FLASH四通道引脚，将/WP和/HOLD使能为IO2和IO3，用于传输数据
+ */
+void SPI_Quad_enable(int csn)
 {
   // uint8_t sts;
   SPI_Flash_CS_Low(csn);
-  spibyte(0x6);//写使能
+  SPI_Send_Byte(CMD_WRITE_ENABLE);//写使能
   SPI_Flash_CS_High(csn);
   SPI_Flash_CS_Low(csn);
-  spibyte(0x01);
-  spibyte(0x00);
-  spibyte(0x02);
+  SPI_Send_Byte(CMD_Status_Register);
+  SPI_Send_Byte(0x00);    //写状态寄存器1
+  SPI_Send_Byte(0x02);    //写状态寄存器2，  bit1: 0,/WP引脚和/HOLD使能 1,四通道IO 2和IO 3引脚使能，/WP和/HOLD功能禁用
   SPI_Flash_CS_High(csn);
-  // printf("set qe,flash csn%x spiwip:sts: 0x%x\n",csn,sts);
-  printf("wait spi wip\n");
-  while(spiwip(csn));
+  while(SPI_Busy(csn));
 }
 
 
-//三线模式状态判断函数
-static uint8_t spi3wirewip(int csn);
-static uint8_t spi3wirewip(int csn)
+/**
+ * @brief 三线模下判断flash是否忙碌
+ *
+ * @param csn SPI控制器选择，可选值为0或1
+ *
+ * @return 返回SPI控制器的状态，0表示空闲，1表示忙碌
+ *
+ * @note 此函数用于判断指定SPI控制器选中的flash是否忙碌,仅使用于三线模式
+ */
+//状态判断函数
+uint8_t SPI_3wire_BUSY(int csn)
 {
+  SPIM_MODE = SPI_3Wire;   //设置为3线模式
   uint8_t sts;
   SPI_Flash_CS_Low(csn);
-  spi2byte_w(CMD_READ_STATUS1);
+  SPI_Send_2byte(CMD_READ_STATUS1);
   spibusy();
   printf("====wait busy over=====\n");
-  SPIM_RDNUM = 1;
-  while((SPIM_SR & SPI_RFNE) == 0x0);//wait rx_fifo not empty
-  sts = REG16(0x6012);
+  SPIM_RDNUM = 1;                           //读取一次FLASH状态数据
+  while((SPIM_SR & SPI_RFNE) == 0x0)       //wait rx_fifo not empty
+  {
+    SPI_Timeout--;
+    if(SPI_Timeout == 0)
+    {
+      dprint("spi等待接收数据超时\n");
+    }
+  }
+  sts = SPIM_DA;
+  printf("sts:%x\n", sts);
   SPI_Flash_CS_High(csn);
   return(sts & 0x1);
 }
 
-//三线写函数
-void spi3wireprogram(int addr, uint16_t *data, int num, int csn)
+
+/**
+ * @brief  三线页写入函数
+ * @param  addr: 写入的地址
+ *         num: 写入多少字节
+ *         data: 写入的数据指针
+ *         csn: 选择哪个片选
+ * @Note   SPI三线模式下的页编程函数，数据帧宽度为16bits
+ * @return None
+ */
+void SPI_3Wire_Page_Program(int addr, uint16_t *data, int num, int csn)
 {
   uint8_t ad[3];
   ad[0] = ((addr & 0xff0000) >> 16);
   ad[1] = ((addr & 0xff00) >> 8);
   ad[2] = (addr) & 0xff;
-  printf("flash csn%x write enable\n", csn);
-  SPIM_CTRL = 0x6704;//dssp 8 bit
-  SPIM_MODE = 0x3; // 3线模式
-  SPI_Flash_CS_Low(0);
-  spi2byte_w(CMD_WRITE_ENABLE);
-  spibusy();
-  SPI_Flash_CS_High(0);
   printf("flash csn%x 3wire program\n", csn);
-  SPI_Flash_CS_Low(0);
-  spi2byte_w(CMD_PAGE_PROGRAM);
-  spi2byte_w(ad[0]);
-  spi2byte_w(ad[1]);
-  spi2byte_w(ad[2]);
-  while(num--)
-    spi2byte_w(*data++);
+  SPIM_CTRL |= (0x7 << 8);//dssp 8 bit
+  printf("SPIM_CTRL:%x\n", SPIM_CTRL);
+  SPIM_MODE = SPI_3Wire; // 3线模式
+  SPI_Flash_CS_Low(csn);
+  SPI_Send_2byte(CMD_WRITE_ENABLE);
   spibusy();
-  SPI_Flash_CS_High(0);
-  printf("wait spi wip\n");
-  while(spi3wirewip(csn));
+  SPI_Flash_CS_High(csn);
+  SPI_Flash_CS_Low(csn);
+  SPI_Send_2byte(CMD_PAGE_PROGRAM);
+  SPI_Send_2byte(ad[0]);
+  SPI_Send_2byte(ad[1]);
+  SPI_Send_2byte(ad[2]);
+  while(num--)
+    SPI_Send_2byte(*data++);
+  spibusy();
+  SPI_Flash_CS_High(csn);
+  while(SPI_3wire_BUSY(csn));
+  printf("flash csn%x 3wire program over\n", csn);
 }
 
-
-//SPI三线模式读函数
-void spi3wireread(int addr, uint16_t *data, int num, int csn)
+/**
+ * @brief 三线模式下读取flash的某个地址的内容
+ *
+ * @param data 存储读取到的内容的地址
+ * @param addr 读取的起始地址
+ * @param num 读取的字节数
+ * @param csn 选择的SPI控制器
+ *
+ * @return 无
+ *
+ * @note 读取到的内容存储到data地址，读取num个数据
+ */
+void SPI_3Wire_Read(int addr, uint16_t *data, int num, int csn)
 {
+  printf("SPI_3wire_Read\n");
   uint8_t ad[3];
   ad[0] = ((addr & 0xff0000) >> 16);
   ad[1] = ((addr & 0xff00) >> 8);
   ad[2] = (addr) & 0xff;
-  SPIM_CTRL = 0x6704;
-  SPIM_MODE = 0x3; // 3线模式
+  SPIM_CTRL |= (0x7 << 8);    //数据宽度为8
+  SPIM_MODE = SPI_3Wire;       // 3线模式
   SPI_Flash_CS_Low(csn);
-  spi2byte_w(CMD_READ_DATA);
-  spi2byte_w(ad[0]);
-  spi2byte_w(ad[1]);
-  spi2byte_w(ad[2]);
+  SPI_Send_2byte(CMD_READ_DATA);
+  SPI_Send_2byte(ad[0]);
+  SPI_Send_2byte(ad[1]);
+  SPI_Send_2byte(ad[2]);
   spibusy();
-  SPIM_RDNUM = num;
+  SPIM_RDNUM = num;   
   for(; num > 0; num--)
   {
     while((SPIM_SR & 0x4) == 0x0);//wait rx_fifo not empty
-    *data++ = REG16(0x6012);
+    *data++ = SPIM_DA;
   }
   SPI_Flash_CS_High(csn);
+  printf("SPI_3wire_Read completed\n");
 }
 
-//3线模式读写测试函数
-/*
-  csn:片选号
-  no:测试数据长度
-*/
-void spim_rw_3wire(int csn, int no)
+/**
+ * @brief Dual模式下读取flash的某个地址的内容
+ *
+ * @param data 存储读取到的内容的地址
+ * @param addr 读取的起始地址
+ * @param num 读取的字节数
+ * @param csn 选择的SPI控制器
+ *
+ * @return 无
+ *
+ * @note 命令和地址的发送仍是标准SPIM模式，只有数据传递的时候采用Dual模式。读取到的内容存储到data地址，读取num个数据
+ */
+void SPI_Dual_Read(int addr, uint16_t *data, int num, int csn)
 {
-  uint16_t s_data[256];
-  uint16_t d_data[256];
-  for(int i = 0; i < 256; i++)
-  {
-    s_data[i] = i;
-  }
-  uint16_t rdata, rdata2;
-  sectorerase(0x4000, csn);
-  spi3wireprogram(0x4000, s_data, no, csn);
-  spi3wireread(0x4000, d_data, no, csn);
-
-  // check
-  for(int i = 0; i < no; i++)
-  {
-    rdata = s_data[i];
-    rdata2 = d_data[i];
-  }
-  if(rdata != rdata2)
-  {
-    printf("error!!\n");
-  }
-  else
-  {
-    printf("PASS!! :quad :spim csn%x, 2BYTE write/read OK\n", csn);
-  }
-  for(int i = 0; i < no; i++)
-  {
-    printf("send is 0x%x\n", s_data[i]);
-    printf("read is 0x%x\n", d_data[i]);
-  }
-}
-
-/*
-  dual模式读写测试函数
-  csn:片选号
-  no:测试数据长度
-*/
-void spim_rw_dual(int csn, int no)
-{
-  uint16_t s_data[256];
-  uint16_t d_data[256];
-  uint16_t rdata, rdata2;
-  int i;
-  for(i = 0; i < no; i++)
-    s_data[i] = i;
-  sectorerase(0x7000, csn);
-  spiquadprogram(0x7000, s_data, no, csn);
-  spidualread(0x7000, d_data, no, csn);
-  // check
-  for(int i = 0; i < no; i++)
-  {
-    rdata = s_data[i];
-    rdata2 = d_data[i];
-  }
-  if(rdata != rdata2)
-  {
-    printf("error dual!!\n");
-  }
-  else
-  {
-    printf("PASS dual!!\n");
-  }
-  for(int i = 0; i < no; i++)
-  {
-    printf("send is 0x%x\n", s_data[i]);
-    printf("read is 0x%x\n", d_data[i]);
-  }
-}
-
-//dual模式读测试函数
-void spidualread(int addr, uint16_t *data, int num, int csn)
-{
+  SPIM_MODE = SPI_Standard; //Standard mode
   uint16_t ad[3];
   ad[0] = (addr >> 16) & 0xff;
   ad[1] = (addr >> 8) & 0xff;
   ad[2] = (addr) & 0xff;
   printf("flash csn%x dual read\n", csn);
   SPI_Flash_CS_Low(csn);
-  spibyte(0x3b); //地址任意位置开始，自动递增，地址单线输出，数据两位输出
-  spibyte(ad[0]);
-  spibyte(ad[1]);
-  spibyte(ad[2]);
-  spibyte(0);//dummy 
-  SPIM_MODE = 0x1; //dual mode
+  SPI_Send_Byte(CMD_Fast_Read_Dual); 
+  SPI_Send_Byte(ad[0]);
+  SPI_Send_Byte(ad[1]);
+  SPI_Send_Byte(ad[2]);
+  SPI_Send_Byte(0);//dummy 
+  SPIM_MODE = SPI_Dual; //dual mode
   SPIM_CTRL = 0x6f04;//dssp 16 bit
   SPIM_RDNUM = num;
   for(; num > 0; num--)
@@ -770,59 +711,86 @@ void spidualread(int addr, uint16_t *data, int num, int csn)
     *data++ = REG16(0x6012);
   }
   SPI_Flash_CS_High(csn);
+  SPIM_MODE = SPI_Standard; //Standard mode
+  printf("flash csn%x dual read over\n", csn);
 }
 
-
-/*
-quad模式的写测试函数
-*/
-
-void spiquadprogram(int addr, uint16_t *data, int num, int csn)
+/**
+ * @brief  Quad模式页写入函数
+ * @param  addr: 写入的地址
+ *         num: 写入多少字节
+ *         data: 写入的数据指针
+ *         csn: 选择哪个片选
+ * @Note   命令和地址的发送仍是标准SPIM模式，只有数据传递的时候采用Quad模式，数据帧宽度为16bits
+ * @return None
+ */
+void SPI_Quad_Program(int addr, uint16_t *data, int num, int csn)
 {
+  SPIM_MODE = SPI_Standard; // 标准SPIM
+  printf("flash csn%x quad program\n", csn);
   uint8_t ad[3];
   ad[0] = ((addr & 0xff0000) >> 16);
   ad[1] = ((addr & 0xff00) >> 8);
   ad[2] = (addr) & 0xff;
   SPI_Flash_CS_Low(csn);
-  spibyte(0x6);//写使能
+  SPI_Send_Byte(CMD_WRITE_ENABLE);//写使能
   SPI_Flash_CS_High(csn);
-  printf("flash csn%x quad program\n", csn);
+  // printf("flash csn%x quad program\n", csn);
   SPI_Flash_CS_Low(csn);
-  spibyte(0x32);
-  spibyte(ad[0]);
-  spibyte(ad[1]);
-  spibyte(ad[2]);
-  SPIM_MODE = 0x2; // quad模式
-  SPIM_CTRL = 0x6f04;//dssp 16 bit
+  SPI_Send_Byte(CMD_Quad_Input_Page_Program);
+  SPI_Send_Byte(ad[0]);
+  SPI_Send_Byte(ad[1]);
+  SPI_Send_Byte(ad[2]);
+  SPIM_MODE = SPI_Quad; // quad模式
+  // printf("SPIM_CTRL1:%x\n", SPIM_CTRL);
+  // SPIM_CTRL = 0x6f04;//dssp 16 bit
+  SPIM_CTRL |= (0xf << 8);  //dssp 16 bit
+  assert_print("SPIM_CTRL:%x\n", SPIM_CTRL);
   while(num--)
-    spi2byte_w(*data++);
+    SPI_Send_2byte(*data++);
   printf("wait busy\n");
   spibusy();
   SPI_Flash_CS_High(csn);
   // SPIM_CTRL = 0x6704;
-  SPIM_CTRL = 0x6754;
-  while(spiwip(csn));
+  // SPIM_CTRL = 0x6754;
+  SPIM_CTRL &= ~(0xf << 8);  
+  SPIM_CTRL |= (0x7 << 8);          //dssp 8 bit
+  SPIM_CTRL |= (0x2 << 3);          //数据帧之间有2个SPI串行时钟周期长度的延时
+  // assert_print("SPIM_CTRL:%x\n", SPIM_CTRL);
+  while(SPI_Busy(csn));
+  printf("flash csn%x quad program over\n", csn);
 }
 
-//quad模式读数据
-void spiquadread(int addr, uint16_t *data, int num, int csn)
+/**
+ * @brief Quad模式下读取flash的某个地址的内容
+ *
+ * @param data 存储读取到的内容的地址
+ * @param addr 读取的起始地址
+ * @param num 读取的字节数
+ * @param csn 选择的SPI控制器
+ *
+ * @return 无
+ *
+ * @note 命令和地址的发送仍是标准SPIM模式，只有数据传递的时候采用Quad模式。读取到的内容存储到data地址，读取num个数据
+ */
+void SPI_Quad_Read(int addr, uint16_t *data, int num, int csn)
 {
+  SPIM_MODE = SPI_Standard; // 标准SPIM
   uint16_t ad[3];
   ad[0] = (addr >> 16) & 0xff;
   ad[1] = (addr >> 8) & 0xff;
   ad[2] = (addr) & 0xff;
   printf("flash csn%x quad read\n", csn);
   SPI_Flash_CS_Low(csn);
-  spibyte(0x6b);
-  spibyte(ad[0]);
-  spibyte(ad[1]);
-  spibyte(ad[2]);
-
-  spibyte(0);//dummy
-
-  SPIM_MODE = 0x2; //quad mode
-  printf("SPIM_MODE :%x\n", SPIM_MODE);
-  SPIM_CTRL = 0x6f04;//dssp 16 bit
+  SPI_Send_Byte(CMD_Fast_Read_Quad);
+  SPI_Send_Byte(ad[0]);
+  SPI_Send_Byte(ad[1]);
+  SPI_Send_Byte(ad[2]);
+  SPI_Send_Byte(0);//dummy
+  SPIM_MODE = SPI_Quad; // quad模式
+  // printf("SPIM_MODE :%x\n", SPIM_MODE);
+  // SPIM_CTRL = 0x6f04;//dssp 16 bit
+  SPIM_CTRL |= (0xf << 8);  //dssp 16 bit
   SPIM_RDNUM = num;
   for(; num > 0; num--)
   {
@@ -830,138 +798,116 @@ void spiquadread(int addr, uint16_t *data, int num, int csn)
     *data++ = REG16(0x6012);
   }
   SPI_Flash_CS_High(csn);
+  SPIM_MODE = SPI_Standard; // 标准SPIM
 }
 
+// //3Wire模式下测试读写函数，再测试读写之前，请提前擦除FLASH
+// void SPI_3Wire_Test(void)
+// {
+//   //初始化SPIM
+//   spim_MoudleClock_EN;
+//   sysctl_iomux_spim();
+//   sysctl_iomux_spim_cs();
+//   SPIM_CTRL = 0x6704;     // 高位优先传输，8位传输
+//   SPIM_CPSR = 0x1;       //4分频
+//   SPIM_IMSR = 0xff;      //屏蔽所有中断
 
-//quad模式测试函数(调用这个)
-/*
-  csn:片选号
-  no:测试数据长度
+//   #define no 64
+//   #define csn 0
+//   #define ADDRess 0x8600
+//   uint16_t s_data[256];
+//   uint16_t r_data[256];
+//   for(int i = 0; i < no; i++)
+//   {
+//       s_data[i] = 0xaa + i;
+//   }
+//   //写
+//   SPI_3Wire_Page_Program(ADDRess, s_data, no, csn);
 
-*/
+//   //读
+//   SPI_3Wire_Read(ADDRess, r_data, no, csn);
 
-void spim_rw_quad(int csn, int no)
-{
-  uint16_t s_data[256];
-  uint16_t d_data[256];
-  uint16_t rdata, rdata2;
-  int i;
-  for(i = 0; i < no; i++)
-    s_data[i] = i;
-  spiqe(csn);//设置quad模式,quad enable
-  sectorerase(0x8000, csn);
-  spiquadprogram(0x8000, s_data, no, csn);
-  spiquadread(0x8000, d_data, no, csn);
-
-  //check
-  for(i = 0; i < no; i++)
-  {
-    rdata = s_data[i];
-    rdata2 = d_data[i];
-  }
-  if(rdata != rdata2)
-    printf("quad ERROR!!\n");
-  else
-    printf("quad PASS\n");
-  for(int i = 0; i < no; i++)
-  {
-    printf("send is 0x%x\n", s_data[i]);
-    printf("read is 0x%x\n", d_data[i]);
-  }
-}
-
-void spibyteprogram(int addr, uint8_t *data, int num, int csn)
-{
-  unsigned char ad[3];
-  ad[0] = (addr >> 16) & 0xff;
-  ad[1] = (addr >> 8) & 0xff;
-  ad[2] = (addr) & 0xff;
-  // SPIM_CTRL = 0x6704;//dssp 8 bit
-  SPI_Flash_CS_Low(csn);
-  spibyte(0x6);//写使能
-  SPI_Flash_CS_High(csn);
-  printf("flash csn%x byte program\n", csn);
-  SPI_Flash_CS_Low(csn);
-  spibyte(0x02);
-  spibyte(ad[0]);
-  spibyte(ad[1]);
-  spibyte(ad[2]);
-  //发送数据
-  SPIM_CTRL = 0x6704;//dssp 16 bit
-  while(num--)
-  {
-    spibyte(*data++);
-  }
-  SPI_Flash_CS_High(csn);
-  printf("wait spi wip\n");
-  while(spiwip(csn));
-}
-
-
-void sendcmd4b(unsigned char cmd, unsigned char *addr, uint8_t *data, unsigned int num, int csn)
-{
-  SPI_Flash_CS_Low(csn);
-  // SPIM_CTRL = 0x6794;//dssp 8 bit
-  spibyte(cmd);
-  spibyte(*addr++);
-  spibyte(*addr++);
-  spibyte(*addr);
-
-  //接收数据
-  for(; num > 0; num--)
-  {
-    *data++ = spibyte(0xff);
-  }
-  SPIM_CTRL = 0x6f54;//dssp 8 bit
-//使用DMA接收数据
-// for(;num>0;num--){
-//   spibyte_exp(0xff);
+//   for(int i = 0; i < no; i++)
+//   {
+//       printf("%x:%x\n", i, r_data[i]);
+//   }
 // }
-  SPI_Flash_CS_High(csn);
-}
-
-void spiread(int addr, uint8_t *data, int num, int csn)
-{
-  unsigned char ad[3];
-  ad[0] = (addr >> 16) & 0xff;
-  ad[1] = (addr >> 8) & 0xff;
-  ad[2] = (addr) & 0xff;
-  // SPIM_CTRL = 0x6754;//dssp 8 bit
-  sendcmd4b(0x03, ad, data, num, csn);
-}
 
 
-//四线模式测试函数
-void spim_rw(int csn, int no)
-{
-  uint8_t s_data[256];
-  uint8_t d_data[256];
-  uint8_t rdata, rdata2;
-  int i;
-  for(i = 0; i < no; i++)
-    s_data[i] = 0xaaf1 + i;
 
-  sectorerase(0x8000, csn);
-  SPI_Flash_CS_Low(csn);
-  // SPIM_CTRL = 0x6704;//dssp 8 bit
-  spibyte(0x6);//写使能
-  SPI_Flash_CS_High(csn);
+// void SPI_Quad_Test(void)
+// {
+//   //SPIM初始化
+//   SPIM_CTRL = 0x6704;     //12:高位优先传； 8-11：0x7,表示8位传输； 0-1：0x0，表示第一个上升沿采集
+//   SPIM_CPSR = 0x1;        //时钟分频，4分频
+//   SPIM_IMSR = 0xff;       //中断全部屏蔽
+//   SPIM_MODE = 0x0;        //标准spi模式
+//   #define no 16
+//   #define csn 0
+//   #define ADDRess 0x0
 
-  spibyteprogram(0x8000, s_data, no, csn);
-  SPIM_CTRL = 0x6704;//dssp 8 bit
-  spiread(0x8000, d_data, no * 2, csn);
+//   uint16_t s_data[256];
+//   uint16_t d_data[256];
+//   uint16_t rdata, rdata2;
+//   int i;
+//   for(i = 0; i < no; i++)
+//       s_data[i] = (((i + 0x01) << 8) | (i + 0x10));
+//   printf("SPIM_MODE:%x\n", SPIM_MODE);
+//   SPI_Quad_enable(csn);//设置quad模式,quad enable
+//   SPI_Block_Erase(ADDRess, csn);
+//   SPI_Quad_Program(ADDRess, s_data, no, csn);
+//   SPI_Quad_Read(ADDRess, d_data, no, csn);
+//   printf("SPIM_MODE:%x\n", SPIM_MODE);
+//   //check
+//   for(i = 0; i < no; i++)
+//   {
+//     rdata = s_data[i];
+//     rdata2 = d_data[i];
+//     if(rdata != rdata2)
+//     printf("quad ERROR!!\n");
+//     else
+//     printf("quad PASS\n");
+//     printf("send is 0x%x\n", s_data[i]);
+//     printf("read is 0x%x\n", d_data[i]);
+//   }
 
-  //check
-  for(i = 0; i < no; i++)
-  {
-    rdata = s_data[i];
-    rdata2 = d_data[i];
-    if(rdata != rdata2)
-      printf("ERROR :4wire\n");
-    else
-      printf("PASS :4wire\n");
-    printf("send is 0x%x,d_data is %x\n", s_data[i], d_data[i]);
-  }
+// }
+ 
+// void SPI_Dual_Test(void)
+// {
+//   //SPIM初始化
+//   SPIM_CTRL = 0x6704;     //12:高位优先传； 8-11：0x7,表示8位传输； 0-1：0x0，表示第一个上升沿采集
+//   SPIM_CPSR = 0x1;        //时钟分频，4分频
+//   SPIM_IMSR = 0xff;       //中断全部屏蔽
+//   SPIM_MODE = 0x0;        //标准spi模式
+//   #define no 16
+//   #define csn 0
+//   #define ADDRess 0x0
 
-  // printf("PASS :4wire :spim csn%x, BYTE write/read OK\n",csn);
-}
+//   uint16_t s_data[256];
+//   uint16_t d_data[256];
+//   uint16_t rdata, rdata2;
+//   int i;
+//   for(i = 0; i < no; i++)
+//       s_data[i] = (((i + 0x01) << 8) | (i + 0x80));
+//   printf("SPIM_MODE:%x\n", SPIM_MODE);
+
+//   //擦除还是标准四线模式
+//   SPI_Block_Erase(ADDRess, csn);
+//   SPI_Quad_Program(ADDRess, s_data, no, csn);
+//   SPI_Dual_Read(ADDRess, d_data, no, csn);
+
+//   printf("SPIM_MODE:%x\n", SPIM_MODE);
+//   //check
+//   for(i = 0; i < no; i++)
+//   {
+//     rdata = s_data[i];
+//     rdata2 = d_data[i];
+//     if(rdata != rdata2)
+//     printf("Dual ERROR!!\n");
+//     else
+//     printf("Dual PASS\n");
+//     printf("send is 0x%x\n", s_data[i]);
+//     printf("read is 0x%x\n", d_data[i]);
+//   }
+// }

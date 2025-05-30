@@ -32,8 +32,13 @@
 #define CMD_WRITE_ENABLE    0x06   //写使能
 #define CMD_READ_DATA       0x03   //读数据
 #define CMD_BLOCK_ERASE_64  0xd8   //Block Erase (64KB)
+#define CMD_SECTOR_ERASE    0x20    //扇区擦除指令
 #define CMD_CHIP_ERASE      0xc7   //芯片擦除
 #define CMD_PAGE_PROGRAM    0x02   //页写入
+#define CMD_Status_Register 0x01   //写FLASH状态寄存器指令
+#define CMD_Quad_Input_Page_Program 0x32    //Quad页编程指令
+#define CMD_Fast_Read_Quad 0x6B             //Quad模式快速读取
+#define CMD_Fast_Read_Dual 0x3B             //Dual模式快速读取
 //add by lufei
 //#define CMD_READ_ID			0x15
 #define CMD_READ_ARRAY_SLOW		0x03
@@ -48,6 +53,8 @@
 #define rxuim				HEX04 //接收FIFO下溢中断屏蔽
 #define rxoim				HEX08 //接收FIFO溢出中断屏蔽
 #define rxfim				HEX10 //接收FIFO满中断屏蔽
+#define rdovm				HEX20 //RDNUM接收完毕中断屏蔽位
+#define errm				HEX40 //错误中断屏蔽位
 /************SPI Register define***************/
 #define SPIF_CTL_FOUR       HEX02
 #define SPIF_CTL_TWO        HEX00
@@ -59,6 +66,11 @@
 #define SPI_RFNE     HEX04 // 接收FIFO不空标志位，0x0 表示为空，0x1 表示不为空
 #define SPI_TFE      HEX02 // 发送FIFO空标志位，0x0 表示不空，0x1 表示为空
 #define SPI_TFNF     HEX01 // 发送FIFO不满标志位，0x0 表示满，0x1 表示未满
+/************SPI MODE***************/
+#define SPI_Standard HEX00
+#define SPI_Dual     HEX01
+#define SPI_Quad     HEX02
+#define SPI_3Wire    HEX03
 
 extern BYTE SPI_Write_Buff[256];
 extern void SPI_Init(BYTE dly, BYTE cpol, BYTE cpha, BYTE lsb, BYTE dssp, BYTE cpsr);
@@ -88,19 +100,15 @@ extern void SPI_Send_RWcmd(uint8_t cmd, uint32_t read_addr, uint8_t cs_select);
 #endif /* _SPI_FLASH_H_ */
 
 extern void spibusy(void);
-extern void spi2byte_w(uint16_t data);
-extern void spi3wireprogram(int addr,uint16_t* data,int num,int csn);
-extern void spi3wireread(int addr,uint16_t* data,int num,int csn);
-extern void spim_rw_3wire(int csn,int no);
+extern void SPI_Send_2byte(uint16_t send_data);
+extern void SPI_3Wire_Page_Program(int addr, uint16_t *data, int num, int csn);
+extern void SPI_3Wire_Read(int addr, uint16_t *data, int num, int csn);
+extern void SPI_Quad_enable(int csn);
+extern void SPI_Dual_Read(int addr, uint16_t *data, int num, int csn);
+extern void SPI_Quad_Program(int addr, uint16_t *data, int num, int csn);
+extern void SPI_Quad_Read(int addr, uint16_t *data, int num, int csn);
+extern uint8_t SPI_3wire_BUSY(int csn);
 
-extern void sectorerase(int addr,int csn);
-extern void spiqe(int csn);
-extern void spim_rw_dual(int csn,int no);
-extern void spidualread(int addr,uint16_t* data,int num,int csn);
-extern void spiquadprogram(int addr,uint16_t* data,int num,int csn);
-extern void spiquadread(int addr,uint16_t* data,int num,int csn);
-extern void sendcmd4b(unsigned char cmd,unsigned char* addr,uint8_t* data,unsigned int num,int csn);
-extern void spibyteprogram(int addr,uint8_t* data,int num,int csn);
-extern void spiread(int addr,uint8_t* data,int num,int csn);
-extern void spim_rw(int csn,int no);
-extern void spim_rw_quad(int csn,int no);
+// extern void SPI_3Wire_Test(void);
+// extern void SPI_Quad_Test(void);
+// extern void SPI_Dual_Test(void);

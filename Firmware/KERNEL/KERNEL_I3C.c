@@ -207,5 +207,34 @@ BYTE I3C_SLAVE_INT_DISABLE(DWORD tpye, BYTE i3c_mux)
     }
 }
 
+// //以下是I3C的回环测试代码，还需结合SLAVE的中断代码一起使用，具体如何使用，请查阅I3C_loop测试文档说明
+// void I3C_LOOP_Test(void)
+// {
+//     printf("test I3C\n");
+//     //引脚复用
+//     sysctl_iomux_master0();
+//     sysctl_iomux_slave0();
+//     sysctl_iomux_master1();
+//     sysctl_iomux_slave1();
 
+//     //master初始化
+//     I3C_Master_Init(0x5a, I3C_MATER1);
+
+//     //初始话slave
+//     I3c_Slave_Init(0x5a, I3C_SLAVE1);
+//     I3C_SLAVE_INT_ENABLE(RXPEND_ENABLE, I3C_SLAVE1);  //使能接收FIFO满中断
+
+//     for (int i = 0; i < 0xf; i++)
+//     {
+//         BYTE tx_data = 0x1+i;
+        
+//         I3c_Master_write(tx_data, I3C_MATER1);
+
+//         vDelayXus(20);
+
+//         // BYTE rx_data = I3c_Master_Read(I3C_MATER1);
+//         I3c_Master_Read(I3C_MATER1);
+//     }
+
+// }
 

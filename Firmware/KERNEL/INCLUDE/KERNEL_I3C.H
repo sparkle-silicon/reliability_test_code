@@ -72,4 +72,7 @@ extern void I3c_Slave_Init(BYTE addr, BYTE i3c_mux);
 
 extern BYTE I3C_SLAVE_INT_ENABLE(DWORD tpye, BYTE i3c_mux);
 extern BYTE I3C_SLAVE_INT_DISABLE(DWORD tpye, BYTE i3c_mux);
+
+// extern void I3C_LOOP_Test(void);
+
 #endif
