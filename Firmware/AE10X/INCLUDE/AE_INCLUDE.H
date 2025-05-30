@@ -20,7 +20,7 @@
 #include "AE_CONFIG.H"
 #include "AE_PRINTF.H"
 #include "AE_MALLOC.H"
-#include "AE_ROMPATCH.H"
+#include "AE_FLASHINFO.H"
 #include "AE_DEBUGGER.H"
 #include "AE_COMMAND.H"
 #include "AE_FUNC.H"

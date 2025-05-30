@@ -320,6 +320,17 @@ CFLAGS += -mabi=$(RISCV_ABI)
 CFLAGS += -mcmodel=medlow 
 CFLAGS += -ffunction-sections -fdata-sections -fno-common
 CFLAGS += -D$(DOWNLOAD)
+# # CFLAGS += -fsanitize=address
+# CFLAGS +=  -pedantic
+# CFLAGS += -fstack-protector-strong #强化栈保护	栈缓冲区溢出
+# CFLAGS += -D_FORTIFY_SOURCE=s #运行时缓冲区检查	内存越界访问
+# CFLAGS += -Wl,-z,relro,-z,now #只读重定位	GOT 覆盖攻击
+# CFLAGS += -fPIE #-pie #位置无关可执行	代码复用攻击,pie无效
+# #CFLAGS += -ftrivial-auto-var-init=pattern	#初始化变量
+# #CFLAGS += -fcf-protection=full	#控制流完整性保护
+# Makefile 安全基线配置
+# CFLAGS += -Wall -Wextra -Wpedantic -Wconversion -Werror
+# LDFLAGS += -Wl,-z,defs -Wl,-z,noexecstack
 ifeq ($(SAVE_TEMPS_FILE),1) 
 CFLAGS += -save-temps=obj
 endif
