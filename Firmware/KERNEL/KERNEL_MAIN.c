@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-02-08 16:07:05
+ * @LastEditTime: 2025-06-03 18:13:34
  * @Description:
  *
  *
@@ -261,7 +261,6 @@ void Service_MS_1(void)
 //----------------------------------------------------------------------------
 // FUNCTION: Service_Mailbox
 //----------------------------------------------------------------------------
-#if (GLE01 == 1)
 void Service_Mailbox(void)
 {
 #if (Service_Mailbox_START == 1)
@@ -272,7 +271,6 @@ void Service_Mailbox(void)
 	}
 #endif
 }
-#endif
 //----------------------------------------------------------------------------
 // FUNCTION: Service_Reserved2
 //----------------------------------------------------------------------------
@@ -428,10 +426,8 @@ const FUNCT_PTR_V_V service_table[] =
 	Service_PCI2,		// PMC1 Host Command/Data service
 	Service_MS_1,		// 5 millisecond elapsed for CUSTOM
 	Service_KBS,		// Keyboard scanner service
-#if (GLE01 == 1)
 		Service_Mailbox, // Mailbox service
 		Service_Process_Tasks, // Process Tasks
-#endif
 						 // Lo-Level Service
 		Service_PCI3,	   // PMC2 Host Command/Data service
 		Service_PCI4,	   // PMC3 Host Command/Data service
@@ -465,10 +461,10 @@ void main_service(void)
 void main_loop(void)
 {
 	dprint("Enter main_service \n");
-	printf("E2CINFO7:%x\n",E2CINFO7);
+	printf("E2CINFO7:%x\n", E2CINFO7);
 	while(1)
 	{
-		if (E2CINFO7 & 0x1) 
+		if(E2CINFO7 & 0x1)
 		{
 			E2CINFO7 = 0x0;
 			Enter_LowPower_Mode();
@@ -544,9 +540,6 @@ int __weak main(void)
 	printr("Compile Time : %s %s\n", __DATE__, __TIME__);
 #endif
 	// 2. print Operational information
-#ifdef AE103
-	extern void write_efuse_data(uint32_t * data);
-	write_efuse_data(NULL);
 	if(SYSCTL_PIO_CFG & BIT1)
 	{
 		// earse_internel_flash();
@@ -556,15 +549,8 @@ int __weak main(void)
 	{
 		dprint("This is internal flash main\n");
 	}
-#endif
 	dprint("CPU freq at %d Hz\n", CPU_FREQ);
 
-	// 若打开GLE01功能，则需要在GLE01主系统第一次启动时，将FLASH文件的256K后的固定32K代码搬运到IRAM0
-#if ((GLE01 == 1) && (FLASH_TO_IRAM0 == 1))
-	GLE01_RomCode_Transport();
-#endif
-	// TaskParams Params = { (APB_UART1 | APB_REQ),0,0 };
-	// Add_Task(Mailbox_APB2_Source_Alloc_Trigger, Params, &task_head);//分配串口1给子系统
 	main_loop();
 	return 0;
 }

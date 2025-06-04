@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-02-07 12:51:48
+ * @LastEditTime: 2025-06-03 18:16:05
  * @Description:
  *
  *
@@ -215,7 +215,6 @@ uint32_t get_cpu_freq();
 extern void Disable_Interrupt_Main_Switch(void);
 extern void Enable_Interrupt_Main_Switch(void);
 void Default_Config();
-extern void GLE01_RomCode_Transport(void);
 extern void Vtable_Tansport(void);
 #if SPIM_CLOCK_EN
 #define spim_MoudleClock_EN SYSCTL_MODEN0 |= SPIM_EN;
@@ -297,7 +296,6 @@ extern void Vtable_Tansport(void);
 #else
 #define wdt_MoudleClock_EN SYSCTL_MODEN0 &= (~WDT_EN);
 #endif
-#ifdef GLE01
 #if SMBUS8_CLOCK_EN
 #define smbus8_MoudleClock_EN SYSCTL_MODEN0 |= SMB8_EN;
 #else
@@ -313,8 +311,6 @@ extern void Vtable_Tansport(void);
 #else
 #define smbus6_MoudleClock_EN SYSCTL_MODEN0 &= (~SMB6_EN);
 #endif
-#endif 
-#ifdef AE103
 #if SMBUS5_CLOCK_EN
 #define smbus5_MoudleClock_EN SYSCTL_MODEN1 |= SMB5_EN;
 #else
@@ -324,7 +320,6 @@ extern void Vtable_Tansport(void);
 #define smbus4_MoudleClock_EN SYSCTL_MODEN1 |= SMB4_EN;
 #else
 #define smbus4_MoudleClock_EN SYSCTL_MODEN1 &= (~SMB4_EN);
-#endif
 #endif
 #if SMBUS3_CLOCK_EN
 #define smbus3_MoudleClock_EN SYSCTL_MODEN0 |= SMB3_EN;

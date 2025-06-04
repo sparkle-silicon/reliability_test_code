@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2023-11-06 13:51:50
+ * @LastEditTime: 2025-06-03 17:06:46
  * @Description: 中断号越大优先级越高
  *
  *
@@ -74,6 +74,6 @@ void enable_irq(uint32_t source, uint32_t lvl, uint32_t edge);
 void disable_irq(uint32_t source, uint32_t lvl, uint32_t edge);
 #define CSR_IRQC_CONFIG(IRQC, en_or_dis, lvl, edge) en_or_dis##able_irq(IRQC, lvl, edge); // lvl为0是边沿触发，1是电平触发
 extern DWORD kernel_trap(uintptr_t mcause, uintptr_t sp);
-extern FUNCT_PTR_V_V Fla_If_Ptr, Smf_Ptr, GLE01_RomCode_Ptr, IVT_Ptr;
+extern FUNCT_PTR_V_V Fla_If_Ptr, Smf_Ptr, IVT_Ptr;
 #include "AE_DEBUGGER.H"
 #endif

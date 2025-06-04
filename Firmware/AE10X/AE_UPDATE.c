@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-03-31 12:04:01
+ * @LastEditTime: 2025-06-04 16:04:40
  * @Description:
  *
  *
@@ -448,13 +448,7 @@ void SECTION(".update.function") Flash_Update_Function(void)
         if(uart_updata_flag & 0x2)
             flag |= 1;
         while(!(UPDATE_LSR & UART_LSR_TEMP)); /*当此位为空发送fifo写入数据*/
-    #ifdef AE103
-        void (*pFunc)(BYTE, DWORD);
-        pFunc = (void (*)(BYTE, DWORD))(*((DWORDP)0x10200)); // ROM_UPDATE
-        (*pFunc)(1, update_reg_ptr);
-    #elif (defined(AE101) || defined(AE102))
         Cache2Ram_ptr = Load_Smfi_To_Dram(EC_UART_Update, 0x800); // 加载func到dram
-    #endif
     }
 #if 0
     else if(SHAREMEM_UPDATE && !strcmp((const char *)(SRAM_BASE_ADDR + 0x100), "update firmware\0") && (eFlash_Forbid_Flag == 0))
@@ -462,7 +456,6 @@ void SECTION(".update.function") Flash_Update_Function(void)
     else if(SHAREMEM_UPDATE && *((volatile uint8_t *)(SRAM_BASE_ADDR + 0x100)) == 0xAB && (eFlash_Forbid_Flag == 0))
     #endif
     {
-    #if (GLE01 == 1)
         {
             printf("jump mailbx update\n");
 
@@ -479,14 +472,7 @@ void SECTION(".update.function") Flash_Update_Function(void)
             // (mailbox_update_jump)(0x3, FW_256byte_cnt * 256, Update_Addr); // 直接跳转到IRAM1里的Mailbox_SMS_UPDATE开始执行
             Mailbox_4KSMS_UPDATE(0x3, FW_256byte_cnt * 256, Update_Addr);
         }
-#else
-        {
-            mode = 0x1;
-            Load_funVV_To_Dram(EC_SMS_Update, 0x400); // 加载func到dram
-        }
-    #endif
     }
-#if (GLE01 == 1)
     else if(SHAREMEM_UPDATE && (*((volatile uint8_t *)(SRAM_BASE_ADDR + 0x100)) == 0xBB) && (eFlash_Forbid_Flag == 0))
     {
         mode = 0x1;
@@ -497,7 +483,6 @@ void SECTION(".update.function") Flash_Update_Function(void)
         // (mailbox_singlepage_jump)(); // 直接跳转到IRAM1里的EC_SinglePage_Update开始执行
         EC_SinglePage_Update();
     }
-#endif
     else if(IO_UPDATE && update_mode == 0xdc && (eFlash_Forbid_Flag == 0))
     {
         mode = 0x2;
@@ -527,7 +512,6 @@ void SECTION(".update.function") Flash_Update_Function(void)
 }
 
 /***************************************************************************************************************/
-#if (GLE01 == 1)
 // void Mailbox_SMS_UPDATE(DWORD fw_size, DWORD start_addr)
 // {
 //     printf("c");
@@ -654,59 +638,6 @@ void ALIGNED(4) Mailbox_Update_Function(BYTE mode, DWORD fwsize, DWORD update_ad
         return;
     }
 }
-
-ALIGNED(4) void Go2Ram_WaitUpdate(void)
-{
-    while(1)
-    {
-        if(C2EINT == 0x2)
-        {
-            if(C2EINFO0 == 0x13)
-            {
-                PRINTF_TX = 'S';
-                PRINTF_TX = 'U';
-                PRINTF_TX = 'C';
-                PRINTF_TX = 'C';
-                PRINTF_TX = 'E';
-                PRINTF_TX = 'S';
-                SYSCTL_RST1 |= BIT(16);//chip reset
-                __nop;
-                SYSCTL_RST1 &= ~BIT(16);//release chip reset
-                goto * 80084UL;
-            }
-        }
-    }
-}
-
-void GLE01_Flash_Update_Function(void)
-{
-    uint32_t Update_Addr = 0;
-    uint32_t FM_size = (REG8((SRAM_BASE_ADDR + 0x104))) | (REG8((SRAM_BASE_ADDR + 0x105)) << 8) | (REG8((SRAM_BASE_ADDR + 0x106)) << 16) | (REG8((SRAM_BASE_ADDR + 0x107)) << 24);
-    uint8_t flashOption = REG8((SRAM_BASE_ADDR + 0x110));
-    printf("FM_size:%d\n", FM_size);
-    printf("flashOption:%x\n", flashOption);
-    if(SYSCTL_RST1 & 0x00000100)
-    {
-        SYSCTL_RST1 &= 0xfffffeff; // 释放复位
-    }
-    sysctl_iomux_config(GPIOB, 17, 0x1);//wp
-    sysctl_iomux_config(GPIOB, 20, 0x1);//mosi
-    sysctl_iomux_config(GPIOB, 21, 0x1);//miso
-    sysctl_iomux_config(GPIOB, 22, 0x1);//cs0
-    sysctl_iomux_config(GPIOB, 23, 0x1);//clk
-    sysctl_iomux_config(GPIOB, 30, 0x1);//hold
-    /* 中断屏蔽 */
-    Disable_Interrupt_Main_Switch();
-    E2CINFO0 = 0x13;
-    E2CINFO1 = flashOption;//0x0:内部flash，0x1:外部flash
-    E2CINFO2 = FM_size;//更新大小
-    E2CINFO3 = Update_Addr;//更新地址
-    /* 进入ram跑代码 */
-    Smf_Ptr = Load_Smfi_To_Dram(Go2Ram_WaitUpdate, 0x400);
-    E2CINT = 0x2; // 触发对应中断
-    (*Smf_Ptr)(); // Do Function at malloc address
-}
-
 void Reset_Crypto_Cpu(void)
 {
     uint32_t Clk_Div = 0;
@@ -856,9 +787,9 @@ uint8_t CRC8(const uint8_t *data, size_t length)
     return crc;  // 返回最终的 CRC 值
 }
 
-void GLE01_Cryp_Update_Function(void)
+void Cryp_Update_Function(void)
 {
-    printf("GLE01_Cryp_Update_Function\n");
+    printf("Cryp_Update_Function\n");
     /* 中断屏蔽 */
     Disable_Interrupt_Main_Switch();
 
@@ -1000,9 +931,9 @@ void GLE01_Cryp_Update_Function(void)
 }
 
 
-char GLE01_ExtFlash_Update_Function(void)
+char ExtFlash_Update_Function(void)
 {
-    printf("GLE01_ExtFlash_Update_Function\n");
+    printf("ExtFlash_Update_Function\n");
     Disable_Interrupt_Main_Switch();
     uint8_t Crc_fail_flag = 0;
     uint8_t Crc8_fail_cnt = 0;
@@ -1199,4 +1130,3 @@ char GLE01_ExtFlash_Update_Function(void)
     Enable_Interrupt_Main_Switch();
     return 1;
 }
-#endif

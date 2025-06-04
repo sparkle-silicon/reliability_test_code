@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-02-07 17:25:02
+ * @LastEditTime: 2025-05-30 18:10:49
  * @Description:
  *
  *
@@ -46,22 +46,15 @@
 #include "KERNEL_PWM.H"
 #include "KERNEL_GPIO.H"
 #include "KERNEL_UART.H"
-#ifdef AE103
-#if (GLE01 == 0)
-#include "KERNEL_SMx.H"
-#endif
 #include "KERNEL_OWI.H"
 #include "KERNEL_CEC.H"
 #include "KERNEL_RTC.H"
 #include "KERNEL_TRIM.H"
 #include "KERNEL_PECI.H"
 #include "KERNEL_ESPI.H"
-#if (GLE01 == 1)
 #include "KERNEL_MAILBOX.H"
 #include "KERNEL_DMA.H"
 #include "KERNEL_I3C.H"
-#endif
 
-#endif
 //-----------------------------------------------------------------------------
 #endif

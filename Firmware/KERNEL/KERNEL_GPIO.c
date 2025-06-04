@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-05-31 16:08:56
+ * @LastEditTime: 2025-05-30 18:15:47
  * @Description:
  *
  *
@@ -520,17 +520,17 @@ void sysctl_iomux_spim()
 #if iomux_spim_PIN_SEL==1
 	sysctl_iomux_config(GPIOA, 19, 2); // spim_mosi
 	sysctl_iomux_config(GPIOA, 21, 2); // spim_miso
-	#if QPI
+#if QPI
 	sysctl_iomux_config(GPIOB, 4, 2); // spim_io2
 	sysctl_iomux_config(GPIOC, 14, 2); // spim_io3
-	#endif
+#endif
 #elif iomux_spim_PIN_SEL==2
 	sysctl_iomux_config(GPIOA, 22, 2); // spim_mosi
 	sysctl_iomux_config(GPIOA, 20, 3); // spim_miso
-	#if QPI
+#if QPI
 	sysctl_iomux_config(GPIOB, 4, 2); // spim_io2
 	sysctl_iomux_config(GPIOC, 14, 2); // spim_io3
-	#endif
+#endif
 #endif
 }
 #define spim_cs_PIN_SEL 1
@@ -673,30 +673,19 @@ void sysctl_iomux_i2c2()
 void sysctl_iomux_i2c3()
 {
 	SMBUS3_UARTB_SEL;// select smbus3
-#if (defined(TEST101) || defined(AE101) || defined(AE102))
-	sysctl_iomux_config(GPIOB, 21, 2);
-	sysctl_iomux_config(GPIOB, 22, 2);
-#elif (defined(AE103))
 	sysctl_iomux_config(GPIOB, 25, 2);
 	sysctl_iomux_config(GPIOB, 26, 2);
-#endif
 }
 void sysctl_iomux_i2c4()
 {
-#if (defined(AE103))
 	sysctl_iomux_config(GPIOB, 0, 2);
 	sysctl_iomux_config(GPIOB, 7, 2);
-#endif
 }
 void sysctl_iomux_i2c5()
 {
-#if (defined(AE103))
 	sysctl_iomux_config(GPIOA, 4, 3);
 	sysctl_iomux_config(GPIOA, 5, 3);
-#endif
 }
-
-#if (GLE01==1)
 void sysctl_iomux_i2c6()
 {
 	sysctl_iomux_config(GPIOA, 24, 3);//clk
@@ -712,7 +701,6 @@ void sysctl_iomux_i2c8()
 	sysctl_iomux_config(GPIOA, 13, 3);//clk
 	sysctl_iomux_config(GPIOC, 14, 3);
 }
-#endif
 //*****************************************************************************
 //
 //  To setup i3c iomux
@@ -724,29 +712,26 @@ void sysctl_iomux_i2c8()
 //      none
 //
 //*****************************************************************************
-#if (GLE01==1)
 void sysctl_iomux_master0()
 {
-	sysctl_iomux_config(GPIOC,11,3);//i3c0_scl
-    sysctl_iomux_config(GPIOC,12,3);//i3c0_sda
+	sysctl_iomux_config(GPIOC, 11, 3);//i3c0_scl
+	sysctl_iomux_config(GPIOC, 12, 3);//i3c0_sda
 }
 void sysctl_iomux_master1()
 {
-	sysctl_iomux_config(GPIOC,13,3);//i3c1_scl
-    sysctl_iomux_config(GPIOB,1,3); //i3c1_sda
+	sysctl_iomux_config(GPIOC, 13, 3);//i3c1_scl
+	sysctl_iomux_config(GPIOB, 1, 3); //i3c1_sda
 }
-void sysctl_iomux_slave0()   
+void sysctl_iomux_slave0()
 {
-	sysctl_iomux_config(GPIOB,2,3);//i3c2_scl
-	sysctl_iomux_config(GPIOB,3,3);//i3c2_sda
+	sysctl_iomux_config(GPIOB, 2, 3);//i3c2_scl
+	sysctl_iomux_config(GPIOB, 3, 3);//i3c2_sda
 }
 void sysctl_iomux_slave1()
 {
-	sysctl_iomux_config(GPIOB,8,3);//i3c3_scl
-    sysctl_iomux_config(GPIOB,9,3);//i3c3_sda
+	sysctl_iomux_config(GPIOB, 8, 3);//i3c3_scl
+	sysctl_iomux_config(GPIOB, 9, 3);//i3c3_sda
 }
-#endif
-
 
 //*****************************************************************************
 //
@@ -1015,7 +1000,7 @@ BYTE GPIO_Pullup_Config(BYTE GPIO, BYTE Num)
 		default:
 			dprint("参数选择错误\n");
 			break;
-}
+	}
 #endif
 #if (defined(AE101) || defined(AE102))
 	switch(GPIO)

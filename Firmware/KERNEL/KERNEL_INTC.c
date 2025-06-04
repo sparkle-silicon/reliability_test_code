@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-07-02 16:25:05
+ * @LastEditTime: 2025-06-03 18:14:25
  * @Description: This file is used for INTC interrupt
  *
  *
@@ -106,10 +106,8 @@ void intr1_gpio_c10(void) __weak; // 10
 void intr1_gpio_c11(void) __weak; // 11
 void intr1_gpio_c12(void) __weak; // 12
 void intr1_gpio_c13(void) __weak; // 13
-#if (defined(AE103))
 void intr1_gpio_c14(void) __weak; // 14
 void intr1_gpio_c15(void) __weak; // 15
-#endif
 // void intr1_gpio_e0(void) __weak; // 14 16
 // void intr1_gpio_e1(void) __weak; // 15 17
 // void intr1_gpio_e2(void) __weak; // 16 18
@@ -127,8 +125,6 @@ void intr1_gpio_c15(void) __weak; // 15
 // void intr1_gpio_e14(void) __weak; // 28
 // void intr1_gpio_e15(void) __weak; // 29
 
-#if defined(AE103)
-#if (GLE01 == 1)
 void intr1_gpio_e16(void) __weak; // 30
 void intr1_gpio_e17(void) __weak; // 31
 void intr1_gpio_e18(void) __weak; // 32
@@ -140,10 +136,6 @@ void intr1_gpio_e23(void) __weak; // 37
 void intr1_dma(void) __weak;	  // 24
 void intr1_cec0(void) __weak;	  // 25
 void intr1_cec1(void) __weak;	  // 26
-#else
-void intr1_sm2(void) __weak; // 24
-void intr1_sm3(void) __weak; // 25
-#endif
 void intr1_smbus4(void) __weak;		 // 27
 void intr1_smbus5(void) __weak;		 // 28
 void intr1_owi(void) __weak;		 // 29
@@ -157,7 +149,7 @@ void intr1_null36(void) __weak;		 // 36
 void intr1_null37(void) __weak;		 // 37
 void intr1_pmc2_ibf_ec(void) __weak; // 38
 void intr1_pmc2_obe_ec(void) __weak; // 39
-#endif
+
 void intr1_pmc3_ibf_ec(void) __weak; // 38 40
 void intr1_pmc3_obe_ec(void) __weak; // 39 41
 void intr1_pmc4_ibf_ec(void) __weak; // 40 42
@@ -165,43 +157,24 @@ void intr1_pmc4_obe_ec(void) __weak; // 41 43
 void intr1_pmc5_ibf_ec(void) __weak; // 42 44
 void intr1_pmc5_obe_ec(void) __weak; // 43 45
 void intr1_ps2_1(void) __weak;		 // 44 46
-#if defined(AE101)
-void intr1_null45(void) __weak; // 45 47
-void intr1_null46(void) __weak; // 46 48
-void intr1_null47(void) __weak; // 47 49
-#elif (defined(AE102) || defined(AE103))
+
 void intr1_uart1(void) __weak;	// 45 47
 void intr1_null48(void) __weak; // 46 48
 void intr1_null49(void) __weak; // 47 49
-#endif
 void intr1_spim(void) __weak;	// 48 50
 void intr1_smbus0(void) __weak; // 49 51
 void intr1_smbus1(void) __weak; // 50 52
 void intr1_smbus2(void) __weak; // 51 53
 void intr1_smbus3(void) __weak; // 52 54
-#if defined(AE101)
-void intr1_null53(void) __weak; // 53 55
-void intr1_null54(void) __weak; // 54 56
-void intr1_null55(void) __weak; // 55 57
-void intr1_null56(void) __weak; // 56 58
-void intr1_null57(void) __weak; // 57 59
-#elif (defined(AE102) || defined(AE103))
 void intr1_smbus6(void) __weak; // 53 55
 void intr1_smbus7(void) __weak; // 54 56
 void intr1_smbus8(void) __weak; // 55 57
 void intr1_null58(void) __weak; // 56 58
 void intr1_null59(void) __weak; // 57 59
-#endif
 void intr1_por_int(void) __weak; // 58 60
-#if ((defined(AE103)) && (GLE01 == 1))
 void intr1_mailbox(void) __weak; // 59 61
-#else
-void intr1_null61(void) __weak; // 59 61
-#endif
-#if (defined(AE103))
 void intr1_espi(void) __weak;	// 62
 void intr1_null63(void) __weak; // 63
-#endif
 /************weak声明************/
 void disable_intc(int index, int num)
 {
@@ -408,7 +381,7 @@ void intr0_gpio_a11(void)
 #endif
 // printf("intr0_gpio_a11\n");
 // Exit_LowPower_Mode();
-GPIO0_EOI1 |= (0x1 << 3); // clear int
+	GPIO0_EOI1 |= (0x1 << 3); // clear int
 }
 void intr0_gpio_a12(void)
 {
@@ -974,8 +947,8 @@ void intr0_gpio_b17(void)
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[81]++;
 #endif
-GPIO1_EOI2 |= 0x1 << 1; //clear interrupt
-Exit_LowPower_Mode();
+	GPIO1_EOI2 |= 0x1 << 1; //clear interrupt
+	Exit_LowPower_Mode();
 #if TEST_INTC
 #if INTC_MODE
 	printf("intr0_gpio_b17 mask\n");
@@ -2068,21 +2041,24 @@ void intr1_owi(void) // 29
 
 void intr1_null30(void) // 30
 {
-	uint8_t data_cnt=0;
-	if(SYSCTL_ESPI_P80_CFG&BIT(7))
+	uint8_t data_cnt = 0;
+	if(SYSCTL_ESPI_P80_CFG & BIT(7))
 	{
-		P80_Idx=((SYSCTL_ESPI_P80_CFG&0x0f00)>>8);
-		SYSCTL_ESPI_P80_CFG|=BIT(7);
+		P80_Idx = ((SYSCTL_ESPI_P80_CFG & 0x0f00) >> 8);
+		SYSCTL_ESPI_P80_CFG |= BIT(7);
 
 		// 如果 P80_idx 自增，且发生了溢出
-		Current_P80_Idx=P80_Idx;
-		if (Current_P80_Idx <= Last_P80_Idx) {
-			// 每次溢出表示已经接收了16个数字
-			data_cnt=(16 - Last_P80_Idx + Current_P80_Idx);
+		Current_P80_Idx = P80_Idx;
+		if(Current_P80_Idx <= Last_P80_Idx)
+		{
+// 每次溢出表示已经接收了16个数字
+			data_cnt = (16 - Last_P80_Idx + Current_P80_Idx);
 			Total_P80_Idx += data_cnt;
-		} else if (Current_P80_Idx > Last_P80_Idx) {
-			// 否则，接收到的数字为 Current_P80_Idx - Last_P80_Idx
-			data_cnt=(Current_P80_Idx - Last_P80_Idx);
+		}
+		else if(Current_P80_Idx > Last_P80_Idx)
+		{
+// 否则，接收到的数字为 Current_P80_Idx - Last_P80_Idx
+			data_cnt = (Current_P80_Idx - Last_P80_Idx);
 			Total_P80_Idx += data_cnt;
 		}
 		// 更新 Last_P80_Idx
@@ -2204,7 +2180,7 @@ void intr1_i3c3(void) // 35
 // 	// 1. 读取接收数据
 // 	slave_rx_data = RDATAB_1;
 // 	printf("RX:%x\n",slave_rx_data);
-	
+
 // 	INTSET_1 |=(0x1<<12);    //主机请求数据时，如果tx空，则触发该中断
 // }
 
@@ -3038,7 +3014,6 @@ void intr1_por_int(void)
 #endif
 #endif
 }
-#if ((defined(AE103)) && (GLE01 == 1))
 void intr1_mailbox(void)
 {
 #if TEST_INTC
@@ -3050,15 +3025,9 @@ void intr1_mailbox(void)
 	ICTL1_INTEN7 &= ~(0x1 << 5);
 #endif
 #endif
-#if (defined(AE101) || defined(AE102))
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[150]++;
-#endif
-#endif
-#ifdef AE103
+
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[157]++;
-#endif
 #endif
 	// printf("c2e int\n");
 	Mailbox_Int_Store = C2EINT;
@@ -3071,21 +3040,7 @@ void intr1_mailbox(void)
 	while(C2EINT); // 清除中断
 	F_Service_Mailbox = 1;
 }
-#else
-void intr1_null61(void)
-{
-#if (defined(AE101) || defined(AE102))
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[150]++;
-#endif
-#endif
-#ifdef AE103
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[157]++;
-#endif
-#endif
-}
-#endif
+
 #ifdef AE103
 void intr1_espi(void)
 {
@@ -3332,13 +3287,8 @@ const __weak FUNCT_PTR_V_V intr1_service[] =
 	intr1_gpio_e21, // 21
 	intr1_gpio_e22, // 22
 	intr1_gpio_e23, // 23
-#if (GLE01 == 1)
 		intr1_dma,	// 24
 		intr1_cec0, // 25
-#else
-		intr1_sm2, // 24
-		intr1_sm3, // 25
-#endif
 		intr1_cec1,		   // 26
 		intr1_smbus4,	   // 27
 		intr1_smbus5,	   // 28
@@ -3374,11 +3324,7 @@ const __weak FUNCT_PTR_V_V intr1_service[] =
 		intr1_null58,	   // 58
 		intr1_null59,	   // 59
 		intr1_por_int,	   // 60
-#if ((defined(AE103)) && (GLE01 == 1))
 		intr1_mailbox, // 61
-#else
-		intr1_null61, // 61
-#endif
 		intr1_espi,	  // 62
 		intr1_null63, // 63
 };

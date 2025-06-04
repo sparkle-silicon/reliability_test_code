@@ -94,23 +94,12 @@ DD_ELF_BOOT2:= if=./$(PROGRAM_BOOT2).bin  of=$(PROGRAM).bin seek=256 conv=notrun
 
 compile: software 
 ifeq ($(OS),Linux) #Linux
-#	 @gcc ./TOOLS/SMx/gle01_sign.c ./TOOLS/SMx/gle01_sign.h -D$(CHIP) -I/usr/include/openssl/ -L /usr/lib/x86_64-linux-gnu/ -lcrypto  -o gle01_sign #-D_DEBUG
-#	 @cp ./gle01_sign ./TOOLS/SMx/
-ifeq ($(findstring bash,$(SHELL_TYPE)),bash)
-# 如果是bash
-	@if [ $(CHIP) == GLE01 ];then cp  ./TOOLS/SMx/gle01_sign ./;./gle01_sign -f $(PROGRAM).bin -s 4096 -h $(HASH_4kSECTORSIZE) -sign_key $(PEM_FILE) -addr $(EXTERNAL_FLASH_ADDR)  $(EFUSE_SECVER_FLAG_STR);rm ./gle01_sign;fi;
-else
-ifeq ($(findstring dash,$(SHELL_TYPE)),dash)
-# 如果是dash
-	@if [ $(CHIP) = GLE01 ];then cp  ./TOOLS/SMx/gle01_sign ./;./gle01_sign -f $(PROGRAM).bin -s 4096 -h $(HASH_4kSECTORSIZE) -sign_key $(PEM_FILE) -addr $(EXTERNAL_FLASH_ADDR) $(EFUSE_SECVER_FLAG_STR);rm ./gle01_sign;fi;
-else
-# 默认情况
-	@if [ $(CHIP) == GLE01 ];then cp  ./TOOLS/SMx/gle01_sign ./;./gle01_sign -f $(PROGRAM).bin -s 4096 -h $(HASH_4kSECTORSIZE) -sign_key $(PEM_FILE) -addr $(EXTERNAL_FLASH_ADDR) $(EFUSE_SECVER_FLAG_STR);rm ./gle01_sign;fi;
-endif
-endif
-	@if [ -e SM3_hash.txt ];then mv SM3_hash.txt ./TOOLS/SMx/;fi;
-	@if [ -e SM2_sig.txt ];then mv SM2_sig.txt ./TOOLS/SMx/;fi;
-	@if [ -e SM2_user_key.txt ];then mv SM2_user_key.txt ./TOOLS/SMx/;fi;
+#	 @gcc ./TOOLS/SMx/sign.c ./TOOLS/SMx/sign.h -D$(CHIP) -I/usr/include/openssl/ -L /usr/lib/x86_64-linux-gnu/ -lcrypto  -o sign #-D_DEBUG
+#	 @cp ./sign ./TOOLS/SMx/
+	@cp  ./TOOLS/SMx/sign ./
+	@./sign -f $(PROGRAM).bin -s 4096 -h $(HASH_4kSECTORSIZE) -sign_key $(PEM_FILE) -addr $(EXTERNAL_FLASH_ADDR)  $(EFUSE_SECVER_FLAG_STR);
+	@rm ./sign
+
 else #Windows or other commands
 endif
 	@echo CHIP $(CHIP) CODE Compiled successfully.

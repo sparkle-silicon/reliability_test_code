@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-01-23 20:18:31
+ * @LastEditTime: 2025-06-03 17:07:23
  * @Description: This is about the  national crypto algorithm implementation
  *
  *
@@ -112,24 +112,18 @@ void i2c5_pull_up(void)
 }
 void i2c6_pull_up(void)
 {
-#if (defined(GLE01))
 	GPIO_Pullup_Config(GPIOA, 24);  //SMCLK6
 	GPIO_Pullup_Config(GPIOA, 25);  //SMDAT6
-#endif
 }
 void i2c7_pull_up(void)
 {
-#if (defined(GLE01))
 	GPIO_Pullup_Config(GPIOA, 10);  //SMCLK7
 	GPIO_Pullup_Config(GPIOB, 24);  //SMDAT7
-#endif
 }
 void i2c8_pull_up(void)
 {
-#if (defined(GLE01))
 	GPIO_Pullup_Config(GPIOA, 13);  //SMCLK8
 	GPIO_Pullup_Config(GPIOC, 14);  //SMDAT8
-#endif
 }
 
 void tach0_pull_up(void)
@@ -297,7 +291,6 @@ void smbus_init(void)
 	I2c_Channel_Init(I2C_CHANNEL_3, I2C3_SPEED, I2C_NO_ROLE, 0x00, 1);
 #endif
 #endif
-#ifdef AE103
 #if I2C4_EN_Init
 	smbus4_MoudleClock_EN;
 	sysctl_iomux_i2c4();
@@ -324,8 +317,6 @@ void smbus_init(void)
 	I2c_Channel_Init(I2C_CHANNEL_5, I2C5_SPEED, I2C_NO_ROLE, 0x00, 1);
 #endif
 #endif
-#endif
-#ifdef GLE01
 #if I2C6_EN_Init
 	smbus6_MoudleClock_EN;
 	sysctl_iomux_i2c6();
@@ -365,7 +356,6 @@ void smbus_init(void)
 #endif
 #else
 	I2c_Channel_Init(I2C_CHANNEL_8, I2C8_SPEED, I2C_MASTER_ROLE, 0x6a, 1);
-#endif
 #endif
 #endif
 	dprint("I2c_channel_init done.\n");
@@ -703,12 +693,6 @@ void __weak SECTION(".init.module") Module_init(void)
 	kbc_pmc_init();
 	// 9.Initialize  The KBS
 	kbs_init();
-#if (defined(AE102))
-	// 11.Initialize The PPort
-	pport_init();
-	// 12.Initialize The CAN
-	can_init();
-#endif
 #if (defined(AE103) && 0)
 	// 13.Initialize The CEC
 	cec_init();
@@ -726,12 +710,10 @@ void __weak SECTION(".init.module") Module_init(void)
 	// 18. Initialize The timer and The watch dog
 	time_init();
 	// 19.Initialize The Mailboxs
-#if (GLE01 == 1)
 	mailbox_init();
 
 	SPIF_Init();
 	sysctl_iomux_lpc();
-#endif
 
 
 	dprint("End init \n");

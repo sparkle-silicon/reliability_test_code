@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-03-27 23:27:49
+ * @LastEditTime: 2025-06-03 18:16:42
  * @Description: Custom function support
  *
  *
@@ -87,19 +87,19 @@ void __weak Hook_50msEventA(void)
     {
         printf("准备更新固件\n");
         TaskParams Params;
-        Add_Task((TaskFunction)GLE01_Flash_Update_Function, Params, &task_head);//sms update
+        Add_Task((TaskFunction)Flash_Update_Function, Params, &task_head);//sms update
     }
 #endif
 //子系统dram更新测试用例
 #if 1
     if(update_crypram_flag == 1)
     {
-        GLE01_Cryp_Update_Function();
+        Cryp_Update_Function();
         update_crypram_flag = 0;
     }
     if(update_intflash_flag == 1)
     {
-        GLE01_ExtFlash_Update_Function();
+        ExtFlash_Update_Function();
         update_intflash_flag = 0;
     }
 #endif
@@ -150,7 +150,6 @@ void __weak Hook_1secEventA(void) // get all temp
 #endif
     // printf("C2EINT:%x,C2EINFO0:%x,C2EINFO1:%x\n", C2EINT, C2EINFO0, C2EINFO1);
 
-#if (GLE01 == 1)
     if(*((VBYTE *)(0x203B9)) == 1)
     {
         // printf("0x203B9:%x\n", *((VBYTE *)(0x203B9)));
@@ -187,8 +186,6 @@ void __weak Hook_1secEventA(void) // get all temp
         *((VBYTE *)(0x203B9)) = 0;
         Mailbox_ReadParameter_Trigger();
     }
-
-#endif
 }
 //-----------------------------------------------------------------------------
 void __weak Hook_1secEventB(void) // get fan rpm

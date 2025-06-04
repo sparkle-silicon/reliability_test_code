@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-01-16 11:47:34
+ * @LastEditTime: 2025-05-30 17:34:10
  * @Description:
  *
  *
@@ -41,7 +41,6 @@ int do_gpio_config(struct cmd_tbl *cmd, int flags, int argc, char *const argv[])
 int do_jump(struct cmd_tbl *cmd, int flags, int argc, char *const argv[]);
 int do_dbg(struct cmd_tbl *cmd, int flags, int argc, char *const argv[]);
 int do_power(struct cmd_tbl *cmd, int flags, int argc, char *const argv[]);
-int do_efuse(struct cmd_tbl *cmd, int flags, int argc, char *const argv[]);
 
 // 命令列表
 const cmd_tbl cmd_menu[] = {
@@ -55,7 +54,6 @@ const cmd_tbl cmd_menu[] = {
 {.name = "debug", .maxargs = 5, .cmd = &do_dbg, .usage = "debug <Mode> [1,10] level [0,10]", .help = ""} ,
 
  {.name = "power", .maxargs = 1, .cmd = &do_power, .usage = "power [on,off]", .help = "power - power on/off host"},
-{.name = "efuse", .maxargs = 3, .cmd = &do_efuse, .usage = "efuse data0 data1", .help = "" },
 };
 #ifdef USER_AE10X_LIBC_A
 int system(const char *string)
@@ -603,16 +601,6 @@ int do_power(struct cmd_tbl *cmd, int flags, int argc, char *const argv[])
     {
         printf("argc error\n");
     }
-    return 0;
-}
-#endif
-#if 1
-extern void write_efuse_data(uint32_t *data);
-
-int do_efuse(struct cmd_tbl *cmd, int flags, int argc, char *const argv[])
-{
-    uint32_t  data[2] = { cmd_atoi(argv[1]), cmd_atoi(argv[2]) };
-    write_efuse_data(data);
     return 0;
 }
 #endif

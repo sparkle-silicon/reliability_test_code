@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-09-05 18:01:10
+ * @LastEditTime: 2025-06-03 17:06:52
  * @Description: This file is used for SPI Flash Interface
  *
  *
@@ -18,7 +18,6 @@
 #include "KERNEL_ACPI.H"
 #pragma pack(4)
 FUNCT_PTR_V_V Smf_Ptr;
-FUNCT_PTR_V_V GLE01_RomCode_Ptr;
 FUNCT_PTR_V_V IVT_Ptr;
 FUNCT_PTR_V_D_BP_L Spif_Ptr;
 FUNCT_PTR_V_D_BP ECU_Ptr;
@@ -46,7 +45,7 @@ void SPIF_READ_ID(void)
    // SPIF_FIFO_TOP = FLASH_ID_CMD;
    SPIF_FIFO_TOP = 0x9f;
    // while(!(SPIF_READY & SPIF_RDY));
-   while (((SPIF_FIFO_CNT & 0x3) == 0));
+   while(((SPIF_FIFO_CNT & 0x3) == 0));
    dprint("read flash id is %#x\n", SPIF_FIFO_TOP);
 }
 /**
@@ -222,7 +221,7 @@ void ExtFlash_Deep_Power_Down(void)
    while(!(SPIF_READY & SPIF_RDY));
    while(SPIF_STATUS & 0xf);
    SPIF_FIFO_TOP = 0xb9;
-   for(int i=0;i<1000;i++)
+   for(int i = 0; i < 1000; i++)
    {
       nop;
    }
@@ -239,7 +238,7 @@ void ExtFlash_Exit_Power_Down(void)
 #endif
    while(!(SPIF_READY & SPIF_RDY));
    SPIF_FIFO_TOP = 0xab;
-   for(int i=0;i<1000;i++)
+   for(int i = 0; i < 1000; i++)
    {
       nop;
    }
