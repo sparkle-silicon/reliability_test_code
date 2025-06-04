@@ -24,7 +24,7 @@ DUAL_BOOT_FLAG?=0#双启动开关
 SAVE_TEMPS_FILE ?= 0#保留编译文件
 USER_RISCV_LIBC_A?=0#0 USER_AE10X_LIBC_A 1 USER_RISCV_LIBC_A
 #安全相关
-PEM_FILE ?= $(TOPDIR)/TOOLS/SMx/private_key.pem
+PEM_FILE ?= $(TOPDIR)/TOOLS/Security/private_key.pem
 EFUSE_SECVER_FLAG?=1#efuse security open or close 
 HASH_4kSECTORSIZE?=0#0:4k*HASH_4kSECTORSIZE sector size
 EXTERNAL_FLASH_ADDR?=0x000000#外部flash地址
@@ -94,9 +94,9 @@ DD_ELF_BOOT2:= if=./$(PROGRAM_BOOT2).bin  of=$(PROGRAM).bin seek=256 conv=notrun
 
 compile: software 
 ifeq ($(OS),Linux) #Linux
-#	 @gcc ./TOOLS/SMx/sign.c ./TOOLS/SMx/sign.h -D$(CHIP) -I/usr/include/openssl/ -L /usr/lib/x86_64-linux-gnu/ -lcrypto  -o sign #-D_DEBUG
-#	 @cp ./sign ./TOOLS/SMx/
-	@cp  ./TOOLS/SMx/sign ./
+#	 @gcc ./TOOLS/Security/sign.c ./TOOLS/Security/sign.h -D$(CHIP) -I/usr/include/openssl/ -L /usr/lib/x86_64-linux-gnu/ -lcrypto  -o sign #-D_DEBUG
+#	 @cp ./sign ./TOOLS/Security/
+	@cp  ./TOOLS/Security/sign ./
 	@./sign -f $(PROGRAM).bin -s 4096 -h $(HASH_4kSECTORSIZE) -sign_key $(PEM_FILE) -addr $(EXTERNAL_FLASH_ADDR)  $(EFUSE_SECVER_FLAG_STR);
 	@rm ./sign
 
