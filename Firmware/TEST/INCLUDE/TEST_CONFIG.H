@@ -43,7 +43,6 @@
 #define SMI_Test 0
 #define SWUC_TEST 0
 #define SPI_TEST 0
-#define SMx_TEST 0
 /* ACPI EC SCI Interrupt Response Timing ( 8-16uSec).*/
 #define LPC_PRESSURE_TEST 0 // LPC压力测试
 #endif /* AE_CONFIG_H */

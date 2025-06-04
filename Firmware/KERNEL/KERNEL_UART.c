@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-07-25 15:49:34
+ * @LastEditTime: 2025-06-04 17:20:23
  * @Description:
  *
  *
@@ -23,17 +23,9 @@ void serial_base(BYTE uart_num)
         case UART0_CHANNEL:
             g_uart_base = UART0_BASE_ADDR;
             break;
-        #if (defined(AE102) || defined(AE103))
         case UART1_CHANNEL:
             g_uart_base = UART1_BASE_ADDR;
             break;
-        // case UART2_CHANNEL:
-        //     g_uart_base = UART2_BASE_ADDR;
-        //     break;
-        // case UART3_CHANNEL:
-        //     g_uart_base = UART3_BASE_ADDR;
-        //     break;
-        #endif
         case UARTA_CHANNEL:
             g_uart_base = UARTA_BASE_ADDR;
             break;
@@ -55,7 +47,7 @@ int serial_config(BYTE uart_num, DWORD baudrate)
     VBYTEP uart_ier = (VBYTEP)REG_ADDR(g_uart_base, UART_IER_OFFSET);
     register DWORD divisor;
     register DWORD freq;
-#if 1||(defined(AE103)&&(OSC_CLOCK_SWITCH==0))
+#if 1||(OSC_CLOCK_SWITCH==0)
     freq = HIGHT_CHIP_CLOCK;
 #else
     freq = CPU_FREQ;//如果时钟不标准则可以使用现场推算的（例如晶振不标准，但必须是外部PPL锁屏成比例的时钟）
@@ -96,17 +88,9 @@ int serial_deinit(DWORD uart_num)
         case UART0_CHANNEL:
             reset_val = UART0_EN;
             break;
-        #if (defined(AE102) || defined(AE103))
         case UART1_CHANNEL:
             reset_val = UART1_EN;
             break;
-        // case UART2_CHANNEL:
-        //     reset_val = UART2_EN;
-        //     break;
-        // case UART3_CHANNEL:
-        //     reset_val = UART3_EN;
-        //     break;
-        #endif
         case UARTA_CHANNEL:
             reset_val = UARTA_EN;
             break;
@@ -172,20 +156,10 @@ int gpio2serial(DWORD uart_num)
             sysctl_iomux_uart0();
             val |= UART0_EN;
             break;
-        #if (defined(AE102) || defined(AE103))
         case UART1_CHANNEL:
             sysctl_iomux_uart1();
             val |= UART1_EN;
             break;
-        // case UART2_CHANNEL:
-        //     sysctl_iomux_uart2();
-        //     val |= UART2_EN;
-        //     break;
-        // case UART3_CHANNEL:
-        //     sysctl_iomux_uart3();
-        //     val |= UART3_EN;
-            // break;
-        #endif
         case UARTB_CHANNEL:
             sysctl_iomux_uartb();
             val |= UARTB_EN;
@@ -206,17 +180,9 @@ BYTE Uart_Int_Enable(BYTE channel, BYTE type)
         case UART0_CHANNEL:
             UART0_IER |= (0x1 << type);
             break;
-        #if (defined(AE102) || defined(AE103))
         case UART1_CHANNEL:
             UART1_IER |= (0x1 << type);
             break;
-        // case UART2_CHANNEL:
-        //     UART2_IER |= (0x1 << type);
-        //     break;
-        // case UART3_CHANNEL:
-        //     UART3_IER |= (0x1 << type);
-        //     break;
-        #endif
         case UARTA_CHANNEL:
             UARTA_IER |= (0x1 << type);
             break;
@@ -236,17 +202,9 @@ BYTE Uart_Int_Disable(BYTE channel, BYTE type)
         case UART0_CHANNEL:
             UART0_IER &= ~(0x1 << type);
             break;
-        #if (defined(AE102) || defined(AE103))
         case UART1_CHANNEL:
             UART1_IER &= ~(0x1 << type);
             break;
-        // case UART2_CHANNEL:
-        //     UART2_IER &= ~(0x1 << type);
-        //     break;
-        // case UART3_CHANNEL:
-        //     UART3_IER &= ~(0x1 << type);
-        //     break;
-        #endif
         case UARTA_CHANNEL:
             UARTA_IER &= ~(0x1 << type);
             break;
@@ -265,14 +223,8 @@ BYTE Uart_Int_Enable_Read(BYTE channel, BYTE type)
     {
         case UART0_CHANNEL:
             return ((UART0_IER & (0x1 << type)) != 0);
-        #if (defined(AE102) || defined(AE103))
         case UART1_CHANNEL:
             return ((UART1_IER & (0x1 << type)) != 0);
-        // case UART2_CHANNEL:
-        //     return ((UART2_IER & (0x1 << type)) != 0);
-        // case UART3_CHANNEL:
-        //     return ((UART3_IER & (0x1 << type)) != 0);
-        #endif
         case UARTA_CHANNEL:
             return ((UARTA_IER & (0x1 << type)) != 0);
         case UARTB_CHANNEL:
@@ -287,10 +239,8 @@ BYTE Uart_Int_Status(BYTE channel, BYTE type)
     {
         case UART0_CHANNEL:
             return ((UART0_IIR & (0x1 << type)) != 0);
-        #if (defined(AE102) || defined(AE103))
         case UART1_CHANNEL:
             return ((UART1_IIR & (0x1 << type)) != 0);
-        #endif
         case UARTA_CHANNEL:
             return ((UARTA_IIR & (0x1 << type)) != 0);
         case UARTB_CHANNEL:
@@ -340,7 +290,7 @@ WEAK int putchar(int ch) /**/
         print_number++;
         if(print_cnt >= PRINT_MAX_SIZE)
             print_cnt = 0;
-}
+    }
 #else
     if(str == '\n')
     {

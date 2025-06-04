@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-01-31 19:39:14
+ * @LastEditTime: 2025-06-04 17:22:59
  * @Description:
  *
  *
@@ -14,7 +14,6 @@
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
 #include <KERNEL_RTC.H>
-#ifdef AE103
 u32 Get_RTC_CountVal(void)
 {
     u32 rtc_ccvr = (RTC_CCVR0 << 0) | \
@@ -107,4 +106,3 @@ void RTC_Sleep_Test(u32 sleep_time)
     CPU_Sleep();
 
 }
-#endif

@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-06-04 14:51:37
+ * @LastEditTime: 2025-06-04 16:58:33
  * @Description:
  *
  *
@@ -84,27 +84,10 @@
 #define PinB16_23_Init    0b00000000          // GPIO B[23:16] data register OUTPUT init
 #define PinB16_23_InOut   0b00000000          // GPIO B[23:16] data direction register init.0 is INPUT,1 is OUTPUT.
 #define PinB16_23_PullUp  0b00000000          // GPIO B[23:16] IO Pull Up control register init.0 is not PULLUP,1 is PULLUP.
-#if (defined(AE101)||defined(AE102))
-                          // 7 6 5 4 3 2 1 0
-#define PinB16_23_IoMux   0b0000000000001111  // GPIO B[23:16] IO multiplex control register init. refer to 'pin_iocfg.xlsx'
 
-#elif defined(AE103)
                           // 7 6 5 4 3 2 1 0
 #define PinB16_23_IoMux   0b0101010100000011  // GPIO B[23:16] IO multiplex control register init. refer to 'pin_iocfg.xlsx'
 
-#endif
-#if (defined(AE101)||defined(AE102))
-//------------------------------------------------------------------------------
-// GPIO B[26:24] Registers define GPH[2:0] or(GPH[6:4])
-//------------------------------------------------------------------------------
-                          //210
-#define PinB24_26_Init    0b000             // GPIO B[26:24] data register OUTPUT init
-#define PinB24_26_InOut   0b000             // GPIO B[26:24] data direction register init.0 is INPUT,1 is OUTPUT.
-#define PinB24_26_PullUp  0b000             // GPIO B[26:24] IO Pull Up control register init.0 is not PULLUP,1 is PULLUP.
-                          // 2 1 0
-#define PinB24_26_IoMux   0b000000          // GPIO B[26:24] IO multiplex control register init. refer to 'pin_iocfg.xlsx'
-
-#elif defined(AE103)
 //------------------------------------------------------------------------------
 // GPIO B[31:24] Registers define GPH[7:0] 
 //------------------------------------------------------------------------------
@@ -115,7 +98,6 @@
                           // 7 6 5 4 3 2 1 0
 #define PinB24_31_IoMux   0b0000000000000000     // GPIO B[26:24] IO multiplex control register init. refer to 'pin_iocfg.xlsx'
 
-#endif
 //------------------------------------------------------------------------------
 // GPIO C[7:0] Registers define GPI[7:0]
 //------------------------------------------------------------------------------
@@ -125,19 +107,7 @@
 #define PinC0_7_PullUp    0b00000000            // GPIO C[7:0] IO Pull Up control register init.0 is not PULLUP,1 is PULLUP.
                           // 7 6 5 4 3 2 1 0
 #define PinC0_7_IoMux     0b0000000000000000          // GPIO C[7:0] IO multiplex control register init. refer to 'pin_iocfg.xlsx'
-#if (defined(AE101)||defined(AE102))
 
-//------------------------------------------------------------------------------
-// GPIO C[13:8] Registers define GPJ[5:0]
-//------------------------------------------------------------------------------
-                          //543210
-#define PinC8_13_Init     0b000000        // GPIO C[13:8] data register OUTPUT init
-#define PinC8_13_InOut    0b000000        // GPIO C[13:8] data direction register init.0 is INPUT,1 is OUTPUT.
-#define PinC8_13_PullUp   0b000000        // GPIO C[13:8] IO Pull Up control register init.0 is not PULLUP,1 is PULLUP.
-                          // 5 4 3 2 1 0
-#define PinC8_13_IoMux    0b000000000000      // GPIO C[13:8] IO multiplex control register init. refer to 'pin_iocfg.xlsx'
-
-#elif defined(AE103)
 //------------------------------------------------------------------------------
 // GPIO C[15:8] Registers define GPJ[7:0]
 //------------------------------------------------------------------------------
@@ -148,19 +118,6 @@
                           // 7 6 5 4 3 2 1 0
 #define PinC8_15_IoMux    0b0000000000000000      // GPIO C[13:8] IO multiplex control register init. refer to 'pin_iocfg.xlsx'
 
-#endif
-#if (defined(AE101)||defined(AE102))
-//------------------------------------------------------------------------------
-// GPIO D[6:0] Registers define GPM[6:0]
-//------------------------------------------------------------------------------
-                          //6543210
-#define PinD0_6_Init      0b0000000        // GPIO D[7:0] data register OUTPUT init
-#define PinD0_6_InOut     0b0000000        // GPIO D[7:0] data direction register init.0 is INPUT,1 is OUTPUT.
-#define PinD0_6_PullUp    0b0000000          // GPIO D[7:0] IO Pull Up control register init. And bit7, 0 is "Gph0 or Gph1 selects uartb function.", 1 is "Gph0 or Gph1 selects SMCLK3 function."
-                          // 6 5 4 3 2 1 0
-#define PinD0_6_IoMux     0b01010101010101      // GPIO D[7:0] IO multiplex control register init. refer to 'pin_iocfg.xlsx'
-
-#elif defined(AE103)
 //------------------------------------------------------------------------------
 // GPIO D[7:0] Registers define GPM[7:0]
 //------------------------------------------------------------------------------
@@ -180,7 +137,6 @@
                           // 0
 #define PinD8_IoMux       0b00      // GPIO D[8] IO multiplex control register init. refer to 'pin_iocfg.xlsx'
 
-#endif
 //------------------------------------------------------------------------------
 // GPIO E[7:0] Registers define GPN[7:0]
 //------------------------------------------------------------------------------
@@ -210,28 +166,16 @@
 #define PinA0_15_IoMux  ((PinA8_15_IoMux<<16)+PinA0_7_IoMux)
 #define PinA16_31_IoMux ((PinA24_31_IoMux<<16)+PinA16_23_IoMux)
 #define PinB0_15_IoMux  ((PinB8_15_IoMux<<16)+PinB0_7_IoMux)
-#if (defined(AE101)||defined(AE102))
-#define PinB16_26_IoMux ((PinB24_26_IoMux<<16)+PinB16_23_IoMux)
-#define PinC0_13_IoMux  ((PinC8_13_IoMux<<16)+PinC0_7_IoMux)
-#define PinDE_IoMux     ((PinE0_23_IoMux<<14)+PinD0_6_IoMux)
-#elif defined(AE103)
+
 #define PinB16_31_IoMux ((PinB24_31_IoMux<<16)+PinB16_23_IoMux)
 #define PinC0_15_IoMux  ((PinC8_15_IoMux<<16)+PinC0_7_IoMux)
 #define PinDE_IoMux     ((PinE0_23_IoMux<<18)+(PinD8_IoMux<<16)+PinD0_7_IoMux)
-#endif
-#if (defined(AE101)||defined(AE102))
-#define PinA0_15_PullUp     ((PinA8_15_PullUp<<8)+PinA0_7_PullUp)
-#define PinA16_31_PullUp    ((PinA24_31_PullUp<<8)+PinA16_23_PullUp)
-#define PinB0_15_PullUp     ((PinB8_15_PullUp<<8)+PinB0_7_PullUp)
-#define PinB16_26_PullUp    ((PinB24_26_PullUp<<8)+PinB16_23_PullUp)
-#define PinC0_13_PullUp     ((PinC8_13_PullUp<<8)+PinC0_7_PullUp)
-#define PinDE_PullUp        ((PinE0_7_PullUp<<16)+(PinE8_15_PullUp<<24)+(PinE16_23_PullUp<<8)+PinD0_6_PullUp)
-#elif defined(AE103)
+
 #define PinA0_31_PullUp     ((PinA24_31_PullUp<<24)+(PinA16_23_PullUp<<16)+(PinA8_15_PullUp<<8)+PinA0_7_PullUp)
 #define PinB0_31_PullUp     ((PinB24_31_PullUp<<24)+(PinB16_23_PullUp<<16)+(PinB8_15_PullUp<<8)+PinB0_7_PullUp)
 #define PinCD_PullUp        ((PinD8_PullUp<<24)+(PinD0_7_PullUp<<16)+(PinC8_15_PullUp<<8)+PinC0_7_PullUp)
 #define PinE0_23_PullUp     ((PinE16_23_PullUp<<16)+(PinE8_15_PullUp<<8)+PinE0_7_PullUp)
-#endif
+
 
 #define GPIO_INPUT_VAL  (0x00)
 #define GPIO_INPUT_EN   (0x04)
@@ -377,13 +321,11 @@
 #define GPIOB24(x) (x) ? SET_MASK(GPIO1_DR3, BIT(0)) : CLEAR_MASK(GPIO1_DR3, BIT(0))
 #define GPIOB25(x) (x) ? SET_MASK(GPIO1_DR3, BIT(1)) : CLEAR_MASK(GPIO1_DR3, BIT(1))
 #define GPIOB26(x) (x) ? SET_MASK(GPIO1_DR3, BIT(2)) : CLEAR_MASK(GPIO1_DR3, BIT(2))
-#if (defined(AE103))
 #define GPIOB27(x) (x) ? SET_MASK(GPIO1_DR3, BIT(3)) : CLEAR_MASK(GPIO1_DR3, BIT(3))
 #define GPIOB28(x) (x) ? SET_MASK(GPIO1_DR3, BIT(4)) : CLEAR_MASK(GPIO1_DR3, BIT(4))
 #define GPIOB29(x) (x) ? SET_MASK(GPIO1_DR3, BIT(5)) : CLEAR_MASK(GPIO1_DR3, BIT(5))
 #define GPIOB30(x) (x) ? SET_MASK(GPIO1_DR3, BIT(6)) : CLEAR_MASK(GPIO1_DR3, BIT(6))
 #define GPIOB31(x) (x) ? SET_MASK(GPIO1_DR3, BIT(7)) : CLEAR_MASK(GPIO1_DR3, BIT(7))
-#endif
 // GPIOC0 to GPIOC7 
 #define GPIOC0(x) (x) ? SET_MASK(GPIO2_DR0, BIT(0)) : CLEAR_MASK(GPIO2_DR0, BIT(0))
 #define GPIOC1(x) (x) ? SET_MASK(GPIO2_DR0, BIT(1)) : CLEAR_MASK(GPIO2_DR0, BIT(1))
@@ -401,10 +343,8 @@
 #define GPIOC11(x) (x) ? SET_MASK(GPIO2_DR1, BIT(3)) : CLEAR_MASK(GPIO2_DR1, BIT(3))
 #define GPIOC12(x) (x) ? SET_MASK(GPIO2_DR1, BIT(4)) : CLEAR_MASK(GPIO2_DR1, BIT(4))
 #define GPIOC13(x) (x) ? SET_MASK(GPIO2_DR1, BIT(5)) : CLEAR_MASK(GPIO2_DR1, BIT(5))
-#if (defined(AE103))
 #define GPIOC14(x) (x) ? SET_MASK(GPIO2_DR1, BIT(6)) : CLEAR_MASK(GPIO2_DR1, BIT(6))
 #define GPIOC15(x) (x) ? SET_MASK(GPIO2_DR1, BIT(7)) : CLEAR_MASK(GPIO2_DR1, BIT(7))
-#endif
 // GPIOD0 to GPIOD7 
 #define GPIOD0(x) (x) ? SET_MASK(GPIO2_DR2, BIT(0)) : CLEAR_MASK(GPIO2_DR2, BIT(0))
 #define GPIOD1(x) (x) ? SET_MASK(GPIO2_DR2, BIT(1)) : CLEAR_MASK(GPIO2_DR2, BIT(1))
@@ -413,13 +353,11 @@
 #define GPIOD4(x) (x) ? SET_MASK(GPIO2_DR2, BIT(4)) : CLEAR_MASK(GPIO2_DR2, BIT(4))
 #define GPIOD5(x) (x) ? SET_MASK(GPIO2_DR2, BIT(5)) : CLEAR_MASK(GPIO2_DR2, BIT(5))
 #define GPIOD6(x) (x) ? SET_MASK(GPIO2_DR2, BIT(6)) : CLEAR_MASK(GPIO2_DR2, BIT(6))
-#if (defined(AE103))
 #define GPIOD7(x) (x) ? SET_MASK(GPIO2_DR2, BIT(7)) : CLEAR_MASK(GPIO2_DR2, BIT(7))
 
 
 // GPIOD8 (由GPIO2_DR3控制)
 #define GPIOD8(x) (x) ? SET_MASK(GPIO2_DR3, BIT(0)) : CLEAR_MASK(GPIO2_DR3, BIT(0))
-#endif
 // GPIOE0 to GPIOE7 
 #define GPIOE0(x) (x) ? SET_MASK(GPIO3_DR0, BIT(0)) : CLEAR_MASK(GPIO3_DR0, BIT(0))
 #define GPIOE1(x) (x) ? SET_MASK(GPIO3_DR0, BIT(1)) : CLEAR_MASK(GPIO3_DR0, BIT(1))
@@ -521,13 +459,11 @@
 #define IS_GPIOB24(x) (x) ? IS_MASK_SET(GPIO1_EXT3, BIT(0)) : IS_MASK_CLEAR(GPIO1_EXT3, BIT(0))
 #define IS_GPIOB25(x) (x) ? IS_MASK_SET(GPIO1_EXT3, BIT(1)) : IS_MASK_CLEAR(GPIO1_EXT3, BIT(1))
 #define IS_GPIOB26(x) (x) ? IS_MASK_SET(GPIO1_EXT3, BIT(2)) : IS_MASK_CLEAR(GPIO1_EXT3, BIT(2))
-#if (defined(AE103))
 #define IS_GPIOB27(x) (x) ? IS_MASK_SET(GPIO1_EXT3, BIT(3)) : IS_MASK_CLEAR(GPIO1_EXT3, BIT(3))
 #define IS_GPIOB28(x) (x) ? IS_MASK_SET(GPIO1_EXT3, BIT(4)) : IS_MASK_CLEAR(GPIO1_EXT3, BIT(4))
 #define IS_GPIOB29(x) (x) ? IS_MASK_SET(GPIO1_EXT3, BIT(5)) : IS_MASK_CLEAR(GPIO1_EXT3, BIT(5))
 #define IS_GPIOB30(x) (x) ? IS_MASK_SET(GPIO1_EXT3, BIT(6)) : IS_MASK_CLEAR(GPIO1_EXT3, BIT(6))
 #define IS_GPIOB31(x) (x) ? IS_MASK_SET(GPIO1_EXT3, BIT(7)) : IS_MASK_CLEAR(GPIO1_EXT3, BIT(7))
-#endif
 // GPIOC组输入检测
 #define IS_GPIOC0(x)  (x) ? IS_MASK_SET(GPIO2_EXT0, BIT(0)) : IS_MASK_CLEAR(GPIO2_EXT0, BIT(0))
 #define IS_GPIOC1(x)  (x) ? IS_MASK_SET(GPIO2_EXT0, BIT(1)) : IS_MASK_CLEAR(GPIO2_EXT0, BIT(1))
@@ -544,10 +480,8 @@
 #define IS_GPIOC11(x) (x) ? IS_MASK_SET(GPIO2_EXT1, BIT(3)) : IS_MASK_CLEAR(GPIO2_EXT1, BIT(3))
 #define IS_GPIOC12(x) (x) ? IS_MASK_SET(GPIO2_EXT1, BIT(4)) : IS_MASK_CLEAR(GPIO2_EXT1, BIT(4))
 #define IS_GPIOC13(x) (x) ? IS_MASK_SET(GPIO2_EXT1, BIT(5)) : IS_MASK_CLEAR(GPIO2_EXT1, BIT(5))
-#if (defined(AE103))
 #define IS_GPIOC14(x) (x) ? IS_MASK_SET(GPIO2_EXT1, BIT(6)) : IS_MASK_CLEAR(GPIO2_EXT1, BIT(6))
 #define IS_GPIOC15(x) (x) ? IS_MASK_SET(GPIO2_EXT1, BIT(7)) : IS_MASK_CLEAR(GPIO2_EXT1, BIT(7))
-#endif
 // GPIOD组输入检测
 #define IS_GPIOD0(x) (x) ? IS_MASK_SET(GPIO2_EXT2, BIT(0)) : IS_MASK_CLEAR(GPIO2_EXT2, BIT(0))
 #define IS_GPIOD1(x) (x) ? IS_MASK_SET(GPIO2_EXT2, BIT(1)) : IS_MASK_CLEAR(GPIO2_EXT2, BIT(1))
@@ -556,10 +490,8 @@
 #define IS_GPIOD4(x) (x) ? IS_MASK_SET(GPIO2_EXT2, BIT(4)) : IS_MASK_CLEAR(GPIO2_EXT2, BIT(4))
 #define IS_GPIOD5(x) (x) ? IS_MASK_SET(GPIO2_EXT2, BIT(5)) : IS_MASK_CLEAR(GPIO2_EXT2, BIT(5))
 #define IS_GPIOD6(x) (x) ? IS_MASK_SET(GPIO2_EXT2, BIT(6)) : IS_MASK_CLEAR(GPIO2_EXT2, BIT(6))
-#if (defined(AE103))
 #define IS_GPIOD7(x) (x) ? IS_MASK_SET(GPIO2_EXT2, BIT(7)) : IS_MASK_CLEAR(GPIO2_EXT2, BIT(7))
 #define IS_GPIOD8(x) (x) ? IS_MASK_SET(GPIO2_EXT3, BIT(0)) : IS_MASK_CLEAR(GPIO2_EXT3, BIT(0))
-#endif
 // GPIOE组输入检测
 #define IS_GPIOE0(x)  (x) ? IS_MASK_SET(GPIO3_EXT0, BIT(0)) : IS_MASK_CLEAR(GPIO3_EXT0, BIT(0))
 #define IS_GPIOE1(x)  (x) ? IS_MASK_SET(GPIO3_EXT0, BIT(1)) : IS_MASK_CLEAR(GPIO3_EXT0, BIT(1))
@@ -590,10 +522,8 @@
  /*-----------------------------------------------------------------------------
   * GPIO引脚输出高低定义(按照pin的格式)
   *---------------------------------------------------------------------------*/
-#if (defined(AE103))
 #define Pin2(x) GPIOC15(x)
 #define Pin3(x) GPIOB31(x)
-#endif
 #define Pin4(x)   GPIOA14(x)
 #define Pin5(x)   GPIOD6(x)
 #define Pin6(x)   GPIOD5(x)
@@ -672,16 +602,7 @@
 #define Pin88(x)  GPIOB11(x)
 #define Pin89(x)  GPIOB12(x)
 #define Pin90(x)  GPIOB13(x)
-#if (defined(AE101)||defined(AE102))
-#define Pin93(x)  GPIOB20(x)
-#define Pin94(x)  GPIOB21(x)
-#define Pin95(x)  GPIOB22(x)
-#define Pin96(x)  GPIOB23(x)
-#define Pin97(x)  GPIOB24(x)
-#define Pin98(x)  GPIOB25(x)
-#define Pin99(x)  GPIOB26(x)
-#endif
-#if (defined(AE103))
+
 #define Pin93(x)  GPIOB24(x)
 #define Pin94(x)  GPIOB25(x)
 #define Pin95(x)  GPIOB26(x)
@@ -689,15 +610,12 @@
 #define Pin97(x)  GPIOB28(x)
 #define Pin98(x)  GPIOB29(x)
 #define Pin99(x)  GPIOB30(x)
-#endif
 #define Pin100(x) GPIOB18(x)
-#if (defined(AE103))
 #define Pin101(x) GPIOB22(x)
 #define Pin102(x) GPIOB20(x)
 #define Pin103(x) GPIOB21(x)
 #define Pin104(x) GPIOB19(x)
 #define Pin105(x) GPIOB23(x)
-#endif
 #define Pin106(x) GPIOB16(x)
 #define Pin107(x) GPIOB17(x)
 #define Pin108(x) GPIOA8(x)
@@ -705,32 +623,24 @@
 #define Pin110(x) GPIOA11(x)
 #define Pin111(x) GPIOA12(x)
 #define Pin112(x) GPIOA15(x)
-#if (defined(AE103))
 #define Pin113(x) GPIOD7(x)
-#endif
 #define Pin115(x) GPIOA17(x)
 #define Pin116(x) GPIOA18(x)
 #define Pin117(x) GPIOB14(x)
 #define Pin118(x) GPIOB15(x)
 #define Pin119(x) GPIOA16(x)
 #define Pin120(x) GPIOA20(x)
-#if (defined(AE103))
 #define Pin122(x) GPIOD8(x)
-#endif
 #define Pin123(x) GPIOA10(x)
 #define Pin124(x) GPIOA22(x)
 #define Pin125(x) GPIOB4(x)
 #define Pin126(x) GPIOA13(x)
-#if (defined(AE103))
 #define Pin128(x) GPIOC14(x)
-#endif
  /*-----------------------------------------------------------------------------
   * GPIO引脚检测高低定义(按照pin的格式)
   *---------------------------------------------------------------------------*/
-#if (defined(AE103))
 #define IS_Pin2(x)    IS_GPIOC15(x)
 #define IS_Pin3(x)    IS_GPIOB31(x)
-#endif
 #define IS_Pin4(x)    IS_GPIOA14(x)
 #define IS_Pin5(x)    IS_GPIOD6(x)
 #define IS_Pin6(x)    IS_GPIOD5(x)
@@ -809,16 +719,7 @@
 #define IS_Pin88(x)   IS_GPIOB11(x)
 #define IS_Pin89(x)   IS_GPIOB12(x)
 #define IS_Pin90(x)   IS_GPIOB13(x)
-#if (defined(AE101)||defined(AE102))
-#define IS_Pin93(x)   IS_GPIOB20(x)
-#define IS_Pin94(x)   IS_GPIOB21(x)
-#define IS_Pin95(x)   IS_GPIOB22(x)
-#define IS_Pin96(x)   IS_GPIOB23(x)
-#define IS_Pin97(x)   IS_GPIOB24(x)
-#define IS_Pin98(x)   IS_GPIOB25(x)
-#define IS_Pin99(x)   IS_GPIOB26(x)
-#endif
-#if (defined(AE103))
+
 #define IS_Pin93(x)   IS_GPIOB24(x)
 #define IS_Pin94(x)   IS_GPIOB25(x)
 #define IS_Pin95(x)   IS_GPIOB26(x)
@@ -826,15 +727,12 @@
 #define IS_Pin97(x)   IS_GPIOB28(x)
 #define IS_Pin98(x)   IS_GPIOB29(x)
 #define IS_Pin99(x)   IS_GPIOB30(x)
-#endif
 #define IS_Pin100(x)  IS_GPIOB18(x)
-#if (defined(AE103))  
 #define IS_Pin101(x)  IS_GPIOB22(x)
 #define IS_Pin102(x)  IS_GPIOB20(x)
 #define IS_Pin103(x)  IS_GPIOB21(x)
 #define IS_Pin104(x)  IS_GPIOB19(x)
 #define IS_Pin105(x)  IS_GPIOB23(x)
-#endif  
 #define IS_Pin106(x)  IS_GPIOB16(x)
 #define IS_Pin107(x)  IS_GPIOB17(x)
 #define IS_Pin108(x)  IS_GPIOA8(x)
@@ -842,25 +740,19 @@
 #define IS_Pin110(x)  IS_GPIOA11(x)
 #define IS_Pin111(x)  IS_GPIOA12(x)
 #define IS_Pin112(x)  IS_GPIOA15(x)
-#if (defined(AE103))  
 #define IS_Pin113(x)  IS_GPIOD7(x)
-#endif  
 #define IS_Pin115(x)  IS_GPIOA17(x)
 #define IS_Pin116(x)  IS_GPIOA18(x)
 #define IS_Pin117(x)  IS_GPIOB14(x)
 #define IS_Pin118(x)  IS_GPIOB15(x)
 #define IS_Pin119(x)  IS_GPIOA16(x)
 #define IS_Pin120(x)  IS_GPIOA20(x)
-#if (defined(AE103))  
 #define IS_Pin122(x)  IS_GPIOD8(x)
-#endif  
 #define IS_Pin123(x)  IS_GPIOA10(x)
 #define IS_Pin124(x)  IS_GPIOA22(x)
 #define IS_Pin125(x)  IS_GPIOB4(x)
 #define IS_Pin126(x)  IS_GPIOA13(x)
-#if (defined(AE103))  
 #define IS_Pin128(x)  IS_GPIOC14(x)
-#endif
  /*-----------------------------------------------------------------------------
   * function extern
   *---------------------------------------------------------------------------*/

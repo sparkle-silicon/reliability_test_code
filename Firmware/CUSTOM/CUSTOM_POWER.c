@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-05-10 17:43:18
+ * @LastEditTime: 2025-06-04 16:56:13
  * @Description: Power sequnce control function example
  *
  *
@@ -1568,10 +1568,8 @@ void SB_PowerButton_Monitor(void)
 #define PWRSW_INT BIT5//WDT Timeout IRQ status
 #define PWRSW_DBTIMEL(dbtime) ((dbtime&0b11)<<6)/*102:disable/64/96/1000ms,103:disable/DBBT*4/6/64*/
 #define PWRSW_RSTOEN BIT(8)/*GPIOC5(pin71) 500ms low value*/
-#ifdef AE103
 #define PWRSW_TBT(tbt) ((tbt&0x3fff)<<9)/*Ttbt = ref_clock * (PWRSW_TBT + 1)*/
 #define PWRSW_DBBT(dbbt) ((dbbt&0x1ff)<<23)/*Tdbbt = ref_clock * (PWRSW_DBBT + 1)*/
-#endif 
 #define PWRSW_PIN_SEL 3
 void PWRSW_Config(BYTE timeout, BYTE mode)
 {
@@ -1592,11 +1590,9 @@ void PWRSW_Config(BYTE timeout, BYTE mode)
     }
     pwrswcsr |= PWRSW_DBTIMEL(0x01); // 去抖64ms
     pwrswcsr |= PWRSW_RSTOEN;//GPIOC5输出500ms低电平
-#ifdef AE103
     pwrswcsr |= PWRSW_TBT(15999);//32k的16000分频（2Hz）
     pwrswcsr |= PWRSW_DBBT(511);//32k的512分频(62.5Hz)
 
-#endif
     SYSCTL_PWRSWCSR = pwrswcsr;
 #endif
 }

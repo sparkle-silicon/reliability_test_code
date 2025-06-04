@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-02-06 19:29:00
+ * @LastEditTime: 2025-06-04 17:21:11
  * @Description:
  *
  *
@@ -14,7 +14,6 @@
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
 #include "KERNEL_TRIM.H"
-#if defined(AE103)
 u16 High_Clock_trim_get(void)
 {
     return (SYSCTL_OSCTRIM >> 13) & 0x3ff;
@@ -175,4 +174,3 @@ void High_Clock_Autotrim(void)//必须低电平准
 //     nop;
 //     return 0;
 // }
-#endif

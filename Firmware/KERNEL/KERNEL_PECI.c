@@ -1,20 +1,19 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-02-07 15:57:07
+ * @LastEditTime: 2025-06-04 17:22:30
  * @Description:
  *
  *
  * The following is the Chinese and English copyright notice, encoded as UTF-8.
- * 以下是中文及英文版权同步声明，编码为UTF-8。
+ * 浠ヤ笅鏄腑鏂囧強鑻辨枃鐗堟潈鍚屾澹版槑锛岀紪鐮佷负UTF-8銆�
  * Copyright has legal effects and violations will be prosecuted.
- * 版权具有法律效力，违反必究。
+ * 鐗堟潈鍏锋湁娉曞緥鏁堝姏锛岃繚鍙嶅繀绌躲€�
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright 漏2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 鐗堟潈鎵€鏈� 漏2021-2023榫欐櫠鐭冲崐瀵间綋绉戞妧锛堣嫃宸烇級鏈夐檺鍏徃
  */
-#include "KERNEL_PECI.H" //鍏ㄥ眬鍙橀噺
-#ifdef AE103
+#include "KERNEL_PECI.H" //閸忋劌鐪崣姗€鍣�
 #if PECI_Softwave_AWFCS
 u8 PECI_CRC8;
 #endif
@@ -26,7 +25,7 @@ BYTE PECI_RdPkgCfg_Idx16[5];
 BYTE PECI_ReadBuffer[16];
 BYTE PECI_WriteBuffer[16];
 
-// 涓婇潰娴嬭瘯鐢�
+// 娑撳﹪娼板ù瀣槸閻拷
 //*****************************************************************************
 //
 //  CRC-8 polynomial
@@ -45,7 +44,7 @@ void PECI_CalcCRC8(BYTE sourcebyte)
     PECI_CRC8 ^= sourcebyte;
     temp = PECI_CRC8;
 
-    if (IS_MASK_CLEAR(temp, BIT7))
+    if(IS_MASK_CLEAR(temp, BIT7))
     {
         temp = temp << 1;
         PECI_CRC8 ^= temp;
@@ -57,7 +56,7 @@ void PECI_CalcCRC8(BYTE sourcebyte)
         PECI_CRC8 ^= temp;
     }
 
-    if (IS_MASK_CLEAR(temp, BIT7))
+    if(IS_MASK_CLEAR(temp, BIT7))
     {
         temp = temp << 1;
         PECI_CRC8 ^= temp;
@@ -136,10 +135,10 @@ BYTE PECI_CheckHostBusy(void)
 {
     BYTE result = 0x00;
     u16 timeout = PECI_TIMEOUT;
-    while (timeout--)
+    while(timeout--)
     {
 
-        if (IS_MASK_CLEAR(PECI_HOSTAR, PECI_HOSTAR_HOBY)) // Host free
+        if(IS_MASK_CLEAR(PECI_HOSTAR, PECI_HOSTAR_HOBY)) // Host free
         {
             result = 0x01;
             break;
@@ -172,15 +171,15 @@ BYTE PECI_CheckHostFinish(void)
 
     u16 timeout = PECI_TIMEOUT;
 
-    while (timeout--)
+    while(timeout--)
     {
 
         status = PECI_HOSTAR;
-        if (status != 0x00)
+        if(status != 0x00)
         {
-            if (IS_MASK_SET(status, PECI_HOSTAR_FINISH))
+            if(IS_MASK_SET(status, PECI_HOSTAR_FINISH))
             {
-                PECI_HOSTAR |= PECI_HOSTAR_FINISH; // 写1清除FINISH状态
+                PECI_HOSTAR |= PECI_HOSTAR_FINISH; // 鍐�1娓呴櫎FINISH鐘舵€�
                 error = 0x00;
                 break;
             }
@@ -217,7 +216,7 @@ BYTE PECI_CheckHostFinish(void)
             // }
         }
     }
-    if (error != 0x00)
+    if(error != 0x00)
     {
         dprint("f\n");
         result = 0x00; // error
@@ -269,10 +268,10 @@ BYTE PECI_Ping(BYTE addr, BYTE ReadLen, BYTE WriteLen)
     PECI_HOWRLR = WriteLen;
     PECI_HORDLR = ReadLen;
 
-    if (PECI_CheckHostBusy())
+    if(PECI_CheckHostBusy())
     {
         PECI_HostControl(PECI_HOCTLR_START);
-        if (PECI_CheckHostFinish())
+        if(PECI_CheckHostFinish())
         {
             done = 0x01;
         }
@@ -308,12 +307,12 @@ BYTE PECI_GetDIB(BYTE addr, BYTE *ReadData, BYTE ReadLen, BYTE WriteLen)
     PECI_HORDLR = ReadLen;
     PECI_HOCMDR = PECI_CMD_GetDIB;
 
-    if (PECI_CheckHostBusy())
+    if(PECI_CheckHostBusy())
     {
         PECI_HostControl(PECI_HOCTLR_START);
-        if (PECI_CheckHostFinish())
+        if(PECI_CheckHostFinish())
         {
-            for (index = 0x00; index < PECI_HORDLR; index++)
+            for(index = 0x00; index < PECI_HORDLR; index++)
             {
                 *(ReadData + index) = PECI_HORDDR;
             }
@@ -333,8 +332,8 @@ BYTE PECI_GetDIB(BYTE addr, BYTE *ReadData, BYTE ReadLen, BYTE WriteLen)
 //  parameter :
 //              (1) addr : The address of processor
 //              (2) *ReadData : the start address of variable to save data
-//              (3) Domain : 0 or 1锟紺
-//                           0 : Domain 0, 1 : Domain 1锟紺
+//              (3) Domain : 0 or 1閿熺春
+//                           0 : Domain 0, 1 : Domain 1閿熺春
 //              (4) ReadLen read length always 2
 //              (5) WriteLen Write length always 1
 //  return :
@@ -351,7 +350,7 @@ BYTE PECI_GetTemp(BYTE addr, BYTE *ReadData, BYTE Domain, BYTE ReadLen, BYTE Wri
     PECI_HOTRADDR = addr;
     PECI_HOWRLR = WriteLen;
     PECI_HORDLR = ReadLen;
-    if (Domain < 2)
+    if(Domain < 2)
     {
         PECI_HOCMDR = PECI_CMD_GetTemp + Domain;
     }
@@ -360,10 +359,10 @@ BYTE PECI_GetTemp(BYTE addr, BYTE *ReadData, BYTE Domain, BYTE ReadLen, BYTE Wri
         PECI_HOCMDR = PECI_CMD_GetTemp;
     }
 
-    if (PECI_CheckHostBusy())
+    if(PECI_CheckHostBusy())
     {
         PECI_HostControl(PECI_HOCTLR_START);
-        if (PECI_CheckHostFinish())
+        if(PECI_CheckHostFinish())
         {
             *ReadData = PECI_HORDDR;
             *(++ReadData) = PECI_HORDDR;
@@ -383,8 +382,8 @@ BYTE PECI_GetTemp(BYTE addr, BYTE *ReadData, BYTE Domain, BYTE ReadLen, BYTE Wri
 //  parameter :
 //              (1) addr : The address of processor
 //              (2) *ReadData : the start address of variable to save data
-//              (3) Domain : 0 or 1锟紺
-//                           0 : Domain 0, 1 : Domain 1锟紺
+//              (3) Domain : 0 or 1閿熺春
+//                           0 : Domain 0, 1 : Domain 1閿熺春
 //              (4) Retry   0 or 1
 //              (5) Index
 //              (6) LSB of parameter
@@ -405,7 +404,7 @@ BYTE PECI_RdPkgConfig(BYTE addr, BYTE *ReadData, BYTE Domain, BYTE Retry, BYTE I
     PECI_HOTRADDR = addr;
     PECI_HOWRLR = WriteLen;
     PECI_HORDLR = ReadLen;
-    if (Domain < 2)
+    if(Domain < 2)
     {
         PECI_HOCMDR = PECI_CMD_RdPkgConfig + Domain;
     }
@@ -414,7 +413,7 @@ BYTE PECI_RdPkgConfig(BYTE addr, BYTE *ReadData, BYTE Domain, BYTE Retry, BYTE I
         PECI_HOCMDR = PECI_CMD_RdPkgConfig;
     }
 
-    if (Retry < 2)
+    if(Retry < 2)
     {
         PECI_HOWRDR = (PECI_HostID << 1) + Retry;
     }
@@ -427,16 +426,16 @@ BYTE PECI_RdPkgConfig(BYTE addr, BYTE *ReadData, BYTE Domain, BYTE Retry, BYTE I
     PECI_HOWRDR = LSB;
     PECI_HOWRDR = MSB;
 
-    if (PECI_CheckHostBusy())
+    if(PECI_CheckHostBusy())
     {
         PECI_HostControl(PECI_HOCTLR_START);
-        if (PECI_CheckHostFinish())
+        if(PECI_CheckHostFinish())
         {
-            if (PECI_HORDLR != 0x00)
+            if(PECI_HORDLR != 0x00)
             {
-                for (cunt = 0x00; cunt < PECI_HORDLR; cunt++)
+                for(cunt = 0x00; cunt < PECI_HORDLR; cunt++)
                 {
-                    if (cunt == 0x00)
+                    if(cunt == 0x00)
                     {
                         PECI_CompletionCode = PECI_HORDDR;
                     }
@@ -446,7 +445,7 @@ BYTE PECI_RdPkgConfig(BYTE addr, BYTE *ReadData, BYTE Domain, BYTE Retry, BYTE I
                     }
                 }
 
-                if (PECI_CompletionCode == PECI_CC_Valid)
+                if(PECI_CompletionCode == PECI_CC_Valid)
                 {
                     done = 0x01;
                 }
@@ -474,8 +473,8 @@ BYTE PECI_RdPkgConfig(BYTE addr, BYTE *ReadData, BYTE Domain, BYTE Retry, BYTE I
 //  Input :
 //              (1) addr : The address of processor
 //              (2) *WriteData : the start address of variable to wirte data
-//              (3) Domain : 0 or 1锟紺
-//                           0 : Domain 0, 1 : Domain 1锟紺
+//              (3) Domain : 0 or 1閿熺春
+//                           0 : Domain 0, 1 : Domain 1閿熺春
 //              (4) Retry   0 or 1
 //              (5) Index
 //              (6) LSB of parameter
@@ -508,7 +507,7 @@ BYTE PECI_WrPkgConfig(BYTE addr, BYTE *WriteData, BYTE Domain, BYTE Retry, BYTE 
     PECI_HORDLR = ReadLen;
     PECI_CalcCRC8(ReadLen);
 
-    if (Domain < 2)
+    if(Domain < 2)
     {
         PECI_HOCMDR = PECI_CMD_WrPkgConfig + Domain;
         PECI_CalcCRC8(PECI_CMD_WrPkgConfig + Domain);
@@ -519,7 +518,7 @@ BYTE PECI_WrPkgConfig(BYTE addr, BYTE *WriteData, BYTE Domain, BYTE Retry, BYTE 
         PECI_CalcCRC8(PECI_CMD_WrPkgConfig);
     }
 
-    if (Retry < 2)
+    if(Retry < 2)
     {
         PECI_HOWRDR = (PECI_HostID << 1) + Retry;
         PECI_CalcCRC8((PECI_HostID << 1) + Retry);
@@ -537,7 +536,7 @@ BYTE PECI_WrPkgConfig(BYTE addr, BYTE *WriteData, BYTE Domain, BYTE Retry, BYTE 
     PECI_HOWRDR = MSB;
     PECI_CalcCRC8(MSB);
 
-    for (cunt = 0x00; cunt < (WriteLen - 6); cunt++)
+    for(cunt = 0x00; cunt < (WriteLen - 6); cunt++)
     {
         PECI_HOWRDR = *(WriteData + cunt);
         PECI_CalcCRC8(*(WriteData + cunt));
@@ -548,13 +547,13 @@ BYTE PECI_WrPkgConfig(BYTE addr, BYTE *WriteData, BYTE Domain, BYTE Retry, BYTE 
     PECI_HOWRDR = PECI_CRC8;
 #endif
 
-    if (PECI_CheckHostBusy())
+    if(PECI_CheckHostBusy())
     {
         PECI_HostControl(PECI_HOCTLR_START);
-        if (PECI_CheckHostFinish())
+        if(PECI_CheckHostFinish())
         {
             PECI_CompletionCode = PECI_HORDDR;
-            if (PECI_CompletionCode == PECI_CC_Valid)
+            if(PECI_CompletionCode == PECI_CC_Valid)
             {
                 done = 0x01;
             }
@@ -577,8 +576,8 @@ BYTE PECI_WrPkgConfig(BYTE addr, BYTE *WriteData, BYTE Domain, BYTE Retry, BYTE 
 //  Input :
 //              (1) addr : The address of processor
 //              (2) *ReadData : the start address of variable to save data
-//              (3) Domain : 0 or 1锟紺
-//                           0 : Domain 0, 1 : Domain 1锟紺
+//              (3) Domain : 0 or 1閿熺春
+//                           0 : Domain 0, 1 : Domain 1閿熺春
 //              (4) Retry   0 or 1
 //              (5) ProcessorID
 //              (6) LSB of parameter
@@ -599,7 +598,7 @@ BYTE PECI_RdIAMSR(BYTE addr, BYTE *ReadData, BYTE Domain, BYTE Retry, BYTE Proce
     PECI_HOTRADDR = addr;
     PECI_HOWRLR = WriteLen;
     PECI_HORDLR = ReadLen;
-    if (Domain < 2)
+    if(Domain < 2)
     {
         PECI_HOCMDR = PECI_CMD_RdIAMSR + Domain;
     }
@@ -608,7 +607,7 @@ BYTE PECI_RdIAMSR(BYTE addr, BYTE *ReadData, BYTE Domain, BYTE Retry, BYTE Proce
         PECI_HOCMDR = PECI_CMD_RdIAMSR;
     }
 
-    if (Retry < 2)
+    if(Retry < 2)
     {
         PECI_HOWRDR = (PECI_HostID << 1) + Retry;
     }
@@ -621,14 +620,14 @@ BYTE PECI_RdIAMSR(BYTE addr, BYTE *ReadData, BYTE Domain, BYTE Retry, BYTE Proce
     PECI_HOWRDR = LSB;
     PECI_HOWRDR = MSB;
 
-    if (PECI_CheckHostBusy())
+    if(PECI_CheckHostBusy())
     {
         PECI_HostControl(PECI_HOCTLR_START);
-        if (PECI_CheckHostFinish())
+        if(PECI_CheckHostFinish())
         {
-            for (cunt = 0x00; cunt < PECI_HORDLR; cunt++)
+            for(cunt = 0x00; cunt < PECI_HORDLR; cunt++)
             {
-                if (cunt == 0x00)
+                if(cunt == 0x00)
                 {
                     PECI_CompletionCode = PECI_HORDDR;
                 }
@@ -638,7 +637,7 @@ BYTE PECI_RdIAMSR(BYTE addr, BYTE *ReadData, BYTE Domain, BYTE Retry, BYTE Proce
                 }
             }
 
-            if (PECI_CompletionCode == PECI_CC_Valid)
+            if(PECI_CompletionCode == PECI_CC_Valid)
             {
                 done = 0x01;
             }
@@ -654,4 +653,3 @@ BYTE PECI_RdIAMSR(BYTE addr, BYTE *ReadData, BYTE Domain, BYTE Retry, BYTE Proce
     return (done);
 }
 
-#endif

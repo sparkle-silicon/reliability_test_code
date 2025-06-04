@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-06-03 18:16:05
+ * @LastEditTime: 2025-06-04 16:46:39
  * @Description:
  *
  *
@@ -79,9 +79,7 @@
 #define KBS_EN 0x10000000
 #define PS2_1_EN 0x08000000
 #define PS2_0_EN 0x04000000
-#if defined(AE103)
 #define ROMP_EN 0x02000000
-#endif
 #define PMCKBC_EN 0x01000000
 #define SHM_EN 0x00800000
 #define SWUC_EN 0x00400000
@@ -92,32 +90,17 @@
 #define SMB2_EN 0x00020000
 #define SMB3_EN 0x00010000
 #define WDT_EN 0x00008000
-#if (defined(AE102) || defined(AE103))
-#define PP_EN 0x00004000
-#endif
-#if defined(AE103)
-#define SM4_EN 0x00002000
-#endif
 #define ADC_EN 0x00001000
 #define PWM_EN 0x00000800
 #define UARTA_EN 0x00000400
 #define UARTB_EN 0x00000200
 #define UART0_EN 0x00000100
-#if (defined(AE102) || defined(AE103))
 #define UART1_EN 0x00000080
-#define UART2_EN 0x00000040
-#define UART3_EN 0x00000020
-#define CAN0_EN 0x00000010
-#define CAN1_EN 0x00000008
-#define CAN2_EN 0x00000004
-#define CAN3_EN 0x00000002
-#endif
 #define SPIM_EN 0x00000001
 #define SMB6_EN 0x00000002
 #define SMB7_EN 0x00000004
 #define SMB8_EN 0x00000008
 // SYSCTL_MODE1
-#if defined(AE103)
 /*yujiang add*/
 #define IRAM_EN 0x00800000
 /*yujiang add*/
@@ -132,15 +115,12 @@
 #define SMB5_EN 0x00004000
 #define TRNG_EN 0x00002000
 #define ESPI_EN 0x00001000
-#endif
 #define APB_EN 0x00000800
 #define DRAM_EN 0x00000400
 #define SYSCTL_EN 0x00000200
-#if defined(AE103)
 #define SM2_EN 0x00000100
 #define SM3_EN 0x00000080
 #define EFUSE_EN 0x00000040
-#endif
 #define GPIODB_EN 0x00000020
 #define SRAM_EN 0x00000010
 #define SPIF_EN 0x00000008
@@ -221,38 +201,6 @@ extern void Vtable_Tansport(void);
 #else
 #define spim_MoudleClock_EN SYSCTL_MODEN0 &= (~SPIM_EN);
 #endif
-#if (defined(AE103) || defined(AE102))
-#if CAN3_CLOCK_EN
-#define can3_MoudleClock_EN SYSCTL_MODEN0 |= CAN3_EN;
-#else
-#define can3_MoudleClock_EN SYSCTL_MODEN0 &= (~CAN3_EN);
-#endif
-#if CAN2_CLOCK_EN
-#define can2_MoudleClock_EN SYSCTL_MODEN0 |= CAN2_EN;
-#else
-#define can2_MoudleClock_EN SYSCTL_MODEN0 &= (~CAN2_EN);
-#endif
-#if CAN1_CLOCK_EN
-#define can1_MoudleClock_EN SYSCTL_MODEN0 |= CAN1_EN;
-#else
-#define can1_MoudleClock_EN SYSCTL_MODEN0 &= (~CAN1_EN);
-#endif
-#if CAN0_CLOCK_EN
-#define can0_MoudleClock_EN SYSCTL_MODEN0 |= CAN0_EN;
-#else
-#define can0_MoudleClock_EN SYSCTL_MODEN0 &= (~CAN0_EN);
-#endif
-#endif
-#if UART3_CLOCK_EN
-#define uart3_MoudleClock_EN SYSCTL_MODEN0 |= UART3_EN;
-#else
-#define uart3_MoudleClock_EN SYSCTL_MODEN0 &= (~UART3_EN);
-#endif
-#if UART2_CLOCK_EN
-#define uart2_MoudleClock_EN SYSCTL_MODEN0 |= UART2_EN;
-#else
-#define uart2_MoudleClock_EN SYSCTL_MODEN0 &= (~UART2_EN);
-#endif
 #if UART1_CLOCK_EN
 #define uart1_MoudleClock_EN SYSCTL_MODEN0 |= UART1_EN;
 #else
@@ -284,13 +232,6 @@ extern void Vtable_Tansport(void);
 #define adc_MoudleClock_EN SYSCTL_MODEN0 &= (~ADC_EN);
 #endif
 #define PLL_ENF2 (ADC_CLOCK_EN << 27)
-#if (defined(AE103) || defined(AE102))
-#if PPORT_CLOCK_EN
-#define pport_MoudleClock_EN SYSCTL_MODEN0 |= PP_EN;
-#else
-#define pport_MoudleClock_EN SYSCTL_MODEN0 &= (~PP_EN);
-#endif
-#endif
 #if WDT_CLOCK_EN
 #define wdt_MoudleClock_EN SYSCTL_MODEN0 |= WDT_EN;
 #else
@@ -441,7 +382,6 @@ extern void Vtable_Tansport(void);
 #else
 #define apb_MoudleClock_EN SYSCTL_MODEN1 &= (~APB_EN);
 #endif
-#ifdef AE103
 #if CEC_CLOCK_EN
 #define cec_MoudleClock_EN SYSCTL_MODEN1 |= CEC_EN;
 #else
@@ -466,6 +406,5 @@ extern void Vtable_Tansport(void);
 #define espi_MoudleClock_EN SYSCTL_MODEN1 |= ESPI_EN;
 #else
 #define espi_MoudleClock_EN SYSCTL_MODEN1 &= (~ESPI_EN);
-#endif
 #endif
 #endif

@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-01-16 17:25:09
+ * @LastEditTime: 2025-06-04 17:53:44
  * @Description:
  *
  *
@@ -17,8 +17,8 @@
 #define RISCV_H
 /*-------------------------------------AE10X SELECITON-------------------------------------*/
 // AE10X is  SPK32AE10X,arch is riscv32
-#if !(defined(TEST101) || defined(AE101) || defined(AE102) || defined(AE103)) // If the compiler does not set an external selection macro
-#define AE103                                                                 // Default Settings
+#if !(defined(GLE01)) // If the compiler does not set an external selection macro
+#define GLE01                                                                 // Default Settings
 
 #define AE8528 0
 #define AE8987 0

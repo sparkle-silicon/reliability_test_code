@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-03-06 11:37:17
+ * @LastEditTime: 2025-06-04 17:00:35
  * @Description: Memory Definition for extern all code base reference
  *
  *
@@ -479,7 +479,6 @@
 #define SYSCTL_PIO3_UDCFG_Value (*(DWORDP)(GPIO_InitInfo_MemBase + 68))
 #define SYSCTL_PIO4_UDCFG_Value (*(DWORDP)(GPIO_InitInfo_MemBase + 72))
 #define SYSCTL_PIO5_UDCFG_Value (*(DWORDP)(GPIO_InitInfo_MemBase + 76))
-#ifdef AE103
 
 #define eSPI_MemBase (GPIO_InitInfo_MemBase + MEMORY_128SIZE) // 0x203F8
 #define eSPI_BUF_VWCTRL1 (*(VBYTEP)(eSPI_MemBase + 0x0))
@@ -589,7 +588,6 @@
 #define DEFAULT_BASE_ADDR2 (Mailbox_MemBase + MEMORY_064SIZE) // 0x203C0
 #define DEFAULT_BASE_SIZE 0x2A8
 
-#endif // end #if AE103
 /*--------------------------------------ALL DEFINITION END----------------------------------------------*/
 #include "CUSTOM_MEMORY.H"
 #endif

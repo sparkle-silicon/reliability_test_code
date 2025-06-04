@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-06-03 17:06:46
+ * @LastEditTime: 2025-06-04 17:00:42
  * @Description: 中断号越大优先级越高
  *
  *
@@ -36,13 +36,8 @@
 #define IRQC_INT_DEVICE_KBC_OBE 14
 #define IRQC_INT_DEVICE_PMC1_IBF 15
 #define IRQC_INT_DEVICE_PMC1_OBE 16
-#if (defined(TEST101) || defined(AE101) || defined(AE102))
-#define IRQC_INT_DEVICE_PMC2_IBF 17
-#define IRQC_INT_DEVICE_PMC2_OBE 18
-#elif defined(AE103)
 #define IRQC_INT_DEVICE_WU42 17
 #define IRQC_INT_DEVICE_RTC 18
-#endif
 #define IRQC_INT_DEVICE_WDT 19
 #define IRQC_INT_DEVICE_ADC 20
 #define IRQC_INT_DEVICE_UART0 21

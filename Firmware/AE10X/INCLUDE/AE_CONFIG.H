@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-01-16 15:43:09
+ * @LastEditTime: 2025-06-04 16:45:25
  * @Description:
  *
  *
@@ -34,9 +34,7 @@
  *****************************************************************************/
 #define SUPPORT_LOWPOWER 0    // 低功耗
 #define SUPPORT_GPIO_WAKEUP 0 // GPIO中断唤醒
-#ifdef AE103
 #define SUPPORT_RTC_WAKEUP 0 // RTC定时器唤醒
-#endif
 #define SUPPORT_CPUTIMER_WAKEUP 0 // CPU定时器唤醒
 #define SUPPORT_PWRSW_WAKEUP 0    // 长按GPIOB4唤醒
 #define SUPPORT_KBS_WAKEUP 0      // 键盘按键唤醒
@@ -124,21 +122,11 @@
 #define ADC_MODULE_EN 1
 #define UART_MODULE_EN 1
 // reserved
-#if (defined(AE103) || defined(AE102))
-#define PPORT_MODULE_EN 0
-#define CAN_MODULE_EN 0
-#endif
-#if (PPORT_MODULE_EN & KBS_MODULE_EN)
-#warning "You want use KBS ,but PPORT Enable, They reuse the same pin"
-#endif
-#if (defined(AE103))
 #define CEC_MODULE_EN 0
 #define OWI_MODULE_EN 0
 #define RTC_MODULE_EN 0
 #define PECI_MODULE_EN 0
 #define ESPI_MODULE_EN 0
-
-#endif
 /****************************************************************************
  * Switch
  *****************************************************************************/
@@ -176,7 +164,6 @@
 #define ADC_CLOCK ((LOW_CHIP_CLOCK * 3000) / ((ADC_CLOCK_SWITCH) ? (ADC_CLOCK_SWITCH * 2) : 1)) // 96M/ADC_CLOCK_SWITCH
 #define PLL_POSTDIV2 ((ADC_CLOCK_SWITCH & 0x1f) << 21)
 // uart 功能选择 suggestions COMMAND_UART_SWITCH == PRINTF_UART_SWITCH != DEBUG_UART_SWITCH
-#if (defined(AE102) || defined(AE103))
 #if ENABLE_DEBUGGER_SUPPORT
 #define DEBUG_UART_SWITCH 1
 #else
@@ -184,16 +171,7 @@
 #endif
 #define PRINTF_UART_SWITCH 0                 // 串口引脚选择 uarta对应数值2 uartb对应数值3
 #define COMMAND_UART_SWITCH PRINTF_UART_SWITCH // It's aobut receive uart, comand send is printf.
-#else
-#if ENABLE_DEBUGGER_SUPPORT
-#define DEBUG_UART_SWITCH 4
-#else
-#undef DEBUG_UART_SWITCH
-#endif
 
-#define PRINTF_UART_SWITCH 0                   // 串口引脚选择 uarta对应数值2 uartb对应数值3
-#define COMMAND_UART_SWITCH PRINTF_UART_SWITCH // It's aobut receive uart, comand send is printf.
-#endif
 /****************************************************************************
  * Module SWITCH Enable
  *****************************************************************************/
@@ -232,16 +210,8 @@
 #if (COMMAND_UART_SWITCH == 0 || DEBUG_UART_SWITCH == 0 || PRINTF_UART_SWITCH == 0)
 #define UART0_BAUD 115200
 #endif
-#if (defined(AE102) || defined(AE103))
 #if (COMMAND_UART_SWITCH == 1 || DEBUG_UART_SWITCH == 1 || PRINTF_UART_SWITCH == 1)
 #define UART1_BAUD 115200
-#endif
-// #if (COMMAND_UART_SWITCH == 2 || DEBUG_UART_SWITCH == 2 || PRINTF_UART_SWITCH == 2)
-// #define UART2_BAUD 115200
-// #endif
-// #if (COMMAND_UART_SWITCH == 3 || DEBUG_UART_SWITCH == 3 || PRINTF_UART_SWITCH == 3)
-// #define UART3_BAUD 115200
-// #endif
 #endif
 #if (COMMAND_UART_SWITCH == 2 || DEBUG_UART_SWITCH == 2 || PRINTF_UART_SWITCH == 2)
 #define UARTA_BAUD 115200
@@ -259,7 +229,6 @@
 #define I2C2_SPEED 100000
 #define I2C3_EN_Init 1 & SMBUS3_CLOCK_EN
 #define I2C3_SPEED 100000
-#if (defined(AE103))
 #define I2C4_EN_Init 0 & SMBUS4_CLOCK_EN
 #define I2C4_SPEED 100000
 #define I2C5_EN_Init 0 & SMBUS5_CLOCK_EN
@@ -272,7 +241,6 @@
 #define I2C8_EN_Init 0 & SMBUS8_CLOCK_EN
 #define I2C8_SPEED 100000
 /*yujiang add*/
-#endif
 #if SPI_MODULE_EN
 #define SPIM_CS_EN 1
 #endif
@@ -302,21 +270,12 @@
 #define ADC6_EN_Init 0 & ADC_CLOCK_EN
 #define ADC7_EN_Init 0 & ADC_CLOCK_EN
 #define ADC7_EN_Init 0 & ADC_CLOCK_EN
-// CAN初始化
-#if (defined(AE103) || defined(AE102))
-#define CAN0_EN_Init 0 & CAN0_CLOCK_EN
-#define CAN1_EN_Init 0 & CAN1_CLOCK_EN
-#define CAN2_EN_Init 0 & CAN2_CLOCK_EN
-#define CAN3_EN_Init 0 & CAN3_CLOCK_EN
-#endif
+
 #if (CEC_MODULE_EN & PS2_0_EN)
 #warning "You want use KBSOUT[16] ,but SPIM Enable, They reuse the same pin"
 #endif
 #if (SPI_MODULE_EN & PWM6_EN_Init)
 #warning "You want use PWM6 ,but SPIM SCK Enable, They reuse the same pin"
-#endif
-#if (CAN1_EN_Init & PWM6_EN_Init)
-#warning "You want use PWM4 or PWM5 ,but CAN1 TXRX Enable, They reuse the same pin"
 #endif
 #if (PECI_MODULE_EN & I2C2_EN_Init)
 #warning "You want use PECI ,but I2C2 Enable, They reuse the same pin"

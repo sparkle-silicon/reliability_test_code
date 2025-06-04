@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-11-27 11:08:49
+ * @LastEditTime: 2025-06-04 16:47:08
  * @Description:
  *               define chip_type
  *               define identifier
@@ -119,20 +119,12 @@ typedef struct _Mode
     BYTE KBS : 1;
     BYTE PS2 : 2;
     BYTE GPIO : 5;
-#if (defined(AE101) || defined(AE102))
-    BYTE I2C : 4;
-#endif
-#if (defined(AE103))
     BYTE I2C : 6;
-#endif
     BYTE WDT : 1;
     BYTE PPORT : 1;
     BYTE ADC : 1;
     BYTE PWM : 8;
     BYTE UART : 6;
-#if (defined(AE103) || defined(AE102))
-    BYTE CAN : 4;
-#endif
     BYTE SPIM : 1;
     BYTE P80 : 1;
 } sMode;

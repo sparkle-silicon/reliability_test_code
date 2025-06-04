@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-06-03 17:07:23
+ * @LastEditTime: 2025-06-04 17:24:42
  * @Description: This is about the  national crypto algorithm implementation
  *
  *
@@ -88,27 +88,18 @@ void i2c2_pull_up(void)
 }
 void i2c3_pull_up(void)
 {
-#if (defined(TEST101) || defined(AE101) || defined(AE102))
-	GPIO_Pullup_Config(GPIOB, 21);
-	GPIO_Pullup_Config(GPIOB, 22);
-#elif (defined(AE103))
 	GPIO_Pullup_Config(GPIOB, 25);
 	GPIO_Pullup_Config(GPIOB, 26);
-#endif
 }
 void i2c4_pull_up(void)
 {
-#if (defined(AE103))
 	GPIO_Pullup_Config(GPIOA, 4);
 	GPIO_Pullup_Config(GPIOA, 5);
-#endif
 }
 void i2c5_pull_up(void)
 {
-#if (defined(AE103))
 	GPIO_Pullup_Config(GPIOB, 0);
 	GPIO_Pullup_Config(GPIOB, 7);
-#endif
 }
 void i2c6_pull_up(void)
 {
@@ -190,32 +181,22 @@ void uart_init(void)
 	flag |= BIT0;
 	baud[0] = serial_init(UART0_CHANNEL, UART0_BAUD);
 #endif
-#if (defined(AE102) || defined(AE103))
 #ifdef UART1_BAUD
 	uart1_MoudleClock_EN;
 	sysctl_iomux_uart1();
 	flag |= BIT1;
 	baud[1] = serial_init(UART1_CHANNEL, UART1_BAUD);
 #endif
-// #ifdef UART2_BAUD
-// 	uart2_MoudleClock_EN;
-// 	sysctl_iomux_uart2();
-// 	flag |= BIT2;
-// 	baud[2] = serial_init(UART2_CHANNEL, UART2_BAUD);
-// #endif
-// #ifdef UART3_BAUD
-// 	uart3_MoudleClock_EN;
-// 	sysctl_iomux_uart3();
-// 	flag |= BIT3;
-// 	baud[3] = serial_init(UART3_CHANNEL, UART3_BAUD);
-// #endif
+// #define UART2_BAUD 115200
+#ifdef UART2_BAUD
+#define	UARTA_BAUD UART2_BAUD
 #endif
-// #ifdef UARTA_BAUD
+#ifdef UARTA_BAUD
 	uarta_MoudleClock_EN;
 	sysctl_iomux_uarta();
 	flag |= BIT4;
-	baud[4] = serial_init(UARTA_CHANNEL, 115200);
-// #endif
+	baud[4] = serial_init(UARTA_CHANNEL, UARTA_BAUD);
+#endif
 #ifdef UARTB_BAUD
 	SMBUS3_UARTB_SEL;
 	uartb_MoudleClock_EN;
@@ -693,7 +674,7 @@ void __weak SECTION(".init.module") Module_init(void)
 	kbc_pmc_init();
 	// 9.Initialize  The KBS
 	kbs_init();
-#if (defined(AE103) && 0)
+#if ( 0)
 	// 13.Initialize The CEC
 	cec_init();
 	// 14.Initialize The OWI

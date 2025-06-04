@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-02-29 11:42:58
+ * @LastEditTime: 2025-06-04 17:22:42
  * @Description: This file is used to handling PS2 interface
  *
  *
@@ -234,7 +234,7 @@ BYTE Wait_PS2_Device_Ack_Timeout(BYTE channel)
 	BYTE result;
 	BYTE receive_id_ack[3];
 	BYTE cnt = 0;
-	BYTE ms_cnt=0;
+	BYTE ms_cnt = 0;
 	result = 0x1;
 	TIMER_Init(TIMER1, TIMER1_1ms, 0x1, 0x1);
 	Timer_Int_Clear(TIMER1);
@@ -299,14 +299,15 @@ BYTE Wait_PS2_Device_Ack_Timeout(BYTE channel)
 				dprint("ack data error\n");
 			}
 		}
-		if ((TIMER_TRIS & 0x2)==0x2) 
+		if((TIMER_TRIS & 0x2) == 0x2)
 		{
 			ms_cnt++;
 			Timer_Int_Clear(TIMER1); // clear timer interrupt flag
-    	}
-	}while(ms_cnt<=10); // 10ms timeout
+		}
+	}
+	while(ms_cnt <= 10); // 10ms timeout
 	TIMER_Disable(TIMER1);
-	if(ms_cnt>=10)
+	if(ms_cnt >= 10)
 	{
 		dprint("PS2 device not response\n");
 	}
@@ -432,10 +433,10 @@ void Send_ResetCmd_To_MS_WaitACK(BYTE PortNum)
 	if(PortNum == 0) // 发送Cmd之前屏蔽中断，以防中断中断中被调用，导致嵌套
 		irqc_disable_interrupt(IRQC_INT_DEVICE_PS2_CH0);
 	else if(PortNum == 1)
-		ICTL1_INTMASK5 |=0x40;
+		ICTL1_INTMASK5 |= 0x40;
 	PS2_PortN_Write_Output_W(0xFF, PortNum);
 	TIMER_Disable(0x0);
-	TIMER_Init(0x0, TIMER0_1ms*4, 0x0, 0x1);
+	TIMER_Init(0x0, TIMER0_1ms * 4, 0x0, 0x1);
 	do // Wait PS2 ACK 0xFA
 	{
 		BYTE status = PS2_PortN_Read_Status(PortNum);
@@ -452,7 +453,7 @@ void Send_ResetCmd_To_MS_WaitACK(BYTE PortNum)
 	}
 	else if(PortNum == 1)
 	{
-		ICTL1_INTMASK5&=~0x40;
+		ICTL1_INTMASK5 &= ~0x40;
 	}
 }
 /* ----------------------------------------------------------------------------
@@ -835,34 +836,34 @@ void MS_Data_Suspend(BYTE nPending)
 		}
 		if(MS_Main_CHN == 1)
 		{
-			if(sysctl_iomux_ps2_0()==0x1)
+			if(sysctl_iomux_ps2_0() == 0x1)
 			{
 				GPIO1_DR1 &= 0xFE;	  // GPB8 输出低
 				GPIO1_DDR1 |= 0x1;	  // GPB8 配置为GPIO输出模式
 				sysctl_iomux_config(GPIOB, 8, 0); // GPB8 配置为GPIO模式
 			}
-			else if(sysctl_iomux_ps2_0()==0x2)
+			else if(sysctl_iomux_ps2_0() == 0x2)
 			{
 				GPIO1_DR1 &= 0xFB;    //GPIOB10 输出低
 				GPIO1_DDR1 |= 0x04;
 				sysctl_iomux_config(GPIOB, 10, 0); // GPB10 配置为GPIO模式
 			}
-			else if(sysctl_iomux_ps2_0()==0x4)
+			else if(sysctl_iomux_ps2_0() == 0x4)
 			{
 				GPIOB27(LOW);
-				GPIO1_DDR3|=0x08;
+				GPIO1_DDR3 |= 0x08;
 				sysctl_iomux_config(GPIOB, 27, 0); // GPB27 配置为GPIO模式
 			}
 		}
 		else if(MS_Main_CHN == 2)
 		{
-			if(sysctl_iomux_ps2_1()==0x10)
+			if(sysctl_iomux_ps2_1() == 0x10)
 			{
 				GPIO1_DR1 &= 0xEF;	  // GPB12 输出低
 				GPIO1_DDR1 |= 0x10;	  // GPB12 配置为GPIO输出模式
 				sysctl_iomux_config(GPIOB, 12, 0); // GPB12 配置为GPIO模式
 			}
-			else if(sysctl_iomux_ps2_1()==0x20)
+			else if(sysctl_iomux_ps2_1() == 0x20)
 			{
 				GPIO1_DR1 &= 0xFB;    //GPIOB10 输出低
 				GPIO1_DDR1 |= 0x04;
@@ -1031,19 +1032,11 @@ void Service_Send_PS2(void)
 		}
 		else if(MS_Main_CHN == 2)
 		{
-		#if (defined(AE103))
 			if(ICTL1_INTEN5 & 0x40)
 			{
 				PS2_Int_Record |= 0x2;
 				ICTL1_INTEN5 &= (~(0x1 << 6));
 			}
-		#elif (defined(AE101) || defined(AE102))
-			if(ICTL1_INTEN5 & INT1_PS2_1)
-			{
-				PS2_Int_Record |= 0x2;
-				ICTL1_INTEN5 &= (~INT1_PS2_1);//失能PS2中断
-			}
-		#endif
 		}
 		if((TP_ACK_CUNT == 0) && (IS_SET(KBC_STA, 1)))
 		{
@@ -1079,11 +1072,7 @@ void Service_Send_PS2(void)
 		else if(PS2_Int_Record & 0x2)
 		{
 			PS2_Int_Record &= (~(0x1 << 1));
-		#if (defined(AE103))
 			ICTL1_INTEN5 |= (0x1 << 6);
-		#elif (defined(AE101) || defined(AE102))
-			ICTL1_INTEN5 |= INT1_PS2_1;
-		#endif
 		}
 	}
 	else
@@ -1112,12 +1101,12 @@ void Service_Send_PS2(void)
 BYTE PS2_PinSelect(void)
 {
 	BYTE PinSelect = 0;
-	PinSelect|=sysctl_iomux_ps2_0();
-	PinSelect|=sysctl_iomux_ps2_1();
+	PinSelect |= sysctl_iomux_ps2_0();
+	PinSelect |= sysctl_iomux_ps2_1();
 	switch(PinSelect)
 	{
 		case 0x1:
-		 	return (IS_GPIOB8(HIGH) && IS_GPIOB9(HIGH));
+			return (IS_GPIOB8(HIGH) && IS_GPIOB9(HIGH));
 		case 0x2:
 			return (IS_GPIOB10(HIGH) && IS_GPIOB11(HIGH));
 		case 0x4:
@@ -1148,7 +1137,7 @@ void InitAndIdentifyPS2(void)
 	static BYTE Temp_flag = 0;
 	if(MS_Main_CHN == 0 && KB_Main_CHN == 0)
 	{
-		if(Temp_flag==0)
+		if(Temp_flag == 0)
 		{
 			Temp_SYSCTLPIO2 = SYSCTL_PIO2_CFG;
 			Temp_flag = 1;

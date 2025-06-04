@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2023-10-12 16:08:34
+ * @LastEditTime: 2025-06-04 17:23:28
  * @Description:
  *
  *
@@ -157,7 +157,6 @@ void SWUC_UART_Test(void)
 	// PNP Default Config
 	Config_PNP_Write(0x23, 0x01, 0x01);
 	vDelayXms(5);
-#if (defined(AE102) || defined(AE103))
 	// UART0_BAUD
 	Config_PNP_Write(0x07, 0x1b, 0x1b);
 	vDelayXms(5);
@@ -172,7 +171,6 @@ void SWUC_UART_Test(void)
 	Config_PNP_Write(0x30, 0x1b, 0x01);
 	vDelayXms(5);
 	dprint("UART0_BAUD PNP Config finish!\n");
-#endif
 	// SWUC
 	Config_PNP_Write(0x07, 0x04, 0x04);
 	vDelayXms(5);

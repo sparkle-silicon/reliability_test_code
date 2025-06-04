@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-01-26 09:53:38
+ * @LastEditTime: 2025-06-04 17:56:42
  * @Description:
  *
  *
@@ -41,13 +41,7 @@ extern void Restore_Context(void);
 extern void Low_Power_Set(void);
 extern void Enter_LowPower_Mode(void);
 extern void Exit_LowPower_Mode(void);
-extern void AE103_Sleep(void);
-extern void AE103_Deep_Sleep(void);
-extern void GLE_Sleep(void);
-extern void GLE_Deep_Sleep(void);   
-#if 0
-extern void GLE_Deep_Sleep2(void);   
-#endif
-extern void GLE_Hibernation(void);
+
+extern void CHIP_Hibernation(void);
 extern void Test_OSC32K(void);
 #endif

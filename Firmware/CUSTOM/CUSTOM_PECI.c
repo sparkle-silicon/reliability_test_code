@@ -1,24 +1,23 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-07-12 15:22:54
+ * @LastEditTime: 2025-06-04 16:54:52
  * @Description:
  *
  *
  * The following is the Chinese and English copyright notice, encoded as UTF-8.
- * 娴犮儰绗呴弰顖欒厬閺傚洤寮烽懟杈ㄦ瀮閻楀牊娼堥崥灞绢劄婢圭増妲戦敍宀€绱惍浣疯礋UTF-8閵嗭拷
+ * 濞寸姰鍎扮粭鍛村及椤栨瑨鍘柡鍌氭搐瀵兘鎳熸潏銊︾€柣妤€鐗婂鍫ュ触鐏炵虎鍔勫鍦濡叉垿鏁嶅畝鈧槐顏堟儘娴ｇ柉绀婾TF-8闁靛棴鎷�
  * Copyright has legal effects and violations will be prosecuted.
- * 閻楀牊娼堥崗閿嬫箒濞夋洖绶ラ弫鍫濆閿涘矁绻氶崣宥呯箑缁岃翰鈧拷
+ * 闁绘鐗婂鍫ュ礂闁垮绠掓繛澶嬫礀缁躲儵寮崼婵嗩潝闁挎稑鐭佺换姘跺矗瀹ュ懐绠戠紒宀冪堪閳ь剨鎷�
  *
- * Copyright 婕�2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 閻楀牊娼堥幍鈧張锟� 婕�2021-2023姒瑦娅犻惌鍐插磹鐎甸棿缍嬬粔鎴炲Η閿涘牐瀚冨鐑囩礆閺堝妾洪崗顒€寰�
+ * Copyright 濠曪拷2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 闁绘鐗婂鍫ュ箥閳ь剟寮甸敓锟� 濠曪拷2021-2023濮掝偅鐟﹀▍鐘绘儗閸愭彃纾归悗鐢告？缂嶅绮旈幋鐐参楅柨娑樼墣鐎氬啫顔忛悜鍥╃闁哄牆顦靛娲礂椤掆偓瀵帮拷
  */
 
 #include "KERNEL_PECI.H"
 #include "CUSTOM_PECI.H"
 #include "CUSTOM_GPIO.H"
 
-#ifdef AE103
 /*-----------------------------------------------------------------------------
  * Local Parameter Definition
  *---------------------------------------------------------------------------*/
@@ -59,11 +58,11 @@ void Init_PECI(void)
 
     // PECI_HOSTAR = PECI_HOSTAR_LSB_FIRST;
 
-    PECI_Set_Pad(0x3, 0x0); // 闁瀚�1.0V鐠佸墽鐤嗛敍灞界杽闂勫懓绶崙锟�1.05V
+    PECI_Set_Pad(0x3, 0x0); // 闂侇偄顦扮€氾拷1.0V閻犱礁澧介悿鍡涙晬鐏炵晫鏉介梻鍕嚀缁额參宕欓敓锟�1.05V
 
     // dprint("b:%x,%x\n", PECI_HOSTAR, PECI_HOCTLR);
 
-    PECI_HOCTLR |= BIT7; // 鐠佸墽鐤咹HRAE = 1
+    PECI_HOCTLR |= BIT7; // 閻犱礁澧介悿鍜笻RAE = 1
 
     PECI_HOCTL2R &= 0xF8;
 
@@ -74,7 +73,7 @@ void Init_PECI(void)
 
     // dprint("d:%x,%x\n", PECI_HOSTAR, PECI_HOCTLR);
 
-    PECI_HOCTL2R &= ~BIT7; // 鐠佸墽鐤咹HRAE = 0
+    PECI_HOCTL2R &= ~BIT7; // 閻犱礁澧介悿鍜笻RAE = 0
 
     PECI_ERRCNT = 0;
 
@@ -83,7 +82,7 @@ void Init_PECI(void)
     // // dprint("f:%x,%x\n", PECI_HOSTAR, PECI_HOCTLR);
 }
 
-// PADsel: 1:缂侇垵宕电划铏规媼閸撗呮瀭PAD闁挎冻鎷�0闁挎稒纰嶈啯闁秆勵殙椤旀洜绱旈悽鍦揇
+// PADsel: 1:缂備緡鍨靛畷鐢靛垝閾忚濯奸柛鎾楀懏鐎璓AD闂佹寧鍐婚幏锟�0闂佹寧绋掔喊宥堝暞闂佺鍕垫畽妞ゆ梹娲滅槐鏃堟偨閸︽弴
 void PECI_Set_Pad(u16 VTTlev, u8 PADsel)
 {
     if(PADsel)
@@ -93,11 +92,11 @@ void PECI_Set_Pad(u16 VTTlev, u8 PADsel)
     }
     else
     {
-        SYSCTL_PAD_PECI &= ~BIT(15); // 鐠佸墽鐤�304e4閻ㄥ垺it15娑擄拷0閿涘矂鈧瀚ㄦ担璺ㄦ暏PECI鐎靛嫬鐡ㄩ崳銊︽降闁板秶鐤哖AD閻㈤潧甯�
-        PECI_HOCTLR |= BIT7;         // 鐠佸墽鐤咹HRAE = 1
+        SYSCTL_PAD_PECI &= ~BIT(15); // 閻犱礁澧介悿锟�304e4闁汇劌鍨篿t15濞戞搫鎷�0闁挎稑鐭傞埀顒€顦扮€氥劍鎷呯捄銊︽殢PECI閻庨潧瀚悺銊╁闯閵婏附闄嶉梺鏉跨Ф閻ゅ摉AD闁汇垽娼х敮锟�
+        PECI_HOCTLR |= BIT7;         // 閻犱礁澧介悿鍜笻RAE = 1
         PECI_PADCTLR &= 0xfc;
         PECI_PADCTLR |= VTTlev & 0b11;
-        PECI_HOCTL2R &= ~BIT7; // 鐠佸墽鐤咹HRAE = 0
+        PECI_HOCTL2R &= ~BIT7; // 閻犱礁澧介悿鍜笻RAE = 0
     }
 }
 void PECI_Init(u16 VTTlev, u8 PADsel)
@@ -624,7 +623,7 @@ BYTE PECI_ReadDIB(void)
     return (done);
 }
 
-/******PECI 濞ｈ濮濻YNC鐢嶇礉闁俺绻冮柅蹇庣炊閺傜懓绱￠崣鎴︹偓浣规殶閹诡噯绱濋崙鑺ユ殶閺€鐟板晸-start*************/
+/******PECI 婵烇綀顕ф慨婵籝NC閻㈩垎宥囩闂侇偅淇虹换鍐焻韫囧海鐐婇柡鍌滄嚀缁憋繝宕ｉ幋锔瑰亾娴ｈ娈堕柟璇″櫙缁辨繈宕欓懞銉︽闁衡偓閻熸澘鏅�-start*************/
 BYTE PECI_PING_TEST(void)
 {
     BYTE done, index;
@@ -650,65 +649,65 @@ BYTE PECI_PING_TEST(void)
     PECI_HOWRDR = 0x00;
 
     PECI_HOCTL2R &= (~PECI_HOCTLR_HHRAE);     // HHRAE = 0
-    PECI_HOCTLR &= (~PECI_HOCTLR_CONCTRL);    // 闁板秶鐤嗛幀鑽ゅ殠閸愯尙鐛婃稉宥嗘杹瀵啯婀板▎鈥茬炊鏉堟挷濞囬懗鎴掔秴
-    PECI_HOCTLR &= (~PECI_HOCTLR_FCSERR_ABT); // 闁板秶鐤咶CS ERROR閸氬簼绗夐弨鎯х磾閺堫剚顐兼导鐘虹翻娴ｈ儻鍏樻担锟�
+    PECI_HOCTLR &= (~PECI_HOCTLR_CONCTRL);    // 闂佹澘绉堕悿鍡涘箑閼姐倕娈犻柛鎰皺閻涘﹥绋夊鍡樻澒鐎殿喖鍟﹢鏉库枎閳ヨ尙鐐婇弶鍫熸尫婵炲洭鎳楅幋鎺旂Т
+    PECI_HOCTLR &= (~PECI_HOCTLR_FCSERR_ABT); // 闂佹澘绉堕悿鍜禖S ERROR闁告艾绨肩粭澶愬绩閹呯＞闁哄牜鍓氶鍏煎閻樿櫣缈诲ù锝堝劵閸忔ɑ鎷呴敓锟�
 
     PECI_HOCTLR |= PECI_HOCTLR_HHRAE; // HHRAE = 1
-    PECI_HOCTL2R |= 0x20;             // 鏉╂稑鍙嗛柅蹇庣炊濡€崇础
+    PECI_HOCTL2R |= 0x20;             // 閺夆晜绋戦崣鍡涙焻韫囧海鐐婃俊顖椻偓宕囩
 
     PECI_HOCTL2R &= (~PECI_HOCTLR_HHRAE); // HHRAE = 0
-    // PECI_HOCTLR |= PECI_HOCTLR_START;     // 瀵偓閸氼垱婀板▎鈥茬炊鏉堬拷
+    // PECI_HOCTLR |= PECI_HOCTLR_START;     // 鐎殿喒鍋撻柛姘煎灡濠€鏉库枎閳ヨ尙鐐婇弶鍫嫹
 
     /***************************************************************/
 
     // PECI_HOCTLR |= PECI_HOCTLR_HHRAE; // HHRAE = 1
-    // PECI_PADCTLR |= 0x80;             // 鐠佸墽鐤嗛柅蹇庣炊濡€崇础娑撳褰傞柅涓凞DR
+    // PECI_PADCTLR |= 0x80;             // 閻犱礁澧介悿鍡涙焻韫囧海鐐婃俊顖椻偓宕囩濞戞挸顑呰ぐ鍌炴焻娑撳嚍DR
 
     // PECI_HOCTL2R &= (~PECI_HOCTLR_HHRAE); // HHRAE = 0
-    // PECI_HOTRADDR = _PECI_CPU_ADDR_TEST;  // 闁板秶鐤咰PU PECI 娴犲孩婧€閸︽澘娼冩稉锟�0x0C
+    // PECI_HOTRADDR = _PECI_CPU_ADDR_TEST;  // 闂佹澘绉堕悿鍜癙U PECI 濞寸姴瀛╁┃鈧柛锔芥緲濞煎啯绋夐敓锟�0x0C
 
     // PECI_HOCTLR |= PECI_HOCTLR_HHRAE; // HHRAE = 1
-    // PECI_PADCTLR |= 0x40;             // 闁瀚ㄩ崣鎴︹偓浜€rite length
+    // PECI_PADCTLR |= 0x40;             // 闂侇偄顦扮€氥劑宕ｉ幋锔瑰亾娴溾偓rite length
 
     // PECI_HOCTL2R &= (~PECI_HOCTLR_HHRAE); // HHRAE = 0
     // PECI_HOWRLR = 0x00;
 
     // PECI_HOCTLR |= PECI_HOCTLR_HHRAE; // HHRAE = 1
-    // PECI_PADCTLR |= 0x20;             // 闁瀚ㄩ崣鎴︹偓涔篹ad length
+    // PECI_PADCTLR |= 0x20;             // 闂侇偄顦扮€氥劑宕ｉ幋锔瑰亾娑旂ad length
 
     // PECI_HOCTL2R &= (~PECI_HOCTLR_HHRAE); // HHRAE = 0
     // PECI_HORDLR = 0x21;
 
     // PECI_HOCMDR = 0x1E;
 
-    // PECI_HOCTLR |= 0x40; // 闁板秶鐤咥WFCS_FRC_CTRL = 1
+    // PECI_HOCTLR |= 0x40; // 闂佹澘绉堕悿鍜FCS_FRC_CTRL = 1
 
     // PECI_HOCTLR |= PECI_HOCTLR_HHRAE; // HHRAE = 1
     // PECI_AWFCSV = 0xE0;
 
     // PECI_HOCTL2R &= (~PECI_HOCTLR_HHRAE);  // HHRAE = 0
-    // PECI_HOCTLR |= PECI_HOCTLR_CONCTRL;    // 闁板秶鐤嗛幀鑽ゅ殠閸愯尙鐛婃稉宥嗘杹瀵啯婀板▎鈥茬炊鏉堟挷濞囬懗鎴掔秴
-    // PECI_HOCTLR |= PECI_HOCTLR_FCSERR_ABT; // 闁板秶鐤咶CS ERROR閸氬簼绗夐弨鎯х磾閺堫剚顐兼导鐘虹翻娴ｈ儻鍏樻担锟�
+    // PECI_HOCTLR |= PECI_HOCTLR_CONCTRL;    // 闂佹澘绉堕悿鍡涘箑閼姐倕娈犻柛鎰皺閻涘﹥绋夊鍡樻澒鐎殿喖鍟﹢鏉库枎閳ヨ尙鐐婇弶鍫熸尫婵炲洭鎳楅幋鎺旂Т
+    // PECI_HOCTLR |= PECI_HOCTLR_FCSERR_ABT; // 闂佹澘绉堕悿鍜禖S ERROR闁告艾绨肩粭澶愬绩閹呯＞闁哄牜鍓氶鍏煎閻樿櫣缈诲ù锝堝劵閸忔ɑ鎷呴敓锟�
 
     // PECI_HOCTLR |= PECI_HOCTLR_HHRAE; // HHRAE = 1
-    // PECI_HOCTL2R |= 0x20;             // 鏉╂稑鍙嗛柅蹇庣炊濡€崇础
+    // PECI_HOCTL2R |= 0x20;             // 閺夆晜绋戦崣鍡涙焻韫囧海鐐婃俊顖椻偓宕囩
 
     // PECI_HOCTL2R &= (~PECI_HOCTLR_HHRAE); // HHRAE = 0
-    // PECI_HOCTLR |= PECI_HOCTLR_START;     // 瀵偓閸氼垱婀板▎鈥茬炊鏉堬拷
+    // PECI_HOCTLR |= PECI_HOCTLR_START;     // 鐎殿喒鍋撻柛姘煎灡濠€鏉库枎閳ヨ尙鐐婇弶鍫嫹
 
     if(PECI_CheckHostBusy())
     {
-        PECI_HOCTLR |= PECI_HOCTLR_START; // 瀵偓閸氼垱婀板▎鈥茬炊鏉堬拷
+        PECI_HOCTLR |= PECI_HOCTLR_START; // 鐎殿喒鍋撻柛姘煎灡濠€鏉库枎閳ヨ尙鐐婇弶鍫嫹
         // dprint("2:%x,%x\n", PECI_HOSTAR, PECI_HOCTLR);
         if(PECI_CheckHostFinish())
         {
-            // for (index = 0x00; index < 10; index++) // 闁繋绱跺Ο鈥崇础娑撳绱濋幍鈧張濉朙AVE閸ョ偟娈戦弫鐗堝祦闁垝绱扮悮顐ｆ杹閸掔増甯撮弨绂橧FO娑擄拷
+            // for (index = 0x00; index < 10; index++) // 闂侇偄绻嬬槐璺何熼垾宕囩濞戞挸顑戠槐婵嬪箥閳ь剟寮垫繅鏈橝VE闁搞儳鍋熷▓鎴﹀极閻楀牆绁﹂梺顔藉灊缁辨壆鎮锝嗘澒闁告帞澧楃敮鎾绩缁傛┃FO濞戞搫鎷�
             // {
             //     // PECI_Get_DIB_TEST[index] = PECI_HORDDR;
             //     // dprint("3:%x\n", PECI_Get_DIB[index]);
             // }
 
-            // for (index = 0x00; index < 10; index++) // 闁繋绱跺Ο鈥崇础娑撳绱濋幍鈧張濉朙AVE閸ョ偟娈戦弫鐗堝祦闁垝绱扮悮顐ｆ杹閸掔増甯撮弨绂橧FO娑擄拷
+            // for (index = 0x00; index < 10; index++) // 闂侇偄绻嬬槐璺何熼垾宕囩濞戞挸顑戠槐婵嬪箥閳ь剟寮垫繅鏈橝VE闁搞儳鍋熷▓鎴﹀极閻楀牆绁﹂梺顔藉灊缁辨壆鎮锝嗘澒闁告帞澧楃敮鎾绩缁傛┃FO濞戞搫鎷�
             // {
             //     if (index == 9)
             //     {
@@ -716,7 +715,7 @@ BYTE PECI_PING_TEST(void)
             //     }
             //     else
             //     {
-            //         PECI_Get_DIB_TEST[index] = (PECI_Get_DIB_TEST[index] << 3) | (PECI_Get_DIB_TEST[index + 1] >> 5); // 閻㈠彉绨径姘絺娴滐拷5bit閺佺増宓侀敍灞惧娴犮儵娓剁憰浣哥殺鏉╋拷5bit閺佺増宓佹稉銏犵磾閿涘矂鍣搁弬鎵╂担宥囩矋閸氬牆鍤锝団€橀惃鍕殶閹诡噯绱濇稉宥堢箖缁楊兛绔存稉鐙S閻㈠彉绨悮顐℃丢瀵啩绨￠敍灞惧娴犮儱褰ч懗钘夌繁閸掞拷8BYTE閻ㄥ嫭鏆熼幑顔兼嫲閺堚偓閸氬簼绔存稉鐙S
+            //         PECI_Get_DIB_TEST[index] = (PECI_Get_DIB_TEST[index] << 3) | (PECI_Get_DIB_TEST[index + 1] >> 5); // 闁汇垹褰夌花顒佸緞濮橆剙绲哄ù婊愭嫹5bit闁轰胶澧楀畵渚€鏁嶇仦鎯ь暡濞寸姰鍎靛〒鍓佹啺娴ｅ摜娈洪弶鈺嬫嫹5bit闁轰胶澧楀畵浣圭▔閵忕姷纾鹃柨娑樼焸閸ｆ悂寮幍顔р晜鎷呭鍥╃煁闁告艾鐗嗛崵顓烆潰閿濆洠鈧﹢鎯冮崟顒佹闁硅鍣槐婵囩▔瀹ュ牏绠栫紒妤婂厸缁斿瓨绋夐悪顧塖闁汇垹褰夌花顒傛偖椤愨剝涓㈢€殿喖鍟╃花锟犳晬鐏炴儳顣插ù鐘劚瑜把囨嚄閽樺绻侀柛鎺炴嫹8BYTE闁汇劌瀚弳鐔煎箲椤斿吋瀚查柡鍫氬亾闁告艾绨肩粩瀛樼▔閻欘檳S
             //         // dprint("%x\n", PECI_Get_DIB_TEST[index]);
             //     }
             // }
@@ -753,65 +752,65 @@ BYTE PECI_ReadDIB_TEST(void)
     PECI_HOWRDR = 0x20;
 
     PECI_HOCTL2R &= (~PECI_HOCTLR_HHRAE);     // HHRAE = 0
-    PECI_HOCTLR &= (~PECI_HOCTLR_CONCTRL);    // 闁板秶鐤嗛幀鑽ゅ殠閸愯尙鐛婃稉宥嗘杹瀵啯婀板▎鈥茬炊鏉堟挷濞囬懗鎴掔秴
-    PECI_HOCTLR &= (~PECI_HOCTLR_FCSERR_ABT); // 闁板秶鐤咶CS ERROR閸氬簼绗夐弨鎯х磾閺堫剚顐兼导鐘虹翻娴ｈ儻鍏樻担锟�
+    PECI_HOCTLR &= (~PECI_HOCTLR_CONCTRL);    // 闂佹澘绉堕悿鍡涘箑閼姐倕娈犻柛鎰皺閻涘﹥绋夊鍡樻澒鐎殿喖鍟﹢鏉库枎閳ヨ尙鐐婇弶鍫熸尫婵炲洭鎳楅幋鎺旂Т
+    PECI_HOCTLR &= (~PECI_HOCTLR_FCSERR_ABT); // 闂佹澘绉堕悿鍜禖S ERROR闁告艾绨肩粭澶愬绩閹呯＞闁哄牜鍓氶鍏煎閻樿櫣缈诲ù锝堝劵閸忔ɑ鎷呴敓锟�
 
     PECI_HOCTLR |= PECI_HOCTLR_HHRAE; // HHRAE = 1
-    PECI_HOCTL2R |= 0x20;             // 鏉╂稑鍙嗛柅蹇庣炊濡€崇础
+    PECI_HOCTL2R |= 0x20;             // 閺夆晜绋戦崣鍡涙焻韫囧海鐐婃俊顖椻偓宕囩
 
     PECI_HOCTL2R &= (~PECI_HOCTLR_HHRAE); // HHRAE = 0
-    // PECI_HOCTLR |= PECI_HOCTLR_START;     // 瀵偓閸氼垱婀板▎鈥茬炊鏉堬拷
+    // PECI_HOCTLR |= PECI_HOCTLR_START;     // 鐎殿喒鍋撻柛姘煎灡濠€鏉库枎閳ヨ尙鐐婇弶鍫嫹
 
     /***************************************************************/
 
     // PECI_HOCTLR |= PECI_HOCTLR_HHRAE; // HHRAE = 1
-    // PECI_PADCTLR |= 0x80;             // 鐠佸墽鐤嗛柅蹇庣炊濡€崇础娑撳褰傞柅涓凞DR
+    // PECI_PADCTLR |= 0x80;             // 閻犱礁澧介悿鍡涙焻韫囧海鐐婃俊顖椻偓宕囩濞戞挸顑呰ぐ鍌炴焻娑撳嚍DR
 
     // PECI_HOCTL2R &= (~PECI_HOCTLR_HHRAE); // HHRAE = 0
-    // PECI_HOTRADDR = _PECI_CPU_ADDR_TEST;  // 闁板秶鐤咰PU PECI 娴犲孩婧€閸︽澘娼冩稉锟�0x0C
+    // PECI_HOTRADDR = _PECI_CPU_ADDR_TEST;  // 闂佹澘绉堕悿鍜癙U PECI 濞寸姴瀛╁┃鈧柛锔芥緲濞煎啯绋夐敓锟�0x0C
 
     // PECI_HOCTLR |= PECI_HOCTLR_HHRAE; // HHRAE = 1
-    // PECI_PADCTLR |= 0x40;             // 闁瀚ㄩ崣鎴︹偓浜€rite length
+    // PECI_PADCTLR |= 0x40;             // 闂侇偄顦扮€氥劑宕ｉ幋锔瑰亾娴溾偓rite length
 
     // PECI_HOCTL2R &= (~PECI_HOCTLR_HHRAE); // HHRAE = 0
     // PECI_HOWRLR = 0x00;
 
     // PECI_HOCTLR |= PECI_HOCTLR_HHRAE; // HHRAE = 1
-    // PECI_PADCTLR |= 0x20;             // 闁瀚ㄩ崣鎴︹偓涔篹ad length
+    // PECI_PADCTLR |= 0x20;             // 闂侇偄顦扮€氥劑宕ｉ幋锔瑰亾娑旂ad length
 
     // PECI_HOCTL2R &= (~PECI_HOCTLR_HHRAE); // HHRAE = 0
     // PECI_HORDLR = 0x21;
 
     // PECI_HOCMDR = 0x1E;
 
-    // PECI_HOCTLR |= 0x40; // 闁板秶鐤咥WFCS_FRC_CTRL = 1
+    // PECI_HOCTLR |= 0x40; // 闂佹澘绉堕悿鍜FCS_FRC_CTRL = 1
 
     // PECI_HOCTLR |= PECI_HOCTLR_HHRAE; // HHRAE = 1
     // PECI_AWFCSV = 0xE0;
 
     // PECI_HOCTL2R &= (~PECI_HOCTLR_HHRAE);  // HHRAE = 0
-    // PECI_HOCTLR |= PECI_HOCTLR_CONCTRL;    // 闁板秶鐤嗛幀鑽ゅ殠閸愯尙鐛婃稉宥嗘杹瀵啯婀板▎鈥茬炊鏉堟挷濞囬懗鎴掔秴
-    // PECI_HOCTLR |= PECI_HOCTLR_FCSERR_ABT; // 闁板秶鐤咶CS ERROR閸氬簼绗夐弨鎯х磾閺堫剚顐兼导鐘虹翻娴ｈ儻鍏樻担锟�
+    // PECI_HOCTLR |= PECI_HOCTLR_CONCTRL;    // 闂佹澘绉堕悿鍡涘箑閼姐倕娈犻柛鎰皺閻涘﹥绋夊鍡樻澒鐎殿喖鍟﹢鏉库枎閳ヨ尙鐐婇弶鍫熸尫婵炲洭鎳楅幋鎺旂Т
+    // PECI_HOCTLR |= PECI_HOCTLR_FCSERR_ABT; // 闂佹澘绉堕悿鍜禖S ERROR闁告艾绨肩粭澶愬绩閹呯＞闁哄牜鍓氶鍏煎閻樿櫣缈诲ù锝堝劵閸忔ɑ鎷呴敓锟�
 
     // PECI_HOCTLR |= PECI_HOCTLR_HHRAE; // HHRAE = 1
-    // PECI_HOCTL2R |= 0x20;             // 鏉╂稑鍙嗛柅蹇庣炊濡€崇础
+    // PECI_HOCTL2R |= 0x20;             // 閺夆晜绋戦崣鍡涙焻韫囧海鐐婃俊顖椻偓宕囩
 
     // PECI_HOCTL2R &= (~PECI_HOCTLR_HHRAE); // HHRAE = 0
-    // PECI_HOCTLR |= PECI_HOCTLR_START;     // 瀵偓閸氼垱婀板▎鈥茬炊鏉堬拷
+    // PECI_HOCTLR |= PECI_HOCTLR_START;     // 鐎殿喒鍋撻柛姘煎灡濠€鏉库枎閳ヨ尙鐐婇弶鍫嫹
 
     if(PECI_CheckHostBusy())
     {
-        PECI_HOCTLR |= PECI_HOCTLR_START; // 瀵偓閸氼垱婀板▎鈥茬炊鏉堬拷
+        PECI_HOCTLR |= PECI_HOCTLR_START; // 鐎殿喒鍋撻柛姘煎灡濠€鏉库枎閳ヨ尙鐐婇弶鍫嫹
         // dprint("2:%x,%x\n", PECI_HOSTAR, PECI_HOCTLR);
         if(PECI_CheckHostFinish())
         {
-            for(index = 0x00; index < 10; index++) // 闁繋绱跺Ο鈥崇础娑撳绱濋幍鈧張濉朙AVE閸ョ偟娈戦弫鐗堝祦闁垝绱扮悮顐ｆ杹閸掔増甯撮弨绂橧FO娑擄拷
+            for(index = 0x00; index < 10; index++) // 闂侇偄绻嬬槐璺何熼垾宕囩濞戞挸顑戠槐婵嬪箥閳ь剟寮垫繅鏈橝VE闁搞儳鍋熷▓鎴﹀极閻楀牆绁﹂梺顔藉灊缁辨壆鎮锝嗘澒闁告帞澧楃敮鎾绩缁傛┃FO濞戞搫鎷�
             {
                 PECI_Get_DIB_TEST[index] = PECI_HORDDR;
                 // dprint("3:%x\n", PECI_Get_DIB[index]);
             }
 
-            for(index = 0x00; index < 10; index++) // 闁繋绱跺Ο鈥崇础娑撳绱濋幍鈧張濉朙AVE閸ョ偟娈戦弫鐗堝祦闁垝绱扮悮顐ｆ杹閸掔増甯撮弨绂橧FO娑擄拷
+            for(index = 0x00; index < 10; index++) // 闂侇偄绻嬬槐璺何熼垾宕囩濞戞挸顑戠槐婵嬪箥閳ь剟寮垫繅鏈橝VE闁搞儳鍋熷▓鎴﹀极閻楀牆绁﹂梺顔藉灊缁辨壆鎮锝嗘澒闁告帞澧楃敮鎾绩缁傛┃FO濞戞搫鎷�
             {
                 if(index == 9)
                 {
@@ -819,7 +818,7 @@ BYTE PECI_ReadDIB_TEST(void)
                 }
                 else
                 {
-                    PECI_Get_DIB_TEST[index] = (PECI_Get_DIB_TEST[index] << 3) | (PECI_Get_DIB_TEST[index + 1] >> 5); // 閻㈠彉绨径姘絺娴滐拷5bit閺佺増宓侀敍灞惧娴犮儵娓剁憰浣哥殺鏉╋拷5bit閺佺増宓佹稉銏犵磾閿涘矂鍣搁弬鎵╂担宥囩矋閸氬牆鍤锝団€橀惃鍕殶閹诡噯绱濇稉宥堢箖缁楊兛绔存稉鐙S閻㈠彉绨悮顐℃丢瀵啩绨￠敍灞惧娴犮儱褰ч懗钘夌繁閸掞拷8BYTE閻ㄥ嫭鏆熼幑顔兼嫲閺堚偓閸氬簼绔存稉鐙S
+                    PECI_Get_DIB_TEST[index] = (PECI_Get_DIB_TEST[index] << 3) | (PECI_Get_DIB_TEST[index + 1] >> 5); // 闁汇垹褰夌花顒佸緞濮橆剙绲哄ù婊愭嫹5bit闁轰胶澧楀畵渚€鏁嶇仦鎯ь暡濞寸姰鍎靛〒鍓佹啺娴ｅ摜娈洪弶鈺嬫嫹5bit闁轰胶澧楀畵浣圭▔閵忕姷纾鹃柨娑樼焸閸ｆ悂寮幍顔р晜鎷呭鍥╃煁闁告艾鐗嗛崵顓烆潰閿濆洠鈧﹢鎯冮崟顒佹闁硅鍣槐婵囩▔瀹ュ牏绠栫紒妤婂厸缁斿瓨绋夐悪顧塖闁汇垹褰夌花顒傛偖椤愨剝涓㈢€殿喖鍟╃花锟犳晬鐏炴儳顣插ù鐘劚瑜把囨嚄閽樺绻侀柛鎺炴嫹8BYTE闁汇劌瀚弳鐔煎箲椤斿吋瀚查柡鍫氬亾闁告艾绨肩粩瀛樼▔閻欘檳S
                     // dprint("%x\n", PECI_Get_DIB_TEST[index]);
                 }
             }
@@ -857,65 +856,65 @@ BYTE PECI_ReadTemp_TEST(void)
     PECI_HOWRDR = 0x20;
 
     PECI_HOCTL2R &= (~PECI_HOCTLR_HHRAE);     // HHRAE = 0
-    PECI_HOCTLR &= (~PECI_HOCTLR_CONCTRL);    // 闁板秶鐤嗛幀鑽ゅ殠閸愯尙鐛婃稉宥嗘杹瀵啯婀板▎鈥茬炊鏉堟挷濞囬懗鎴掔秴
-    PECI_HOCTLR &= (~PECI_HOCTLR_FCSERR_ABT); // 闁板秶鐤咶CS ERROR閸氬簼绗夐弨鎯х磾閺堫剚顐兼导鐘虹翻娴ｈ儻鍏樻担锟�
+    PECI_HOCTLR &= (~PECI_HOCTLR_CONCTRL);    // 闂佹澘绉堕悿鍡涘箑閼姐倕娈犻柛鎰皺閻涘﹥绋夊鍡樻澒鐎殿喖鍟﹢鏉库枎閳ヨ尙鐐婇弶鍫熸尫婵炲洭鎳楅幋鎺旂Т
+    PECI_HOCTLR &= (~PECI_HOCTLR_FCSERR_ABT); // 闂佹澘绉堕悿鍜禖S ERROR闁告艾绨肩粭澶愬绩閹呯＞闁哄牜鍓氶鍏煎閻樿櫣缈诲ù锝堝劵閸忔ɑ鎷呴敓锟�
 
     PECI_HOCTLR |= PECI_HOCTLR_HHRAE; // HHRAE = 1
-    PECI_HOCTL2R |= 0x20;             // 鏉╂稑鍙嗛柅蹇庣炊濡€崇础
+    PECI_HOCTL2R |= 0x20;             // 閺夆晜绋戦崣鍡涙焻韫囧海鐐婃俊顖椻偓宕囩
 
     PECI_HOCTL2R &= (~PECI_HOCTLR_HHRAE); // HHRAE = 0
-    // PECI_HOCTLR |= PECI_HOCTLR_START;     // 瀵偓閸氼垱婀板▎鈥茬炊鏉堬拷
+    // PECI_HOCTLR |= PECI_HOCTLR_START;     // 鐎殿喒鍋撻柛姘煎灡濠€鏉库枎閳ヨ尙鐐婇弶鍫嫹
 
     /***************************************************************/
 
     // PECI_HOCTLR |= PECI_HOCTLR_HHRAE; // HHRAE = 1
-    // PECI_PADCTLR |= 0x80;             // 鐠佸墽鐤嗛柅蹇庣炊濡€崇础娑撳褰傞柅涓凞DR
+    // PECI_PADCTLR |= 0x80;             // 閻犱礁澧介悿鍡涙焻韫囧海鐐婃俊顖椻偓宕囩濞戞挸顑呰ぐ鍌炴焻娑撳嚍DR
 
     // PECI_HOCTL2R &= (~PECI_HOCTLR_HHRAE); // HHRAE = 0
-    // PECI_HOTRADDR = _PECI_CPU_ADDR_TEST;  // 闁板秶鐤咰PU PECI 娴犲孩婧€閸︽澘娼冩稉锟�0x0C
+    // PECI_HOTRADDR = _PECI_CPU_ADDR_TEST;  // 闂佹澘绉堕悿鍜癙U PECI 濞寸姴瀛╁┃鈧柛锔芥緲濞煎啯绋夐敓锟�0x0C
 
     // PECI_HOCTLR |= PECI_HOCTLR_HHRAE; // HHRAE = 1
-    // PECI_PADCTLR |= 0x40;             // 闁瀚ㄩ崣鎴︹偓浜€rite length
+    // PECI_PADCTLR |= 0x40;             // 闂侇偄顦扮€氥劑宕ｉ幋锔瑰亾娴溾偓rite length
 
     // PECI_HOCTL2R &= (~PECI_HOCTLR_HHRAE); // HHRAE = 0
     // PECI_HOWRLR = 0x00;
 
     // PECI_HOCTLR |= PECI_HOCTLR_HHRAE; // HHRAE = 1
-    // PECI_PADCTLR |= 0x20;             // 闁瀚ㄩ崣鎴︹偓涔篹ad length
+    // PECI_PADCTLR |= 0x20;             // 闂侇偄顦扮€氥劑宕ｉ幋锔瑰亾娑旂ad length
 
     // PECI_HOCTL2R &= (~PECI_HOCTLR_HHRAE); // HHRAE = 0
     // PECI_HORDLR = 0x21;
 
     // PECI_HOCMDR = 0x1E;
 
-    // PECI_HOCTLR |= 0x40; // 闁板秶鐤咥WFCS_FRC_CTRL = 1
+    // PECI_HOCTLR |= 0x40; // 闂佹澘绉堕悿鍜FCS_FRC_CTRL = 1
 
     // PECI_HOCTLR |= PECI_HOCTLR_HHRAE; // HHRAE = 1
     // PECI_AWFCSV = 0xE0;
 
     // PECI_HOCTL2R &= (~PECI_HOCTLR_HHRAE);  // HHRAE = 0
-    // PECI_HOCTLR |= PECI_HOCTLR_CONCTRL;    // 闁板秶鐤嗛幀鑽ゅ殠閸愯尙鐛婃稉宥嗘杹瀵啯婀板▎鈥茬炊鏉堟挷濞囬懗鎴掔秴
-    // PECI_HOCTLR |= PECI_HOCTLR_FCSERR_ABT; // 闁板秶鐤咶CS ERROR閸氬簼绗夐弨鎯х磾閺堫剚顐兼导鐘虹翻娴ｈ儻鍏樻担锟�
+    // PECI_HOCTLR |= PECI_HOCTLR_CONCTRL;    // 闂佹澘绉堕悿鍡涘箑閼姐倕娈犻柛鎰皺閻涘﹥绋夊鍡樻澒鐎殿喖鍟﹢鏉库枎閳ヨ尙鐐婇弶鍫熸尫婵炲洭鎳楅幋鎺旂Т
+    // PECI_HOCTLR |= PECI_HOCTLR_FCSERR_ABT; // 闂佹澘绉堕悿鍜禖S ERROR闁告艾绨肩粭澶愬绩閹呯＞闁哄牜鍓氶鍏煎閻樿櫣缈诲ù锝堝劵閸忔ɑ鎷呴敓锟�
 
     // PECI_HOCTLR |= PECI_HOCTLR_HHRAE; // HHRAE = 1
-    // PECI_HOCTL2R |= 0x20;             // 鏉╂稑鍙嗛柅蹇庣炊濡€崇础
+    // PECI_HOCTL2R |= 0x20;             // 閺夆晜绋戦崣鍡涙焻韫囧海鐐婃俊顖椻偓宕囩
 
     // PECI_HOCTL2R &= (~PECI_HOCTLR_HHRAE); // HHRAE = 0
-    // PECI_HOCTLR |= PECI_HOCTLR_START;     // 瀵偓閸氼垱婀板▎鈥茬炊鏉堬拷
+    // PECI_HOCTLR |= PECI_HOCTLR_START;     // 鐎殿喒鍋撻柛姘煎灡濠€鏉库枎閳ヨ尙鐐婇弶鍫嫹
 
     if(PECI_CheckHostBusy())
     {
-        PECI_HOCTLR |= PECI_HOCTLR_START; // 瀵偓閸氼垱婀板▎鈥茬炊鏉堬拷
+        PECI_HOCTLR |= PECI_HOCTLR_START; // 鐎殿喒鍋撻柛姘煎灡濠€鏉库枎閳ヨ尙鐐婇弶鍫嫹
         // dprint("2:%x,%x\n", PECI_HOSTAR, PECI_HOCTLR);
         if(PECI_CheckHostFinish())
         {
-            // for (index = 0x00; index < 10; index++) // 闁繋绱跺Ο鈥崇础娑撳绱濋幍鈧張濉朙AVE閸ョ偟娈戦弫鐗堝祦闁垝绱扮悮顐ｆ杹閸掔増甯撮弨绂橧FO娑擄拷
+            // for (index = 0x00; index < 10; index++) // 闂侇偄绻嬬槐璺何熼垾宕囩濞戞挸顑戠槐婵嬪箥閳ь剟寮垫繅鏈橝VE闁搞儳鍋熷▓鎴﹀极閻楀牆绁﹂梺顔藉灊缁辨壆鎮锝嗘澒闁告帞澧楃敮鎾绩缁傛┃FO濞戞搫鎷�
             // {
             //     PECI_Get_DIB_TEST[index] = PECI_HORDDR;
             //     // dprint("3:%x\n", PECI_Get_DIB[index]);
             // }
 
-            // for (index = 0x00; index < 10; index++) // 闁繋绱跺Ο鈥崇础娑撳绱濋幍鈧張濉朙AVE閸ョ偟娈戦弫鐗堝祦闁垝绱扮悮顐ｆ杹閸掔増甯撮弨绂橧FO娑擄拷
+            // for (index = 0x00; index < 10; index++) // 闂侇偄绻嬬槐璺何熼垾宕囩濞戞挸顑戠槐婵嬪箥閳ь剟寮垫繅鏈橝VE闁搞儳鍋熷▓鎴﹀极閻楀牆绁﹂梺顔藉灊缁辨壆鎮锝嗘澒闁告帞澧楃敮鎾绩缁傛┃FO濞戞搫鎷�
             // {
             //     if (index == 9)
             //     {
@@ -923,7 +922,7 @@ BYTE PECI_ReadTemp_TEST(void)
             //     }
             //     else
             //     {
-            //         PECI_Get_DIB_TEST[index] = (PECI_Get_DIB_TEST[index] << 3) | (PECI_Get_DIB_TEST[index + 1] >> 5); // 閻㈠彉绨径姘絺娴滐拷5bit閺佺増宓侀敍灞惧娴犮儵娓剁憰浣哥殺鏉╋拷5bit閺佺増宓佹稉銏犵磾閿涘矂鍣搁弬鎵╂担宥囩矋閸氬牆鍤锝団€橀惃鍕殶閹诡噯绱濇稉宥堢箖缁楊兛绔存稉鐙S閻㈠彉绨悮顐℃丢瀵啩绨￠敍灞惧娴犮儱褰ч懗钘夌繁閸掞拷8BYTE閻ㄥ嫭鏆熼幑顔兼嫲閺堚偓閸氬簼绔存稉鐙S
+            //         PECI_Get_DIB_TEST[index] = (PECI_Get_DIB_TEST[index] << 3) | (PECI_Get_DIB_TEST[index + 1] >> 5); // 闁汇垹褰夌花顒佸緞濮橆剙绲哄ù婊愭嫹5bit闁轰胶澧楀畵渚€鏁嶇仦鎯ь暡濞寸姰鍎靛〒鍓佹啺娴ｅ摜娈洪弶鈺嬫嫹5bit闁轰胶澧楀畵浣圭▔閵忕姷纾鹃柨娑樼焸閸ｆ悂寮幍顔р晜鎷呭鍥╃煁闁告艾鐗嗛崵顓烆潰閿濆洠鈧﹢鎯冮崟顒佹闁硅鍣槐婵囩▔瀹ュ牏绠栫紒妤婂厸缁斿瓨绋夐悪顧塖闁汇垹褰夌花顒傛偖椤愨剝涓㈢€殿喖鍟╃花锟犳晬鐏炴儳顣插ù鐘劚瑜把囨嚄閽樺绻侀柛鎺炴嫹8BYTE闁汇劌瀚弳鐔煎箲椤斿吋瀚查柡鍫氬亾闁告艾绨肩粩瀛樼▔閻欘檳S
             //         // dprint("%x\n", PECI_Get_DIB_TEST[index]);
             //     }
             // }
@@ -965,65 +964,65 @@ BYTE PECI_RdPkgConfig_TEST(void)
     PECI_HOWRDR = 0x00;
 
     PECI_HOCTL2R &= (~PECI_HOCTLR_HHRAE);     // HHRAE = 0
-    PECI_HOCTLR &= (~PECI_HOCTLR_CONCTRL);    // 闁板秶鐤嗛幀鑽ゅ殠閸愯尙鐛婃稉宥嗘杹瀵啯婀板▎鈥茬炊鏉堟挷濞囬懗鎴掔秴
-    PECI_HOCTLR &= (~PECI_HOCTLR_FCSERR_ABT); // 闁板秶鐤咶CS ERROR閸氬簼绗夐弨鎯х磾閺堫剚顐兼导鐘虹翻娴ｈ儻鍏樻担锟�
+    PECI_HOCTLR &= (~PECI_HOCTLR_CONCTRL);    // 闂佹澘绉堕悿鍡涘箑閼姐倕娈犻柛鎰皺閻涘﹥绋夊鍡樻澒鐎殿喖鍟﹢鏉库枎閳ヨ尙鐐婇弶鍫熸尫婵炲洭鎳楅幋鎺旂Т
+    PECI_HOCTLR &= (~PECI_HOCTLR_FCSERR_ABT); // 闂佹澘绉堕悿鍜禖S ERROR闁告艾绨肩粭澶愬绩閹呯＞闁哄牜鍓氶鍏煎閻樿櫣缈诲ù锝堝劵閸忔ɑ鎷呴敓锟�
 
     PECI_HOCTLR |= PECI_HOCTLR_HHRAE; // HHRAE = 1
-    PECI_HOCTL2R |= 0x20;             // 鏉╂稑鍙嗛柅蹇庣炊濡€崇础
+    PECI_HOCTL2R |= 0x20;             // 閺夆晜绋戦崣鍡涙焻韫囧海鐐婃俊顖椻偓宕囩
 
     PECI_HOCTL2R &= (~PECI_HOCTLR_HHRAE); // HHRAE = 0
-    // PECI_HOCTLR |= PECI_HOCTLR_START;     // 瀵偓閸氼垱婀板▎鈥茬炊鏉堬拷
+    // PECI_HOCTLR |= PECI_HOCTLR_START;     // 鐎殿喒鍋撻柛姘煎灡濠€鏉库枎閳ヨ尙鐐婇弶鍫嫹
 
     /***************************************************************/
 
     // PECI_HOCTLR |= PECI_HOCTLR_HHRAE; // HHRAE = 1
-    // PECI_PADCTLR |= 0x80;             // 鐠佸墽鐤嗛柅蹇庣炊濡€崇础娑撳褰傞柅涓凞DR
+    // PECI_PADCTLR |= 0x80;             // 閻犱礁澧介悿鍡涙焻韫囧海鐐婃俊顖椻偓宕囩濞戞挸顑呰ぐ鍌炴焻娑撳嚍DR
 
     // PECI_HOCTL2R &= (~PECI_HOCTLR_HHRAE); // HHRAE = 0
-    // PECI_HOTRADDR = _PECI_CPU_ADDR_TEST;  // 闁板秶鐤咰PU PECI 娴犲孩婧€閸︽澘娼冩稉锟�0x0C
+    // PECI_HOTRADDR = _PECI_CPU_ADDR_TEST;  // 闂佹澘绉堕悿鍜癙U PECI 濞寸姴瀛╁┃鈧柛锔芥緲濞煎啯绋夐敓锟�0x0C
 
     // PECI_HOCTLR |= PECI_HOCTLR_HHRAE; // HHRAE = 1
-    // PECI_PADCTLR |= 0x40;             // 闁瀚ㄩ崣鎴︹偓浜€rite length
+    // PECI_PADCTLR |= 0x40;             // 闂侇偄顦扮€氥劑宕ｉ幋锔瑰亾娴溾偓rite length
 
     // PECI_HOCTL2R &= (~PECI_HOCTLR_HHRAE); // HHRAE = 0
     // PECI_HOWRLR = 0x00;
 
     // PECI_HOCTLR |= PECI_HOCTLR_HHRAE; // HHRAE = 1
-    // PECI_PADCTLR |= 0x20;             // 闁瀚ㄩ崣鎴︹偓涔篹ad length
+    // PECI_PADCTLR |= 0x20;             // 闂侇偄顦扮€氥劑宕ｉ幋锔瑰亾娑旂ad length
 
     // PECI_HOCTL2R &= (~PECI_HOCTLR_HHRAE); // HHRAE = 0
     // PECI_HORDLR = 0x21;
 
     // PECI_HOCMDR = 0x1E;
 
-    // PECI_HOCTLR |= 0x40; // 闁板秶鐤咥WFCS_FRC_CTRL = 1
+    // PECI_HOCTLR |= 0x40; // 闂佹澘绉堕悿鍜FCS_FRC_CTRL = 1
 
     // PECI_HOCTLR |= PECI_HOCTLR_HHRAE; // HHRAE = 1
     // PECI_AWFCSV = 0xE0;
 
     // PECI_HOCTL2R &= (~PECI_HOCTLR_HHRAE);  // HHRAE = 0
-    // PECI_HOCTLR |= PECI_HOCTLR_CONCTRL;    // 闁板秶鐤嗛幀鑽ゅ殠閸愯尙鐛婃稉宥嗘杹瀵啯婀板▎鈥茬炊鏉堟挷濞囬懗鎴掔秴
-    // PECI_HOCTLR |= PECI_HOCTLR_FCSERR_ABT; // 闁板秶鐤咶CS ERROR閸氬簼绗夐弨鎯х磾閺堫剚顐兼导鐘虹翻娴ｈ儻鍏樻担锟�
+    // PECI_HOCTLR |= PECI_HOCTLR_CONCTRL;    // 闂佹澘绉堕悿鍡涘箑閼姐倕娈犻柛鎰皺閻涘﹥绋夊鍡樻澒鐎殿喖鍟﹢鏉库枎閳ヨ尙鐐婇弶鍫熸尫婵炲洭鎳楅幋鎺旂Т
+    // PECI_HOCTLR |= PECI_HOCTLR_FCSERR_ABT; // 闂佹澘绉堕悿鍜禖S ERROR闁告艾绨肩粭澶愬绩閹呯＞闁哄牜鍓氶鍏煎閻樿櫣缈诲ù锝堝劵閸忔ɑ鎷呴敓锟�
 
     // PECI_HOCTLR |= PECI_HOCTLR_HHRAE; // HHRAE = 1
-    // PECI_HOCTL2R |= 0x20;             // 鏉╂稑鍙嗛柅蹇庣炊濡€崇础
+    // PECI_HOCTL2R |= 0x20;             // 閺夆晜绋戦崣鍡涙焻韫囧海鐐婃俊顖椻偓宕囩
 
     // PECI_HOCTL2R &= (~PECI_HOCTLR_HHRAE); // HHRAE = 0
-    // PECI_HOCTLR |= PECI_HOCTLR_START;     // 瀵偓閸氼垱婀板▎鈥茬炊鏉堬拷
+    // PECI_HOCTLR |= PECI_HOCTLR_START;     // 鐎殿喒鍋撻柛姘煎灡濠€鏉库枎閳ヨ尙鐐婇弶鍫嫹
 
     if(PECI_CheckHostBusy())
     {
-        PECI_HOCTLR |= PECI_HOCTLR_START; // 瀵偓閸氼垱婀板▎鈥茬炊鏉堬拷
+        PECI_HOCTLR |= PECI_HOCTLR_START; // 鐎殿喒鍋撻柛姘煎灡濠€鏉库枎閳ヨ尙鐐婇弶鍫嫹
         // dprint("2:%x,%x\n", PECI_HOSTAR, PECI_HOCTLR);
         if(PECI_CheckHostFinish())
         {
-            // for (index = 0x00; index < 10; index++) // 闁繋绱跺Ο鈥崇础娑撳绱濋幍鈧張濉朙AVE閸ョ偟娈戦弫鐗堝祦闁垝绱扮悮顐ｆ杹閸掔増甯撮弨绂橧FO娑擄拷
+            // for (index = 0x00; index < 10; index++) // 闂侇偄绻嬬槐璺何熼垾宕囩濞戞挸顑戠槐婵嬪箥閳ь剟寮垫繅鏈橝VE闁搞儳鍋熷▓鎴﹀极閻楀牆绁﹂梺顔藉灊缁辨壆鎮锝嗘澒闁告帞澧楃敮鎾绩缁傛┃FO濞戞搫鎷�
             // {
             //     PECI_Get_DIB_TEST[index] = PECI_HORDDR;
             //     // dprint("3:%x\n", PECI_Get_DIB[index]);
             // }
 
-            // for (index = 0x00; index < 10; index++) // 闁繋绱跺Ο鈥崇础娑撳绱濋幍鈧張濉朙AVE閸ョ偟娈戦弫鐗堝祦闁垝绱扮悮顐ｆ杹閸掔増甯撮弨绂橧FO娑擄拷
+            // for (index = 0x00; index < 10; index++) // 闂侇偄绻嬬槐璺何熼垾宕囩濞戞挸顑戠槐婵嬪箥閳ь剟寮垫繅鏈橝VE闁搞儳鍋熷▓鎴﹀极閻楀牆绁﹂梺顔藉灊缁辨壆鎮锝嗘澒闁告帞澧楃敮鎾绩缁傛┃FO濞戞搫鎷�
             // {
             //     if (index == 9)
             //     {
@@ -1031,7 +1030,7 @@ BYTE PECI_RdPkgConfig_TEST(void)
             //     }
             //     else
             //     {
-            //         PECI_Get_DIB_TEST[index] = (PECI_Get_DIB_TEST[index] << 3) | (PECI_Get_DIB_TEST[index + 1] >> 5); // 閻㈠彉绨径姘絺娴滐拷5bit閺佺増宓侀敍灞惧娴犮儵娓剁憰浣哥殺鏉╋拷5bit閺佺増宓佹稉銏犵磾閿涘矂鍣搁弬鎵╂担宥囩矋閸氬牆鍤锝団€橀惃鍕殶閹诡噯绱濇稉宥堢箖缁楊兛绔存稉鐙S閻㈠彉绨悮顐℃丢瀵啩绨￠敍灞惧娴犮儱褰ч懗钘夌繁閸掞拷8BYTE閻ㄥ嫭鏆熼幑顔兼嫲閺堚偓閸氬簼绔存稉鐙S
+            //         PECI_Get_DIB_TEST[index] = (PECI_Get_DIB_TEST[index] << 3) | (PECI_Get_DIB_TEST[index + 1] >> 5); // 闁汇垹褰夌花顒佸緞濮橆剙绲哄ù婊愭嫹5bit闁轰胶澧楀畵渚€鏁嶇仦鎯ь暡濞寸姰鍎靛〒鍓佹啺娴ｅ摜娈洪弶鈺嬫嫹5bit闁轰胶澧楀畵浣圭▔閵忕姷纾鹃柨娑樼焸閸ｆ悂寮幍顔р晜鎷呭鍥╃煁闁告艾鐗嗛崵顓烆潰閿濆洠鈧﹢鎯冮崟顒佹闁硅鍣槐婵囩▔瀹ュ牏绠栫紒妤婂厸缁斿瓨绋夐悪顧塖闁汇垹褰夌花顒傛偖椤愨剝涓㈢€殿喖鍟╃花锟犳晬鐏炴儳顣插ù鐘劚瑜把囨嚄閽樺绻侀柛鎺炴嫹8BYTE闁汇劌瀚弳鐔煎箲椤斿吋瀚查柡鍫氬亾闁告艾绨肩粩瀛樼▔閻欘檳S
             //         // dprint("%x\n", PECI_Get_DIB_TEST[index]);
             //     }
             // }
@@ -1042,7 +1041,7 @@ BYTE PECI_RdPkgConfig_TEST(void)
 
     return (done);
 }
-/******PECI 濞ｈ濮濻YNC鐢嶇礉闁俺绻冮柅蹇庣炊閺傜懓绱￠崣鎴︹偓浣规殶閹诡噯绱濋崙鑺ユ殶閺€鐟板晸-end*************/
+/******PECI 婵烇綀顕ф慨婵籝NC閻㈩垎宥囩闂侇偅淇虹换鍐焻韫囧海鐐婇柡鍌滄嚀缁憋繝宕ｉ幋锔瑰亾娴ｈ娈堕柟璇″櫙缁辨繈宕欓懞銉︽闁衡偓閻熸澘鏅�-end*************/
 
 /*-----------------------------------------------------------------------------
  * @subroutine - PECI_ReadTemp
@@ -1134,8 +1133,8 @@ BYTE PECI_ReadTemp(void)
  * calculating power and timing parameters. The default value of the power
  * unit field [19:16] is 0111b,energy unit [11:8] is 0000b
  * Power Control Register Unit Calculations:
- * Time:   1s / 2^TIME UNIT,   Default Value: 1s / 2^10 = 976 閿熺淳gs
- * Energy: 1J / 2^ENERGY UNIT, Default Value: 1J / 2^16 = 15.3 閿熺淳gJ
+ * Time:   1s / 2^TIME UNIT,   Default Value: 1s / 2^10 = 976 闁跨喓娣砱s
+ * Energy: 1J / 2^ENERGY UNIT, Default Value: 1J / 2^16 = 15.3 闁跨喓娣砱J
  * Power:  1W / 2^POWER UNIT,  Default Value: 1W / 2^3 = 1/8 W
  */
 BYTE PECI_ReadPowerUnit(void)
@@ -1439,4 +1438,3 @@ BYTE PECI_WritePowerLimit4(BYTE SettingWatts)
 #endif // SUPPORT_PECI_POWER_CTRL
 //-----------------------------------------------------------------------------
 
-#endif

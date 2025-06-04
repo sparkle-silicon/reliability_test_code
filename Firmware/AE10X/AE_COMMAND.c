@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-05-30 17:34:10
+ * @LastEditTime: 2025-06-04 16:20:34
  * @Description:
  *
  *
@@ -559,19 +559,6 @@ int do_dbg(struct cmd_tbl *cmd, int flags, int argc, char *const argv[])
                 Mode.UART &= ~(1 << mode_offset);
             }
         }
-    #if (defined(AE103)||defined(AE102))
-        else if(!strcmp("CAN", argv[1]))
-        {
-            if(mode_flag & 1)
-            {
-                Mode.CAN |= (1 << mode_offset);
-            }
-            else
-            {
-                Mode.CAN &= ~(1 << mode_offset);
-            }
-        }
-    #endif
         else if(!strcmp("NONE", argv[1]))
         {
         }

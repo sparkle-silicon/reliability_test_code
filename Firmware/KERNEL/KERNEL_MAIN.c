@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-06-03 18:13:34
+ * @LastEditTime: 2025-06-04 17:00:08
  * @Description:
  *
  *
@@ -390,12 +390,10 @@ void Service_Debugger(void)
 				I2C2_INTR_MASK |= 0x20;
 			case I2C_CHANNEL_3:
 				I2C3_INTR_MASK |= 0x20;
-			#ifdef AE103
 			case I2C_CHANNEL_4:
 				I2C4_INTR_MASK |= 0x20;
 			case I2C_CHANNEL_5:
 				I2C5_INTR_MASK |= 0x20;
-			#endif
 		}
 	}
 }

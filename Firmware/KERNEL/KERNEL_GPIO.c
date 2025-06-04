@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-05-30 18:15:47
+ * @LastEditTime: 2025-06-04 17:59:09
  * @Description:
  *
  *
@@ -200,7 +200,7 @@ void enable_necessary_input(DWORD port, DWORD io, unsigned port_type)
 /**
  * @brief GPIO引脚复用功能配置
  *
- * @param    port     		AE102可选参数：GPIOA ,GPIOB...GPIOE
+ * @param    port     		可选参数：GPIOA ,GPIOB...GPIOE
  *
  * @param    io      		GPIO序列号选择如：GPIOA10
  *
@@ -260,14 +260,8 @@ void sysctl_iomux_config(DWORD port, DWORD io, unsigned port_type)
 			else
 			{
 				cfg_val = *(DWORDP)addr;
-			#if (defined AE102 || defined AE101)
-				cfg_val &= ~(3 << 14);
-				cfg_val |= port_type << 14;
-			#endif
-			#if (defined AE103)
 				cfg_val &= ~(3 << 18);
 				cfg_val |= port_type << 18;
-			#endif
 				*(DWORDP)addr = cfg_val;
 			}
 		}
@@ -314,10 +308,8 @@ void sysctl_iomux_disable_uart0()
 void sysctl_iomux_uart1()
 {
 #if uart1_PIN_SEL==1
-#if (defined(AE102) || defined(AE103))
 	sysctl_iomux_config(GPIOB, 1, 1);//tx
 	sysctl_iomux_config(GPIOB, 3, 1);//rx
-#endif
 #elif uart1_PIN_SEL==2
 	sysctl_iomux_config(GPIOE, 14, 3);//rx
 	sysctl_iomux_config(GPIOE, 15, 3);//tx
@@ -325,10 +317,8 @@ void sysctl_iomux_uart1()
 }
 void sysctl_iomux_disable_uart1()
 {
-#if (defined(AE102) || defined(AE103))
 	sysctl_iomux_config(GPIOB, 1, 0);
 	sysctl_iomux_config(GPIOB, 3, 0);
-#endif
 }
 //*****************************************************************************
 //
@@ -343,25 +333,13 @@ void sysctl_iomux_disable_uart1()
 //*****************************************************************************
 void sysctl_iomux_uart2()
 {
-#if (defined(AE101) || defined(AE102))
-	sysctl_iomux_config(GPIOB, 23, 1);
-	sysctl_iomux_config(GPIOB, 25, 1);
-#endif
-#ifdef AE103
 	sysctl_iomux_config(GPIOB, 27, 1);    //txd
 	sysctl_iomux_config(GPIOB, 29, 1);	   //rxd
-#endif
 }
 void sysctl_iomux_disable_uart2()
 {
-#if (defined(AE101) || defined(AE102))
-	sysctl_iomux_config(GPIOB, 23, 0);
-	sysctl_iomux_config(GPIOB, 25, 0);
-#endif
-#ifdef AE103
 	sysctl_iomux_config(GPIOB, 27, 0);    //txd
 	sysctl_iomux_config(GPIOB, 29, 0);	   //rxd
-#endif
 }
 //*****************************************************************************
 //
@@ -376,25 +354,13 @@ void sysctl_iomux_disable_uart2()
 //*****************************************************************************
 void sysctl_iomux_uart3()
 {
-#if (defined(AE101) || defined(AE102))
-	sysctl_iomux_config(GPIOA, 15, 2);
-	sysctl_iomux_config(GPIOC, 11, 1);
-#endif
-#ifdef AE103
 	sysctl_iomux_config(GPIOA, 10, 2);			//txd
 	sysctl_iomux_config(GPIOC, 11, 1);			//rxd
-#endif
 }
 void sysctl_iomux_disable_uart3()
 {
-#if (defined(AE101) || defined(AE102))
-	sysctl_iomux_config(GPIOA, 15, 0);
-	sysctl_iomux_config(GPIOC, 11, 0);
-#endif
-#ifdef AE103
 	sysctl_iomux_config(GPIOA, 10, 0);			//txd
 	sysctl_iomux_config(GPIOC, 11, 0);			//rxd
-#endif
 }
 //*****************************************************************************
 //
@@ -436,25 +402,13 @@ void sysctl_iomux_disable_uarta()
 //*****************************************************************************
 void sysctl_iomux_uartb()
 {
-#if (defined(AE101) || defined(AE102))
-	sysctl_iomux_config(GPIOB, 21, 2);
-	sysctl_iomux_config(GPIOB, 22, 2);
-#endif
-#ifdef AE103
 	sysctl_iomux_config(GPIOB, 25, 2);//rx
 	sysctl_iomux_config(GPIOB, 26, 2);//tx
-#endif
 }
 void sysctl_iomux_disable_uartb()
 {
-#if (defined(AE101) || defined(AE102))
-	sysctl_iomux_config(GPIOB, 21, 0);
-	sysctl_iomux_config(GPIOB, 22, 0);
-#endif
-#ifdef AE103
 	sysctl_iomux_config(GPIOB, 25, 0);
 	sysctl_iomux_config(GPIOB, 26, 0);
-#endif
 }
 //*****************************************************************************
 //
@@ -796,7 +750,6 @@ void sysctl_iomux_adc7()
 {
 	sysctl_iomux_config(GPIOC, 7, 1);
 }
-#ifdef AE103
 //*****************************************************************************
 //
 //  To setup cec iomux
@@ -822,7 +775,7 @@ void sysctl_iomux_peci()
 	sysctl_iomux_config(GPIOB, 14, 2);
 	sysctl_iomux_config(GPIOB, 15, 2);
 }
-#endif
+
 //*****************************************************************************
 //
 //  To setup gpio or kbs or pport iomux
@@ -933,53 +886,17 @@ void sysctl_iomux_espi(void)
 	sysctl_iomux_config(GPIOD, 6, 1);//alert
 #endif
 }
-//*****************************************************************************
-//
-//  To setup can0-3 iomux
-//
-//  parameter :
-//      none
-//
-//  return :
-//      none
-//
-//*****************************************************************************
-void sysctl_iomux_can0(void)
-{
-	sysctl_iomux_config(GPIOA, 13, 1); // CAN0 tx
-	sysctl_iomux_config(GPIOA, 14, 1); // CAN0 rx
-}
-void sysctl_iomux_can1(void)
-{
-	sysctl_iomux_config(GPIOA, 4, 2); // CAN1 tx
-	sysctl_iomux_config(GPIOA, 5, 2); // CAN1 rx
-}
-void sysctl_iomux_can2(void)
-{
-	sysctl_iomux_config(GPIOC, 8, 1); // CAN2 tx
-	sysctl_iomux_config(GPIOC, 9, 1); // CAN2 rx
-}
-void sysctl_iomux_can3(void)
-{
-	sysctl_iomux_config(GPIOA, 22, 2); // CAN3
-#if (defined(AE102))
-	sysctl_iomux_config(GPIOB, 26, 2); // CAN3
-#elif defined(AE103) 
-	sysctl_iomux_config(GPIOA, 30, 2); // CAN3
-#endif
-}
 /**
  * @brief GPIO上拉设置
  *
- * @param    GPIO     AE102可选参数：GPIOA ,GPIOB...GPIOE
- *                    AE103可选参数：GPIOA ,GPIOB...GPIOE
+ * @param    GPIO     可选参数：GPIOA ,GPIOB...GPIOE
+ *
  * @param    Num      号码选择如：GPIOA[Num] Num可选0-31
  *
  * @return   无
  */
 BYTE GPIO_Pullup_Config(BYTE GPIO, BYTE Num)
 {
-#ifdef AE103
 	switch(GPIO)
 	{
 		case GPIOA:
@@ -1001,58 +918,7 @@ BYTE GPIO_Pullup_Config(BYTE GPIO, BYTE Num)
 			dprint("参数选择错误\n");
 			break;
 	}
-#endif
-#if (defined(AE101) || defined(AE102))
-	switch(GPIO)
-	{
-		case GPIOA:
-			if(Num <= 15)
-			{
-				SYSCTL_PIO0_UDCFG |= (0x1 << Num);
-			}
-			else
-			{
-				SYSCTL_PIO1_UDCFG |= (0x1 << (Num - 16));
-			}
-			break;
-		case GPIOB:
-			if(Num <= 15)
-			{
-				SYSCTL_PIO2_UDCFG |= (0x1 << Num);
-			}
-			else
-			{
-				SYSCTL_PIO3_UDCFG |= (0x1 << (Num - 16));
-			}
-			break;
-		case GPIOC:
-			if(Num <= 15)
-			{
-				SYSCTL_PIO4_UDCFG |= (0x1 << Num);
-			}
-			else
-			{
-				dprint("GPIO serial number input error");
-			}
-			break;
-		case GPIOD:
-			SYSCTL_PIO5_UDCFG |= (0x1 << Num);
-			break;
-		case GPIOE:
-			if(Num <= 15)
-			{
-				SYSCTL_PIO5_UDCFG |= (0x1 << (Num + 16));
-			}
-			else if(Num <= 23)
-			{
-				SYSCTL_PIO5_UDCFG |= (0x1 << (Num - 8));
-			}
-			break;
-		default:
-			dprint("参数选择错误\n");
-			break;
-}
-#endif
+
 	return 0;
 }
 /**
@@ -1231,7 +1097,6 @@ int GPIO_Config(int GPIO, int gpio_no, int mode, int op_val, int int_lv, int pol
 				//dprint("触发极性:%#x\n", GPIOC_REG((GPIO_IOF_SEL + (gpio_no / 8))));
 			}
 		}
-	#if (defined(AE101) || defined(AE102) || defined(AE103))
 		else if((GPIO == 5))
 		{
 			if(mode == 1) // output
@@ -1267,7 +1132,6 @@ int GPIO_Config(int GPIO, int gpio_no, int mode, int op_val, int int_lv, int pol
 				//dprint("触发极性:%#x\n", GPIOE_REG((GPIO_IOF_SEL + (gpio_no / 8))));
 			}
 		}
-	#endif
 	}
 	return 0;
 }
@@ -1282,106 +1146,6 @@ int GPIO_Config(int GPIO, int gpio_no, int mode, int op_val, int int_lv, int pol
  */
 void GPIO_Input_EN(int GPIO, int gpio_no, char sw)
 {
-#if (defined(AE101)||defined(AE102))
-
-	switch(GPIO)
-	{
-		case GPIOA:
-			if(sw == ENABLE)
-			{
-				if(gpio_no <= 15)
-				{
-					SYSCTL_PIO0_IECFG |= (0x1 << gpio_no);
-				}
-				else
-				{
-					SYSCTL_PIO1_IECFG |= (0x1 << (gpio_no - 16));
-				}
-			}
-			else
-			{
-				if(gpio_no <= 15)
-				{
-					SYSCTL_PIO0_IECFG &= ~(0x1 << gpio_no);
-				}
-				else
-				{
-					SYSCTL_PIO1_IECFG &= ~(0x1 << (gpio_no - 16));
-				}
-			}
-			break;
-		case GPIOB:
-			if(sw == ENABLE)
-			{
-				if(gpio_no <= 15)
-				{
-					SYSCTL_PIO2_IECFG |= (0x1 << gpio_no);
-				}
-				else
-				{
-					SYSCTL_PIO3_IECFG |= (0x1 << (gpio_no - 16));
-				}
-			}
-			else
-			{
-				if(gpio_no <= 15)
-				{
-					SYSCTL_PIO2_IECFG &= ~(0x1 << gpio_no);
-				}
-				else
-				{
-					SYSCTL_PIO3_IECFG &= ~(0x1 << (gpio_no - 16));
-				}
-			}
-			break;
-		case GPIOC:
-			if(sw == ENABLE)
-			{
-				SYSCTL_CLKDIV_I3C |= (0x1 << gpio_no);
-			}
-			else
-			{
-				SYSCTL_CLKDIV_I3C &= ~(0x1 << gpio_no);
-			}
-			break;
-		case GPIOD:
-			if(sw == ENABLE)
-			{
-				SYSCTL_CLKDIV_PECI |= (0x1 << gpio_no);
-			}
-			else
-			{
-				SYSCTL_CLKDIV_PECI &= ~(0x1 << gpio_no);
-			}
-			break;
-		case GPIOE:
-			if(sw == ENABLE)
-			{
-				if(gpio_no <= 15)
-				{
-					SYSCTL_CLKDIV_PECI |= (0x1 << (gpio_no + 16));
-				}
-				else
-				{
-					SYSCTL_CLKDIV_PECI |= (0x1 << (gpio_no - 8));
-				}
-			}
-			else
-			{
-				if(gpio_no <= 15)
-				{
-					SYSCTL_PIO2_IECFG &= ~(0x1 << (gpio_no + 16));
-				}
-				else
-				{
-					SYSCTL_PIO3_IECFG &= ~(0x1 << (gpio_no - 8));
-				}
-			}
-			break;
-		default:
-			break;
-	}
-#elif defined(AE103)
 	switch(GPIO)
 	{
 		case GPIOA:
@@ -1439,10 +1203,7 @@ void GPIO_Input_EN(int GPIO, int gpio_no, char sw)
 			break;
 	}
 
-#endif
-
 }
-#if defined(AE103)
 /**
  * @brief 1.8V IO配置
  *
@@ -1559,7 +1320,6 @@ void GPIO_1V8(int GPIO, int gpio_no, char sw)
 		SYSCTL_PAD_1P8 &= ~BIT(offset);
 
 }
-#endif
 
 char GPIOAutoTest(void)//102
 {
@@ -1857,31 +1617,6 @@ char IsGpioOut(DWORD port, DWORD io)
 		else if(port == 5)
 		{
 			cfg_val = *(DWORDP)addr;
-		#if (defined AE102 || defined AE101)
-			cfg_val &= ~(3 << 14);
-			if(cfg_val == *(DWORDP)addr)
-			{
-				//assert_print("port: %d,io: %d\n", port, io);
-				cfg_val = GPIOE_REG((GPIO_INPUT_EN + (io / 8)));
-				cfg_val |= ((0x1) << (io % 8));
-				if(cfg_val == GPIOE_REG((GPIO_INPUT_EN + (io / 8))))
-				{
-					//assert_print("is output\n");
-					return 1;
-				}
-				else
-				{
-					//assert_print("is not output\n");
-					return 0;
-				}
-			}
-			else
-			{
-				//assert_print("pin is not GPIO\n");
-				return 0;
-			}
-		#endif
-		#if (defined AE103)
 			cfg_val &= ~(3 << 18);
 			if(cfg_val == *(DWORDP)addr)
 			{
@@ -1901,7 +1636,6 @@ char IsGpioOut(DWORD port, DWORD io)
 			{
 				return 0; //dprint("pin is not GPIO\n");
 			}
-		#endif
 		}
 		else
 		{
@@ -1933,13 +1667,6 @@ char ReadGPIOLevel(BYTE port, BYTE pin)
 	}
 	else if(port == 3)
 	{
-	#if (defined AE102 || defined AE101)
-		if(pin > 13)
-		{
-			printf("GPIO  number input error\n");
-			return -1;
-		}
-	#endif
 		portBase = (volatile unsigned char *)(GPIO0_BASE_ADDR + 0x50 + (port - 1) * 0x400 + (pin / 8));
 		// 读取引脚的电平值
 		pinValue = *portBase & (0x1 << (pin % 8));
@@ -1948,13 +1675,6 @@ char ReadGPIOLevel(BYTE port, BYTE pin)
 	}
 	else if(port == 4)
 	{
-	#if (defined AE102 || defined AE101)
-		if(pin > 6)
-		{
-			printf("GPIO  number input error\n");
-			return -1;
-		}
-	#endif
 		portBase = (volatile unsigned char *)(GPIO2_BASE_ADDR + 0x54);
 		// 读取引脚的电平值
 		pinValue = *portBase & (0x1 << (pin % 8));
@@ -1964,13 +1684,6 @@ char ReadGPIOLevel(BYTE port, BYTE pin)
 	}
 	else if(port == 5)
 	{
-	#if (defined AE102 || defined AE101)
-		if(pin > 23)
-		{
-			printf("GPIO  number input error\n");
-			return -1;
-		}
-	#endif
 		portBase = (volatile unsigned char *)(GPIO3_BASE_ADDR + 0x50 + (pin / 8));
 		// 读取引脚的电平值
 		pinValue = *portBase & (0x1 << (pin % 8));

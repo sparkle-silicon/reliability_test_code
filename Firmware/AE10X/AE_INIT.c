@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-04-10 15:07:08
+ * @LastEditTime: 2025-06-04 17:57:12
  * @Description:
  *
  *
@@ -20,7 +20,7 @@
  */
 void SECTION(".init.dbinit") DoubleBoot_Init(void)
 {
-#if (defined(AE102) || defined(AE101))
+#if 0
   // 1.get OEM Set Double Boot Addr and Code Space ID
   register FUNCT_PTR_V_V func_ptr = Get_DoubleBoot_ADDR();
   if(func_ptr == NULL)

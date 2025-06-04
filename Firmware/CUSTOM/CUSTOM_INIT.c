@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-11-20 18:03:20
+ * @LastEditTime: 2025-06-04 16:53:32
  * @Description:
  *
  *
@@ -53,18 +53,12 @@ FUNCT_PTR_V_V Get_DoubleBoot_ADDR(void)
 void Default_ModuleClock_LowPower()
 {
 	SYSCTL_MODEN0 &= ~(SPIM_EN); // SPIM
-#if (defined(AE102) || defined(AE103))
-	SYSCTL_MODEN0 &= ~(CAN0_EN | CAN1_EN | CAN2_EN | CAN3_EN); // CAN0-3
-	SYSCTL_MODEN0 &= ~(UART1_EN | UART2_EN | UART3_EN);		   // UART1-3
-	SYSCTL_MODEN0 &= ~(PP_EN);								   // PPORT
-#endif
+	SYSCTL_MODEN0 &= ~(UART1_EN);		   // UART1
 	SYSCTL_MODEN0 &= ~(UARTA_EN | UARTB_EN | UART0_EN); // UART0AB
 	SYSCTL_MODEN0 &= ~(PWM_EN);							// PWM
 	SYSCTL_MODEN0 &= ~(ADC_EN);							// ADC
 	SYSCTL_MODEN0 &= ~(WDT_EN);							// WDT
-#if (defined(AE103))
-	SYSCTL_MODEN1 &= ~(CEC_EN | SM4_EN); // CEC
-#endif
+	SYSCTL_MODEN1 &= ~(CEC_EN); // CEC
 	SYSCTL_MODEN0 &= ~(SMB0_EN | SMB1_EN | SMB2_EN | SMB3_EN); // SMBUS3=0
 	SYSCTL_MODEN0 &= ~(GPIO_EN);// GPIO
 	SYSCTL_MODEN0 &= ~(BRAM_EN);					 // BRAM
@@ -80,14 +74,9 @@ void Default_ModuleClock_LowPower()
 	// SYSCTL_MODEN1&=~(SPIF_EN);// SPIF is necessary
 	SYSCTL_MODEN1 &= ~(SRAM_EN);// SRAM
 	SYSCTL_MODEN1 &= ~(GPIODB_EN);// GPIODB
-#if defined(AE103)
-	// SYSCTL_MODEN1 &= ~(EFUSE_EN);
-	// SYSCTL_MODEN1 &= ~(SM2_EN | SM3_EN);
-#endif
 	// SYSCTL_MODEN1&=~(SYSCTL_EN);// SYSCTL is necessary
 	// SYSCTL_MODEN1&=~(DRAM_EN);// DRAM is necessary
 	// SYSCTL_MODEN1&=~(APB_EN);// PB is necessary
-#if defined(AE103)
 	//SYSCTL_MODEN1 &= ~(ESPI_EN);
 	// SYSCTL_MODEN1 &= ~(TRNG_EN);
 	SYSCTL_MODEN1 &= ~(SMB4_EN | SMB5_EN);
@@ -98,7 +87,6 @@ void Default_ModuleClock_LowPower()
 	// SYSCTL_MODEN1 &= ~(ROM_EN);
 	// SYSCTL_MODEN1 &= ~(RTC_EN);
 	// SYSCTL_MODEN1 &= ~(PECI_EN);
-#endif
 
 }
 /*
@@ -122,20 +110,11 @@ void Default_GPIO_LowPower()
 	Default_PinIO_Set(PinB0_7_InOut, GPIOB, 0, 7);
 	Default_PinIO_Set(PinB8_15_InOut, GPIOB, 8, 7);
 	Default_PinIO_Set(PinB16_23_InOut, GPIOB, 16, 7);
-#if (defined(AE101)||defined(AE102))
-	Default_PinIO_Set(PinB24_26_InOut, GPIOB, 24, 2);
-#elif defined(AE103)
 	Default_PinIO_Set(PinB24_31_InOut, GPIOB, 24, 7);
-#endif
 	Default_PinIO_Set(PinC0_7_InOut, GPIOC, 0, 7);
-#if (defined(AE101)||defined(AE102))
-	Default_PinIO_Set(PinC8_13_InOut, GPIOC, 8, 5);
-	Default_PinIO_Set(PinD0_6_InOut, GPIOD, 0, 6);
-#elif defined(AE103)
 	Default_PinIO_Set(PinC8_15_InOut, GPIOC, 8, 7);
 	Default_PinIO_Set(PinD0_7_InOut, GPIOD, 0, 7);
 	Default_PinIO_Set(PinD8_InOut, GPIOD, 8, 1);
-#endif
 
 	Default_PinIO_Set(PinE0_7_InOut, GPIOE, 0, 7);
 	Default_PinIO_Set(PinE8_15_InOut, GPIOE, 8, 7);

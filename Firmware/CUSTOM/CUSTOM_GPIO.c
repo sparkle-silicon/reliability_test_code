@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-01-02 18:12:04
+ * @LastEditTime: 2025-06-04 17:58:58
  * @Description: GPIO custom configuration
  *
  *
@@ -43,29 +43,18 @@ const sInitGPIOReg InitGPIORegXBYTE[] =
     {&GPIO1_DDR1, PinB8_15_InOut},
     {&GPIO1_DR2, PinB16_23_Init},
     {&GPIO1_DDR2, PinB16_23_InOut},
-#if (defined(AE101)||defined(AE102))
-    {&GPIO1_DR3, PinB24_26_Init},
-    {&GPIO1_DDR3, PinB24_26_InOut},
-#elif defined(AE103)
+
     {&GPIO1_DR3, PinB24_31_Init},
     {&GPIO1_DDR3, PinB24_31_InOut},
-#endif
     {&GPIO2_DR0, PinC0_7_Init},
     {&GPIO2_DDR0, PinC0_7_InOut},
-#if (defined(AE101)||defined(AE102))
-    {&GPIO2_DR1, PinC8_13_Init},
-    {&GPIO2_DDR1, PinC8_13_InOut},
-    {&GPIO2_DR2, PinD0_6_Init},
-    {&GPIO2_DDR2, PinD0_6_InOut},
-#elif defined(AE103)
+
         {&GPIO2_DR1, PinC8_15_Init},
     {&GPIO2_DDR1, PinC8_15_InOut},
     {&GPIO2_DR2, PinD0_7_Init},
     {&GPIO2_DDR2, PinD0_7_InOut},
     {&GPIO2_DR3, PinD8_Init},
     {&GPIO2_DDR3, PinD8_InOut},
-
-#endif
 
     {&GPIO3_DR0, PinE0_7_Init},
     {&GPIO3_DDR0, PinE0_7_InOut},
@@ -76,21 +65,7 @@ const sInitGPIOReg InitGPIORegXBYTE[] =
 };
 const sInitGPIORegXWORD InitGPIORegXWORD[] =
 {
-#if (defined(AE101)||defined(AE102))
 
-    {&SYSCTL_PIO0_CFG, PinA0_15_IoMux},
-    {&SYSCTL_PIO0_UDCFG, PinA0_15_PullUp},
-    {&SYSCTL_PIO1_CFG, PinA16_31_IoMux},
-    {&SYSCTL_PIO1_UDCFG, PinA16_31_PullUp},
-    {&SYSCTL_PIO2_CFG, PinB0_15_IoMux},
-    {&SYSCTL_PIO2_UDCFG, PinB0_15_PullUp},
-    {&SYSCTL_PIO3_CFG, PinB16_26_IoMux},
-    {&SYSCTL_PIO3_UDCFG, PinB16_26_PullUp},
-    {&SYSCTL_PIO4_CFG, PinC0_13_IoMux},
-    {&SYSCTL_PIO4_UDCFG, PinC0_13_PullUp},
-    {&SYSCTL_PIO5_CFG, PinDE_IoMux},
-    {&SYSCTL_PIO5_UDCFG, PinDE_PullUp},
-#elif defined(AE103)
     {&SYSCTL_PIO0_CFG, PinA0_15_IoMux},
     {&SYSCTL_PIO1_CFG, PinA16_31_IoMux},
     {&SYSCTL_PIO0_UDCFG, PinA0_31_PullUp},
@@ -102,7 +77,6 @@ const sInitGPIORegXWORD InitGPIORegXWORD[] =
     {&SYSCTL_PIO2_UDCFG, PinCD_PullUp},
     {&SYSCTL_PIO3_UDCFG, PinE0_23_PullUp},
 
-#endif
 };
 typedef struct GetGPIORegInfo
 {
@@ -139,10 +113,8 @@ sGetGPIORegInfo aGetGPIORegInfo[] =
     {&GPIO2_DDR1, &GPIO2_DDR1_Value},
     {&GPIO2_DR2, &GPIO2_DR2_Value},
     {&GPIO2_DDR2, &GPIO2_DDR2_Value},
-#if defined(AE103)
     {&GPIO2_DR3, &GPIO2_DR3_Value},
     {&GPIO2_DDR3, &GPIO2_DDR3_Value},
-#endif
     {&GPIO3_DR0, &GPIO3_DR0_Value},
     {&GPIO3_DDR0, &GPIO3_DDR0_Value},
     {&GPIO3_DR1, &GPIO3_DR1_Value},
@@ -161,14 +133,8 @@ sGetGPIOMuxInfo aGetGPIOMuxInfo[] =
     {&SYSCTL_PIO3_CFG, &SYSCTL_PIO3_CFG_Value},
     {&SYSCTL_PIO3_UDCFG, &SYSCTL_PIO3_UDCFG_Value},
     {&SYSCTL_PIO4_CFG, &SYSCTL_PIO4_CFG_Value},
-#if (defined(AE101)||defined(AE102))
-    {&SYSCTL_PIO4_UDCFG, &SYSCTL_PIO4_UDCFG_Value},
-#endif
-
     {&SYSCTL_PIO5_CFG, &SYSCTL_PIO5_CFG_Value},
-#if (defined(AE101)||defined(AE102))
-    {&SYSCTL_PIO5_UDCFG, &SYSCTL_PIO5_UDCFG_Value},
-#endif
+
 };
 //-----------------------------------------------------------------------------
 // The function of pin register init.

@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2023-12-21 17:46:57
+ * @LastEditTime: 2025-06-04 17:28:31
  * @Description:
  *
  *
@@ -27,17 +27,10 @@
 WORD I2c_Channel_Baseaddr(WORD i2c_channel)
 {
 	// 如果传进来是基地址那么直接返回
-#if (defined(TEST101) || defined(AE101) || defined(AE102) || defined(AE103))
-	if(i2c_channel <= SMBUS3_BASE_ADDR && i2c_channel >= SMBUS0_BASE_ADDR)
-	{
-		return (i2c_channel & 0xff00);
-	}
-#elif (defined(AE103))
 	if(i2c_channel <= SMBUS5_BASE_ADDR && i2c_channel >= SMBUS0_BASE_ADDR)
 	{
 		return (i2c_channel & 0xff00);
 	}
-#endif
 	// 根据通道选择基地址
 	switch(i2c_channel)
 	{
@@ -49,12 +42,10 @@ WORD I2c_Channel_Baseaddr(WORD i2c_channel)
 			return SMBUS2_BASE_ADDR;
 		case I2C_CHANNEL_3:
 			return SMBUS3_BASE_ADDR;
-		#ifdef AE103
 		case I2C_CHANNEL_4:
 			return SMBUS4_BASE_ADDR;
 		case I2C_CHANNEL_5:
 			return SMBUS5_BASE_ADDR;
-		#endif
 		/*yujiang add*/
 		case I2C_CHANNEL_6:
 			return SMBUS6_BASE_ADDR;
@@ -139,13 +130,8 @@ void I2c_Write_Short(WORD value, WORD regoffset, WORD i2c_channel)
 //*****************************************************************************
 void I2c_Mux_set(BYTE model)
 {
-#if (defined(AE101) || defined(AE102))
-	SYSCTL_CFG &= ~(3 << 9); // I2C_Mux: bit9~10  clear default: model: 0
-	SYSCTL_CFG |= (model << 9);
-#elif (defined(AE103))
 	SYSCTL_CFG &= ~(7 << 16); // I2C_Mux: bit9~10  clear default: model: 0
 	SYSCTL_CFG |= (model << 16);
-#endif
 	return;
 }
 
@@ -1055,14 +1041,12 @@ BYTE I2c_Int_Mask(BYTE channel, BYTE type)
 		case I2C_CHANNEL_3:
 			I2C3_INTR_MASK &= ~(0x1 << type);
 			return 0;
-		#ifdef AE103
 		case I2C_CHANNEL_4:
 			I2C4_INTR_MASK &= ~(0x1 << type);
 			return 0;
 		case I2C_CHANNEL_5:
 			I2C5_INTR_MASK &= ~(0x1 << type);
 			return 0;
-		#endif
 		default:
 			return -1;
 	}
@@ -1090,14 +1074,12 @@ BYTE I2c_Int_Unmask(BYTE channel, BYTE type)
 		case I2C_CHANNEL_3:
 			I2C3_INTR_MASK |= (0x1 << type);
 			return 0;
-		#ifdef AE103
 		case I2C_CHANNEL_4:
 			I2C4_INTR_MASK |= (0x1 << type);
 			return 0;
 		case I2C_CHANNEL_5:
 			I2C5_INTR_MASK |= (0x1 << type);
 			return 0;
-		#endif
 		default:
 			return -1;
 	}
@@ -1121,12 +1103,10 @@ BYTE I2c_Int_Mask_Read(BYTE channel, BYTE type)
 			return ((I2C2_INTR_MASK & (0x1 << type)) == 0);
 		case I2C_CHANNEL_3:
 			return ((I2C3_INTR_MASK & (0x1 << type)) == 0);
-		#ifdef AE103
 		case I2C_CHANNEL_4:
 			return ((I2C4_INTR_MASK & (0x1 << type)) == 0);
 		case I2C_CHANNEL_5:
 			return ((I2C5_INTR_MASK & (0x1 << type)) == 0);
-		#endif
 		default:
 			return -1;
 	}
@@ -1150,12 +1130,10 @@ BYTE I2c_Int_Status(BYTE channel, BYTE type)
 			return ((I2C2_INTR_STAT & (0x1 << type)) != 0);
 		case I2C_CHANNEL_3:
 			return ((I2C3_INTR_STAT & (0x1 << type)) != 0);
-		#ifdef AE103
 		case I2C_CHANNEL_4:
 			return ((I2C4_INTR_STAT & (0x1 << type)) != 0);
 		case I2C_CHANNEL_5:
 			return ((I2C5_INTR_STAT & (0x1 << type)) != 0);
-		#endif
 		default:
 			return -1;
 	}

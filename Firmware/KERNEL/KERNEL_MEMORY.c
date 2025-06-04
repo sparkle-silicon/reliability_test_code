@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-05-11 15:36:09
+ * @LastEditTime: 2025-06-04 17:37:59
  * @Description:
  *
  *
@@ -29,19 +29,13 @@ VBYTE *Tmp_XPntr;
 VBYTE *Tmp_XPntr1;
 void Clear_Specific_Mem(void)
 {
-        for (register u32 i = 0; i < 0x800; i += 4)
+        for(register u32 i = 0; i < 0x800; i += 4)
                 (*(DWORDP)(DRAM_BASE_ADDR + i)) = 0;
 }
 void SECTION(".init.mem") Specific_Mem_init(void)
 {
-#ifdef AE101
-        CORE_Version = 101;
-#elif defined(AE102)
-        CORE_Version = 102;
-#elif defined(AE103)
-        CORE_Version = 103;
-#endif
-        for (int i = 0; i <= 8; i++)
+        CORE_Version = 104;
+        for(int i = 0; i <= 8; i++)
         {
                 KBDataPending[i] = 0;
                 MSDataPending[i] = 0;
@@ -61,7 +55,7 @@ void SECTION(".init.mem") Specific_Mem_init(void)
         PowerSequence_WaitTime = Wait_Time;
         ROM_COPY_CNT = 0;
 
-        for (int i = 0; i < 4 * 1024; i++)
+        for(int i = 0; i < 4 * 1024; i++)
         {
                 *((VBYTEP)(SRAM_BASE_ADDR + i)) = 0x0;
         }

@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-05-31 16:14:01
+ * @LastEditTime: 2025-06-04 17:02:16
  * @Description:
  *
  *
@@ -37,13 +37,9 @@
 #define Por_Int_Disable(type)	(SYSCTL_PORINT &= ~(0x1<<type))
 #define Por_Int_Enable_Read(type)	((SYSCTL_PORINT & (0x1<<type)) != 0)
 #define Por_Int_Status(type)	((SYSCTL_PORINT & (0x1<<(type+2))) != 0)
-#if (defined(AE101)||defined(AE102))
-#define UARTB_SEL  SYSCTL_PIO5_UDCFG &= ~BIT7;
-#define SMBUS3_SEL  SYSCTL_PIO5_UDCFG |=BIT7;
-#elif defined(AE103)
+
 #define UARTB_SEL  SYSCTL_PIO_CFG &= ~BIT0;
 #define SMBUS3_SEL  SYSCTL_PIO_CFG |=BIT0;
-#endif
 #if (COMMAND_UART_SWITCH == 3 || DEBUG_UART_SWITCH == 3 || PRINTF_UART_SWITCH == 3)
 #if SMBUS3_CLOCK_EN
 // #error 
@@ -67,15 +63,10 @@
 #define GPIOB20_26_Int_Enable(IO_num)	(GPIO1_INTEN3 |= (0x1<<IO_num))
 #define GPIOC0_7_Int_Enable(IO_num)	    (GPIO2_INTEN0 |= (0x1<<IO_num))
 #define GPIOC8_13_Int_Enable(IO_num)	(GPIO2_INTEN1 |= (0x1<<IO_num))
-#if (defined(AE101)||defined(AE102)||defined(AE103))//If it's AE102 or AE103
 #define GPIOE0_7_Int_Enable(IO_num)	    (GPIO3_INTEN0 |= (0x1<<IO_num))
 #define GPIOE8_15_Int_Enable(IO_num)	(GPIO3_INTEN1 |= (0x1<<IO_num))
 #define GPIOE16_23_Int_Enable(IO_num)	(GPIO3_INTEN2 |= (0x1<<IO_num))
-#else
-#define GPIOE0_7_Int_Enable(IO_num)	
-#define GPIOE8_15_Int_Enable(IO_num)
-#define GPIOE16_23_Int_Enable(IO_num)
-#endif
+
 #define GPIOA0_7_Int_Disable(IO_num)	(GPIO0_INTEN0 &= ~(0x1<<IO_num))
 #define GPIOA8_15_Int_Disable(IO_num)	(GPIO0_INTEN1 &= ~(0x1<<IO_num))
 #define GPIOA16_23_Int_Disable(IO_num)	(GPIO0_INTEN2 &= ~(0x1<<IO_num))
@@ -86,15 +77,10 @@
 #define GPIOB20_26_Int_Disable(IO_num)	(GPIO1_INTEN3 &= ~(0x1<<IO_num))
 #define GPIOC0_7_Int_Disable(IO_num)	(GPIO2_INTEN0 &= ~(0x1<<IO_num))
 #define GPIOC8_13_Int_Disable(IO_num)	(GPIO2_INTEN1 &= ~(0x1<<IO_num))
-#if (defined(AE101)||defined(AE102)||defined(AE103))//If it's AE102 or AE103
 #define GPIOE0_7_Int_Disable(IO_num)	(GPIO3_INTEN0 &= ~(0x1<<IO_num))
 #define GPIOE8_15_Int_Disable(IO_num)	(GPIO3_INTEN1 &= ~(0x1<<IO_num))
 #define GPIOE16_23_Int_Disable(IO_num)	(GPIO3_INTEN2 &= ~(0x1<<IO_num))
-#else
-#define GPIOE0_7_Int_Disable(IO_num)	
-#define GPIOE8_15_Int_Disable(IO_num)
-#define GPIOE16_23_Int_Disable(IO_num)
-#endif
+
 #define GPIOA0_7_Int_Mask(IO_num)	(GPIO0_INTMASK0 |= (0x1<<IO_num))
 #define GPIOA8_15_Int_Mask(IO_num)	(GPIO0_INTMASK1 |= (0x1<<IO_num))
 #define GPIOA16_23_Int_Mask(IO_num)	(GPIO0_INTMASK2 |= (0x1<<IO_num))
@@ -105,15 +91,10 @@
 #define GPIOB20_26_Int_Mask(IO_num)	(GPIO1_INTMASK3 |= (0x1<<IO_num))
 #define GPIOC0_7_Int_Mask(IO_num)	(GPIO2_INTMASK0 |= (0x1<<IO_num))
 #define GPIOC8_13_Int_Mask(IO_num)	(GPIO2_INTMASK1 |= (0x1<<IO_num))
-#if (defined(AE101)||defined(AE102)||defined(AE103))//If it's AE102 or AE103
 #define GPIOE0_7_Int_Mask(IO_num)	(GPIO3_INTMASK0 |= (0x1<<IO_num))
 #define GPIOE8_15_Int_Mask(IO_num)	(GPIO3_INTMASK1 |= (0x1<<IO_num))
 #define GPIOE16_23_Int_Mask(IO_num)	(GPIO3_INTMASK2 |= (0x1<<IO_num))
-#else
-#define GPIOE0_7_Int_Mask(IO_num)	
-#define GPIOE8_15_Int_Mask(IO_num)
-#define GPIOE16_23_Int_Mask(IO_num)
-#endif
+
 #define GPIOA0_7_Int_Unmask(IO_num)	    (GPIO0_INTMASK0 &= ~(0x1<<IO_num))
 #define GPIOA8_15_Int_Unmask(IO_num)	(GPIO0_INTMASK1 &= ~(0x1<<IO_num))
 #define GPIOA16_23_Int_Unmask(IO_num)	(GPIO0_INTMASK2 &= ~(0x1<<IO_num))
@@ -124,15 +105,10 @@
 #define GPIOB20_26_Int_Unmask(IO_num)	(GPIO1_INTMASK3 &= ~(0x1<<IO_num))
 #define GPIOC0_7_Int_Unmask(IO_num)	    (GPIO2_INTMASK0 &= ~(0x1<<IO_num))
 #define GPIOC8_13_Int_Unmask(IO_num)	(GPIO2_INTMASK1 &= ~(0x1<<IO_num))
-#if (defined(AE101)||defined(AE102)||defined(AE103))//If it's AE102 or AE103
 #define GPIOE0_7_Int_Unmask(IO_num)	    (GPIO3_INTMASK0 &= ~(0x1<<IO_num))
 #define GPIOE8_15_Int_Unmask(IO_num)	(GPIO3_INTMASK1 &= ~(0x1<<IO_num))
 #define GPIOE16_23_Int_Unmask(IO_num)	(GPIO3_INTMASK2 &= ~(0x1<<IO_num))
-#else
-#define GPIOE0_7_Int_Unmask(IO_num)	
-#define GPIOE8_15_Int_Unmask(IO_num)
-#define GPIOE16_23_Int_Unmask(IO_num)
-#endif
+
 #define GPIOA0_7_Int_Type_Edge(IO_num)	    (GPIO0_INTTYPE_LEVEL0 |= (0x1<<IO_num))
 #define GPIOA8_15_Int_Type_Edge(IO_num)	    (GPIO0_INTTYPE_LEVEL1 |= (0x1<<IO_num))
 #define GPIOA16_23_Int_Type_Edge(IO_num)	(GPIO0_INTTYPE_LEVEL2 |= (0x1<<IO_num))
@@ -143,15 +119,10 @@
 #define GPIOB20_26_Int_Type_Edge(IO_num)	(GPIO1_INTTYPE_LEVEL3 |= (0x1<<IO_num))
 #define GPIOC0_7_Int_Type_Edge(IO_num)	    (GPIO2_INTTYPE_LEVEL0 |= (0x1<<IO_num))
 #define GPIOC8_13_Int_Type_Edge(IO_num)	    (GPIO2_INTTYPE_LEVEL1 |= (0x1<<IO_num))
-#if (defined(AE101)||defined(AE102)||defined(AE103))//If it's AE102 or AE103
 #define GPIOE0_7_Int_Type_Edge(IO_num)	    (GPIO3_INTTYPE_LEVEL0 |= (0x1<<IO_num))
 #define GPIOE8_15_Int_Type_Edge(IO_num)	    (GPIO3_INTTYPE_LEVEL1 |= (0x1<<IO_num))
 #define GPIOE16_23_Int_Type_Edge(IO_num)	(GPIO3_INTTYPE_LEVEL2 |= (0x1<<IO_num))
-#else
-#define GPIOE0_7_Int_Type_Edge(IO_num)	
-#define GPIOE8_15_Int_Type_Edge(IO_num)
-#define GPIOE16_23_Int_Type_Edge(IO_num)
-#endif
+
 #define GPIOA0_7_Int_Type_Level(IO_num)	    (GPIO0_INTTYPE_LEVEL0 &= ~(0x1<<IO_num))
 #define GPIOA8_15_Int_Type_Level(IO_num)	(GPIO0_INTTYPE_LEVEL1 &= ~(0x1<<IO_num))
 #define GPIOA16_23_Int_Type_Level(IO_num)	(GPIO0_INTTYPE_LEVEL2 &= ~(0x1<<IO_num))
@@ -162,15 +133,10 @@
 #define GPIOB20_26_Int_Type_Level(IO_num)	(GPIO1_INTTYPE_LEVEL3 &= ~(0x1<<IO_num))
 #define GPIOC0_7_Int_Type_Level(IO_num)	    (GPIO2_INTTYPE_LEVEL0 &= ~(0x1<<IO_num))
 #define GPIOC8_13_Int_Type_Level(IO_num)	(GPIO2_INTTYPE_LEVEL1 &= ~(0x1<<IO_num))
-#if (defined(AE101)||defined(AE102)||defined(AE103))//If it's AE102 or AE103
 #define GPIOE0_7_Int_Type_Level(IO_num)	    (GPIO3_INTTYPE_LEVEL0 &= ~(0x1<<IO_num))
 #define GPIOE8_15_Int_Type_Level(IO_num)	(GPIO3_INTTYPE_LEVEL1 &= ~(0x1<<IO_num))
 #define GPIOE16_23_Int_Type_Level(IO_num)	(GPIO3_INTTYPE_LEVEL2 &= ~(0x1<<IO_num))
-#else
-#define GPIOE0_7_Int_Type_Level(IO_num)	
-#define GPIOE8_15_Int_Type_Level(IO_num)
-#define GPIOE16_23_Int_Type_Level(IO_num)
-#endif
+
 #define GPIOA0_7_Int_Polarity_High(IO_num)	    (GPIO0_INT_POLARITY0 |= (0x1<<IO_num))
 #define GPIOA8_15_Int_Polarity_High(IO_num)	    (GPIO0_INT_POLARITY1 |= (0x1<<IO_num))
 #define GPIOA16_23_Int_Polarity_High(IO_num)	(GPIO0_INT_POLARITY2 |= (0x1<<IO_num))
@@ -181,15 +147,10 @@
 #define GPIOB20_26_Int_Polarity_High(IO_num)	(GPIO1_INT_POLARITY3 |= (0x1<<IO_num))
 #define GPIOC0_7_Int_Polarity_High(IO_num)	    (GPIO2_INT_POLARITY0 |= (0x1<<IO_num))
 #define GPIOC8_13_Int_Polarity_High(IO_num)	    (GPIO2_INT_POLARITY1 |= (0x1<<IO_num))
-#if (defined(AE101)||defined(AE102)||defined(AE103))//If it's AE102 or AE103
 #define GPIOE0_7_Int_Polarity_High(IO_num)	    (GPIO3_INT_POLARITY0 |= (0x1<<IO_num))
 #define GPIOE8_15_Int_Polarity_High(IO_num)	    (GPIO3_INT_POLARITY1 |= (0x1<<IO_num))
 #define GPIOE16_23_Int_Polarity_High(IO_num)	(GPIO3_INT_POLARITY2 |= (0x1<<IO_num))
-#else
-#define GPIOE0_7_Int_Polarity_High(IO_num)	
-#define GPIOE8_15_Int_Polarity_High(IO_num)
-#define GPIOE16_23_Int_Polarity_High(IO_num)
-#endif
+
 #define GPIOA0_7_Int_Polarity_Low(IO_num)	(GPIO0_INT_POLARITY0 &= ~(0x1<<IO_num))
 #define GPIOA8_15_Int_Polarity_Low(IO_num)	(GPIO0_INT_POLARITY1 &= ~(0x1<<IO_num))
 #define GPIOA16_23_Int_Polarity_Low(IO_num)	(GPIO0_INT_POLARITY2 &= ~(0x1<<IO_num))
@@ -200,15 +161,10 @@
 #define GPIOB20_26_Int_Polarity_Low(IO_num)	(GPIO1_INT_POLARITY3 &= ~(0x1<<IO_num))
 #define GPIOC0_7_Int_Polarity_Low(IO_num)	(GPIO2_INT_POLARITY0 &= ~(0x1<<IO_num))
 #define GPIOC8_13_Int_Polarity_Low(IO_num)	(GPIO2_INT_POLARITY1 &= ~(0x1<<IO_num))
-#if (defined(AE101)||defined(AE102)||defined(AE103))//If it's AE102 or AE103
 #define GPIOE0_7_Int_Polarity_Low(IO_num)	(GPIO3_INT_POLARITY0 &= ~(0x1<<IO_num))
 #define GPIOE8_15_Int_Polarity_Low(IO_num)	(GPIO3_INT_POLARITY1 &= ~(0x1<<IO_num))
 #define GPIOE16_23_Int_Polarity_Low(IO_num)	(GPIO3_INT_POLARITY2 &= ~(0x1<<IO_num))
-#else
-#define GPIOE0_7_Int_Polarity_Low(IO_num)	
-#define GPIOE8_15_Int_Polarity_Low(IO_num)
-#define GPIOE16_23_Int_Polarity_Low(IO_num)
-#endif
+
 //Read
 #define GPIOA0_7_Int_Enable_Read(IO_num)	((GPIO0_INTEN0 & (0x1<<IO_num))  != 0)
 #define GPIOA8_15_Int_Enable_Read(IO_num)	((GPIO0_INTEN1 & (0x1<<IO_num))  != 0)
@@ -220,15 +176,10 @@
 #define GPIOB20_26_Int_Enable_Read(IO_num)	((GPIO1_INTEN3 & (0x1<<IO_num))  != 0)
 #define GPIOC0_7_Int_Enable_Read(IO_num)	((GPIO2_INTEN0 & (0x1<<IO_num))  != 0)
 #define GPIOC8_13_Int_Enable_Read(IO_num)	((GPIO2_INTEN1 & (0x1<<IO_num))  != 0)
-#if (defined(AE101)||defined(AE102)||defined(AE103))//If it's AE102 or AE103
 #define GPIOE0_7_Int_Enable_Read(IO_num)	((GPIO3_INTEN0 & (0x1<<IO_num))  != 0)
 #define GPIOE8_15_Int_Enable_Read(IO_num)	((GPIO3_INTEN1 & (0x1<<IO_num))  != 0)
 #define GPIOE16_23_Int_Enable_Read(IO_num)	((GPIO3_INTEN2 & (0x1<<IO_num))  != 0)
-#else
-#define GPIOE0_7_Int_Enable_Read(IO_num)	0
-#define GPIOE8_15_Int_Enable_Read(IO_num)   0
-#define GPIOE16_23_Int_Enable_Read(IO_num)   0
-#endif
+
 #define GPIOA0_7_Int_Mask_Read(IO_num)	    ((GPIO0_INTMASK0 & (0x1<<IO_num)) != 0)
 #define GPIOA8_15_Int_Mask_Read(IO_num)	    ((GPIO0_INTMASK1 & (0x1<<IO_num)) != 0)
 #define GPIOA16_23_Int_Mask_Read(IO_num)	((GPIO0_INTMASK2 & (0x1<<IO_num)) != 0)
@@ -239,15 +190,10 @@
 #define GPIOB20_26_Int_Mask_Read(IO_num)	((GPIO1_INTMASK3 & (0x1<<IO_num)) != 0)
 #define GPIOC0_7_Int_Mask_Read(IO_num)	    ((GPIO2_INTMASK0 & (0x1<<IO_num)) != 0)
 #define GPIOC8_13_Int_Mask_Read(IO_num)	    ((GPIO2_INTMASK1 & (0x1<<IO_num)) != 0)
-#if (defined(AE101)||defined(AE102)||defined(AE103))//If it's AE102 or AE103
 #define GPIOE0_7_Int_Mask_Read(IO_num)	    ((GPIO3_INTMASK0 & (0x1<<IO_num)) != 0)
 #define GPIOE8_15_Int_Mask_Read(IO_num)	    ((GPIO3_INTMASK1 & (0x1<<IO_num)) != 0)
 #define GPIOE16_23_Int_Mask_Read(IO_num)	((GPIO3_INTMASK2 & (0x1<<IO_num)) != 0)
-#else
-#define GPIOE0_7_Int_Mask_Read(IO_num)	 0
-#define GPIOE8_15_Int_Mask_Read(IO_num)	 0
-#define GPIOE16_23_Int_Mask_Read(IO_num)	 0
-#endif
+
 #define GPIOA0_7_Int_Type_Read(IO_num)	    ((GPIO0_INTTYPE_LEVEL0 & (0x1<<IO_num)) != 0)
 #define GPIOA8_15_Int_Type_Read(IO_num)	    ((GPIO0_INTTYPE_LEVEL1 & (0x1<<IO_num)) != 0)
 #define GPIOA16_23_Int_Type_Read(IO_num)	((GPIO0_INTTYPE_LEVEL2 & (0x1<<IO_num)) != 0)
@@ -258,15 +204,10 @@
 #define GPIOB20_26_Int_Type_Read(IO_num)	((GPIO1_INTTYPE_LEVEL3 & (0x1<<IO_num)) != 0)
 #define GPIOC0_7_Int_Type_Read(IO_num)	    ((GPIO2_INTTYPE_LEVEL0 & (0x1<<IO_num)) != 0)
 #define GPIOC8_13_Int_Type_Read(IO_num)	    ((GPIO2_INTTYPE_LEVEL1 & (0x1<<IO_num)) != 0)
-#if (defined(AE101)||defined(AE102)||defined(AE103))//If it's AE102 or AE103
 #define GPIOE0_7_Int_Type_Read(IO_num)	    ((GPIO3_INTTYPE_LEVEL0 & (0x1<<IO_num)) != 0)
 #define GPIOE8_15_Int_Type_Read(IO_num) 	((GPIO3_INTTYPE_LEVEL1 & (0x1<<IO_num)) != 0)
 #define GPIOE16_23_Int_Type_Read(IO_num)	((GPIO3_INTTYPE_LEVEL2 & (0x1<<IO_num)) != 0)
-#else
-#define GPIOE0_7_Int_Type_Read(IO_num)		 0
-#define GPIOE8_15_Int_Type_Read(IO_num)	 0
-#define GPIOE16_23_Int_Type_Read(IO_num)	 0
-#endif
+
 #define GPIOA0_7_Int_Polarity_Read(IO_num)	    ((GPIO0_INT_POLARITY0 & (0x1<<IO_num)) != 0)
 #define GPIOA8_15_Int_Polarity_Read(IO_num)	    ((GPIO0_INT_POLARITY1 & (0x1<<IO_num)) != 0)
 #define GPIOA16_23_Int_Polarity_Read(IO_num)	((GPIO0_INT_POLARITY2 & (0x1<<IO_num)) != 0)
@@ -277,15 +218,10 @@
 #define GPIOB20_26_Int_Polarity_Read(IO_num)	((GPIO1_INT_POLARITY3 & (0x1<<IO_num)) != 0)
 #define GPIOC0_7_Int_Polarity_Read(IO_num)	    ((GPIO2_INT_POLARITY0 & (0x1<<IO_num)) != 0)
 #define GPIOC8_13_Int_Polarity_Read(IO_num)	    ((GPIO2_INT_POLARITY1 & (0x1<<IO_num)) != 0)
-#if (defined(AE101)||defined(AE102)||defined(AE103))//If it's AE102 or AE103
 #define GPIOE0_7_Int_Polarity_Read(IO_num)	    ((GPIO3_INT_POLARITY0 & (0x1<<IO_num)) != 0)
 #define GPIOE8_15_Int_Polarity_Read(IO_num)	    ((GPIO3_INT_POLARITY1 & (0x1<<IO_num)) != 0)
 #define GPIOE16_23_Int_Polarity_Read(IO_num)	((GPIO3_INT_POLARITY2 & (0x1<<IO_num)) != 0)
-#else
-#define GPIOE0_7_Int_Polarity_Read(IO_num)		 0
-#define GPIOE8_15_Int_Polarity_Read(IO_num)	 0
-#define GPIOE16_23_Int_Polarity_Read(IO_num)	 0
-#endif
+
 #define GPIOA0_7_Int_Status(IO_num)	    ((GPIO0_INTSTATUS0 & (0x1<<IO_num))  != 0)
 #define GPIOA8_15_Int_Status(IO_num)	((GPIO0_INTSTATUS1 & (0x1<<IO_num))  != 0)
 #define GPIOA16_23_Int_Status(IO_num)	((GPIO0_INTSTATUS2 & (0x1<<IO_num))  != 0)
@@ -296,22 +232,15 @@
 #define GPIOB20_26_Int_Status(IO_num)	((GPIO1_INTSTATUS3 & (0x1<<IO_num))  != 0)
 #define GPIOC0_7_Int_Status(IO_num)	    ((GPIO2_INTSTATUS0 & (0x1<<IO_num))  != 0)
 #define GPIOC8_13_Int_Status(IO_num)	((GPIO2_INTSTATUS1 & (0x1<<IO_num))  != 0)
-#if (defined(AE101)||defined(AE102)||defined(AE103))//If it's AE102 or AE103
 #define GPIOE0_7_Int_Status(IO_num)	    ((GPIO3_INTSTATUS0 & (0x1<<IO_num))  != 0)
 #define GPIOE8_15_Int_Status(IO_num)	((GPIO3_INTSTATUS1 & (0x1<<IO_num))  != 0)
 #define GPIOE16_23_Int_Status(IO_num)	((GPIO3_INTSTATUS2 & (0x1<<IO_num))  != 0)
-#else
-#define GPIOE0_7_Int_Status(IO_num)		 0
-#define GPIOE8_15_Int_Status(IO_num)	 0
-#define GPIOE16_23_Int_Status(IO_num)	 0
-#endif
-#ifdef AE103
+
 #define GPIOA HEX01
 #define GPIOB HEX02
 #define GPIOC HEX03
 #define GPIOD HEX04
 #define GPIOE HEX05
-#endif
 #define ENABLE      HEX01
 #define DISABLE     HEX00
 #define NUM_OF_GPIOA 32

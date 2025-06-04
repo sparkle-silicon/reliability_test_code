@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-05-21 18:34:53
+ * @LastEditTime: 2025-06-04 17:51:55
  * @Description:
  *
  *
@@ -45,13 +45,8 @@ void __interrupt SECTION(".interrupt.KBC_IBF_HANDLER") KBC_IBF_HANDLER(void) __w
 void __interrupt SECTION(".interrupt.KBC_OBE_HANDLER") KBC_OBE_HANDLER(void) __weak;
 void __interrupt SECTION(".interrupt.PMC1_IBF_HANDLER") PMC1_IBF_HANDLER(void) __weak;
 void __interrupt SECTION(".interrupt.PMC1_OBE_HANDLER") PMC1_OBE_HANDLER(void) __weak;
-#if (defined(TEST101) || defined(AE101) || defined(AE102))
-void __interrupt SECTION(".interrupt.PMC2_IBF_HANDLER") PMC2_IBF_HANDLER(void) __weak;
-void __interrupt SECTION(".interrupt.PMC2_OBE_HANDLER") PMC2_OBE_HANDLER(void) __weak;
-#elif defined(AE103)
 void __interrupt SECTION(".interrupt.WU42_HANDLER") WU42_HANDLER(void) __weak;
 void __interrupt SECTION(".interrupt.RTC_HANDLER") RTC_HANDLER(void) __weak;
-#endif
 void __interrupt SECTION(".interrupt.WDT_HANDLER") WDT_HANDLER(void) __weak;
 void __interrupt SECTION(".interrupt.ADC_HANDLER") ADC_HANDLER(void) __weak;
 void __interrupt SECTION(".interrupt.UART0_HANDLER") UART0_HANDLER(void) __weak;
@@ -134,13 +129,8 @@ void cpu_irq_en(void)
 	CSR_IRQC_CONFIG(IRQC_INT_DEVICE_KBC_OBE, en, 1, 0);
 	CSR_IRQC_CONFIG(IRQC_INT_DEVICE_PMC1_IBF, en, 0, 0);
 	CSR_IRQC_CONFIG(IRQC_INT_DEVICE_PMC1_OBE, en, 1, 0);
-#if (defined(TEST101) || defined(AE101) || defined(AE102))
-	CSR_IRQC_CONFIG(IRQC_INT_DEVICE_PMC2_IBF, dis, 0, 0);
-	CSR_IRQC_CONFIG(IRQC_INT_DEVICE_PMC2_OBE, dis, 1, 0);
-#elif defined(AE103)
 	CSR_IRQC_CONFIG(IRQC_INT_DEVICE_WU42, en, 0, 0);
 	CSR_IRQC_CONFIG(IRQC_INT_DEVICE_RTC, en, 1, 0);
-#endif
 	CSR_IRQC_CONFIG(IRQC_INT_DEVICE_WDT, en, 1, 0);
 	CSR_IRQC_CONFIG(IRQC_INT_DEVICE_ADC, en, 1, 0);
 	CSR_IRQC_CONFIG(IRQC_INT_DEVICE_UART0, en, 1, 0);
@@ -444,26 +434,6 @@ void __interrupt SECTION(".interrupt.PMC1_OBE_HANDLER") PMC1_OBE_HANDLER(void)
 	Debugger_KBC_PMC_Record(1, 1, 0x5a);
 #endif
 };
-#if (defined(TEST101) || defined(AE101) || defined(AE102))
-void __interrupt SECTION(".interrupt.PMC2_IBF_HANDLER") PMC2_IBF_HANDLER(void)
-{
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[17]++;
-#endif
-	irqprint(irq_string, __FUNCTION__, 17);
-	PMC2_CTL &= ~IBF_INT_ENABLE; // 清除中断，读走以后再打开
-	F_Service_PCI3 = 1;
-};
-void __interrupt SECTION(".interrupt.PMC2_OBE_HANDLER") PMC2_OBE_HANDLER(void)
-{
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[18]++;
-#endif
-	irqprint(irq_string, __FUNCTION__, 18);
-	PMC2_CTL &= ~OBE_INT_ENABLE;//清除中断
-};
-#endif
-#ifdef AE103
 void __interrupt SECTION(".interrupt.WU42_HANDLER") WU42_HANDLER(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
@@ -494,7 +464,7 @@ void __interrupt SECTION(".interrupt.RTC_HANDLER") RTC_HANDLER(void)
 	RTC_EOI0;//clear interrupt
 	printf("RTC\n");
 };
-#endif
+
 void __interrupt SECTION(".interrupt.WDT_HANDLER") WDT_HANDLER(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
@@ -575,12 +545,7 @@ void __interrupt SECTION(".interrupt.UART0_HANDLER") UART0_HANDLER(void)
 		{
 			UART0_RX;//读出异常值
 			irqprint("Receive error\n");//报错
-		#if (defined(AE101) || defined(AE102))
-			SYSCTL_PIO1_UDCFG |= (1 << 8);
-		#endif
-		#ifdef AE103
 			SYSCTL_PIO0_UDCFG |= (1 << 24);
-		#endif
 		}//接收错误
 
 	}
@@ -728,12 +693,7 @@ void __interrupt SECTION(".interrupt.UARTB_HANDLER") UARTB_HANDLER(void)
 		{
 			UARTB_RX;//读出异常值
 			irqprint("Receive error\n");//报错
-		#if (defined(AE101) || defined(AE102))
-			SYSCTL_PIO3_UDCFG |= (1 << 5);
-		#endif
-		#ifdef AE103
 			SYSCTL_PIO1_UDCFG |= (1 << 25);
-		#endif
 		}//接收错误
 
 	}
@@ -965,7 +925,6 @@ void __interrupt SECTION(".interrupt.INTR1_HANDLER") INTR1_HANDLER(void)
 		if(flag == 1)
 			break;
 	}
-#if (defined(AE102) || defined(AE103))
 #if ((DEBUG_UART_SWITCH == 1))
 	if(intr1_service[(num)] == &intr1_uart1)
 	{
@@ -1008,7 +967,6 @@ void __interrupt SECTION(".interrupt.INTR1_HANDLER") INTR1_HANDLER(void)
 	// else if(intr1_service[(num)] != &intr1_uart3)
 	// #else
 	else if(TRUE)
-	#endif
 	#endif
 	{
 		irqprint("ISR: %s,IRQ: %d. 2nd-level IRQ[%d]\n", __FUNCTION__, 31, num);

@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-06-03 18:14:25
+ * @LastEditTime: 2025-06-04 17:59:29
  * @Description: This file is used for INTC interrupt
  *
  *
@@ -85,13 +85,11 @@ void intr0_gpio_b23(void) __weak;
 void intr0_gpio_b24(void) __weak;
 void intr0_gpio_b25(void) __weak;
 void intr0_gpio_b26(void) __weak;
-#if (defined(AE103))
 void intr0_gpio_b27(void) __weak;
 void intr0_gpio_b28(void) __weak;
 void intr0_gpio_b29(void) __weak;
 void intr0_gpio_b30(void) __weak;
 void intr0_gpio_b31(void) __weak;
-#endif
 void intr1_gpio_c0(void) __weak;  // 0
 void intr1_gpio_c1(void) __weak;  // 1
 void intr1_gpio_c2(void) __weak;  // 2
@@ -1094,7 +1092,6 @@ void intr0_gpio_b26(void)
 #endif
 #endif
 }
-#ifdef AE103
 void intr0_gpio_b27(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
@@ -1170,18 +1167,10 @@ void intr0_gpio_b31(void)
 #endif
 #endif
 }
-#endif
 void intr1_gpio_c0(void)
 {
-#if (defined(AE101) || defined(AE102))
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[91]++;
-#endif
-#endif
-#ifdef AE103
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[96]++;
-#endif
 #endif
 
 #if TEST_INTC
@@ -1196,11 +1185,6 @@ void intr1_gpio_c0(void)
 }
 void intr1_gpio_c1(void)
 {
-#if (defined(AE101) || defined(AE102))
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[92]++;
-#endif
-#endif
 #if TEST_INTC
 #if INTC_MODE
 	printf("intr1_gpio_c1 mask\n");
@@ -1210,19 +1194,12 @@ void intr1_gpio_c1(void)
 	ICTL1_INTEN0 &= ~(0x1 << 1);
 #endif
 #endif
-#ifdef AE103
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[97]++;
-#endif
 #endif
 }
 void intr1_gpio_c2(void)
 {
-#if (defined(AE101) || defined(AE102))
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[93]++;
-#endif
-#endif
 #if TEST_INTC
 #if INTC_MODE
 	printf("intr1_gpio_c2 mask\n");
@@ -1232,19 +1209,13 @@ void intr1_gpio_c2(void)
 	ICTL1_INTEN0 &= ~(0x1 << 2);
 #endif
 #endif
-#ifdef AE103
+
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[98]++;
-#endif
 #endif
 }
 void intr1_gpio_c3(void)
 {
-#if (defined(AE101) || defined(AE102))
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[94]++;
-#endif
-#endif
 #if TEST_INTC
 #if INTC_MODE
 	printf("intr1_gpio_c3 mask\n");
@@ -1254,19 +1225,12 @@ void intr1_gpio_c3(void)
 	ICTL1_INTEN0 &= ~(0x1 << 3);
 #endif
 #endif
-#ifdef AE103
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[99]++;
-#endif
 #endif
 }
 void intr1_gpio_c4(void)
 {
-#if (defined(AE101) || defined(AE102))
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[95]++;
-#endif
-#endif
 #if TEST_INTC
 #if INTC_MODE
 	printf("intr1_gpio_c4 mask\n");
@@ -1276,19 +1240,12 @@ void intr1_gpio_c4(void)
 	ICTL1_INTEN0 &= ~(0x1 << 4);
 #endif
 #endif
-#ifdef AE103
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[100]++;
-#endif
 #endif
 }
 void intr1_gpio_c5(void)
 {
-#if (defined(AE101) || defined(AE102))
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[96]++;
-#endif
-#endif
 #if TEST_INTC
 #if INTC_MODE
 	printf("intr1_gpio_c5 mask\n");
@@ -1298,19 +1255,12 @@ void intr1_gpio_c5(void)
 	ICTL1_INTEN0 &= ~(0x1 << 5);
 #endif
 #endif
-#ifdef AE103
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[101]++;
-#endif
 #endif
 }
 void intr1_gpio_c6(void)
 {
-#if (defined(AE101) || defined(AE102))
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[97]++;
-#endif
-#endif
 #if TEST_INTC
 #if INTC_MODE
 	printf("intr1_gpio_c6 mask\n");
@@ -1320,19 +1270,12 @@ void intr1_gpio_c6(void)
 	ICTL1_INTEN0 &= ~(0x1 << 6);
 #endif
 #endif
-#ifdef AE103
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[102]++;
-#endif
 #endif
 }
 void intr1_gpio_c7(void)
 {
-#if (defined(AE101) || defined(AE102))
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[98]++;
-#endif
-#endif
 #if TEST_INTC
 #if INTC_MODE
 	printf("intr1_gpio_c7 mask\n");
@@ -1342,19 +1285,12 @@ void intr1_gpio_c7(void)
 	ICTL1_INTEN0 &= ~(0x1 << 7);
 #endif
 #endif
-#ifdef AE103
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[103]++;
-#endif
 #endif
 }
 void intr1_gpio_c8(void)
 {
-#if (defined(AE101) || defined(AE102))
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[99]++;
-#endif
-#endif
 #if TEST_INTC
 #if INTC_MODE
 	printf("intr1_gpio_c8 mask\n");
@@ -1364,19 +1300,12 @@ void intr1_gpio_c8(void)
 	ICTL1_INTEN1 &= ~(0x1 << 0);
 #endif
 #endif
-#ifdef AE103
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[104]++;
-#endif
 #endif
 }
 void intr1_gpio_c9(void)
 {
-#if (defined(AE101) || defined(AE102))
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[100]++;
-#endif
-#endif
 #if TEST_INTC
 #if INTC_MODE
 	printf("intr1_gpio_c9 mask\n");
@@ -1386,19 +1315,12 @@ void intr1_gpio_c9(void)
 	ICTL1_INTEN1 &= ~(0x1 << 1);
 #endif
 #endif
-#ifdef AE103
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[105]++;
-#endif
 #endif
 }
 void intr1_gpio_c10(void)
 {
-#if (defined(AE101) || defined(AE102))
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[101]++;
-#endif
-#endif
 #if TEST_INTC
 #if INTC_MODE
 	printf("intr1_gpio_c10 mask\n");
@@ -1408,19 +1330,12 @@ void intr1_gpio_c10(void)
 	ICTL1_INTEN1 &= ~(0x1 << 2);
 #endif
 #endif
-#ifdef AE103
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[106]++;
-#endif
 #endif
 }
 void intr1_gpio_c11(void)
 {
-#if (defined(AE101) || defined(AE102))
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[102]++;
-#endif
-#endif
 #if TEST_INTC
 #if INTC_MODE
 	printf("intr1_gpio_c11 mask\n");
@@ -1430,19 +1345,12 @@ void intr1_gpio_c11(void)
 	ICTL1_INTEN1 &= ~(0x1 << 3);
 #endif
 #endif
-#ifdef AE103
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[107]++;
-#endif
 #endif
 }
 void intr1_gpio_c12(void)
 {
-#if (defined(AE101) || defined(AE102))
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[103]++;
-#endif
-#endif
 #if TEST_INTC
 #if INTC_MODE
 	printf("intr1_gpio_c12 mask\n");
@@ -1452,19 +1360,12 @@ void intr1_gpio_c12(void)
 	ICTL1_INTEN1 &= ~(0x1 << 4);
 #endif
 #endif
-#ifdef AE103
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[108]++;
-#endif
 #endif
 }
 void intr1_gpio_c13(void)
 {
-#if (defined(AE101) || defined(AE102))
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[104]++;
-#endif
-#endif
 #if TEST_INTC
 #if INTC_MODE
 	printf("intr1_gpio_c13 mask\n");
@@ -1474,13 +1375,10 @@ void intr1_gpio_c13(void)
 	ICTL1_INTEN1 &= ~(0x1 << 5);
 #endif
 #endif
-#ifdef AE103
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[109]++;
 #endif
-#endif
 }
-#if (defined(AE103))
 void intr1_gpio_c14(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
@@ -1511,159 +1409,6 @@ void intr1_gpio_c15(void)
 #endif
 #endif
 }
-#endif
-// void intr1_gpio_e0(void)
-// {
-// #if (defined(AE101) || defined(AE102))
-// #if ENABLE_DEBUGGER_SUPPORT
-// 	Intr_num[105]++;
-// #endif
-// #endif
-// #ifdef AE103
-// #if ENABLE_DEBUGGER_SUPPORT
-// 	Intr_num[112]++;
-// #endif
-// #endif
-// }
-// void intr1_gpio_e1(void)
-// {
-// #if (defined(AE101) || defined(AE102))
-// #if ENABLE_DEBUGGER_SUPPORT
-// 	Intr_num[106]++;
-// #endif
-// #endif
-// #ifdef AE103
-// #if ENABLE_DEBUGGER_SUPPORT
-// 	Intr_num[113]++;
-// #endif
-// #endif
-// }
-// void intr1_gpio_e2(void)
-// {
-// #if (defined(AE101) || defined(AE102))
-// #if ENABLE_DEBUGGER_SUPPORT
-// 	Intr_num[107]++;
-// #endif
-// #endif
-// #ifdef AE103
-// #if ENABLE_DEBUGGER_SUPPORT
-// 	Intr_num[114]++;
-// #endif
-// #endif
-// }
-// void intr1_gpio_e3(void)
-// {
-// #if (defined(AE101) || defined(AE102))
-// #if ENABLE_DEBUGGER_SUPPORT
-// 	Intr_num[108]++;
-// #endif
-// #endif
-// #ifdef AE103
-// #if ENABLE_DEBUGGER_SUPPORT
-// 	Intr_num[115]++;
-// #endif
-// #endif
-// }
-// void intr1_gpio_e4(void)
-// {
-// #if (defined(AE101) || defined(AE102))
-// #if ENABLE_DEBUGGER_SUPPORT
-// 	Intr_num[109]++;
-// #endif
-// #endif
-// #ifdef AE103
-// #if ENABLE_DEBUGGER_SUPPORT
-// 	Intr_num[116]++;
-// #endif
-// #endif
-// }
-// void intr1_gpio_e5(void)
-// {
-// #if (defined(AE101) || defined(AE102))
-// #if ENABLE_DEBUGGER_SUPPORT
-// 	Intr_num[110]++;
-// #endif
-// #endif
-// #ifdef AE103
-// #if ENABLE_DEBUGGER_SUPPORT
-// 	Intr_num[117]++;
-// #endif
-// #endif
-// }
-// void intr1_gpio_e6(void)
-// {
-// #if (defined(AE101) || defined(AE102))
-// #if ENABLE_DEBUGGER_SUPPORT
-// 	Intr_num[111]++;
-// #endif
-// #endif
-// #ifdef AE103
-// #if ENABLE_DEBUGGER_SUPPORT
-// 	Intr_num[118]++;
-// #endif
-// #endif
-// }
-// void intr1_gpio_e7(void)
-// {
-// #if (defined(AE101) || defined(AE102))
-// #if ENABLE_DEBUGGER_SUPPORT
-// 	Intr_num[112]++;
-// #endif
-// #endif
-// #ifdef AE103
-// #if ENABLE_DEBUGGER_SUPPORT
-// 	Intr_num[119]++;
-// #endif
-// #endif
-// }
-// void intr1_gpio_e8(void)
-// {
-// #if ENABLE_DEBUGGER_SUPPORT
-// 	Intr_num[113]++;
-// #endif
-// }
-// void intr1_gpio_e9(void)
-// {
-// #if ENABLE_DEBUGGER_SUPPORT
-// 	Intr_num[114]++;
-// #endif
-// }
-// void intr1_gpio_e10(void)
-// {
-// #if ENABLE_DEBUGGER_SUPPORT
-// 	Intr_num[115]++;
-// #endif
-// }
-// void intr1_gpio_e11(void)
-// {
-// #if ENABLE_DEBUGGER_SUPPORT
-// 	Intr_num[116]++;
-// #endif
-// }
-// void intr1_gpio_e12(void)
-// {
-// #if ENABLE_DEBUGGER_SUPPORT
-// 	Intr_num[117]++;
-// #endif
-// }
-// void intr1_gpio_e13(void)
-// {
-// #if ENABLE_DEBUGGER_SUPPORT
-// 	Intr_num[118]++;
-// #endif
-// }
-// void intr1_gpio_e14(void)
-// {
-// #if ENABLE_DEBUGGER_SUPPORT
-// 	Intr_num[119]++;
-// #endif
-// }
-// void intr1_gpio_e15(void)
-// {
-// #if ENABLE_DEBUGGER_SUPPORT
-// 	Intr_num[120]++;
-// #endif
-// }
 void intr1_gpio_e16(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
@@ -2246,11 +1991,6 @@ void intr1_pmc2_obe_ec(void) // 39
 
 void intr1_pmc3_ibf_ec(void)
 {
-#if (defined(AE101) || defined(AE102))
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[129]++;
-#endif
-#endif
 #if TEST_INTC
 #if INTC_MODE
 	printf("intr1_pmc3_ibf_ec mask\n");
@@ -2260,21 +2000,14 @@ void intr1_pmc3_ibf_ec(void)
 	ICTL1_INTEN5 &= ~(0x1 << 0);
 #endif
 #endif
-#ifdef AE103
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[136]++;
-#endif
 #endif
 	PMC3_CTL &= ~IBF_INT_ENABLE;
 	F_Service_PCI4 = 1;
 }
 void intr1_pmc3_obe_ec(void)
 {
-#if (defined(AE101) || defined(AE102))
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[130]++;
-#endif
-#endif
 #if TEST_INTC
 #if INTC_MODE
 	printf("intr1_pmc3_obe_ec mask\n");
@@ -2284,19 +2017,12 @@ void intr1_pmc3_obe_ec(void)
 	ICTL1_INTEN5 &= ~(0x1 << 1);
 #endif
 #endif
-#ifdef AE103
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[137]++;
-#endif
 #endif
 }
 void intr1_pmc4_ibf_ec(void)
 {
-#if (defined(AE101) || defined(AE102))
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[131]++;
-#endif
-#endif
 #if TEST_INTC
 #if INTC_MODE
 	printf("intr1_pmc4_ibf_ec mask\n");
@@ -2306,21 +2032,14 @@ void intr1_pmc4_ibf_ec(void)
 	ICTL1_INTEN5 &= ~(0x1 << 2);
 #endif
 #endif
-#ifdef AE103
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[138]++;
-#endif
 #endif
 	PMC4_CTL &= ~IBF_INT_ENABLE;
 	F_Service_PCI5 = 1;
 }
 void intr1_pmc4_obe_ec(void)
 {
-#if (defined(AE101) || defined(AE102))
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[132]++;
-#endif
-#endif
 #if TEST_INTC
 #if INTC_MODE
 	printf("intr1_pmc4_ibf_ec mask\n");
@@ -2330,19 +2049,12 @@ void intr1_pmc4_obe_ec(void)
 	ICTL1_INTEN5 &= ~(0x1 << 3);
 #endif
 #endif
-#ifdef AE103
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[139]++;
-#endif
 #endif
 }
 void intr1_pmc5_ibf_ec(void)
 {
-#if (defined(AE101) || defined(AE102))
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[133]++;
-#endif
-#endif
 #if TEST_INTC
 #if INTC_MODE
 	printf("intr1_pmc5_ibf_ec mask\n");
@@ -2352,21 +2064,14 @@ void intr1_pmc5_ibf_ec(void)
 	ICTL1_INTEN5 &= ~(0x1 << 4);
 #endif
 #endif
-#ifdef AE103
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[140]++;
-#endif
 #endif
 	PMC5_CTL &= ~IBF_INT_ENABLE;
 	F_Service_PCI6 = 1;
 }
 void intr1_pmc5_obe_ec(void)
 {
-#if (defined(AE101) || defined(AE102))
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[134]++;
-#endif
-#endif
 #if TEST_INTC
 #if INTC_MODE
 	printf("intr1_pmc5_obe_ec mask\n");
@@ -2376,19 +2081,12 @@ void intr1_pmc5_obe_ec(void)
 	ICTL1_INTEN5 &= ~(0x1 << 5);
 #endif
 #endif
-#ifdef AE103
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[141]++;
-#endif
 #endif
 }
 void intr1_ps2_1(void) // 46
 {
-#if (defined(AE101) || defined(AE102))
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[135]++;
-#endif
-#endif
 #if TEST_INTC
 #if INTC_MODE
 	printf("intr1_ps2_1 mask\n");
@@ -2398,127 +2096,15 @@ void intr1_ps2_1(void) // 46
 	ICTL1_INTEN5 &= ~(0x1 << 6);
 #endif
 #endif
-#ifdef AE103
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[142]++;
-#endif
 #endif
 	if(MS_Main_CHN == 2)
 		Handle_Mouse(MS_Main_CHN - 1);
 	else if(KB_Main_CHN == 2)
 		Handle_Kbd(KB_Main_CHN - 1);
 }
-#if defined(AE101)
-void intr1_null45(void) // 45 47
-{
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[136]++;
-#endif
-	irqprint("null 45\n");
-}
-void intr1_null46(void) // 46 48
-{
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[137]++;
-#endif
-	irqprint("null 46\n");
-}
-void intr1_null47(void) // 47 49
-{
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[138]++;
-#endif
-	irqprint("null 47\n");
-}
-#elif (defined(AE102) || defined(AE103))
-void intr1_uart1(void)
-{
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_uart1 mask\n");
-	ICTL1_INTMASK5 |= 0x1 << 7;
-#else
-	printf("intr1_uart1 disable\n");
-	ICTL1_INTEN5 &= ~(0x1 << 7);
-#endif
-#endif
 
-#if (defined(AE101) || defined(AE102))
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[136]++;
-#endif
-#endif
-	register u8 iir = (UART1_IIR & 0xf);
-	if(iir == UART_IIR_RLS) // 奇偶校验、溢出、格式错误、失效中断
-	{
-		register u8 lsr = UART1_LSR;
-		if(lsr & (UART_LSR_BI | UART_LSR_FE | UART_LSR_PE)) // 打断传输,格式错误，奇偶校验，
-		{
-			UART1_RX;					 // 读出异常值
-			irqprint("Receive error\n"); // 报错
-		#if (defined(AE101) || defined(AE102))
-			SYSCTL_PIO2_UDCFG |= BIT3;
-		#endif
-		#ifdef AE103
-			SYSCTL_PIO1_UDCFG |= BIT3;
-		#endif
-		} // 接收错误
-	}
-#if (ENABLE_COMMAND_SUPPORT && COMMAND_UART_SWITCH == 1)
-	if(F_Service_CMD == 1)
-	{
-		char temp = UART1_RX;
-	#if (!IRQC_DEBUG)
-		UNUSED_VAR(temp);
-	#endif
-		irqprint("erro of CMD_RUN:%#x,%c\n", temp, temp);
-		return;
-	}
-	CMD_UART_BUFF[CMD_UART_CNT] = UART1_RX;
-	if(CMD_UART_BUFF[CMD_UART_CNT] == '\n' || CMD_UART_CNT == CMD_BUFF_MAX)
-	{
-		CMD_UART_BUFF[CMD_UART_CNT] = '\0';
-		if(CMD_UART_BUFF[CMD_UART_CNT - 1] == ' ')
-		{
-			CMD_UART_CNT--;
-			CMD_UART_BUFF[CMD_UART_CNT] = '\0';
-		}
-		F_Service_CMD = 1;
-	}
-	else if(CMD_UART_BUFF[CMD_UART_CNT] == '\r')
-		CMD_UART_BUFF[CMD_UART_CNT] = '\0';
-	else
-		CMD_UART_CNT++;
-#endif
-#ifdef AE103
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[143]++;
-#endif
-#endif
-#if ENABLE_DEBUGGER_SUPPORT
-#if DEBUGGER_OUTPUT_SWITCH == 0
-#if DEBUG_UART_SWITCH == 1
-	char temp = UART1_RX;
-	Uart_buffer[Uart_Rx_index++] = temp;
-	Uart_Rx_index %= UART_BUFFER_SIZE;
-	Debugger_Cmd_IRQ(temp);
-#endif
-#endif
-#endif
-}
-void intr1_null48(void)
-{
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[144]++;
-#endif
-}
-void intr1_null49(void)
-{
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[145]++;
-#endif
-}
-#endif
 void intr1_spim(void)
 {
 #if TEST_INTC
@@ -2531,15 +2117,9 @@ void intr1_spim(void)
 #endif
 #endif
 	uint8_t data = 0;
-#if (defined(AE101) || defined(AE102))
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[139]++;
-#endif
-#endif
-#ifdef AE103
+
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[146]++;
-#endif
 #endif
 	if((SPIM_ISR & 0X10)) // fifo接收满中断
 	{
@@ -2585,15 +2165,9 @@ void intr1_smbus0(void)
 	ICTL1_INTEN6 &= ~(0x1 << 3);
 #endif
 #endif
-#if (defined(AE101) || defined(AE102))
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[140]++;
-#endif
-#endif
-#ifdef AE103
+
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[147]++;
-#endif
 #endif
 	BYTE abrt_source_l = I2c_Readb(I2C_TX_ABRT_SOURCE_OFFSET, I2C_CHANNEL_0);
 	BYTE abrt_source_h = I2c_Readb((I2C_TX_ABRT_SOURCE_OFFSET + 1), I2C_CHANNEL_0);
@@ -2680,15 +2254,8 @@ void intr1_smbus1(void)
 	ICTL1_INTEN6 &= ~(0x1 << 4);
 #endif
 #endif
-#if (defined(AE101) || defined(AE102))
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[141]++;
-#endif
-#endif
-#ifdef AE103
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[148]++;
-#endif
 #endif
 	BYTE abrt_source_l = I2c_Readb(I2C_TX_ABRT_SOURCE_OFFSET, I2C_CHANNEL_1);
 	BYTE abrt_source_h = I2c_Readb((I2C_TX_ABRT_SOURCE_OFFSET + 1), I2C_CHANNEL_1);
@@ -2753,15 +2320,8 @@ void intr1_smbus2(void)
 	ICTL1_INTEN6 &= ~(0x1 << 5);
 #endif
 #endif
-#if (defined(AE101) || defined(AE102))
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[142]++;
-#endif
-#endif
-#ifdef AE103
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[149]++;
-#endif
 #endif
 	BYTE abrt_source_l = I2c_Readb(I2C_TX_ABRT_SOURCE_OFFSET, I2C_CHANNEL_2);
 	BYTE abrt_source_h = I2c_Readb((I2C_TX_ABRT_SOURCE_OFFSET + 1), I2C_CHANNEL_2);
@@ -2825,15 +2385,8 @@ void intr1_smbus3(void)
 	ICTL1_INTEN6 &= ~(0x1 << 6);
 #endif
 #endif
-#if (defined(AE101) || defined(AE102))
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[143]++;
-#endif
-#endif
-#ifdef AE103
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[150]++;
-#endif
 #endif
 	BYTE abrt_source_l = I2c_Readb(I2C_TX_ABRT_SOURCE_OFFSET, I2C_CHANNEL_3);
 	BYTE abrt_source_h = I2c_Readb((I2C_TX_ABRT_SOURCE_OFFSET + 1), I2C_CHANNEL_3);
@@ -2886,29 +2439,10 @@ void intr1_smbus3(void)
 	}
 #endif
 }
-#if defined(AE101)
-void intr1_null53(void) // 53 55
-{}
-void intr1_null54(void) // 54 56
-{}
-void intr1_null55(void) // 55 57
-{}
-void intr1_null56(void) // 56 58
-{}
-void intr1_null57(void) // 57 59
-{}
-#elif (defined(AE102) || defined(AE103))
 void intr1_smbus6(void)
 {
-#if (defined(AE101) || defined(AE102))
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[144]++;
-#endif
-#endif
-#ifdef AE103
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[151]++;
-#endif
 #endif
 
 #if TEST_INTC
@@ -2923,15 +2457,8 @@ void intr1_smbus6(void)
 }
 void intr1_smbus7(void)
 {
-#if (defined(AE101) || defined(AE102))
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[145]++;
-#endif
-#endif
-#ifdef AE103
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[152]++;
-#endif
 #endif
 #if TEST_INTC
 #if INTC_MODE
@@ -2945,15 +2472,8 @@ void intr1_smbus7(void)
 }
 void intr1_smbus8(void)
 {
-#if (defined(AE101) || defined(AE102))
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[146]++;
-#endif
-#endif
-#ifdef AE103
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[153]++;
-#endif
 #endif
 #if TEST_INTC
 #if INTC_MODE
@@ -2967,31 +2487,16 @@ void intr1_smbus8(void)
 }
 void intr1_null58(void)
 {
-#if (defined(AE101) || defined(AE102))
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[147]++;
-#endif
-#endif
-#ifdef AE103
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[154]++;
-#endif
 #endif
 }
 void intr1_null59(void)
 {
-#if (defined(AE101) || defined(AE102))
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[148]++;
-#endif
-#endif
-#ifdef AE103
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[155]++;
 #endif
-#endif
 }
-#endif
 void intr1_por_int(void)
 {
 #if TEST_INTC
@@ -3003,15 +2508,8 @@ void intr1_por_int(void)
 	ICTL1_INTEN7 &= ~(0x1 << 4);
 #endif
 #endif
-#if (defined(AE101) || defined(AE102))
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[149]++;
-#endif
-#endif
-#ifdef AE103
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[156]++;
-#endif
 #endif
 }
 void intr1_mailbox(void)
@@ -3041,7 +2539,6 @@ void intr1_mailbox(void)
 	F_Service_Mailbox = 1;
 }
 
-#ifdef AE103
 void intr1_espi(void)
 {
 #if TEST_INTC
@@ -3192,8 +2689,7 @@ void intr1_null63(void)
 	Intr_num[159]++;
 #endif
 }
-#endif
-/* Temporarily debug interrupt service used by AE102 due to macro issue  */
+/* Temporarily debug interrupt service used by  due to macro issue  */
 const __weak FUNCT_PTR_V_V intr0_service[] =
 {
 	intr0_gpio_a0,	// 0

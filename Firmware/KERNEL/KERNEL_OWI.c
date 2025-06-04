@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-01-12 17:27:51
+ * @LastEditTime: 2025-06-04 17:22:23
  * @Description:
  *
  *
@@ -15,7 +15,6 @@
  */
 #include <KERNEL_OWI.H>
 
-#if (defined(AE103))
 //数据发送
 void OWI_GO(u16 reset_us)
 {
@@ -63,4 +62,3 @@ void OWI_Send_One_Data(u32 data)
     OWI_Set_Data(0, 127, data);
     OWI_GO(50);
 }
-#endif
