@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-06-04 17:59:29
+ * @LastEditTime: 2025-06-11 17:40:26
  * @Description: This file is used for INTC interrupt
  *
  *
@@ -2104,7 +2104,80 @@ void intr1_ps2_1(void) // 46
 	else if(KB_Main_CHN == 2)
 		Handle_Kbd(KB_Main_CHN - 1);
 }
-
+void intr1_uart1(void)
+{
+#if TEST_INTC
+#if INTC_MODE
+	printf("intr1_uart1 mask\n");
+	ICTL1_INTMASK5 |= 0x1 << 7;
+#else
+	printf("intr1_uart1 disable\n");
+	ICTL1_INTEN5 &= ~(0x1 << 7);
+#endif
+#endif
+	register u8 iir = (UART1_IIR & 0xf);
+	if(iir == UART_IIR_RLS) // 奇偶校验、溢出、格式错误、失效中断
+	{
+		register u8 lsr = UART1_LSR;
+		if(lsr & (UART_LSR_BI | UART_LSR_FE | UART_LSR_PE)) // 打断传输,格式错误，奇偶校验，
+		{
+			UART1_RX;					 // 读出异常值
+			irqprint("Receive error\n"); // 报错
+			SYSCTL_PIO1_UDCFG |= BIT3;
+		} // 接收错误
+	}
+#if (ENABLE_COMMAND_SUPPORT && COMMAND_UART_SWITCH == 1)
+	if(F_Service_CMD == 1)
+	{
+		char temp = UART1_RX;
+	#if (!IRQC_DEBUG)
+		UNUSED_VAR(temp);
+	#endif
+		irqprint("erro of CMD_RUN:%#x,%c\n", temp, temp);
+		return;
+	}
+	CMD_UART_BUFF[CMD_UART_CNT] = UART1_RX;
+	if(CMD_UART_BUFF[CMD_UART_CNT] == '\n' || CMD_UART_CNT == CMD_BUFF_MAX)
+	{
+		CMD_UART_BUFF[CMD_UART_CNT] = '\0';
+		if(CMD_UART_BUFF[CMD_UART_CNT - 1] == ' ')
+		{
+			CMD_UART_CNT--;
+			CMD_UART_BUFF[CMD_UART_CNT] = '\0';
+		}
+		F_Service_CMD = 1;
+	}
+	else if(CMD_UART_BUFF[CMD_UART_CNT] == '\r')
+		CMD_UART_BUFF[CMD_UART_CNT] = '\0';
+	else
+		CMD_UART_CNT++;
+#endif
+#if ENABLE_DEBUGGER_SUPPORT
+	Intr_num[143]++;
+#endif
+#if ENABLE_DEBUGGER_SUPPORT
+#if DEBUGGER_OUTPUT_SWITCH == 0
+#if DEBUG_UART_SWITCH == 1
+	char temp = UART1_RX;
+	Uart_buffer[Uart_Rx_index++] = temp;
+	Uart_Rx_index %= UART_BUFFER_SIZE;
+	Debugger_Cmd_IRQ(temp);
+#endif
+#endif
+#endif
+}
+void intr1_null48(void)
+{
+#if ENABLE_DEBUGGER_SUPPORT
+	Intr_num[144]++;
+#endif
+}
+void intr1_null49(void)
+{
+#if ENABLE_DEBUGGER_SUPPORT
+	Intr_num[145]++;
+#endif
+}
 void intr1_spim(void)
 {
 #if TEST_INTC
