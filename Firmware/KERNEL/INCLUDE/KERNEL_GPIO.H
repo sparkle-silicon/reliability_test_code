@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-06-04 17:02:16
+ * @LastEditTime: 2025-06-13 19:44:39
  * @Description:
  *
  *
@@ -259,23 +259,19 @@ extern struct GPIOPinState gpio_state_table[];
 //	Extern functions
 //******************************************************************************************
 extern void sysctl_iomux_uart0(void);
-extern void sysctl_iomux_uart1(void);
-extern void sysctl_iomux_uart2(void);
-extern void sysctl_iomux_uart3(void);
-extern void sysctl_iomux_uarta(void);
+extern void sysctl_iomux_uart1(uint32_t tx_sel, uint32_t rx_sel);
+extern void sysctl_iomux_uarta(uint32_t tx_sel, uint32_t rx_sel);
 extern void sysctl_iomux_uartb(void);
 
 extern void sysctl_iomux_disable_uart0(void);
-extern void sysctl_iomux_disable_uart1(void);
-extern void sysctl_iomux_disable_uart2(void);
-extern void sysctl_iomux_disable_uart3(void);
-extern void sysctl_iomux_disable_uarta(void);
+extern void sysctl_iomux_disable_uart1(uint32_t tx_sel, uint32_t rx_sel);
+extern void sysctl_iomux_disable_uarta(uint32_t tx_sel, uint32_t rx_sel);
 extern void sysctl_iomux_disable_uartb(void);
 
-extern BYTE sysctl_iomux_ps2_0(void);
-extern BYTE sysctl_iomux_ps2_1(void);
-extern void sysctl_iomux_spim(void);
-extern void sysctl_iomux_spim_cs(void);
+extern void sysctl_iomux_ps2_0(uint32_t clk_sel, uint32_t data_sel);
+extern void sysctl_iomux_ps2_1(uint32_t clk_sel, uint32_t data_sel);
+extern void sysctl_iomux_spim(uint32_t mosi_sel, uint32_t miso_sel, uint32_t Quad_Enable);
+extern void sysctl_iomux_spim_cs(uint32_t csn0_sel);
 extern void sysctl_iomux_pwm0(void);
 extern void sysctl_iomux_pwm1(void);
 extern void sysctl_iomux_pwm2(void);
@@ -284,13 +280,13 @@ extern void sysctl_iomux_pwm4(void);
 extern void sysctl_iomux_pwm5(void);
 extern void sysctl_iomux_pwm6(void);
 extern void sysctl_iomux_pwm7(void);
-extern void sysctl_iomux_tach0(void);
-extern void sysctl_iomux_tach1(void);
+extern void sysctl_iomux_tach0(uint32_t tach_sel);
+extern void sysctl_iomux_tach1(uint32_t tach_sel);
 extern void sysctl_iomux_tach2(void);
-extern void sysctl_iomux_tach3(void);
-extern void sysctl_iomux_i2c0(void);
+extern void sysctl_iomux_tach3(uint32_t tach_sel);
+extern void sysctl_iomux_i2c0(uint32_t clk_sel, uint32_t data_sel);
 extern void sysctl_iomux_i2c1(void);
-extern void sysctl_iomux_i2c2(void);
+extern void sysctl_iomux_i2c2(uint32_t clk_sel);
 extern void sysctl_iomux_i2c3(void);
 extern void sysctl_iomux_i2c4(void);
 extern void sysctl_iomux_i2c5(void);

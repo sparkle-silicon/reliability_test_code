@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-06-04 17:28:31
+ * @LastEditTime: 2025-06-13 15:58:06
  * @Description:
  *
  *
@@ -1161,14 +1161,19 @@ int i2c_dw_read_clear_intrbits(WORD i2c_channel)
 	 *
 	 * The raw version might be useful for debugging purposes.
 	 */
+#if 1
+	int stat = I2c_Read_Short(I2C_INTR_STAT_OFFSET, i2c_channel);
+#else
 	int stat = I2c_Readb(I2C_INTR_STAT_OFFSET, i2c_channel);
-	/*
-	 * Do not use the IC_CLR_INTR register to clear interrupts, or
-	 * you'll miss some interrupts, triggered during the period from
-	 * readl(IC_INTR_STAT) to readl(IC_CLR_INTR).
-	 *
-	 * Instead, use the separately-prepared IC_CLR_* registers.
-	 */
+	stat |= (I2c_Readb((I2C_INTR_STAT_OFFSET + 1), i2c_channel) << 8);
+#endif
+/*
+ * Do not use the IC_CLR_INTR register to clear interrupts, or
+ * you'll miss some interrupts, triggered during the period from
+ * readl(IC_INTR_STAT) to readl(IC_CLR_INTR).
+ *
+ * Instead, use the separately-prepared IC_CLR_* registers.
+ */
 	if(stat & I2C_INTR_RX_UNDER)
 		I2c_Readb(I2C_INTR_MASK_OFFSET, i2c_channel);
 	if(stat & I2C_INTR_RX_OVER)

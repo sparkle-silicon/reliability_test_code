@@ -1,7 +1,7 @@
 /*
  * @Author: Maple
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-01-21 11:50:23
+ * @LastEditTime: 2025-06-13 20:27:38
  * @Description:
  *
  *
@@ -195,7 +195,7 @@ BYTE Moudle_test(void)
 				{
 					SYSCTL_MODEN0 &= (~UART1_EN);
 				}
-				sysctl_iomux_uart1();
+				sysctl_iomux_uart1(UART1_TX_SEL, UART1_RX_SEL);
 				serial_init(1, 115200);
 				Uart_Int_Disable(1, 0);
 				dprint("perpare UART1\n");
@@ -368,7 +368,7 @@ BYTE Moudle_test(void)
 				// {
 				// 	SYSCTL_MODEN0 &=(~UARTA_EN);
 				// }
-				sysctl_iomux_uarta();
+				sysctl_iomux_uarta(UARTA_TX_SEL, UARTA_RX_SEL);
 				serial_init(UARTA_CHANNEL, 115200);
 
 				Uart_Int_Disable(UARTA_CHANNEL, 0);
@@ -676,13 +676,13 @@ BYTE Moudle_test(void)
 
 				sysctl_iomux_pwm0();
 				//pwm,A0
-				sysctl_iomux_tach0();
+				sysctl_iomux_tach0(TACH0_PIN_SEL);
 				//tach0_pull_up();
-				sysctl_iomux_tach1();
+				sysctl_iomux_tach1(TACH1_PIN_SEL);
 				//tach1_pull_up();
 				sysctl_iomux_tach2();
 				//tach2_pull_up();
-				sysctl_iomux_tach3();
+				sysctl_iomux_tach3(TACH3_PIN_SEL);
 				//tach3_pull_up();
 				TACH_Init_Channel(TACH_CHANNEL0, 1, 0);//用PWM0连接FAN2（PIOA0连接FAN2_PWM），用于驱动风扇转动
 				TACH_Init_Channel(TACH_CHANNEL1, 1, 0);//tach0-3分别与FAN2_TACH连接，观察打印是否有打印风扇转速信息
@@ -747,7 +747,7 @@ BYTE Moudle_test(void)
 				{
 					SYSCTL_MODEN0 &= (~SMB0_EN);
 				}
-				sysctl_iomux_i2c0();
+				sysctl_iomux_i2c0(I2C0_CLK_SEL, I2C0_DAT_SEL);
 				I2c_Channel_Init(I2C_CHANNEL_0, I2C0_SPEED, I2C_MASTER_ROLE, 0x4c, 1);
 				dprint("perpare SMBUS0\n");
 				dprint("completing the jumper, then send any key to start test\n");  //SMCLK0接TMP_SCL，SMDAT0接TMP_SDA
@@ -853,7 +853,7 @@ BYTE Moudle_test(void)
 				{
 					SYSCTL_MODEN0 &= (~SMB2_EN);
 				}
-				sysctl_iomux_i2c2();
+				sysctl_iomux_i2c2(I2C2_CLK_SEL);
 				I2c_Channel_Init(I2C_CHANNEL_2, I2C2_SPEED, I2C_MASTER_ROLE, 0x4c, 1);
 				dprint("perpare SMBUS2\n");
 				dprint("completing the jumper, then send any key to start test\n");//SMCLK2接TMP_SCL，SMDAT2接TMP_SDA
@@ -960,8 +960,8 @@ BYTE Moudle_test(void)
 				{
 					SYSCTL_MODEN0 &= (~SPIM_EN);
 				}
-				sysctl_iomux_spim();
-				sysctl_iomux_spim_cs();
+				sysctl_iomux_spim(SPIM_MOSI_SEL, SPIM_MISO_SEL, SPIM_QE_SEL);
+				sysctl_iomux_spim_cs(SPIM_CS_SEL);
 				SPI_Init(0, SPIM_CPOL_LOW, SPIM_CPHA_FE, SPIM_LSB, 0x7, 1);
 				dprint("perpare SPIM\n");
 				dprint("completing the jumper, then send any key to start test\n");//spim_sck接SSCK，spim_mosi接SMOSI，spim_miso接SMISO

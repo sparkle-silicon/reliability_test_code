@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-06-04 16:45:25
+ * @LastEditTime: 2025-06-13 20:27:23
  * @Description:
  *
  *
@@ -219,7 +219,10 @@
 #if (COMMAND_UART_SWITCH == 3 || DEBUG_UART_SWITCH == 3 || PRINTF_UART_SWITCH == 3)
 #define UARTB_BAUD 115200
 #endif
-
+#define UART1_TX_SEL 0
+#define UART1_RX_SEL 0
+#define UARTA_TX_SEL 0
+#define UARTA_RX_SEL 0
 // I2C 初始化
 #define I2C0_EN_Init 1 & SMBUS0_CLOCK_EN
 #define I2C0_SPEED 100000
@@ -240,6 +243,9 @@
 #define I2C7_SPEED 100000
 #define I2C8_EN_Init 0 & SMBUS8_CLOCK_EN
 #define I2C8_SPEED 100000
+#define I2C0_CLK_SEL 0
+#define I2C0_DAT_SEL 0
+#define I2C2_CLK_SEL 0
 /*yujiang add*/
 #if SPI_MODULE_EN
 #define SPIM_CS_EN 1
@@ -257,9 +263,21 @@
 #define TACH1_EN 0 & PWM_CLOCK_EN
 #define TACH2_EN 0 & PWM_CLOCK_EN
 #define TACH3_EN 0 & PWM_CLOCK_EN
+#define TACH0_PIN_SEL 0
+#define TACH1_PIN_SEL 0
+#define TACH3_PIN_SEL 0
 // PS2初始化
 #define PS2_0_EN_Init 1 & PS2_0_CLOCK_EN
 #define PS2_1_EN_Init 1 & PS2_1_CLOCK_EN
+#define PS2_0_CLK_SEL 0
+#define PS2_1_CLK_SEL 0
+#define PS2_0_DAT_SEL 0
+#define PS2_1_DAT_SEL 0
+//SPIM初始化
+#define SPIM_CS_SEL 0
+#define SPIM_MOSI_SEL 0
+#define SPIM_MISO_SEL 0
+#define SPIM_QE_SEL 0
 // ADC初始化
 #define ADC0_EN_Init 0 & ADC_CLOCK_EN
 #define ADC1_EN_Init 0 & ADC_CLOCK_EN

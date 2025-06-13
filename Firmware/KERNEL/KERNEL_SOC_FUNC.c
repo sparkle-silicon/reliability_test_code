@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-06-04 17:24:42
+ * @LastEditTime: 2025-06-13 20:24:47
  * @Description: This is about the  national crypto algorithm implementation
  *
  *
@@ -183,17 +183,13 @@ void uart_init(void)
 #endif
 #ifdef UART1_BAUD
 	uart1_MoudleClock_EN;
-	sysctl_iomux_uart1();
+	sysctl_iomux_uart1(UART1_TX_SEL, UART1_RX_SEL);
 	flag |= BIT1;
 	baud[1] = serial_init(UART1_CHANNEL, UART1_BAUD);
 #endif
-// #define UART2_BAUD 115200
-#ifdef UART2_BAUD
-#define	UARTA_BAUD UART2_BAUD
-#endif
 #ifdef UARTA_BAUD
 	uarta_MoudleClock_EN;
-	sysctl_iomux_uarta();
+	sysctl_iomux_uarta(UARTA_TX_SEL, UARTA_RX_SEL);
 	flag |= BIT4;
 	baud[4] = serial_init(UARTA_CHANNEL, UARTA_BAUD);
 #endif
@@ -219,7 +215,7 @@ void smbus_init(void)
 #if I2C_MODULE_EN
 #if I2C0_EN_Init
 	smbus0_MoudleClock_EN;
-	sysctl_iomux_i2c0();
+	sysctl_iomux_i2c0(I2C0_CLK_SEL, I2C0_DAT_SEL);
 	// printf("0x30454:%x\n", *(unsigned int *)0x30454);
 	//i2c0_pull_up();
 #if (DEBUGGER_OUTPUT_SWITCH == 1)
@@ -247,7 +243,7 @@ void smbus_init(void)
 #endif
 #if I2C2_EN_Init
 	smbus2_MoudleClock_EN;
-	sysctl_iomux_i2c2();
+	sysctl_iomux_i2c2(I2C2_CLK_SEL);
 	i2c2_pull_up();
 	GPIO_Pullup_Config(GPIOA, 23);
 #if (DEBUGGER_OUTPUT_SWITCH == 1)
@@ -346,13 +342,13 @@ void spim_init(void)
 {
 #if SPI_MODULE_EN
 	spim_MoudleClock_EN;
-	sysctl_iomux_spim();
+	sysctl_iomux_spim(SPIM_MOSI_SEL, SPIM_MISO_SEL, SPIM_QE_SEL);
 #if SPIM_CS_EN
 	/*By default, a slave device does not multiplexing the chip select signal and utilizes hardware
 	circuitry to manage the chip select signal. For two or more devices, the default
 	configuration involves the use of two chip select signals for control. If there are specific
 	requirements, it is possible to disable the reuse of unnecessary chip select signals.*/
-	sysctl_iomux_spim_cs();
+	sysctl_iomux_spim_cs(SPIM_CS_SEL);
 #endif
 	SPI_Init(0, SPIM_CPOL_LOW, SPIM_CPHA_FE, SPIM_LSB, 0x7, 1);
 	dprint("SPI init done.\n");

@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-06-04 17:22:42
+ * @LastEditTime: 2025-06-13 20:19:05
  * @Description: This file is used to handling PS2 interface
  *
  *
@@ -836,19 +836,19 @@ void MS_Data_Suspend(BYTE nPending)
 		}
 		if(MS_Main_CHN == 1)
 		{
-			if(sysctl_iomux_ps2_0() == 0x1)
+			if(PS2_0_CLK_SEL == 0)
 			{
 				GPIO1_DR1 &= 0xFE;	  // GPB8 输出低
 				GPIO1_DDR1 |= 0x1;	  // GPB8 配置为GPIO输出模式
 				sysctl_iomux_config(GPIOB, 8, 0); // GPB8 配置为GPIO模式
 			}
-			else if(sysctl_iomux_ps2_0() == 0x2)
+			else if(PS2_0_CLK_SEL == 1)
 			{
 				GPIO1_DR1 &= 0xFB;    //GPIOB10 输出低
 				GPIO1_DDR1 |= 0x04;
 				sysctl_iomux_config(GPIOB, 10, 0); // GPB10 配置为GPIO模式
 			}
-			else if(sysctl_iomux_ps2_0() == 0x4)
+			else if(PS2_0_CLK_SEL == 2)
 			{
 				GPIOB27(LOW);
 				GPIO1_DDR3 |= 0x08;
@@ -857,13 +857,13 @@ void MS_Data_Suspend(BYTE nPending)
 		}
 		else if(MS_Main_CHN == 2)
 		{
-			if(sysctl_iomux_ps2_1() == 0x10)
+			if(PS2_1_CLK_SEL == 0)
 			{
 				GPIO1_DR1 &= 0xEF;	  // GPB12 输出低
 				GPIO1_DDR1 |= 0x10;	  // GPB12 配置为GPIO输出模式
 				sysctl_iomux_config(GPIOB, 12, 0); // GPB12 配置为GPIO模式
 			}
-			else if(sysctl_iomux_ps2_1() == 0x20)
+			else if(PS2_1_CLK_SEL == 1)
 			{
 				GPIO1_DR1 &= 0xFB;    //GPIOB10 输出低
 				GPIO1_DDR1 |= 0x04;
@@ -1054,11 +1054,11 @@ void Service_Send_PS2(void)
 		{
 			if(MS_Main_CHN == 1)
 			{
-				sysctl_iomux_ps2_0(); // 配置为PS2 CLK线
+				sysctl_iomux_ps2_0(PS2_0_CLK_SEL, PS2_0_DAT_SEL); // 配置为PS2 CLK线
 			}
 			else if(MS_Main_CHN == 2)
 			{
-				sysctl_iomux_ps2_1(); // 配置为PS2 CLK线
+				sysctl_iomux_ps2_1(PS2_1_CLK_SEL, PS2_1_DAT_SEL); // 配置为PS2 CLK线
 			}
 			MSCmdAck = Release_MS_Data_Suspend();
 			Send_Aux_Data_To_Host(MSCmdAck);
@@ -1087,11 +1087,11 @@ void Service_Send_PS2(void)
 			}
 			if(MS_Main_CHN == 1)
 			{
-				sysctl_iomux_ps2_0(); //  配置回PS2 CLK线
+				sysctl_iomux_ps2_0(PS2_0_CLK_SEL, PS2_0_DAT_SEL); //  配置回PS2 CLK线
 			}
 			else if(MS_Main_CHN == 2)
 			{
-				sysctl_iomux_ps2_1(); // 配置回PS2 CLK线
+				sysctl_iomux_ps2_1(PS2_1_CLK_SEL, PS2_1_DAT_SEL); // 配置回PS2 CLK线
 			}
 		}
 	}
@@ -1100,34 +1100,50 @@ void Service_Send_PS2(void)
 
 BYTE PS2_PinSelect(void)
 {
-	BYTE PinSelect = 0;
-	PinSelect |= sysctl_iomux_ps2_0();
-	PinSelect |= sysctl_iomux_ps2_1();
-	switch(PinSelect)
+	BYTE ret0 = 0, ret1 = 0;
+	switch(PS2_0_CLK_SEL)
 	{
-		case 0x1:
-			return (IS_GPIOB8(HIGH) && IS_GPIOB9(HIGH));
-		case 0x2:
-			return (IS_GPIOB10(HIGH) && IS_GPIOB11(HIGH));
-		case 0x4:
-			return (IS_GPIOB27(HIGH) && IS_GPIOB28(HIGH));
-		case 0x10:
-			return (IS_GPIOB12(HIGH) && IS_GPIOB13(HIGH));
-		case 0x11:
-			return ((IS_GPIOB8(HIGH) && IS_GPIOB9(HIGH)) || (IS_GPIOB12(HIGH) && IS_GPIOB13(HIGH)));
-		case 0x12:
-			return ((IS_GPIOB10(HIGH) && IS_GPIOB11(HIGH)) || (IS_GPIOB12(HIGH) && IS_GPIOB13(HIGH)));
-		case 0x14:
-			return ((IS_GPIOB27(HIGH) && IS_GPIOB28(HIGH)) || (IS_GPIOB12(HIGH) && IS_GPIOB13(HIGH)));
-		case 0x20:
-			return (IS_GPIOB10(HIGH) && IS_GPIOB11(HIGH));
-		case 0x21:
-			return ((IS_GPIOB8(HIGH) && IS_GPIOB9(HIGH)) || (IS_GPIOB10(HIGH) && IS_GPIOB11(HIGH)));
-		case 0x24:
-			return ((IS_GPIOB27(HIGH) && IS_GPIOB28(HIGH)) || (IS_GPIOB10(HIGH) && IS_GPIOB11(HIGH)));
-		default:
-			return 0;
+		case 0:
+			ret0 = IS_GPIOB8(HIGH);
+			break;
+		case 1:
+			ret0 = IS_GPIOB10(HIGH);
+			break;
+		case 2:
+			ret0 = IS_GPIOB27(HIGH);
+			break;
 	}
+	switch(PS2_0_DAT_SEL)
+	{
+		case 0:
+			ret0 = ret0 && IS_GPIOB9(HIGH);
+			break;
+		case 1:
+			ret0 |= ret0 && IS_GPIOB11(HIGH);
+			break;
+		case 2:
+			ret0 |= ret0 && IS_GPIOB28(HIGH);
+			break;
+	}
+	switch(PS2_1_CLK_SEL)
+	{
+		case 0:
+			ret1 = IS_GPIOB12(HIGH);
+			break;
+		case 1:
+			ret1 = IS_GPIOB10(HIGH);
+			break;
+	}
+	switch(PS2_1_DAT_SEL)
+	{
+		case 0:
+			ret1 = ret1 && IS_GPIOB13(HIGH);
+			break;
+		case 1:
+			ret1 = ret1 && IS_GPIOB11(HIGH);
+			break;
+	}
+	return (ret0 || ret1);
 }
 
 void InitAndIdentifyPS2(void)
@@ -1162,10 +1178,10 @@ void InitAndIdentifyPS2(void)
 					switch(KB_Main_CHN)
 					{
 						case 1:
-							sysctl_iomux_ps2_0();
+							sysctl_iomux_ps2_0(PS2_0_CLK_SEL, PS2_0_DAT_SEL);
 							break;
 						case 2:
-							sysctl_iomux_ps2_1();
+							sysctl_iomux_ps2_1(PS2_1_CLK_SEL, PS2_1_DAT_SEL);
 							break;
 						default:
 							break;
@@ -1177,10 +1193,10 @@ void InitAndIdentifyPS2(void)
 					switch(MS_Main_CHN)
 					{
 						case 1:
-							sysctl_iomux_ps2_0();
+							sysctl_iomux_ps2_0(PS2_0_CLK_SEL, PS2_0_DAT_SEL);
 							break;
 						case 2:
-							sysctl_iomux_ps2_1();
+							sysctl_iomux_ps2_1(PS2_1_CLK_SEL, PS2_1_DAT_SEL);
 							break;
 						default:
 							break;

@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-06-04 17:20:23
+ * @LastEditTime: 2025-06-13 20:25:51
  * @Description:
  *
  *
@@ -125,7 +125,7 @@ int serial2gpio(DWORD uart_num)
             val |= UART0_EN;
             break;
         case UART1_CHANNEL:
-            sysctl_iomux_disable_uart1();
+            sysctl_iomux_disable_uart1(UART1_TX_SEL, UART1_RX_SEL);
             val |= UART1_EN;
             break;
         case UARTB_CHANNEL:
@@ -134,7 +134,7 @@ int serial2gpio(DWORD uart_num)
             break;
         case UARTA_CHANNEL:
         default:
-            sysctl_iomux_disable_uarta();
+            sysctl_iomux_disable_uarta(UARTA_TX_SEL, UARTA_RX_SEL);
             val |= UARTA_EN;
             break;
     }
@@ -157,7 +157,7 @@ int gpio2serial(DWORD uart_num)
             val |= UART0_EN;
             break;
         case UART1_CHANNEL:
-            sysctl_iomux_uart1();
+            sysctl_iomux_uart1(UART1_TX_SEL, UART1_RX_SEL);
             val |= UART1_EN;
             break;
         case UARTB_CHANNEL:
@@ -166,7 +166,7 @@ int gpio2serial(DWORD uart_num)
             break;
         case UARTA_CHANNEL:
         default:
-            sysctl_iomux_uarta();
+            sysctl_iomux_uarta(UARTA_TX_SEL, UARTA_RX_SEL);
             val |= UARTA_EN;
             break;
     }
@@ -290,7 +290,7 @@ WEAK int putchar(int ch) /**/
         print_number++;
         if(print_cnt >= PRINT_MAX_SIZE)
             print_cnt = 0;
-    }
+}
 #else
     if(str == '\n')
     {
