@@ -1,7 +1,7 @@
 /*
  * @Author: dejavuwdh
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-06-16 14:47:08
+ * @LastEditTime: 2025-06-16 15:12:16
  * @Description:
  *
  *
@@ -268,6 +268,7 @@ typedef struct _FixedFlashInfo
 
 } sFixedFlashInfo;
 
+extern sFixedFlashInfo Fix_flash_info;
 extern spatch_typdef patch_array[];
 #define X1_RA (0x1)
 #define JAL_RD(rd) ((rd & 0x1f) << 7)

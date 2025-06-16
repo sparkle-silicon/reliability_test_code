@@ -1,7 +1,7 @@
 /*
  * @Author: dejavuwdh
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-05-30 17:06:25
+ * @LastEditTime: 2025-06-16 15:18:33
  * @Description:
  *
  *
@@ -38,7 +38,7 @@
 extern sDynamicFlashInfo Dy_flash_info;
 SECTION(".FlashInfo.Fixed")
 USED sFixedFlashInfo Fix_flash_info = {
-	.Firmware_ID = "SPK32GLE01\0",
+	.Firmware_ID = "SPK32GLE01\0",//識別碼，不允許改動
 
 
 	.Compiler_Version = __DATE__ " "__TIME__

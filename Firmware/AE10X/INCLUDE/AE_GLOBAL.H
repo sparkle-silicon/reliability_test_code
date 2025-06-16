@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-06-04 16:47:08
+ * @LastEditTime: 2025-06-16 15:15:20
  * @Description:
  *               define chip_type
  *               define identifier
@@ -45,7 +45,10 @@
 #include <RISCV.H>
 
 #ifndef CODE_VERSION
-#define CODE_VERSION "Unknown version"
+#define CODE_VERSION Fix_flash_info.Compiler_Version//"Unknown version"
+#endif
+#ifndef CORE_NAME
+#define CORE_NAME "GDMEC01"
 #endif
 /*-------------------------------------AE10X SELECITON-------------------------------------*/
 #if !(defined(USER_AE10X_LIBC_A) || defined(USER_RISCV_LIBC_A))

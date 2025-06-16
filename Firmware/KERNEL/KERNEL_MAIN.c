@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-06-04 17:00:08
+ * @LastEditTime: 2025-06-16 15:13:17
  * @Description:
  *
  *
@@ -533,7 +533,8 @@ int __weak main(void)
 	AutoON_Check_AfterUpdate(); // 检查更新后重启设定标志
 #if DEBUG
 	printr(printf_instructions_msg);
-	printr("Core Version AE%d\n", CORE_Version);
+	printr("Core Name %s\n", CORE_NAME);
+	printr("Core Version %d\n", CORE_Version);
 	printr("Code Version %s\n", CODE_VERSION);
 	printr("Compile Time : %s %s\n", __DATE__, __TIME__);
 #endif
