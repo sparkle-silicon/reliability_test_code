@@ -1,7 +1,7 @@
 /*
  * @Author: dejavuwdh
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-06-16 14:36:09
+ * @LastEditTime: 2025-06-16 14:46:04
  * @Description:
  *
  *
@@ -30,9 +30,6 @@
 #elif PRINTF_UART_SWITCH == 3
 #define UART_BAUD UARTB_BAUD
 #endif
-
-#define NEW_ROM 1
-#if NEW_ROM
 
 // extern of addr
 extern BYTE _start;
@@ -270,41 +267,7 @@ typedef struct _FixedFlashInfo
     uint32_t DEBUGGER_EPE : 1; //奇偶校验选择（0）
 
 } sFixedFlashInfo;
-#else
-typedef struct _rom_data
-{
-    BYTE magic_number[8]; // 识别码 ok
-    ssign SM2_ssign1;     // SM2签名 ok
-} sDynamicFlashInfo;
-typedef struct _flash_info
-{
-    DWORD flash_first_offset : 20; // 第一个程序运行的起始地址（以flash中位置为基准）ok
-    BYTE first_code_size : 4;      // 第一个程序 大小
-    BYTE flash_size : 4;           // flash 大小 no
-    BYTE patch_en : 1;             // patch 使能
-    BYTE double_boot : 1;          // 双启动 ok
-    BYTE safe_mode : 1;            // 安全模式，只需要efuse或者程序中一个设置了，必然为开启
-    BYTE mirror_once : 1;          // 是否镜像（镜像最后都到内部运行，非镜像都到外部运行）
-    DWORD flash_secound_offset : 20; // 第二个程序运行的起始地址（以flash中位置为基准） ok
-    BYTE secound_code_size : 4;      // 第二个程序 大小
-    BYTE main_freq : 6;              // 主频 ok
-    BYTE extern_osc_flag : 1;        // 外部osc ok
-    BYTE flash_qspi_flag : 1;        // flash 四线二线 ok
-    DWORD debug_uart_baud : 24; // debug波特率
-    BYTE debug_uart_en : 1;     // 调试器端口
-    BYTE debug_uart_com : 3;    // uart com
-    BYTE patch_total : 4;       // patch数量
-    WORD jtag_tdi : 3;   // 0:A7,1:F5,2:H5,3:J1,4:J5,5:P6
-    WORD jtag_tdo : 3;   // 0:B2,1:F4,2:H3,3:J0,4:J4,5:P4
-    WORD jtag_tms : 3;   // 0:B4,1:C2,2:F7,3:H2,4:H4,5:P5
-    WORD jtag_tck : 3;   // 0:B3,1:C1,2:F6,3:H1,4:H6,5:P7
-    BYTE jtag_en : 1;    // jtag使能
-    BYTE flash_wp : 1;   // ec103b select spif wp (0:PIOB17,1:PIOD8)
-    BYTE flash_hold : 1; // ec103a selectspif hold (0：PIOA16,1:PIOB19)
-    BYTE reserved0 : 1;  // reserved
-    WORD rom_wdt_time;   // flash看门狗 ok
-} sFixedFlashInfo;
-#endif
+
 void OPTIMIZE0 USED rom_patch_config_func(void);
 void OPTIMIZE0 USED rom_patch_test_func_flash(void);
 extern spatch_typdef patch_array[];
