@@ -1,7 +1,7 @@
 /*
  * @Author: dejavuwdh
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-05-30 16:10:28
+ * @LastEditTime: 2025-06-16 14:36:09
  * @Description:
  *
  *
@@ -13,8 +13,8 @@
  * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
-#ifndef AE_ROMPATCH_H
-#define AE_ROMPATCH_H
+#ifndef AE_FLASHINFO_H
+#define AE_FLASHINFO_H
 #include "AE_GLOBAL.H"
 #include "AE_INCLUDE.H"
 #if PRINTF_UART_SWITCH == 0
