@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-06-13 20:10:47
+ * @LastEditTime: 2025-06-17 15:41:33
  * @Description:
  *
  *
@@ -554,9 +554,9 @@ void sysctl_iomux_i2c0(uint32_t clk_sel, uint32_t data_sel)
 	if(clk_sel == 0)
 		sysctl_iomux_config(GPIOA, 11, 1);//clk
 	else if(clk_sel == 1)
-		sysctl_iomux_config(GPIOA, 12, 1);
-	if(data_sel == 0)
 		sysctl_iomux_config(GPIOB, 10, 2);//clk
+	if(data_sel == 0)
+		sysctl_iomux_config(GPIOA, 12, 1);
 	else if(data_sel == 1)
 		sysctl_iomux_config(GPIOB, 11, 2);
 }

@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-06-13 20:27:23
+ * @LastEditTime: 2025-06-17 16:58:54
  * @Description:
  *
  *
@@ -226,23 +226,50 @@
 // I2C 初始化
 #define I2C0_EN_Init 1 & SMBUS0_CLOCK_EN
 #define I2C0_SPEED 100000
+#define I2C0_EXTERNAL_PULL_UP 1
+#define I2C0_INTERNAL_PULL_UP 0
+
 #define I2C1_EN_Init 0 & SMBUS1_CLOCK_EN
 #define I2C1_SPEED 100000
+#define I2C1_EXTERNAL_PULL_UP 1
+#define I2C1_INTERNAL_PULL_UP 0
+
 #define I2C2_EN_Init 0 & SMBUS2_CLOCK_EN
 #define I2C2_SPEED 100000
+#define I2C2_EXTERNAL_PULL_UP 1
+#define I2C2_INTERNAL_PULL_UP 0
+
 #define I2C3_EN_Init 1 & SMBUS3_CLOCK_EN
 #define I2C3_SPEED 100000
+#define I2C3_EXTERNAL_PULL_UP 1
+#define I2C3_INTERNAL_PULL_UP 0
+
 #define I2C4_EN_Init 0 & SMBUS4_CLOCK_EN
 #define I2C4_SPEED 100000
+#define I2C4_EXTERNAL_PULL_UP 1
+#define I2C4_INTERNAL_PULL_UP 0
+
 #define I2C5_EN_Init 0 & SMBUS5_CLOCK_EN
 #define I2C5_SPEED 100000
+#define I2C5_EXTERNAL_PULL_UP 1
+#define I2C5_INTERNAL_PULL_UP 0
+
 /*yujiang add*/
 #define I2C6_EN_Init 0 & SMBUS6_CLOCK_EN
 #define I2C6_SPEED 100000
+#define I2C6_EXTERNAL_PULL_UP 1
+#define I2C6_INTERNAL_PULL_UP 0
+
 #define I2C7_EN_Init 0 & SMBUS7_CLOCK_EN
 #define I2C7_SPEED 100000
+#define I2C7_EXTERNAL_PULL_UP 1
+#define I2C7_INTERNAL_PULL_UP 0
+
 #define I2C8_EN_Init 0 & SMBUS8_CLOCK_EN
 #define I2C8_SPEED 100000
+#define I2C8_EXTERNAL_PULL_UP 1
+#define I2C8_INTERNAL_PULL_UP 0
+
 #define I2C0_CLK_SEL 0
 #define I2C0_DAT_SEL 0
 #define I2C2_CLK_SEL 0
@@ -260,15 +287,33 @@
 #define PWM6_EN_Init 0 & PWM_CLOCK_EN
 #define PWM7_EN_Init 0 & PWM_CLOCK_EN
 #define TACH0_EN 1 & PWM_CLOCK_EN
+#define TACH0_EXTERNAL_PULL_UP 1
+#define TACH0_INTERNAL_PULL_UP 0
+
 #define TACH1_EN 0 & PWM_CLOCK_EN
+#define TACH1_EXTERNAL_PULL_UP 1
+#define TACH1_INTERNAL_PULL_UP 0
+
 #define TACH2_EN 0 & PWM_CLOCK_EN
+#define TACH2_EXTERNAL_PULL_UP 1
+#define TACH2_INTERNAL_PULL_UP 0
+
 #define TACH3_EN 0 & PWM_CLOCK_EN
+#define TACH3_EXTERNAL_PULL_UP 1
+#define TACH3_INTERNAL_PULL_UP 0
+
 #define TACH0_PIN_SEL 0
 #define TACH1_PIN_SEL 0
 #define TACH3_PIN_SEL 0
 // PS2初始化
 #define PS2_0_EN_Init 1 & PS2_0_CLOCK_EN
+#define PS2_0_EXTERNAL_PULL_UP 1
+#define PS2_0_INTERNAL_PULL_UP 0
+
 #define PS2_1_EN_Init 1 & PS2_1_CLOCK_EN
+#define PS2_1_EXTERNAL_PULL_UP 1
+#define PS2_1_INTERNAL_PULL_UP 0
+
 #define PS2_0_CLK_SEL 0
 #define PS2_1_CLK_SEL 0
 #define PS2_0_DAT_SEL 0
@@ -288,7 +333,14 @@
 #define ADC6_EN_Init 0 & ADC_CLOCK_EN
 #define ADC7_EN_Init 0 & ADC_CLOCK_EN
 #define ADC7_EN_Init 0 & ADC_CLOCK_EN
+//CEC
+#define CEC_EXTERNAL_PULL_UP 1
+#define CEC_INTERNAL_PULL_UP 0
 
+//KBS
+//                             0123456789ABCDEFGHIJKLMNO
+#define KBS_EXTERNAL_PULL_UP 0b1111111111111111111111111
+#define KBS_INTERNAL_PULL_UP 0b0000000000000000000000000 
 #if (CEC_MODULE_EN & PS2_0_EN)
 #warning "You want use KBSOUT[16] ,but SPIM Enable, They reuse the same pin"
 #endif

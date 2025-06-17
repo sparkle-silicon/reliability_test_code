@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-06-13 20:24:47
+ * @LastEditTime: 2025-06-17 17:00:06
  * @Description: This is about the  national crypto algorithm implementation
  *
  *
@@ -71,91 +71,259 @@ void kbc_init(void)
 {
 	SET_BIT(KBC_CTL, KBC_IBFIE); // set KBC_IBF enable
 }
-void i2c0_pull_up(void)
+void i2c0_pull_up(uint32_t clk_sel, uint32_t data_sel)
 {
-	GPIO_Pullup_Config(GPIOA, 11);
-	GPIO_Pullup_Config(GPIOA, 12);
+	if(clk_sel == 0)
+	{
+		if((I2C0_EXTERNAL_PULL_UP == 0) && (IS_GPIOA11(LOW) || I2C0_INTERNAL_PULL_UP))
+			GPIO_Pullup_Config(GPIOA, 11);
+	}
+	else if(clk_sel == 1)
+	{
+		if((I2C0_EXTERNAL_PULL_UP == 0) && (IS_GPIOB10(LOW) || I2C0_INTERNAL_PULL_UP))
+			GPIO_Pullup_Config(GPIOB, 10);
+	}
+	if(data_sel == 0)
+	{
+		if((I2C0_EXTERNAL_PULL_UP == 0) && (IS_GPIOA12(LOW) || I2C0_INTERNAL_PULL_UP))
+			GPIO_Pullup_Config(GPIOA, 12);
+	}
+	else if(data_sel == 1)
+	{
+		if((I2C0_EXTERNAL_PULL_UP == 0) && (IS_GPIOB11(LOW) || I2C0_INTERNAL_PULL_UP))
+			GPIO_Pullup_Config(GPIOB, 11);
+	}
 }
 void i2c1_pull_up(void)
 {
-	GPIO_Pullup_Config(GPIOA, 17);
-	GPIO_Pullup_Config(GPIOA, 18);
+	{
+		if((I2C1_EXTERNAL_PULL_UP == 0) && (IS_GPIOA17(LOW) || I2C1_INTERNAL_PULL_UP))
+			GPIO_Pullup_Config(GPIOA, 17);
+	}
+	{
+		if((I2C1_EXTERNAL_PULL_UP == 0) && (IS_GPIOA18(LOW) || I2C1_INTERNAL_PULL_UP))
+			GPIO_Pullup_Config(GPIOA, 18);
+	}
 }
-void i2c2_pull_up(void)
+void i2c2_pull_up(uint32_t clk_sel)
 {
-	GPIO_Pullup_Config(GPIOB, 14);
-	GPIO_Pullup_Config(GPIOB, 15);
+	if(clk_sel == 0)
+	{
+		if((I2C2_EXTERNAL_PULL_UP == 0) && (IS_GPIOA23(LOW) || I2C2_INTERNAL_PULL_UP))
+			GPIO_Pullup_Config(GPIOA, 23);
+	}
+	else if(clk_sel == 1)
+	{
+		if((I2C2_EXTERNAL_PULL_UP == 0) && (IS_GPIOB14(LOW) || I2C2_INTERNAL_PULL_UP))
+			GPIO_Pullup_Config(GPIOB, 14);
+	}
+	{
+		if((I2C2_EXTERNAL_PULL_UP == 0) && (IS_GPIOB15(LOW) || I2C2_INTERNAL_PULL_UP))
+			GPIO_Pullup_Config(GPIOB, 15);
+	}
 }
 void i2c3_pull_up(void)
 {
-	GPIO_Pullup_Config(GPIOB, 25);
-	GPIO_Pullup_Config(GPIOB, 26);
+	{
+		if((I2C3_EXTERNAL_PULL_UP == 0) && (IS_GPIOB25(LOW) || I2C3_INTERNAL_PULL_UP))
+			GPIO_Pullup_Config(GPIOB, 25);
+	}
+	{
+		if((I2C3_EXTERNAL_PULL_UP == 0) && (IS_GPIOB26(LOW) || I2C3_INTERNAL_PULL_UP))
+			GPIO_Pullup_Config(GPIOB, 26);
+	}
 }
 void i2c4_pull_up(void)
 {
-	GPIO_Pullup_Config(GPIOA, 4);
-	GPIO_Pullup_Config(GPIOA, 5);
+	{
+		if((I2C4_EXTERNAL_PULL_UP == 0) && (IS_GPIOA4(LOW) || I2C4_INTERNAL_PULL_UP))
+			GPIO_Pullup_Config(GPIOA, 4);
+	}
+	{
+		if((I2C4_EXTERNAL_PULL_UP == 0) && (IS_GPIOA5(LOW) || I2C4_INTERNAL_PULL_UP))
+			GPIO_Pullup_Config(GPIOA, 5);
+	}
 }
 void i2c5_pull_up(void)
 {
-	GPIO_Pullup_Config(GPIOB, 0);
-	GPIO_Pullup_Config(GPIOB, 7);
+	{
+		if((I2C5_EXTERNAL_PULL_UP == 0) && (IS_GPIOB0(LOW) || I2C5_INTERNAL_PULL_UP))
+			GPIO_Pullup_Config(GPIOB, 0);
+	}
+	{
+		if((I2C5_EXTERNAL_PULL_UP == 0) && (IS_GPIOB7(LOW) || I2C5_INTERNAL_PULL_UP))
+			GPIO_Pullup_Config(GPIOB, 7);
+	}
 }
 void i2c6_pull_up(void)
 {
-	GPIO_Pullup_Config(GPIOA, 24);  //SMCLK6
-	GPIO_Pullup_Config(GPIOA, 25);  //SMDAT6
+	{
+		if((I2C6_EXTERNAL_PULL_UP == 0) && (IS_GPIOA24(LOW) || I2C6_INTERNAL_PULL_UP))
+			GPIO_Pullup_Config(GPIOA, 24);  //SMCLK6
+	}
+	{
+		if((I2C6_EXTERNAL_PULL_UP == 0) && (IS_GPIOA25(LOW) || I2C6_INTERNAL_PULL_UP))
+			GPIO_Pullup_Config(GPIOA, 25);  //SMDAT6
+	}
 }
 void i2c7_pull_up(void)
 {
-	GPIO_Pullup_Config(GPIOA, 10);  //SMCLK7
-	GPIO_Pullup_Config(GPIOB, 24);  //SMDAT7
+	{
+		if((I2C7_EXTERNAL_PULL_UP == 0) && (IS_GPIOA10(LOW) || I2C7_INTERNAL_PULL_UP))
+			GPIO_Pullup_Config(GPIOA, 10);  //SMCLK7
+	}
+	{
+		if((I2C7_EXTERNAL_PULL_UP == 0) && (IS_GPIOB24(LOW) || I2C7_INTERNAL_PULL_UP))
+			GPIO_Pullup_Config(GPIOB, 24);  //SMDAT7
+	}
 }
 void i2c8_pull_up(void)
 {
-	GPIO_Pullup_Config(GPIOA, 13);  //SMCLK8
-	GPIO_Pullup_Config(GPIOC, 14);  //SMDAT8
+	{
+		if((I2C8_EXTERNAL_PULL_UP == 0) && (IS_GPIOA13(LOW) || I2C8_INTERNAL_PULL_UP))
+			GPIO_Pullup_Config(GPIOA, 13);  //SMCLK8
+	}
+	{
+		if((I2C8_EXTERNAL_PULL_UP == 0) && (IS_GPIOC14(LOW) || I2C8_INTERNAL_PULL_UP))
+			GPIO_Pullup_Config(GPIOC, 14);  //SMDAT8
+	}
 }
 
-void tach0_pull_up(void)
+void tach0_pull_up(uint32_t tach_sel)
 {
-	GPIO_Pullup_Config(GPIOA, 30);
+	if(tach_sel == 0)
+	{
+		if((TACH0_EXTERNAL_PULL_UP == 0) && (IS_GPIOA30(LOW) || TACH0_INTERNAL_PULL_UP))
+			GPIO_Pullup_Config(GPIOA, 30);
+	}
+	else if(tach_sel == 1)
+	{
+		if((TACH0_EXTERNAL_PULL_UP == 0) && (IS_GPIOA22(LOW) || TACH0_INTERNAL_PULL_UP))
+			GPIO_Pullup_Config(GPIOA, 22);
+	}
+
 }
-void tach1_pull_up(void)
+void tach1_pull_up(uint32_t tach_sel)
 {
-	GPIO_Pullup_Config(GPIOA, 31);
+	if(tach_sel == 0)
+	{
+		if((TACH1_EXTERNAL_PULL_UP == 0) && (IS_GPIOA31(LOW) || TACH1_INTERNAL_PULL_UP))
+			GPIO_Pullup_Config(GPIOA, 31);
+	}
+	else if(tach_sel == 1)
+	{
+		if((TACH1_EXTERNAL_PULL_UP == 0) && (IS_GPIOC9(LOW) || TACH1_INTERNAL_PULL_UP))
+			GPIO_Pullup_Config(GPIOC, 9);
+	}
+	else if(tach_sel == 2)
+	{
+		if((TACH1_EXTERNAL_PULL_UP == 0) && (IS_GPIOC14(LOW) || TACH1_INTERNAL_PULL_UP))
+			GPIO_Pullup_Config(GPIOC, 14);
+	}
+
 }
 void tach2_pull_up(void)
 {
-	GPIO_Pullup_Config(GPIOC, 10);
+	{
+		if((TACH2_EXTERNAL_PULL_UP == 0) && (IS_GPIOC8(LOW) || TACH2_INTERNAL_PULL_UP))
+			GPIO_Pullup_Config(GPIOC, 8);
+	}
 }
-void tach3_pull_up(void)
+void tach3_pull_up(uint32_t tach_sel)
 {
-	GPIO_Pullup_Config(GPIOC, 11);
+	if(tach_sel == 0)
+	{
+		if((TACH3_EXTERNAL_PULL_UP == 0) && (IS_GPIOC9(LOW) || TACH3_INTERNAL_PULL_UP))
+			GPIO_Pullup_Config(GPIOC, 9);
+	}
+	else if(tach_sel == 1)
+	{
+		if((TACH3_EXTERNAL_PULL_UP == 0) && (IS_GPIOC11(LOW) || TACH3_INTERNAL_PULL_UP))
+			GPIO_Pullup_Config(GPIOC, 11);
+	}
 }
-void ps2_0_pull_up(void)
+void ps2_0_pull_up(uint32_t clk_sel, uint32_t data_sel)
 {
-	GPIO_Pullup_Config(GPIOB, 8); // gpd6,d7 pull up
-	GPIO_Pullup_Config(GPIOB, 9);
+	if(clk_sel == 0)
+	{
+		if((PS2_0_EXTERNAL_PULL_UP == 0) && (IS_GPIOB8(LOW) || PS2_0_INTERNAL_PULL_UP))
+			GPIO_Pullup_Config(GPIOB, 8);
+	}
+	else if(clk_sel == 1)
+	{
+		if((PS2_0_EXTERNAL_PULL_UP == 0) && (IS_GPIOB10(LOW) || PS2_0_INTERNAL_PULL_UP))
+			GPIO_Pullup_Config(GPIOB, 10);
+	}
+	else if(clk_sel == 2)
+	{
+		if((PS2_0_EXTERNAL_PULL_UP == 0) && (IS_GPIOB27(LOW) || PS2_0_INTERNAL_PULL_UP))
+			GPIO_Pullup_Config(GPIOB, 27);
+	}
+	if(data_sel == 0)
+	{
+		if((PS2_0_EXTERNAL_PULL_UP == 0) && (IS_GPIOB9(LOW) || PS2_0_INTERNAL_PULL_UP))
+			GPIO_Pullup_Config(GPIOB, 9);
+	}
+	else if(data_sel == 1)
+	{
+		if((PS2_0_EXTERNAL_PULL_UP == 0) && (IS_GPIOB11(LOW) || PS2_0_INTERNAL_PULL_UP))
+			GPIO_Pullup_Config(GPIOB, 11);
+	}
+	else if(data_sel == 2)
+	{
+		if((PS2_0_EXTERNAL_PULL_UP == 0) && (IS_GPIOB28(LOW) || PS2_0_INTERNAL_PULL_UP))
+			GPIO_Pullup_Config(GPIOB, 28);
+	}
 }
-void ps2_1_pull_up(void)
+void ps2_1_pull_up(uint32_t clk_sel, uint32_t data_sel)
 {
-	GPIO_Pullup_Config(GPIOB, 12);
-	GPIO_Pullup_Config(GPIOB, 13);
+	if(clk_sel == 0)
+	{
+		if((PS2_1_EXTERNAL_PULL_UP == 0) && (IS_GPIOB12(LOW) || PS2_1_INTERNAL_PULL_UP))
+			GPIO_Pullup_Config(GPIOB, 12);
+	}
+	else if(clk_sel == 1)
+	{
+		if((PS2_1_EXTERNAL_PULL_UP == 0) && (IS_GPIOB10(LOW) || PS2_1_INTERNAL_PULL_UP))
+			GPIO_Pullup_Config(GPIOB, 10);
+	}
+	if(data_sel == 0)
+	{
+		if((PS2_1_EXTERNAL_PULL_UP == 0) && (IS_GPIOB13(LOW) || PS2_1_INTERNAL_PULL_UP))
+			GPIO_Pullup_Config(GPIOB, 13);
+	}
+	else if(data_sel == 1)
+	{
+		if((PS2_1_EXTERNAL_PULL_UP == 0) && (IS_GPIOB13(LOW) || PS2_1_INTERNAL_PULL_UP))
+			GPIO_Pullup_Config(GPIOB, 11);
+	}
+
+
 }
 void cec_pull_up(void)
 {
-	GPIO_Pullup_Config(GPIOB, 8); // gpd6,d7 pull up
+	{
+		if((CEC_EXTERNAL_PULL_UP == 0) && (IS_GPIOB8(LOW) || CEC_INTERNAL_PULL_UP))
+			GPIO_Pullup_Config(GPIOB, 8); // gpd6,d7 pull up
+	}
 }
 void kbs_pull_up(void)
 {
 	for(register unsigned char i = 8; i <= 31; i++)
-		GPIO_Pullup_Config(GPIOE, i); // gpe all pull up
+	{
+		//考虑KBS扫描逻辑，不做低电平判断
+		if((((KBS_EXTERNAL_PULL_UP) & (1 << (i - 8))) == 0) && ((((KBS_INTERNAL_PULL_UP) & (1 << (i - 8))) == (1 << (i - 8)))))
+			GPIO_Pullup_Config(GPIOE, i); // gpe all pull up
+	}
 #if (KBD_8_n_SWITCH == 17 || KBD_8_n_SWITCH == 18)
-	GPIO_Pullup_Config(GPIOA, 19); // C3 kso 16
+	//考虑KBS扫描逻辑，不做低电平判断
+	if((((KBS_EXTERNAL_PULL_UP) & (1 << (24))) == 0) && ((((KBS_INTERNAL_PULL_UP) & (1 << (24))) == (1 << (24)))))
+		GPIO_Pullup_Config(GPIOA, 19); // C3 kso 16
 #endif
 #if (KBD_8_n_SWITCH == 18)
-	GPIO_Pullup_Config(GPIOA, 21); // C3 kso 17
+	//考虑KBS扫描逻辑，不做低电平判断
+	if((((KBS_EXTERNAL_PULL_UP) & (1 << (25))) == 0) && ((((KBS_INTERNAL_PULL_UP) & (1 << (25))) == (1 << (25)))))
+		GPIO_Pullup_Config(GPIOA, 21); // C3 kso 17
 #endif
 }
 void gpio_init(void)
@@ -216,8 +384,7 @@ void smbus_init(void)
 #if I2C0_EN_Init
 	smbus0_MoudleClock_EN;
 	sysctl_iomux_i2c0(I2C0_CLK_SEL, I2C0_DAT_SEL);
-	// printf("0x30454:%x\n", *(unsigned int *)0x30454);
-	//i2c0_pull_up();
+	i2c0_pull_up(I2C0_CLK_SEL, I2C0_DAT_SEL);
 #if (DEBUGGER_OUTPUT_SWITCH == 1)
 #if (DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0)
 	I2c_Channel_Init(I2C_CHANNEL_0, I2C0_SPEED, I2C_SLAVE_ROLE, 0x6A, 1);
@@ -244,8 +411,7 @@ void smbus_init(void)
 #if I2C2_EN_Init
 	smbus2_MoudleClock_EN;
 	sysctl_iomux_i2c2(I2C2_CLK_SEL);
-	i2c2_pull_up();
-	GPIO_Pullup_Config(GPIOA, 23);
+	i2c2_pull_up(I2C2_CLK_SEL);
 #if (DEBUGGER_OUTPUT_SWITCH == 1)
 #if (DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_2)
 	I2c_Channel_Init(I2C_CHANNEL_2, I2C2_SPEED, I2C_SLAVE_ROLE, 0x00, 1);
@@ -405,13 +571,13 @@ void pwm_tach_init(void)
 #endif
 #if (TACH_MODULE_EN)
 #if (TACH0_EN)
-	sysctl_iomux_tach0();
-	tach0_pull_up();
+	sysctl_iomux_tach0(TACH0_PIN_SEL);
+	tach0_pull_up(TACH0_PIN_SEL);
 	TACH_Init_Channel(TACH_CHANNEL0, 1, 0);
 #endif
 #if (TACH1_EN)
-	sysctl_iomux_tach1();
-	tach1_pull_up();
+	sysctl_iomux_tach1(TACH1_PIN_SEL);
+	tach1_pull_up(TACH1_PIN_SEL);
 	TACH_Init_Channel(TACH_CHANNEL1, 1, 0);
 #endif
 #if (TACH2_EN)
@@ -420,8 +586,8 @@ void pwm_tach_init(void)
 	TACH_Init_Channel(TACH_CHANNEL2, 1, 0);
 #endif
 #if (TACH3_EN)
-	sysctl_iomux_tach3();
-	tach3_pull_up();
+	sysctl_iomux_tach3(TACH3_PIN_SEL);
+	tach3_pull_up(TACH3_PIN_SEL);
 	TACH_Init_Channel(TACH_CHANNEL3, 1, 0);
 #endif
 	dprint("TACH init done\n");
@@ -466,18 +632,14 @@ void ps2_init(void)
 #if PS2_0_EN_Init
 	ps2_0_MoudleClock_EN;
 	ps2_0_frequency();
-	//sysctl_iomux_ps2_0();
-#if 0 // 上拉配置
-	ps2_0_pull_up();
-#endif
+	sysctl_iomux_ps2_0(PS2_0_CLK_SEL, PS2_0_DAT_SEL);
+	ps2_0_pull_up(PS2_0_CLK_SEL, PS2_0_DAT_SEL);
 #endif
 #if PS2_1_EN_Init
 	ps2_1_MoudleClock_EN;
 	ps2_1_frequency();
-	//sysctl_iomux_ps2_1();
-#if 0 // 上拉配置
-	ps2_1_pull_up();
-#endif
+	sysctl_iomux_ps2_1(PS2_1_CLK_SEL, PS2_1_DAT_SEL);
+	ps2_1_pull_up(PS2_1_CLK_SEL, PS2_1_DAT_SEL);
 #endif
 	dprint("Ps2 init done.\n");
 #endif
