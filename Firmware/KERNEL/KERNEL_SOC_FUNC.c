@@ -516,7 +516,7 @@ void spim_init(void)
 	requirements, it is possible to disable the reuse of unnecessary chip select signals.*/
 	sysctl_iomux_spim_cs(SPIM_CS_SEL);
 #endif
-	SPI_Init(0, SPIM_CPOL_LOW, SPIM_CPHA_FE, SPIM_LSB, 0x7, 1);
+	SPI_Init(0, SPIM_CPOL_LOW, SPIM_CPHA_FE, SPIM_MSB, 0x7, 1);
 	dprint("SPI init done.\n");
 #endif
 }

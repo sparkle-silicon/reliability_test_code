@@ -1175,7 +1175,7 @@ int i2c_dw_read_clear_intrbits(WORD i2c_channel)
  * Instead, use the separately-prepared IC_CLR_* registers.
  */
 	if(stat & I2C_INTR_RX_UNDER)
-		I2c_Readb(I2C_INTR_MASK_OFFSET, i2c_channel);
+		I2c_Readb(I2C_CLR_RX_UNDER_OFFSET, i2c_channel);
 	if(stat & I2C_INTR_RX_OVER)
 		I2c_Readb(I2C_CLR_RX_OVER_OFFSET, i2c_channel);
 	if(stat & I2C_INTR_TX_OVER)
