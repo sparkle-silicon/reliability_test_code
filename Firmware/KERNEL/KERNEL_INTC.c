@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-06-13 15:16:25
+ * @LastEditTime: 2025-07-03 18:37:21
  * @Description: This file is used for INTC interrupt
  *
  *
@@ -1649,59 +1649,83 @@ void intr1_smbus4(void) // 27
 	ICTL1_INTEN3 &= ~(0x1 << 3);
 #endif
 #endif
-
-	BYTE abrt_source_l = I2c_Readb(I2C_TX_ABRT_SOURCE_OFFSET, I2C_CHANNEL_4);
-	BYTE abrt_source_h = I2c_Readb((I2C_TX_ABRT_SOURCE_OFFSET + 1), I2C_CHANNEL_4);
-	BYTE raw_int = I2c_Readb(I2C_RAW_INTR_STAT_OFFSET, I2C_CHANNEL_4);
-	if(raw_int & I2C_INTR_TX_ABRT)
+	uint16_t raw_intr_stat = SMBUS4_RAW_INTR_STAT0;
+	irqprint("raw_intr_stat : %#x\n", raw_intr_stat);
+	if(raw_intr_stat & I2C_INTR_TX_ABRT)
 	{
-		dprint("smbus4 tx_abrt! addr is 0x%X data is 0x%X\n", SMB_Temp_Addr, SMB_Temp_Data);
-		dprint("tx_abrt_source:0x%x  \n", (WORD)(abrt_source_l | (abrt_source_h << 8)));
+		dprint("SMBUS4 tx_abrt! addr is %#x data is %#x\n", SMB_Temp_Addr, SMB_Temp_Data);
+		uint16_t tx_abrt_source = SMBUS4_TX_ABRT_SOURCE0;
+		dprint("tx_abrt_source:%#x  \n", tx_abrt_source);
 	}
-	I2c_Readb(I2C_CLR_TX_ABRT_OFFSET, I2C_CHANNEL_4); // 清除中断
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[123]++;
-	DWORD ic_stat, int_stat;
-	ic_stat = I2c_Readb(I2C_STATUS_OFFSET, I2C_CHANNEL_4);
-	int_stat = i2c_dw_read_clear_intrbits(I2C_CHANNEL_4); // clear interrupts
-	irqprint("int stat is %d \n", int_stat);
-	if(int_stat & I2C_INTR_TX_ABRT)
+	// uint16_t intr_mask = SMBUS4_INTR_MASK0 | ((uint16_t)SMBUS4_INTR_MASK1 << 8);
+	// uint16_t status = SMBUS4_STATUS0;
+	uint16_t intr_stat = SMBUS4_INTR_STAT0;
+	irqprint("intr_stat = %#x\n", intr_stat);
+	if(intr_stat & I2C_INTR_RX_UNDER)
+		SMBUS4_CLR_RX_UNDER0;
+	else if(intr_stat & I2C_INTR_RX_OVER)
+		SMBUS4_CLR_RX_OVER0;
+	else if(intr_stat & I2C_INTR_RX_FULL)
 	{
-		irqprint("iic send erro !!! \n");
-		i2c_dw_tx_abrt(I2C_CHANNEL_4);
-	}
-	if(int_stat & I2C_INTR_RX_FULL) // start req judge (set flags)
-	{
-	#if DEBUGGER_I2C_CHANNEL == 4
+		// dprint("SMBUS4 RX FULL\n");//相当于延时
+	#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
 		Debugger_Cmd_IRQ(I2c_Slave_Read_Byte(DEBUGGER_I2C_CHANNEL));
 	#endif
 	}
-	if(int_stat & I2C_INTR_TX_EMPTY) // sFIFO almost empty
+	else if(intr_stat & I2C_INTR_TX_OVER)
+		SMBUS4_CLR_TX_OVER0;
+	else if(intr_stat & I2C_INTR_TX_EMPTY)
 	{
-	#if DEBUGGER_I2C_CHANNEL == 4
+		// dprint("SMBUS4 TX EMPTY\n");//相当于延时
+	#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
 		Debugger_I2c_Send(DEBUGGER_I2C_CHANNEL);
-		assert_print("iicFeedback %#x", iicFeedback);
-		F_Service_Debugger_Send = 1;
 	#endif
 	}
-	if(int_stat & I2C_INTR_RD_REQ) // read request only once
+	else if(intr_stat & I2C_INTR_RD_REQ)
 	{
-	#if DEBUGGER_I2C_CHANNEL == 4
+		SMBUS4_CLR_RD_REQ0;
+		SMBUS4_INTR_MASK0 &= (~I2C_INTR_RD_REQ);
+	#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
+	#if 1//irq 
+		Debugger_I2c_Req(DEBUGGER_I2C_CHANNEL);
+		SMBUS4_INTR_MASK0 |= (I2C_INTR_RD_REQ);
+	#else//service
 		F_Service_Debugger_Rrq = 1;
-		I2C4_INTR_MASK &= ~0x20; // 屏蔽RD_REQ中断
+	#endif
 	#endif
 	}
-	if(!(ic_stat & I2C_SLV_ACTIVITY))
-	{
-		// irqprint("the iic of slave is dead! \n");
-		// I2c_Writeb(0, I2C_ENABLE_OFFSET,baseaddr);
-	}
-	if(!(ic_stat & I2C_MST_ACTIVITY))
-	{
-		// irqprint("the iic of master is dead! \n");
-		// I2c_Writeb(0, I2C_ENABLE_OFFSET,baseaddr);
-	}
-#endif
+	else if(intr_stat & I2C_INTR_RX_DONE)
+		SMBUS4_CLR_RX_DONE0;
+	else if(intr_stat & I2C_INTR_TX_ABRT)
+		SMBUS4_CLR_TX_ABRT0;
+	else if(intr_stat & I2C_INTR_ACTIVITY)
+		SMBUS4_CLR_ACTIVITY0;
+	else if(intr_stat & I2C_INTR_STOP_DET)
+		SMBUS4_CLR_STOP_DET0;
+	else if(intr_stat & I2C_INTR_START_DET)
+		SMBUS4_CLR_START_DET0;
+	else if(intr_stat & I2C_INTR_GEN_CALL)
+		SMBUS4_CLR_GEN_CALL0;
+// #define I2C_STATUS_ACTIVITY BIT0
+// #define I2C_STATUS_MST_ACTIVITY BIT5
+// 	if(status & I2C_STATUS_ACTIVITY)
+// 	{
+// 	}
+// 	else if(status & I2C_STATUS_TFNF)
+// 	{
+// 	}
+// 	else if(status & I2C_STATUS_TFE)
+// 	{
+// 	}
+// 	else if(status & I2C_STATUS_RFNE)
+// 	{
+// 	}
+// 	else if(status & I2C_STATUS_RFF)
+// 	{
+// 	}
+// 	else if(status & I2C_STATUS_MST_ACTIVITY)
+// 	{
+// 	}
 }
 void intr1_smbus5(void) // 28
 {
@@ -1714,58 +1738,83 @@ void intr1_smbus5(void) // 28
 	ICTL1_INTEN3 &= ~(0x1 << 4);
 #endif
 #endif
-	BYTE abrt_source_l = I2c_Readb(I2C_TX_ABRT_SOURCE_OFFSET, I2C_CHANNEL_5);
-	BYTE abrt_source_h = I2c_Readb((I2C_TX_ABRT_SOURCE_OFFSET + 1), I2C_CHANNEL_5);
-	BYTE raw_int = I2c_Readb(I2C_RAW_INTR_STAT_OFFSET, I2C_CHANNEL_5);
-	if(raw_int & I2C_INTR_TX_ABRT)
+	uint16_t raw_intr_stat = SMBUS5_RAW_INTR_STAT0;
+	irqprint("raw_intr_stat : %#x\n", raw_intr_stat);
+	if(raw_intr_stat & I2C_INTR_TX_ABRT)
 	{
-		dprint("smbus5 tx_abrt! addr is 0x%X data is 0x%X\n", SMB_Temp_Addr, SMB_Temp_Data);
-		dprint("tx_abrt_source:0x%x  \n", (WORD)(abrt_source_l | (abrt_source_h << 8)));
+		dprint("SMBUS5 tx_abrt! addr is %#x data is %#x\n", SMB_Temp_Addr, SMB_Temp_Data);
+		uint16_t tx_abrt_source = SMBUS5_TX_ABRT_SOURCE0;
+		dprint("tx_abrt_source:%#x  \n", tx_abrt_source);
 	}
-	I2c_Readb(I2C_CLR_TX_ABRT_OFFSET, I2C_CHANNEL_5); // 清除中断
-#if ENABLE_DEBUGGER_SUPPORT
-	Intr_num[124]++;
-
-	DWORD ic_stat, int_stat;
-	ic_stat = I2c_Readb(I2C_STATUS_OFFSET, I2C_CHANNEL_5);
-	int_stat = i2c_dw_read_clear_intrbits(I2C_CHANNEL_5); // clear interrupts
-	if(int_stat & I2C_INTR_TX_ABRT)
+	// uint16_t intr_mask = SMBUS5_INTR_MASK0 | ((uint16_t)SMBUS5_INTR_MASK1 << 8);
+	// uint16_t status = SMBUS5_STATUS0;
+	uint16_t intr_stat = SMBUS5_INTR_STAT0;
+	irqprint("intr_stat = %#x\n", intr_stat);
+	if(intr_stat & I2C_INTR_RX_UNDER)
+		SMBUS5_CLR_RX_UNDER0;
+	else if(intr_stat & I2C_INTR_RX_OVER)
+		SMBUS5_CLR_RX_OVER0;
+	else if(intr_stat & I2C_INTR_RX_FULL)
 	{
-		irqprint("iic send erro !!! \n");
-		i2c_dw_tx_abrt(I2C_CHANNEL_5);
-	}
-	if(int_stat & I2C_INTR_RX_FULL) // start req judge (set flags)
-	{
-	#if DEBUGGER_I2C_CHANNEL == 5
+		// dprint("SMBUS5 RX FULL\n");//相当于延时
+	#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
 		Debugger_Cmd_IRQ(I2c_Slave_Read_Byte(DEBUGGER_I2C_CHANNEL));
 	#endif
 	}
-	if(int_stat & I2C_INTR_TX_EMPTY) // sFIFO almost empty
+	else if(intr_stat & I2C_INTR_TX_OVER)
+		SMBUS5_CLR_TX_OVER0;
+	else if(intr_stat & I2C_INTR_TX_EMPTY)
 	{
-	#if DEBUGGER_I2C_CHANNEL == 5
+		// dprint("SMBUS5 TX EMPTY\n");//相当于延时
+	#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
 		Debugger_I2c_Send(DEBUGGER_I2C_CHANNEL);
-		assert_print("iicFeedback %#x", iicFeedback);
-		F_Service_Debugger_Send = 1;
 	#endif
 	}
-	if(int_stat & I2C_INTR_RD_REQ) // read request only once
+	else if(intr_stat & I2C_INTR_RD_REQ)
 	{
-	#if DEBUGGER_I2C_CHANNEL == 5
+		SMBUS5_CLR_RD_REQ0;
+		SMBUS5_INTR_MASK0 &= (~I2C_INTR_RD_REQ);
+	#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
+	#if 1//irq 
+		Debugger_I2c_Req(DEBUGGER_I2C_CHANNEL);
+		SMBUS5_INTR_MASK0 |= (I2C_INTR_RD_REQ);
+	#else//service
 		F_Service_Debugger_Rrq = 1;
-		I2C5_INTR_MASK &= ~0x20; // 屏蔽RD_REQ中断
+	#endif
 	#endif
 	}
-	if(!(ic_stat & I2C_SLV_ACTIVITY))
-	{
-		// irqprint("the iic of slave is dead! \n");
-		// I2c_Writeb(0, I2C_ENABLE_OFFSET,baseaddr);
-	}
-	if(!(ic_stat & I2C_MST_ACTIVITY))
-	{
-		// irqprint("the iic of master is dead! \n");
-		// I2c_Writeb(0, I2C_ENABLE_OFFSET,baseaddr);
-	}
-#endif
+	else if(intr_stat & I2C_INTR_RX_DONE)
+		SMBUS5_CLR_RX_DONE0;
+	else if(intr_stat & I2C_INTR_TX_ABRT)
+		SMBUS5_CLR_TX_ABRT0;
+	else if(intr_stat & I2C_INTR_ACTIVITY)
+		SMBUS5_CLR_ACTIVITY0;
+	else if(intr_stat & I2C_INTR_STOP_DET)
+		SMBUS5_CLR_STOP_DET0;
+	else if(intr_stat & I2C_INTR_START_DET)
+		SMBUS5_CLR_START_DET0;
+	else if(intr_stat & I2C_INTR_GEN_CALL)
+		SMBUS5_CLR_GEN_CALL0;
+// #define I2C_STATUS_ACTIVITY BIT0
+// #define I2C_STATUS_MST_ACTIVITY BIT5
+// 	if(status & I2C_STATUS_ACTIVITY)
+// 	{
+// 	}
+// 	else if(status & I2C_STATUS_TFNF)
+// 	{
+// 	}
+// 	else if(status & I2C_STATUS_TFE)
+// 	{
+// 	}
+// 	else if(status & I2C_STATUS_RFNE)
+// 	{
+// 	}
+// 	else if(status & I2C_STATUS_RFF)
+// 	{
+// 	}
+// 	else if(status & I2C_STATUS_MST_ACTIVITY)
+// 	{
+// 	}
 }
 
 void intr1_owi(void) // 29
@@ -2242,79 +2291,83 @@ void intr1_smbus0(void)
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[147]++;
 #endif
-	BYTE abrt_source_l = I2c_Readb(I2C_TX_ABRT_SOURCE_OFFSET, I2C_CHANNEL_0);
-	BYTE abrt_source_h = I2c_Readb((I2C_TX_ABRT_SOURCE_OFFSET + 1), I2C_CHANNEL_0);
-	BYTE raw_int = I2c_Readb(I2C_RAW_INTR_STAT_OFFSET, I2C_CHANNEL_0);
-	if(raw_int & I2C_INTR_TX_ABRT)
+	uint16_t raw_intr_stat = SMBUS0_RAW_INTR_STAT0;
+	irqprint("raw_intr_stat : %#x\n", raw_intr_stat);
+	if(raw_intr_stat & I2C_INTR_TX_ABRT)
 	{
-		dprint("smbus0 tx_abrt! addr is 0x%X data is 0x%X\n", SMB_Temp_Addr, SMB_Temp_Data);
-		dprint("tx_abrt_source:0x%x  \n", (WORD)(abrt_source_l | (abrt_source_h << 8)));
+		dprint("smbus0 tx_abrt! addr is %#x data is %#x\n", SMB_Temp_Addr, SMB_Temp_Data);
+		uint16_t tx_abrt_source = SMBUS0_TX_ABRT_SOURCE0;
+		dprint("tx_abrt_source:%#x  \n", tx_abrt_source);
 	}
-	I2c_Readb(I2C_CLR_TX_ABRT_OFFSET, I2C_CHANNEL_0); // 清除中断
-#if 0
-	if(I2c_Readb(I2C_RAW_INTR_STAT_OFFSET, I2C_CHANNEL_0) & 0x04)
+	// uint16_t intr_mask = SMBUS0_INTR_MASK0 | ((uint16_t)SMBUS0_INTR_MASK1 << 8);
+	// uint16_t status = SMBUS0_STATUS0;
+	uint16_t intr_stat = SMBUS0_INTR_STAT0;
+	irqprint("intr_stat = %#x\n", intr_stat);
+	if(intr_stat & I2C_INTR_RX_UNDER)
+		SMBUS0_CLR_RX_UNDER0;
+	else if(intr_stat & I2C_INTR_RX_OVER)
+		SMBUS0_CLR_RX_OVER0;
+	else if(intr_stat & I2C_INTR_RX_FULL)
 	{
-		printf("smbus0 read data:%#x\n", I2c_Slave_Read_Byte(0));
-	}
-	if(I2c_Readb(I2C_RAW_INTR_STAT_OFFSET, I2C_CHANNEL_0) & 0x20)
-	{
-		// I2c_Slave_Write_Byte(0xfe, 0);
-		// I2c_Slave_Write_Byte(0xdd, 0);
-		// printf("send ec\n");
-		// printf("send ed\n");
-		assert_print("iicFeedback %#x", iicFeedback);
-		Debugger_I2c_Req(DEBUGGER_I2C_CHANNEL);
-		assert_print("iicFeedback %#x", iicFeedback);
-	}
-#endif
-#if ENABLE_DEBUGGER_SUPPORT
-	DWORD int_stat, ic_stat;
-	// BYTE mask = I2c_Readb(I2C_INTR_MASK_OFFSET,baseaddr);
-	// BYTE raw_int = I2c_Readb(I2C_RAW_INTR_STAT_OFFSET, I2C_CHANNEL_0);
-	ic_stat = I2c_Readb(I2C_STATUS_OFFSET, I2C_CHANNEL_0);
-	int_stat = i2c_dw_read_clear_intrbits(I2C_CHANNEL_0); // clear interrupts
-#if 1
-	if(int_stat & I2C_INTR_RX_FULL) // start req judge (set flags)
-	{
-	#if DEBUGGER_I2C_CHANNEL == 0
+		// dprint("SMBUS0 RX FULL\n");//相当于延时
+	#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
 		Debugger_Cmd_IRQ(I2c_Slave_Read_Byte(DEBUGGER_I2C_CHANNEL));
 	#endif
 	}
-	if(int_stat & I2C_INTR_TX_EMPTY) // sFIFO almost empty
+	else if(intr_stat & I2C_INTR_TX_OVER)
+		SMBUS0_CLR_TX_OVER0;
+	else if(intr_stat & I2C_INTR_TX_EMPTY)
 	{
-	#if DEBUGGER_I2C_CHANNEL == 0
+		// dprint("SMBUS0 TX EMPTY\n");//相当于延时
+	#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
 		Debugger_I2c_Send(DEBUGGER_I2C_CHANNEL);
-		assert_print("iicFeedback %#x", iicFeedback);
-		F_Service_Debugger_Send = 1;
 	#endif
 	}
-	if(int_stat & I2C_INTR_RD_REQ) // read request only once
+	else if(intr_stat & I2C_INTR_RD_REQ)
 	{
-	#if DEBUGGER_I2C_CHANNEL == 0
-			// assert_print("iicFeedback %#x", iicFeedback);
-			// Debugger_I2c_Req(DEBUGGER_I2C_CHANNEL);
-			// assert_print("iicFeedback %#x", iicFeedback);
+		SMBUS0_CLR_RD_REQ0;
+		SMBUS0_INTR_MASK0 &= (~I2C_INTR_RD_REQ);
+	#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
+	#if 1//irq 
+		Debugger_I2c_Req(DEBUGGER_I2C_CHANNEL);
+		SMBUS0_INTR_MASK0 |= (I2C_INTR_RD_REQ);
+	#else//service
 		F_Service_Debugger_Rrq = 1;
-		I2C0_INTR_MASK &= ~0x20; // 屏蔽RD_REQ中断
+	#endif
 	#endif
 	}
-	if(!(ic_stat & I2C_SLV_ACTIVITY))
-	{
-		// irqprint("the iic of slave is dead! \n");
-		// I2c_Writeb(0, I2C_ENABLE_OFFSET,baseaddr);
-	}
-	if(!(ic_stat & I2C_MST_ACTIVITY))
-	{
-		// irqprint("the iic of master is dead! \n");
-		// I2c_Writeb(0, I2C_ENABLE_OFFSET,baseaddr);
-	}
-	if(int_stat & I2C_INTR_TX_ABRT)
-	{
-		// irqprint("iic send erro !!! \n");
-		// i2c_dw_tx_abrt(I2C_CHANNEL_0);
-	}
-#endif
-#endif
+	else if(intr_stat & I2C_INTR_RX_DONE)
+		SMBUS0_CLR_RX_DONE0;
+	else if(intr_stat & I2C_INTR_TX_ABRT)
+		SMBUS0_CLR_TX_ABRT0;
+	else if(intr_stat & I2C_INTR_ACTIVITY)
+		SMBUS0_CLR_ACTIVITY0;
+	else if(intr_stat & I2C_INTR_STOP_DET)
+		SMBUS0_CLR_STOP_DET0;
+	else if(intr_stat & I2C_INTR_START_DET)
+		SMBUS0_CLR_START_DET0;
+	else if(intr_stat & I2C_INTR_GEN_CALL)
+		SMBUS0_CLR_GEN_CALL0;
+// #define I2C_STATUS_ACTIVITY BIT0
+// #define I2C_STATUS_MST_ACTIVITY BIT5
+// 	if(status & I2C_STATUS_ACTIVITY)
+// 	{
+// 	}
+// 	else if(status & I2C_STATUS_TFNF)
+// 	{
+// 	}
+// 	else if(status & I2C_STATUS_TFE)
+// 	{
+// 	}
+// 	else if(status & I2C_STATUS_RFNE)
+// 	{
+// 	}
+// 	else if(status & I2C_STATUS_RFF)
+// 	{
+// 	}
+// 	else if(status & I2C_STATUS_MST_ACTIVITY)
+// 	{
+// 	}
 }
 void intr1_smbus1(void)
 {
@@ -2330,57 +2383,83 @@ void intr1_smbus1(void)
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[148]++;
 #endif
-	BYTE abrt_source_l = I2c_Readb(I2C_TX_ABRT_SOURCE_OFFSET, I2C_CHANNEL_1);
-	BYTE abrt_source_h = I2c_Readb((I2C_TX_ABRT_SOURCE_OFFSET + 1), I2C_CHANNEL_1);
-	BYTE raw_int = I2c_Readb(I2C_RAW_INTR_STAT_OFFSET, I2C_CHANNEL_1);
-	if(raw_int & I2C_INTR_TX_ABRT)
+	uint16_t raw_intr_stat = SMBUS1_RAW_INTR_STAT0;
+	irqprint("raw_intr_stat : %#x\n", raw_intr_stat);
+	if(raw_intr_stat & I2C_INTR_TX_ABRT)
 	{
-		dprint("smbus1 tx_abrt! addr is 0x%x data is 0x%x\n", SMB_Temp_Addr, SMB_Temp_Data);
-		dprint("tx_abrt_source:0x%x  \n", (WORD)(abrt_source_l | (abrt_source_h << 8)));
+		dprint("SMBUS1 tx_abrt! addr is %#x data is %#x\n", SMB_Temp_Addr, SMB_Temp_Data);
+		uint16_t tx_abrt_source = SMBUS1_TX_ABRT_SOURCE0;
+		dprint("tx_abrt_source:%#x  \n", tx_abrt_source);
 	}
-	I2c_Readb(I2C_CLR_TX_ABRT_OFFSET, I2C_CHANNEL_1); // 清除中断
-#if ENABLE_DEBUGGER_SUPPORT
-	DWORD ic_stat, int_stat;
-	ic_stat = I2c_Readb(I2C_STATUS_OFFSET, I2C_CHANNEL_1);
-	int_stat = i2c_dw_read_clear_intrbits(I2C_CHANNEL_1); // clear interrupts
-	if(int_stat & I2C_INTR_TX_ABRT)
+	// uint16_t intr_mask = SMBUS1_INTR_MASK0 | ((uint16_t)SMBUS1_INTR_MASK1 << 8);
+	// uint16_t status = SMBUS1_STATUS0;
+	uint16_t intr_stat = SMBUS1_INTR_STAT0;
+	irqprint("intr_stat = %#x\n", intr_stat);
+	if(intr_stat & I2C_INTR_RX_UNDER)
+		SMBUS1_CLR_RX_UNDER0;
+	else if(intr_stat & I2C_INTR_RX_OVER)
+		SMBUS1_CLR_RX_OVER0;
+	else if(intr_stat & I2C_INTR_RX_FULL)
 	{
-		irqprint("iic action erro !!! \n");
-		i2c_dw_tx_abrt(I2C_CHANNEL_1);
-		I2c_Writeb(0, I2C_INTR_MASK_OFFSET, I2C_CHANNEL_1);
-	}
-	if(int_stat & I2C_INTR_RX_FULL) // start req judge (set flags)
-	{
-	#if DEBUGGER_I2C_CHANNEL == 1
+		// dprint("SMBUS1 RX FULL\n");//相当于延时
+	#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
 		Debugger_Cmd_IRQ(I2c_Slave_Read_Byte(DEBUGGER_I2C_CHANNEL));
 	#endif
 	}
-	if(int_stat & I2C_INTR_TX_EMPTY) // sFIFO almost empty
+	else if(intr_stat & I2C_INTR_TX_OVER)
+		SMBUS1_CLR_TX_OVER0;
+	else if(intr_stat & I2C_INTR_TX_EMPTY)
 	{
-	#if DEBUGGER_I2C_CHANNEL == 1
+		// dprint("SMBUS1 TX EMPTY\n");//相当于延时
+	#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
 		Debugger_I2c_Send(DEBUGGER_I2C_CHANNEL);
-		assert_print("iicFeedback %#x", iicFeedback);
-		F_Service_Debugger_Send = 1;
 	#endif
 	}
-	if(int_stat & I2C_INTR_RD_REQ) // read request only once
+	else if(intr_stat & I2C_INTR_RD_REQ)
 	{
-	#if DEBUGGER_I2C_CHANNEL == 1
+		SMBUS1_CLR_RD_REQ0;
+		SMBUS1_INTR_MASK0 &= (~I2C_INTR_RD_REQ);
+	#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
+	#if 1//irq 
+		Debugger_I2c_Req(DEBUGGER_I2C_CHANNEL);
+		SMBUS1_INTR_MASK0 |= (I2C_INTR_RD_REQ);
+	#else//service
 		F_Service_Debugger_Rrq = 1;
-		I2C1_INTR_MASK &= ~0x20; // 屏蔽RD_REQ中断
+	#endif
 	#endif
 	}
-	if(!(ic_stat & I2C_SLV_ACTIVITY))
-	{
-		// irqprint("the iic of slave is dead! \n");
-		// I2c_Writeb(0, I2C_ENABLE_OFFSET,baseaddr);
-	}
-	if(!(ic_stat & I2C_MST_ACTIVITY))
-	{
-		// irqprint("the iic of master is dead! \n");
-		// I2c_Writeb(0, I2C_ENABLE_OFFSET,baseaddr);
-	}
-#endif
+	else if(intr_stat & I2C_INTR_RX_DONE)
+		SMBUS1_CLR_RX_DONE0;
+	else if(intr_stat & I2C_INTR_TX_ABRT)
+		SMBUS1_CLR_TX_ABRT0;
+	else if(intr_stat & I2C_INTR_ACTIVITY)
+		SMBUS1_CLR_ACTIVITY0;
+	else if(intr_stat & I2C_INTR_STOP_DET)
+		SMBUS1_CLR_STOP_DET0;
+	else if(intr_stat & I2C_INTR_START_DET)
+		SMBUS1_CLR_START_DET0;
+	else if(intr_stat & I2C_INTR_GEN_CALL)
+		SMBUS1_CLR_GEN_CALL0;
+// #define I2C_STATUS_ACTIVITY BIT0
+// #define I2C_STATUS_MST_ACTIVITY BIT5
+// 	if(status & I2C_STATUS_ACTIVITY)
+// 	{
+// 	}
+// 	else if(status & I2C_STATUS_TFNF)
+// 	{
+// 	}
+// 	else if(status & I2C_STATUS_TFE)
+// 	{
+// 	}
+// 	else if(status & I2C_STATUS_RFNE)
+// 	{
+// 	}
+// 	else if(status & I2C_STATUS_RFF)
+// 	{
+// 	}
+// 	else if(status & I2C_STATUS_MST_ACTIVITY)
+// 	{
+// 	}
 }
 void intr1_smbus2(void)
 {
@@ -2396,56 +2475,83 @@ void intr1_smbus2(void)
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[149]++;
 #endif
-	BYTE abrt_source_l = I2c_Readb(I2C_TX_ABRT_SOURCE_OFFSET, I2C_CHANNEL_2);
-	BYTE abrt_source_h = I2c_Readb((I2C_TX_ABRT_SOURCE_OFFSET + 1), I2C_CHANNEL_2);
-	BYTE raw_int = I2c_Readb(I2C_RAW_INTR_STAT_OFFSET, I2C_CHANNEL_2);
-	if(raw_int & I2C_INTR_TX_ABRT)
+	uint16_t raw_intr_stat = SMBUS2_RAW_INTR_STAT0;
+	irqprint("raw_intr_stat : %#x\n", raw_intr_stat);
+	if(raw_intr_stat & I2C_INTR_TX_ABRT)
 	{
-		dprint("smbus2 tx_abrt! addr is 0x%X data is 0x%X\n", SMB_Temp_Addr, SMB_Temp_Data);
-		dprint("tx_abrt_source:0x%x  \n", (WORD)(abrt_source_l | (abrt_source_h << 8)));
+		dprint("SMBUS2 tx_abrt! addr is %#x data is %#x\n", SMB_Temp_Addr, SMB_Temp_Data);
+		uint16_t tx_abrt_source = SMBUS2_TX_ABRT_SOURCE0;
+		dprint("tx_abrt_source:%#x  \n", tx_abrt_source);
 	}
-	I2c_Readb(I2C_CLR_TX_ABRT_OFFSET, I2C_CHANNEL_2); // 清除中断
-#if ENABLE_DEBUGGER_SUPPORT
-	DWORD ic_stat, int_stat;
-	ic_stat = I2c_Readb(I2C_STATUS_OFFSET, I2C_CHANNEL_2);
-	int_stat = i2c_dw_read_clear_intrbits(I2C_CHANNEL_2); // clear interrupts
-	if(int_stat & I2C_INTR_TX_ABRT)
+	// uint16_t intr_mask = SMBUS2_INTR_MASK0 | ((uint16_t)SMBUS2_INTR_MASK1 << 8);
+	// uint16_t status = SMBUS2_STATUS0;
+	uint16_t intr_stat = SMBUS2_INTR_STAT0;
+	irqprint("intr_stat = %#x\n", intr_stat);
+	if(intr_stat & I2C_INTR_RX_UNDER)
+		SMBUS2_CLR_RX_UNDER0;
+	else if(intr_stat & I2C_INTR_RX_OVER)
+		SMBUS2_CLR_RX_OVER0;
+	else if(intr_stat & I2C_INTR_RX_FULL)
 	{
-		irqprint("iic action erro !!! \n");
-		i2c_dw_tx_abrt(I2C_CHANNEL_2);
-	}
-	if(int_stat & I2C_INTR_RX_FULL) // start req judge (set flags)
-	{
-	#if DEBUGGER_I2C_CHANNEL == 2
+		// dprint("SMBUS2 RX FULL\n");//相当于延时
+	#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
 		Debugger_Cmd_IRQ(I2c_Slave_Read_Byte(DEBUGGER_I2C_CHANNEL));
 	#endif
 	}
-	if(int_stat & I2C_INTR_TX_EMPTY) // sFIFO almost empty
+	else if(intr_stat & I2C_INTR_TX_OVER)
+		SMBUS2_CLR_TX_OVER0;
+	else if(intr_stat & I2C_INTR_TX_EMPTY)
 	{
-	#if DEBUGGER_I2C_CHANNEL == 2
+		// dprint("SMBUS2 TX EMPTY\n");//相当于延时
+	#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
 		Debugger_I2c_Send(DEBUGGER_I2C_CHANNEL);
-		assert_print("iicFeedback %#x", iicFeedback);
-		F_Service_Debugger_Send = 1;
 	#endif
 	}
-	if(int_stat & I2C_INTR_RD_REQ) // read request only once
+	else if(intr_stat & I2C_INTR_RD_REQ)
 	{
-	#if DEBUGGER_I2C_CHANNEL == 2
+		SMBUS2_CLR_RD_REQ0;
+		SMBUS2_INTR_MASK0 &= (~I2C_INTR_RD_REQ);
+	#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
+	#if 1//irq 
+		Debugger_I2c_Req(DEBUGGER_I2C_CHANNEL);
+		SMBUS2_INTR_MASK0 |= (I2C_INTR_RD_REQ);
+	#else//service
 		F_Service_Debugger_Rrq = 1;
-		I2C2_INTR_MASK &= ~0x20; // 屏蔽RD_REQ中断
+	#endif
 	#endif
 	}
-	if(!(ic_stat & I2C_SLV_ACTIVITY))
-	{
-		// irqprint("the iic of slave is dead! \n");
-		// I2c_Writeb(0, I2C_ENABLE_OFFSET,baseaddr);
-	}
-	if(!(ic_stat & I2C_MST_ACTIVITY))
-	{
-		// irqprint("the iic of master is dead! \n");
-		// I2c_Writeb(0, I2C_ENABLE_OFFSET,baseaddr);
-	}
-#endif
+	else if(intr_stat & I2C_INTR_RX_DONE)
+		SMBUS2_CLR_RX_DONE0;
+	else if(intr_stat & I2C_INTR_TX_ABRT)
+		SMBUS2_CLR_TX_ABRT0;
+	else if(intr_stat & I2C_INTR_ACTIVITY)
+		SMBUS2_CLR_ACTIVITY0;
+	else if(intr_stat & I2C_INTR_STOP_DET)
+		SMBUS2_CLR_STOP_DET0;
+	else if(intr_stat & I2C_INTR_START_DET)
+		SMBUS2_CLR_START_DET0;
+	else if(intr_stat & I2C_INTR_GEN_CALL)
+		SMBUS2_CLR_GEN_CALL0;
+// #define I2C_STATUS_ACTIVITY BIT0
+// #define I2C_STATUS_MST_ACTIVITY BIT5
+// 	if(status & I2C_STATUS_ACTIVITY)
+// 	{
+// 	}
+// 	else if(status & I2C_STATUS_TFNF)
+// 	{
+// 	}
+// 	else if(status & I2C_STATUS_TFE)
+// 	{
+// 	}
+// 	else if(status & I2C_STATUS_RFNE)
+// 	{
+// 	}
+// 	else if(status & I2C_STATUS_RFF)
+// 	{
+// 	}
+// 	else if(status & I2C_STATUS_MST_ACTIVITY)
+// 	{
+// 	}
 }
 void intr1_smbus3(void)
 {
@@ -2461,56 +2567,83 @@ void intr1_smbus3(void)
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[150]++;
 #endif
-	BYTE abrt_source_l = I2c_Readb(I2C_TX_ABRT_SOURCE_OFFSET, I2C_CHANNEL_3);
-	BYTE abrt_source_h = I2c_Readb((I2C_TX_ABRT_SOURCE_OFFSET + 1), I2C_CHANNEL_3);
-	BYTE raw_int = I2c_Readb(I2C_RAW_INTR_STAT_OFFSET, I2C_CHANNEL_3);
-	if(raw_int & I2C_INTR_TX_ABRT)
+	uint16_t raw_intr_stat = SMBUS3_RAW_INTR_STAT0;
+	irqprint("raw_intr_stat : %#x\n", raw_intr_stat);
+	if(raw_intr_stat & I2C_INTR_TX_ABRT)
 	{
-		dprint("smbus3 tx_abrt! addr is 0x%X data is 0x%X\n", SMB_Temp_Addr, SMB_Temp_Data);
-		dprint("tx_abrt_source:0x%x  \n", (WORD)(abrt_source_l | (abrt_source_h << 8)));
+		dprint("SMBUS3 tx_abrt! addr is %#x data is %#x\n", SMB_Temp_Addr, SMB_Temp_Data);
+		uint16_t tx_abrt_source = SMBUS3_TX_ABRT_SOURCE0;
+		dprint("tx_abrt_source:%#x  \n", tx_abrt_source);
 	}
-	I2c_Readb(I2C_CLR_TX_ABRT_OFFSET, I2C_CHANNEL_3); // 清除中断
-#if ENABLE_DEBUGGER_SUPPORT
-	DWORD ic_stat, int_stat;
-	ic_stat = I2c_Readb(I2C_STATUS_OFFSET, I2C_CHANNEL_3);
-	int_stat = i2c_dw_read_clear_intrbits(I2C_CHANNEL_3); // clear interrupts
-	if(int_stat & I2C_INTR_TX_ABRT)
+	// uint16_t intr_mask = SMBUS3_INTR_MASK0 | ((uint16_t)SMBUS3_INTR_MASK1 << 8);
+	// uint16_t status = SMBUS3_STATUS0;
+	uint16_t intr_stat = SMBUS3_INTR_STAT0;
+	irqprint("intr_stat = %#x\n", intr_stat);
+	if(intr_stat & I2C_INTR_RX_UNDER)
+		SMBUS3_CLR_RX_UNDER0;
+	else if(intr_stat & I2C_INTR_RX_OVER)
+		SMBUS3_CLR_RX_OVER0;
+	else if(intr_stat & I2C_INTR_RX_FULL)
 	{
-		irqprint("iic action erro !!! \n");
-		i2c_dw_tx_abrt(I2C_CHANNEL_3);
-	}
-	if(int_stat & I2C_INTR_RX_FULL) // start req judge (set flags)
-	{
-	#if DEBUGGER_I2C_CHANNEL == 3
+		// dprint("SMBUS3 RX FULL\n");//相当于延时
+	#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
 		Debugger_Cmd_IRQ(I2c_Slave_Read_Byte(DEBUGGER_I2C_CHANNEL));
 	#endif
 	}
-	if(int_stat & I2C_INTR_TX_EMPTY) // sFIFO almost empty
+	else if(intr_stat & I2C_INTR_TX_OVER)
+		SMBUS3_CLR_TX_OVER0;
+	else if(intr_stat & I2C_INTR_TX_EMPTY)
 	{
-	#if DEBUGGER_I2C_CHANNEL == 3
+		// dprint("SMBUS3 TX EMPTY\n");//相当于延时
+	#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
 		Debugger_I2c_Send(DEBUGGER_I2C_CHANNEL);
-		assert_print("iicFeedback %#x", iicFeedback);
-		F_Service_Debugger_Send = 1;
 	#endif
 	}
-	if(int_stat & I2C_INTR_RD_REQ) // read request only once
+	else if(intr_stat & I2C_INTR_RD_REQ)
 	{
-	#if DEBUGGER_I2C_CHANNEL == 3
+		SMBUS3_CLR_RD_REQ0;
+		SMBUS3_INTR_MASK0 &= (~I2C_INTR_RD_REQ);
+	#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
+	#if 1//irq 
+		Debugger_I2c_Req(DEBUGGER_I2C_CHANNEL);
+		SMBUS3_INTR_MASK0 |= (I2C_INTR_RD_REQ);
+	#else//service
 		F_Service_Debugger_Rrq = 1;
-		I2C2_INTR_MASK &= ~0x20; // 屏蔽RD_REQ中断
+	#endif
 	#endif
 	}
-	if(!(ic_stat & I2C_SLV_ACTIVITY))
-	{
-		// irqprint("the iic of slave is dead! \n");
-		// I2c_Writeb(0, I2C_ENABLE_OFFSET,baseaddr);
-	}
-	if(!(ic_stat & I2C_MST_ACTIVITY))
-	{
-		// irqprint("the iic of master is dead! \n");
-		// I2c_Writeb(0, I2C_ENABLE_OFFSET,baseaddr);
-	}
-#endif
+	else if(intr_stat & I2C_INTR_RX_DONE)
+		SMBUS3_CLR_RX_DONE0;
+	else if(intr_stat & I2C_INTR_TX_ABRT)
+		SMBUS3_CLR_TX_ABRT0;
+	else if(intr_stat & I2C_INTR_ACTIVITY)
+		SMBUS3_CLR_ACTIVITY0;
+	else if(intr_stat & I2C_INTR_STOP_DET)
+		SMBUS3_CLR_STOP_DET0;
+	else if(intr_stat & I2C_INTR_START_DET)
+		SMBUS3_CLR_START_DET0;
+	else if(intr_stat & I2C_INTR_GEN_CALL)
+		SMBUS3_CLR_GEN_CALL0;
+// #define I2C_STATUS_ACTIVITY BIT0
+// #define I2C_STATUS_MST_ACTIVITY BIT5
+// 	if(status & I2C_STATUS_ACTIVITY)
+// 	{
+// 	}
+// 	else if(status & I2C_STATUS_TFNF)
+// 	{
+// 	}
+// 	else if(status & I2C_STATUS_TFE)
+// 	{
+// 	}
+// 	else if(status & I2C_STATUS_RFNE)
+// 	{
+// 	}
+// 	else if(status & I2C_STATUS_RFF)
+// 	{
+// 	}
+// 	else if(status & I2C_STATUS_MST_ACTIVITY)
+// 	{
+// 	}
 }
 void intr1_smbus6(void)
 {

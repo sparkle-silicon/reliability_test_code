@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2023-12-21 17:40:01
+ * @LastEditTime: 2025-07-04 16:12:56
  * @Description:
  *
  *
@@ -72,8 +72,8 @@
 #define I2C_CON_10BITADDR_SLAVE		0x8
 #define I2C_CON_RESTART_EN			0x20
 #define I2C_CON_SLAVE_DISABLE		0x40
-#define I2C_REGADDR_7BIT	0x00
-#define I2C_REGADDR_10BIT	0x10
+#define I2C_REGADDR_7BIT	0x0000
+#define I2C_REGADDR_10BIT	0x1000
 #define I2C_INTR_RX_UNDER	0x01
 #define I2C_INTR_RX_OVER	0x02
 #define I2C_INTR_RX_FULL	0x04
@@ -162,16 +162,15 @@
 #define I2C_CHANNEL_3 3
 #define I2C_CHANNEL_4 4
 #define I2C_CHANNEL_5 5
-/*yujiang add*/
 #define I2C_CHANNEL_6 6
 #define I2C_CHANNEL_7 7
 #define I2C_CHANNEL_8 8
-/*yujiang add*/
-#define I2C_WRITE 0x0
-#define I2C_READ 0x1
-#define I2C_STOP 0x2
+
+#define I2C_WRITE 0x000
+#define I2C_READ 0x100
+#define I2C_STOP 0x200
 #define I2C_RESTART 0x4
-#define I2CTimeOut	1000	//TimeOut set
+#define I2CTimeOut	(HIGHT_CHIP_CLOCK/15/20)	//TimeOut set
 
 //*****************************************************************************
 // extern functions

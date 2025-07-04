@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2023-12-21 18:45:54
+ * @LastEditTime: 2025-07-03 18:10:26
  * @Description: Platform battery & battery charger control code
  *
  *
@@ -181,13 +181,12 @@ VWORD BatteryRead(BYTE addr)
 	word_read temp;
 	BatteryTARSetup();
 	while(I2c_Check_TFE(BAT_I2C_CHANNEL));
-	I2c_Writeb(addr, I2C_DATA_CMD_OFFSET, BAT_I2C_CHANNEL);
-	I2c_Writeb(I2C_WRITE, I2C_DATA_CMD_RWDIR, BAT_I2C_CHANNEL);
-	I2c_Writeb(I2C_READ, I2C_DATA_CMD_RWDIR, BAT_I2C_CHANNEL);
-	I2c_Writeb(I2C_READ | I2C_STOP, I2C_DATA_CMD_RWDIR, BAT_I2C_CHANNEL);
-	while((i--)&&(0 == (I2c_Check_RFNE(BAT_I2C_CHANNEL))))
+	SMBUSn_DATA_CMD0(BAT_I2C_CHANNEL) = (I2C_WRITE) | addr;
+	SMBUSn_DATA_CMD0(BAT_I2C_CHANNEL) = I2C_READ;
+	SMBUSn_DATA_CMD0(BAT_I2C_CHANNEL) = I2C_READ | I2C_STOP;
+	while((i--) && (0 == (I2c_Check_RFNE(BAT_I2C_CHANNEL))))
 	{
-		temp.data0[1 - i] = I2c_Readb(I2C_DATA_CMD_OFFSET, BAT_I2C_CHANNEL);
+		temp.data0[1 - i] = SMBUSn_DATA_CMD0(BAT_I2C_CHANNEL) & 0xff;
 	}
 	return temp.data;
 }
@@ -198,13 +197,12 @@ VWORD ChargerRead(BYTE addr)
 	word_read temp;
 	ChargerTARSetup();
 	while(I2c_Check_TFE(CHG_I2C_CHANNEL));
-	I2c_Writeb(addr, I2C_DATA_CMD_OFFSET, CHG_I2C_CHANNEL);
-	I2c_Writeb(I2C_WRITE, I2C_DATA_CMD_RWDIR, CHG_I2C_CHANNEL);
-	I2c_Writeb(I2C_READ, I2C_DATA_CMD_RWDIR, CHG_I2C_CHANNEL);
-	I2c_Writeb(I2C_READ | I2C_STOP, I2C_DATA_CMD_RWDIR, CHG_I2C_CHANNEL);
+	SMBUSn_DATA_CMD0(CHG_I2C_CHANNEL) = (I2C_WRITE) | addr;
+	SMBUSn_DATA_CMD0(CHG_I2C_CHANNEL) = I2C_READ;
+	SMBUSn_DATA_CMD0(CHG_I2C_CHANNEL) = I2C_READ | I2C_STOP;
 	while((i--) && (0 == I2c_Check_RFNE(CHG_I2C_CHANNEL)))
 	{
-		temp.data0[1 - i] = I2c_Readb(I2C_DATA_CMD_OFFSET, CHG_I2C_CHANNEL);
+		temp.data0[1 - i] = SMBUSn_DATA_CMD0(CHG_I2C_CHANNEL) & 0xff;
 	}
 	return temp.data;
 }

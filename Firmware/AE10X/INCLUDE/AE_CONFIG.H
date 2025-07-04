@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-06-17 16:58:54
+ * @LastEditTime: 2025-07-04 11:37:24
  * @Description:
  *
  *
@@ -229,12 +229,12 @@
 #define I2C0_EXTERNAL_PULL_UP 1
 #define I2C0_INTERNAL_PULL_UP 0
 
-#define I2C1_EN_Init 0 & SMBUS1_CLOCK_EN
-#define I2C1_SPEED 100000
+#define I2C1_EN_Init 1 & SMBUS1_CLOCK_EN
+#define I2C1_SPEED 400000
 #define I2C1_EXTERNAL_PULL_UP 1
 #define I2C1_INTERNAL_PULL_UP 0
 
-#define I2C2_EN_Init 0 & SMBUS2_CLOCK_EN
+#define I2C2_EN_Init 1 & SMBUS2_CLOCK_EN
 #define I2C2_SPEED 100000
 #define I2C2_EXTERNAL_PULL_UP 1
 #define I2C2_INTERNAL_PULL_UP 0

@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-08-13 17:04:43
+ * @LastEditTime: 2025-07-03 19:01:13
  * @Description:
  *
  *
@@ -36,6 +36,23 @@
 #define STOP_RECOARD_KBC_PMC_DATA 0xEE	//      	0xEE--Stop recording KBC/PMC data
 #define HANDSHAKE_REQUEST 0x99			// 		0x99--Handshake request
 #define DISCONNECTION_REQUEST 0x66		// 		0x66--no used DEBUGGER FUNCTION
+
+#define DEBUGGER_BASE_ADDR  UART1_BASE_ADDR
+// extern volatile uint32_t DEBUGGER_FIFO;
+#define DEBUGGER_REG_ADDR(offset) REG_ADDR(DEBUGGER_BASE_ADDR, offset)
+#define DEBUGGER_REG(offset) REG8(DEBUGGER_REG_ADDR(offset))
+#define DEBUGGER_RX DEBUGGER_REG(UART_RBR_OFFSET)
+#define DEBUGGER_TX DEBUGGER_REG(UART_THR_OFFSET)
+#define DEBUGGER_DLL DEBUGGER_REG(UART_DLL_OFFSET)
+#define DEBUGGER_DLH DEBUGGER_REG(UART_DLH_OFFSET)
+#define DEBUGGER_IER DEBUGGER_REG(UART_IER_OFFSET)
+#define DEBUGGER_IIR DEBUGGER_REG(UART_IIR_OFFSET)
+#define DEBUGGER_FCR DEBUGGER_REG(UART_FCR_OFFSET)
+#define DEBUGGER_LCR DEBUGGER_REG(UART_LCR_OFFSET)
+#define DEBUGGER_MICR DEBUGGER_REG(UART_MICR_OFFSET)
+#define DEBUGGER_LSR DEBUGGER_REG(UART_LSR_OFFSET)
+#define DEBUGGER_MSR DEBUGGER_REG(UART_MSR_OFFSET)
+#define DEBUGGER_USR DEBUGGER_REG(UART_USR_OFFSET)
 
 
 /*****************************************************************************
@@ -85,8 +102,7 @@
 /*uart buffer size*/
 #define UART_BUFFER_SIZE 64
 #define KBD_BUFF_SIZE DEBUGGER_BUFF_SIZE
-struct KBD_Event
-{
+struct KBD_Event{
 	BYTE data[KBD_BUFF_SIZE];
 	uint16_t head;
 	uint16_t tail;
