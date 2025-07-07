@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-07-04 18:38:10
+ * @LastEditTime: 2025-07-07 11:14:56
  * @Description:
  *
  *
@@ -72,7 +72,7 @@ WORD I2c_Channel_Baseaddr(WORD i2c_channel)
 //  return :
 //      read value
 //*****************************************************************************
-char I2c_Readb(WORD regoffset, WORD i2c_channel)
+uint8_t I2c_Readb(WORD regoffset, WORD i2c_channel)
 {
 #if SMBUS_REG_SIZE==DEC8
 	return SMBUSn_REG(i2c_channel, regoffset);
@@ -765,7 +765,7 @@ void I2cM_Read_Block(BYTE i2c_addr, BYTE *data, BYTE length, BYTE reg, WORD i2c_
 //  return :
 //      none
 //*****************************************************************************
-void I2c_Slave_Write_Byte(char data, WORD i2c_channel)
+void I2c_Slave_Write_Byte(uint8_t data, WORD i2c_channel)
 {
 	/*write data and stop*/
 	if(0 == I2c_Check_TFE(i2c_channel))
@@ -783,7 +783,7 @@ void I2c_Slave_Write_Byte(char data, WORD i2c_channel)
 //  return :
 //      data
 //*****************************************************************************
-char I2c_Slave_Read_Byte(WORD i2c_channel)
+uint8_t I2c_Slave_Read_Byte(WORD i2c_channel)
 {
 	BYTE data = 0;
 	/*write data and stop*/
@@ -805,7 +805,7 @@ char I2c_Slave_Read_Byte(WORD i2c_channel)
 //  return :
 //      none
 //*****************************************************************************
-void I2c_Slave_Write_Block(char *data, BYTE length, WORD i2c_channel)
+void I2c_Slave_Write_Block(uint8_t *data, BYTE length, WORD i2c_channel)
 {
 	BYTE loop = 0;
 	length--;

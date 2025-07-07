@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-07-03 18:55:40
+ * @LastEditTime: 2025-07-07 11:15:52
  * @Description:
  *
  *
@@ -535,7 +535,7 @@ void Debugger_I2c_Send(WORD channel)
 {
 	// assert_print("iicFeedback %#x", iicFeedback);
 	// int data;
-	char wdata[16];
+	uint8_t wdata[16];
 	volatile BYTE int_status;
 	switch(iicFeedback)
 	{

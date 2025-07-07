@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-07-04 16:12:56
+ * @LastEditTime: 2025-07-07 11:15:33
  * @Description:
  *
  *
@@ -184,7 +184,7 @@ extern BYTE I2c_Master_Read_Byte(BYTE reg, WORD i2c_channel);
 extern BYTE I2cM_Read_Byte(BYTE i2c_addr, BYTE reg, WORD i2c_channel);
 
 extern int i2c_dw_read_clear_intrbits(WORD baseaddr);
-extern char I2c_Readb(WORD regoffset, WORD i2c_channel);
+extern uint8_t I2c_Readb(WORD regoffset, WORD i2c_channel);
 extern char I2c_Check_TXE(WORD i2c_channel);
 extern char I2c_Check_RXF(WORD i2c_channel);
 extern char I2c_Check_TFE(WORD i2c_channel);
@@ -192,7 +192,7 @@ extern char I2c_Check_TFNF(WORD i2c_channel);
 extern char I2c_Check_RFNE(WORD i2c_channel);
 extern char I2c_Check_Stop_Det(WORD i2c_channel);
 extern char I2c_Check_Active(WORD i2c_channel);
-extern char I2c_Slave_Read_Byte(WORD i2c_channel);
+extern uint8_t I2c_Slave_Read_Byte(WORD i2c_channel);
 
 extern void I2c_Writeb(BYTE value, WORD regoffset, WORD i2c_channel);
 extern void I2c_Write16bit(WORD value, WORD regoffset, WORD i2c_channel);
@@ -208,8 +208,8 @@ extern void I2cM_Write_Word(BYTE i2c_addr, BYTE *data, BYTE reg, WORD i2c_channe
 extern void I2cM_Read_Word(BYTE i2c_addr, BYTE *data, BYTE reg, WORD i2c_channel);
 extern void I2cM_Write_Block(BYTE i2c_addr, BYTE *data, BYTE length, BYTE reg, WORD i2c_channel);
 extern void I2cM_Read_Block(BYTE i2c_addr, BYTE *data, BYTE length, BYTE reg, WORD i2c_channel);
-extern void I2c_Slave_Write_Byte(char data, WORD i2c_channel);
-extern void I2c_Slave_Write_Block(char *data, BYTE  length, WORD i2c_channel);
+extern void I2c_Slave_Write_Byte(uint8_t data, WORD i2c_channel);
+extern void I2c_Slave_Write_Block(uint8_t *data, BYTE  length, WORD i2c_channel);
 extern void I2c_Master_Controller_Init(WORD i2c_channel, DWORD speed, BYTE spklen);
 extern void I2c_Slave_Init(WORD i2c_channel, DWORD speed, BYTE spklen);
 extern void I2c_Channel_Init(BYTE channel, DWORD speed, BYTE role, BYTE addr, BYTE spklen);
