@@ -24,7 +24,9 @@
 #include "KERNEL_RTC.H"
 
 #define MOUDLE_TEST 0
+#if ENABLE_DEBUGGER_SUPPORT
 extern char Uart_buffer[UART_BUFFER_SIZE]; // An array of data transferred by the debugger
+#endif
 BYTE intr_st0, intr_st1, intr_st2, intr_st3, intr_st4, intr_st5, intr_st6, intr_st7;
 BYTE intr_st;
 /***************weak声明*********************/
@@ -95,9 +97,9 @@ void irqc_set_negedge_trig(uint32_t source)
 void enable_irq(uint32_t source, uint32_t lvl, uint32_t edge)
 {
 	irqc_enable_interrupt(source);
-	if(lvl)
+	if (lvl)
 		irqc_set_level_trig(source);
-	else if(edge)
+	else if (edge)
 		irqc_set_negedge_trig(source);
 	else
 		irqc_set_posedge_trig(source);
@@ -160,7 +162,7 @@ void SECTION(".init.irq") Irqc_init(void)
 #endif
 }
 #if IRQC_DEBUG
-char __weak *irq_string = "ISR: %s,IRQ: %d.\n";
+char __weak* irq_string = "ISR: %s,IRQ: %d.\n";
 #endif
 void __interrupt SECTION(".interrupt.CPUS_HANDLER") CPUS_HANDLER(void)
 {
@@ -176,7 +178,7 @@ void __interrupt SECTION(".interrupt.CPUT_HANDLER") CPUT_HANDLER(void)
 #endif
 	irqprint(irq_string, __FUNCTION__, 1);
 #if SUPPORT_CPUTIMER_WAKEUP
-	if(Low_Power_Flag)
+	if (Low_Power_Flag)
 	{
 		// Low_Power_Flag = 0;
 		// Restore_Context();
@@ -207,14 +209,14 @@ void __interrupt SECTION(".interrupt.SWUC_HANDLER") SWUC_HANDLER(void)
 	irqprint(irq_string, __FUNCTION__, 3);
 	irqprint("SWCHSTR status is %#x\n", SWUSTA);
 #if 1
-	if(SWUSTA & 0x80)
+	if (SWUSTA & 0x80)
 	{
 		SWUSTA |= 0x80;
 		irqprint("This is Logic Device Module trig interrupt!\n");
 	}
-	else if(SWUSTA & 0x40)
+	else if (SWUSTA & 0x40)
 	{
-		if(!(SWUCTL1 & 0x20))
+		if (!(SWUCTL1 & 0x20))
 		{
 			irqprint("This is Soft Event trig interrupt! HOST Clear!\n");
 		}
@@ -224,56 +226,56 @@ void __interrupt SECTION(".interrupt.SWUC_HANDLER") SWUC_HANDLER(void)
 			irqprint("This is Soft Event trig interrupt! EC Clear!\n");
 		}
 	}
-	else if(SWUSTA & 0x8)
+	else if (SWUSTA & 0x8)
 	{
 		SWUSTA |= 0x8;
 		irqprint("This is RING signal trig interrupt!\n");
 	}
-	else if(SWUSTA & 0x2)
+	else if (SWUSTA & 0x2)
 	{
 		SWUSTA |= 0x2;
 		irqprint("This is RI2 signal trig interrupt!\n");
 	}
-	else if(SWUSTA & 0x1)
+	else if (SWUSTA & 0x1)
 	{
 		SWUSTA |= 0x1;
 		irqprint("This is RI1 signal trig interrupt!\n");
 	}
-	else if((SWUCTL2 & 0x40) && (SWUIE & 0x40))
+	else if ((SWUCTL2 & 0x40) && (SWUIE & 0x40))
 	{
 		irqprint("This is legacy mode way scrdpbm_ec trig interrupt!\n");
 		SWUCTL2 |= 0x40;
 	}
-	else if((SWUCTL2 & 0x80) && (SWUIE & 0x80))
+	else if ((SWUCTL2 & 0x80) && (SWUIE & 0x80))
 	{
 		irqprint("This is legacy mode way scrdpso_ec trig interrupt!\n");
 		SWUCTL2 |= 0x80;
 	}
-	else if((SWUCTL2 & (0x02)))
+	else if ((SWUCTL2 & (0x02)))
 	{
 		irqprint("SWCTL2 data is %#x!\n", SWUCTL2);
 		irqprint("This is ACPI S1 request interrupt!\n");
 		(SWUCTL2) |= 0x02;
 	}
-	else if((SWUCTL2 & (0x04)))
+	else if ((SWUCTL2 & (0x04)))
 	{
 		irqprint("SWCTL2 data is %#x!\n", SWUCTL2);
 		irqprint("This is ACPI S2 request interrupt!\n");
 		(SWUCTL2) |= 0x04;
 	}
-	else if((SWUCTL2 & (0x08)))
+	else if ((SWUCTL2 & (0x08)))
 	{
 		irqprint("SWCTL2 data is %#x!\n", SWUCTL2);
 		irqprint("This is ACPI S3 request interrupt!\n");
 		SWUCTL2 |= 0x08;
 	}
-	else if((SWUCTL2 & (0x10)))
+	else if ((SWUCTL2 & (0x10)))
 	{
 		irqprint("SWCTL2 data is %#x!\n", SWUCTL2);
 		irqprint("This is ACPI S4 request interrupt!\n");
 		SWUCTL2 |= 0x10;
 	}
-	else if((SWUCTL2 & (0x20)))
+	else if ((SWUCTL2 & (0x20)))
 	{
 		irqprint("SWCTL2 data is %#x!\n", SWUCTL2);
 		irqprint("This is ACPI S5 request interrupt!\n");
@@ -316,9 +318,9 @@ void __interrupt SECTION(".interrupt.PS2_0_HANDLER") PS2_0_HANDLER(void)
 	Intr_num[6]++;
 #endif
 	irqprint(irq_string, __FUNCTION__, 6);
-	if(MS_Main_CHN == 1)
+	if (MS_Main_CHN == 1)
 		Handle_Mouse(MS_Main_CHN - 1);
-	else if(KB_Main_CHN == 1)
+	else if (KB_Main_CHN == 1)
 		Handle_Kbd(KB_Main_CHN - 1);
 };
 void __interrupt SECTION(".interrupt.KBS_SDV_HANDLER") KBS_SDV_HANDLER(void)
@@ -328,9 +330,9 @@ void __interrupt SECTION(".interrupt.KBS_SDV_HANDLER") KBS_SDV_HANDLER(void)
 #endif
 	irqprint(irq_string, __FUNCTION__, 7);
 #if SUPPORT_KBS_WAKEUP
-	if(Low_Power_Flag)
+	if (Low_Power_Flag)
 	{
-		if(SystemIsS3)
+		if (SystemIsS3)
 			Exit_LowPower_Mode(); // support KBS wake cpu up when S3
 	}
 #endif
@@ -421,7 +423,7 @@ void __interrupt SECTION(".interrupt.PMC1_IBF_HANDLER") PMC1_IBF_HANDLER(void)
 	irqprint(irq_string, __FUNCTION__, 15);
 	F_Service_PCI2 = 1;
 	PMC1_CTL &= ~IBF_INT_ENABLE; // 清除中断，读走以后再打开
-								 // Service_PCI2_Main();
+	// Service_PCI2_Main();
 };
 void __interrupt SECTION(".interrupt.PMC1_OBE_HANDLER") PMC1_OBE_HANDLER(void)
 {
@@ -471,7 +473,7 @@ void __interrupt SECTION(".interrupt.WDT_HANDLER") WDT_HANDLER(void)
 	Intr_num[19]++;
 #endif
 	irqprint(irq_string, __FUNCTION__, 19);
-	if(WDT_FLAG)
+	if (WDT_FLAG)
 	{
 		WDT_Clear_IRQ(); // 重启则清除中断
 	}
@@ -492,18 +494,18 @@ void __interrupt SECTION(".interrupt.ADC_HANDLER") ADC_HANDLER(void)
 	// dprint("ADC_INTSTAT_int:%x\n",ADC_INTSTAT);
 	// dprint("ADC_ValidStatus_1 is 0x%x\n",ADC_ValidStatus_1);
 	// dprint("ADC_ValidStatus_2 is 0x%x\n",ADC_ValidStatus_2);
-	for(short i = 0; i < 8; i++)
+	for (short i = 0; i < 8; i++)
 	{
-		if(ADC_ValidStatus_1 & (1 << i))
+		if (ADC_ValidStatus_1 & (1 << i))
 		{
 			// printf("i:======%x\n",i);
 			(&ADC_Data0)[i] = ADC_ReadData(i);
 			ADC_INTSTAT |= 1 << i;		//清除中断
 			dprint("ADC%d:0x%x\n", i, (&ADC_Data0)[i]);
 		}
-		if(ADC_ValidStatus_2 & (1 << i))
+		if (ADC_ValidStatus_2 & (1 << i))
 		{
-			if(i < 3 && i >= 0)
+			if (i < 3 && i >= 0)
 			{
 				ADC_INTSTAT |= 1 << (i + 8);		//清除中断
 				printf("compare%d: compare failed\n", i);
@@ -511,11 +513,11 @@ void __interrupt SECTION(".interrupt.ADC_HANDLER") ADC_HANDLER(void)
 		}
 	}
 #if TEST_10TIMES
-	if((((ADC_CTRL >> 7) & 0x3) == 0x2) || (((ADC_CTRL >> 7) & 0x3) == 0x3) || (((ADC_CTRL >> 7) & 0x3) == 0x1))//连续触发 auto samp
-	// if((((ADC_CTRL>>7)&0x3)==0x2))
+	if ((((ADC_CTRL >> 7) & 0x3) == 0x2) || (((ADC_CTRL >> 7) & 0x3) == 0x3) || (((ADC_CTRL >> 7) & 0x3) == 0x1))//连续触发 auto samp
+		// if((((ADC_CTRL>>7)&0x3)==0x2))
 	{
 		//在此测试连续，
-		if(counter_1 < 10)
+		if (counter_1 < 10)
 		{
 			counter_1++;
 			printf("counter_1:%x\n", counter_1);
@@ -538,10 +540,10 @@ void __interrupt SECTION(".interrupt.UART0_HANDLER") UART0_HANDLER(void)
 	irqprint(irq_string, __FUNCTION__, 21);
 #endif
 	register u8 iir = (UART0_IIR & 0xf);
-	if(iir == UART_IIR_RLS)//奇偶校验、溢出、格式错误、失效中断
+	if (iir == UART_IIR_RLS)//奇偶校验、溢出、格式错误、失效中断
 	{
 		register u8 lsr = UART0_LSR;
-		if(lsr & (UART_LSR_BI | UART_LSR_FE | UART_LSR_PE))//打断传输,格式错误，奇偶校验，
+		if (lsr & (UART_LSR_BI | UART_LSR_FE | UART_LSR_PE))//打断传输,格式错误，奇偶校验，
 		{
 			UART0_RX;//读出异常值
 			irqprint("Receive error\n");//报错
@@ -550,32 +552,32 @@ void __interrupt SECTION(".interrupt.UART0_HANDLER") UART0_HANDLER(void)
 
 	}
 #if (ENABLE_COMMAND_SUPPORT && COMMAND_UART_SWITCH == 0)
-	if(F_Service_CMD == 1)
+	if (F_Service_CMD == 1)
 	{
 		char temp = UART0_RX;
-	#if (!IRQC_DEBUG)
+#if (!IRQC_DEBUG)
 		UNUSED_VAR(temp);
-	#endif
+#endif
 		irqprint("erro of CMD_RUN:%#x,%c\n", temp, temp);
 		return;
 	}
 	CMD_UART_BUFF[CMD_UART_CNT] = UART0_RX;
-	if(CMD_UART_BUFF[CMD_UART_CNT] == '\n' || CMD_UART_CNT == CMD_BUFF_MAX)
+	if (CMD_UART_BUFF[CMD_UART_CNT] == '\n' || CMD_UART_CNT == CMD_BUFF_MAX)
 	{
 		CMD_UART_BUFF[CMD_UART_CNT] = '\0';
-		if(CMD_UART_BUFF[CMD_UART_CNT - 1] == ' ')
+		if (CMD_UART_BUFF[CMD_UART_CNT - 1] == ' ')
 		{
 			CMD_UART_CNT--;
 			CMD_UART_BUFF[CMD_UART_CNT] = '\0';
 		}
 		F_Service_CMD = 1;
 	}
-	else if(CMD_UART_BUFF[CMD_UART_CNT] == '\r')
+	else if (CMD_UART_BUFF[CMD_UART_CNT] == '\r')
 		CMD_UART_BUFF[CMD_UART_CNT] = '\0';
 	else
 		CMD_UART_CNT++;
 #endif
-/* Debugger Function Entry */
+	/* Debugger Function Entry */
 #if ENABLE_DEBUGGER_SUPPORT
 #if DEBUGGER_OUTPUT_SWITCH == 0
 #if DEBUG_UART_SWITCH == 0
@@ -597,10 +599,10 @@ void __interrupt SECTION(".interrupt.UARTA_HANDLER") UARTA_HANDLER(void)
 	irqprint(irq_string, __FUNCTION__, 22);
 #endif
 	register u8 iir = (UARTA_IIR & 0xf);
-	if(iir == UART_IIR_RLS)//奇偶校验、溢出、格式错误、失效中断
+	if (iir == UART_IIR_RLS)//奇偶校验、溢出、格式错误、失效中断
 	{
 		register u8 lsr = UARTA_LSR;
-		if(lsr & (UART_LSR_BI | UART_LSR_FE | UART_LSR_PE))//打断传输,格式错误，奇偶校验，
+		if (lsr & (UART_LSR_BI | UART_LSR_FE | UART_LSR_PE))//打断传输,格式错误，奇偶校验，
 		{
 			UARTA_RX;//读出异常值
 			irqprint("Receive error\n");//报错
@@ -609,32 +611,32 @@ void __interrupt SECTION(".interrupt.UARTA_HANDLER") UARTA_HANDLER(void)
 
 	}
 #if (ENABLE_COMMAND_SUPPORT && COMMAND_UART_SWITCH == 2)
-	if(F_Service_CMD == 1)
+	if (F_Service_CMD == 1)
 	{
 		char temp = UARTA_RX;
-	#if (!IRQC_DEBUG)
+#if (!IRQC_DEBUG)
 		UNUSED_VAR(temp);
-	#endif
+#endif
 		irqprint("erro of CMD_RUN:%#x,%c\n", temp, temp);
 		return;
 	}
 	CMD_UART_BUFF[CMD_UART_CNT] = UARTA_RX;
-	if(CMD_UART_BUFF[CMD_UART_CNT] == '\n' || CMD_UART_CNT == CMD_BUFF_MAX)
+	if (CMD_UART_BUFF[CMD_UART_CNT] == '\n' || CMD_UART_CNT == CMD_BUFF_MAX)
 	{
 		CMD_UART_BUFF[CMD_UART_CNT] = '\0';
-		if(CMD_UART_BUFF[CMD_UART_CNT - 1] == ' ')
+		if (CMD_UART_BUFF[CMD_UART_CNT - 1] == ' ')
 		{
 			CMD_UART_CNT--;
 			CMD_UART_BUFF[CMD_UART_CNT] = '\0';
 		}
 		F_Service_CMD = 1;
 	}
-	else if(CMD_UART_BUFF[CMD_UART_CNT] == '\r')
+	else if (CMD_UART_BUFF[CMD_UART_CNT] == '\r')
 		CMD_UART_BUFF[CMD_UART_CNT] = '\0';
 	else
 		CMD_UART_CNT++;
 #endif
-/* Debugger Function Entry */
+	/* Debugger Function Entry */
 #if ENABLE_DEBUGGER_SUPPORT
 #if DEBUGGER_OUTPUT_SWITCH == 0
 #if DEBUG_UART_SWITCH == 4
@@ -648,27 +650,27 @@ void __interrupt SECTION(".interrupt.UARTA_HANDLER") UARTA_HANDLER(void)
 	uart_crtpram_updatebuffer[uart_crypram_updateindex] = UARTA_RX;
 	printf("%d rx:%x\n", uart_crypram_updateindex, uart_crtpram_updatebuffer[uart_crypram_updateindex]);
 	uart_crypram_updateindex++;
-	if((uart_crtpram_updatebuffer[0] == 0x64) && (uart_crypram_updateindex >= 12))
+	if ((uart_crtpram_updatebuffer[0] == 0x64) && (uart_crypram_updateindex >= 12))
 	{
 		printf("crt update\n");
-		if(memcmp(update_crypram_cmd, uart_crtpram_updatebuffer, sizeof(update_crypram_cmd)) == 0)
+		if (memcmp(update_crypram_cmd, uart_crtpram_updatebuffer, sizeof(update_crypram_cmd)) == 0)
 		{
 			update_crypram_flag = 1;
 			uart_crypram_updateindex = 0;
 			uart_crtpram_updatebuffer[0] = 0;
 		}
 	}
-	else if(uart_crtpram_updatebuffer[0] == 0x75 && (uart_crypram_updateindex >= 16))
+	else if (uart_crtpram_updatebuffer[0] == 0x75 && (uart_crypram_updateindex >= 16))
 	{
 		printf("intf update\n");
-		if(memcmp(update_extflash_cmd, uart_crtpram_updatebuffer, sizeof(update_extflash_cmd)) == 0)
+		if (memcmp(update_extflash_cmd, uart_crtpram_updatebuffer, sizeof(update_extflash_cmd)) == 0)
 		{
 			update_intflash_flag = 1;
 			uart_crypram_updateindex = 0;
 			uart_crtpram_updatebuffer[0] = 0;
 		}
 	}
-	else if((uart_crtpram_updatebuffer[0] != 0x64) && (uart_crtpram_updatebuffer[0] != 0x75))
+	else if ((uart_crtpram_updatebuffer[0] != 0x64) && (uart_crtpram_updatebuffer[0] != 0x75))
 	{
 		uart_crypram_updateindex = 0;
 		update_crypram_flag = 0;
@@ -686,10 +688,10 @@ void __interrupt SECTION(".interrupt.UARTB_HANDLER") UARTB_HANDLER(void)
 	irqprint(irq_string, __FUNCTION__, 23);
 #endif
 	register u8 iir = (UARTB_IIR & 0xf);
-	if(iir == UART_IIR_RLS)//奇偶校验、溢出、格式错误、失效中断
+	if (iir == UART_IIR_RLS)//奇偶校验、溢出、格式错误、失效中断
 	{
 		register u8 lsr = UARTB_LSR;
-		if(lsr & (UART_LSR_BI | UART_LSR_FE | UART_LSR_PE))//打断传输,格式错误，奇偶校验，
+		if (lsr & (UART_LSR_BI | UART_LSR_FE | UART_LSR_PE))//打断传输,格式错误，奇偶校验，
 		{
 			UARTB_RX;//读出异常值
 			irqprint("Receive error\n");//报错
@@ -698,32 +700,32 @@ void __interrupt SECTION(".interrupt.UARTB_HANDLER") UARTB_HANDLER(void)
 
 	}
 #if (ENABLE_COMMAND_SUPPORT && COMMAND_UART_SWITCH == 3)
-	if(F_Service_CMD == 1)
+	if (F_Service_CMD == 1)
 	{
 		char temp = UARTB_RX;
-	#if (!IRQC_DEBUG)
+#if (!IRQC_DEBUG)
 		UNUSED_VAR(temp);
-	#endif
+#endif
 		irqprint("erro of CMD_RUN:%#x,%c\n", temp, temp);
 		return;
 	}
 	CMD_UART_BUFF[CMD_UART_CNT] = UARTB_RX;
-	if(CMD_UART_BUFF[CMD_UART_CNT] == '\n' || CMD_UART_CNT == CMD_BUFF_MAX)
+	if (CMD_UART_BUFF[CMD_UART_CNT] == '\n' || CMD_UART_CNT == CMD_BUFF_MAX)
 	{
 		CMD_UART_BUFF[CMD_UART_CNT] = '\0';
-		if(CMD_UART_BUFF[CMD_UART_CNT - 1] == ' ')
+		if (CMD_UART_BUFF[CMD_UART_CNT - 1] == ' ')
 		{
 			CMD_UART_CNT--;
 			CMD_UART_BUFF[CMD_UART_CNT] = '\0';
 		}
 		F_Service_CMD = 1;
 	}
-	else if(CMD_UART_BUFF[CMD_UART_CNT] == '\r')
+	else if (CMD_UART_BUFF[CMD_UART_CNT] == '\r')
 		CMD_UART_BUFF[CMD_UART_CNT] = '\0';
 	else
 		CMD_UART_CNT++;
 #endif
-/* Debugger Function Entry */
+	/* Debugger Function Entry */
 #if ENABLE_DEBUGGER_SUPPORT
 #if DEBUGGER_OUTPUT_SWITCH == 0
 #if DEBUG_UART_SWITCH == 5
@@ -760,7 +762,7 @@ void __interrupt SECTION(".interrupt.TIMER0_HANDLER") TIMER0_HANDLER(void)
 
 #if MOUDLE_TEST
 	int static num = 0;
-	if((GPIO1_DR0) & (0x1 << 0))//pb0翻转
+	if ((GPIO1_DR0) & (0x1 << 0))//pb0翻转
 	{
 		GPIO1_DR0 &= (0x0 << 0);//GPIO输出寄存器原为1时清0
 	}
@@ -768,14 +770,14 @@ void __interrupt SECTION(".interrupt.TIMER0_HANDLER") TIMER0_HANDLER(void)
 	{
 		GPIO1_DR0 |= (0x1 << 0);//GPIO输出寄存器原为0时置1
 	}
-	if(num++ == 100)
+	if (num++ == 100)
 	{
 		num = 0;
 		printf("TIMER0\n");
 	}
 #endif
 
-	if((TIMER0_TIS & 0x1) == 0x1)
+	if ((TIMER0_TIS & 0x1) == 0x1)
 		TIMER0_TEOI; // clear int
 };
 void __interrupt SECTION(".interrupt.TIMER1_HANDLER") TIMER1_HANDLER(void)
@@ -789,7 +791,7 @@ void __interrupt SECTION(".interrupt.TIMER1_HANDLER") TIMER1_HANDLER(void)
 
 #if MOUDLE_TEST
 	int static num = 0;
-	if((GPIO1_DR0) & (0x1 << 1))//pb1翻转
+	if ((GPIO1_DR0) & (0x1 << 1))//pb1翻转
 	{
 		GPIO1_DR0 &= (0x0 << 1);//GPIO输出寄存器原为1时清0
 	}
@@ -797,14 +799,14 @@ void __interrupt SECTION(".interrupt.TIMER1_HANDLER") TIMER1_HANDLER(void)
 	{
 		GPIO1_DR0 |= (0x1 << 1);//GPIO输出寄存器原为0时置1
 	}
-	if(num++ == 100)
+	if (num++ == 100)
 	{
 		num = 0;
 		printf("TIMER1\n");
 	}
 #endif
 
-	if(TIMER1_TIS & 0x1) // read int status
+	if (TIMER1_TIS & 0x1) // read int status
 	{
 		TIMER1_TEOI; // clear int
 	}
@@ -831,11 +833,11 @@ void __interrupt SECTION(".interrupt.TIMER2_HANDLER") TIMER2_HANDLER(void)
 #endif
 
 	// irqprint ("%s","--------Begin TIMER2 handler----Vector mode\n");
-	if(TIMER2_TIS & 0x1)
+	if (TIMER2_TIS & 0x1)
 	{
 		TIMER2_TEOI;
 	}
-	if(!(F_Service_MS_1))
+	if (!(F_Service_MS_1))
 	{
 		F_Service_MS_1 = 1; // Request 5 mS timer service.
 	}
@@ -851,7 +853,7 @@ void __interrupt SECTION(".interrupt.TIMER3_HANDLER") TIMER3_HANDLER(void)
 
 #if MOUDLE_TEST
 	int static num = 0;
-	if((GPIO1_DR0) & (0x1 << 3))//pb1翻转
+	if ((GPIO1_DR0) & (0x1 << 3))//pb1翻转
 	{
 		GPIO1_DR0 &= (0x0 << 3);//GPIO输出寄存器原为1时清0
 	}
@@ -859,15 +861,15 @@ void __interrupt SECTION(".interrupt.TIMER3_HANDLER") TIMER3_HANDLER(void)
 	{
 		GPIO1_DR0 |= (0x1 << 3);//GPIO输出寄存器原为0时置1
 	}
-	if(num++ == 100)
+	if (num++ == 100)
 	{
 		num = 0;
 		printf("TIMER3\n");
-}
+	}
 #endif
 
 	// irqprint ("%s","--------Begin TIMER3 handler----Vector mode\n");
-	if(TIMER3_TIS & 0x1)
+	if (TIMER3_TIS & 0x1)
 	{
 		TIMER3_TEOI;
 	}
@@ -882,19 +884,19 @@ void __interrupt SECTION(".interrupt.INTR0_HANDLER") INTR0_HANDLER(void)
 	int j = 0;
 	int num = 0;
 	int flag = 0;
-	for(i = 0; i < 8; i++)
+	for (i = 0; i < 8; i++)
 	{
 		intr_st = REG8(INTC0_REG_ADDR(INTC_ICTL_MASKSTATUS_L + i));
-		for(j = 0; j < 8; j++)
+		for (j = 0; j < 8; j++)
 		{
-			if(intr_st & (1 << j))
+			if (intr_st & (1 << j))
 			{
 				num = i * 8 + j;
 				flag = 1;
 				break;
 			}
 		}
-		if(flag == 1)
+		if (flag == 1)
 			break;
 	}
 	irqprint("ISR: %s,IRQ: %d. 2nd-level IRQ[%d]\n", __FUNCTION__, 30, num);
@@ -910,70 +912,70 @@ void __interrupt SECTION(".interrupt.INTR1_HANDLER") INTR1_HANDLER(void)
 	int j = 0;
 	int num = 0;
 	int flag = 0;
-	for(i = 0; i < 8; i++)
+	for (i = 0; i < 8; i++)
 	{
 		intr_st = REG8(INTC1_REG_ADDR(INTC_ICTL_MASKSTATUS_L + i));
-		for(j = 0; j < 8; j++)
+		for (j = 0; j < 8; j++)
 		{
-			if(intr_st & (1 << j))
+			if (intr_st & (1 << j))
 			{
 				num = i * 8 + j;
 				flag = 1;
 				break;
 			}
 		}
-		if(flag == 1)
+		if (flag == 1)
 			break;
 	}
 #if ((DEBUG_UART_SWITCH == 1))
-	if(intr1_service[(num)] == &intr1_uart1)
+	if (intr1_service[(num)] == &intr1_uart1)
 	{
 	}
-// #elif ((DEBUG_UART_SWITCH == 2))
-// 	if(intr1_service[(num)] == &intr1_uart2)
-// 	{
-// 	}
-// #elif ((DEBUG_UART_SWITCH == 3))
-// 	if(intr1_service[(num)] == &intr1_uart3)
-// 	{
-// 	}
+	// #elif ((DEBUG_UART_SWITCH == 2))
+	// 	if(intr1_service[(num)] == &intr1_uart2)
+	// 	{
+	// 	}
+	// #elif ((DEBUG_UART_SWITCH == 3))
+	// 	if(intr1_service[(num)] == &intr1_uart3)
+	// 	{
+	// 	}
 #else
-	if(FALSE)
+	if (FALSE)
 	{
 	}
 #endif
 #if ((COMMAND_UART_SWITCH == 1))
-	else if(intr1_service[(num)] == &intr1_uart1)
+	else if (intr1_service[(num)] == &intr1_uart1)
 	{
 	}
-// #elif ((COMMAND_UART_SWITCH == 2))
-// 	else if(intr1_service[(num)] == &intr1_uart2)
-// 	{
-// 	}
-// #elif ((COMMAND_UART_SWITCH == 3))
-// 	else if(intr1_service[(num)] == &intr1_uart3)
-// 	{
-// 	}
+	// #elif ((COMMAND_UART_SWITCH == 2))
+	// 	else if(intr1_service[(num)] == &intr1_uart2)
+	// 	{
+	// 	}
+	// #elif ((COMMAND_UART_SWITCH == 3))
+	// 	else if(intr1_service[(num)] == &intr1_uart3)
+	// 	{
+	// 	}
 #else
-	else if(FALSE)
+	else if (FALSE)
 	{
 	}
 #endif
 #if ((PRINTF_UART_SWITCH == 1))
-	else if(intr1_service[(num)] != &intr1_uart1)
-	// #elif ((PRINTF_UART_SWITCH == 2))
-	// else if(intr1_service[(num)] != &intr1_uart2)
-	// #elif ((PRINTF_UART_SWITCH == 3))
-	// else if(intr1_service[(num)] != &intr1_uart3)
-	// #else
-	else if(TRUE)
-	#endif
+	else if (intr1_service[(num)] != &intr1_uart1)
+		// #elif ((PRINTF_UART_SWITCH == 2))
+		// else if(intr1_service[(num)] != &intr1_uart2)
+		// #elif ((PRINTF_UART_SWITCH == 3))
+		// else if(intr1_service[(num)] != &intr1_uart3)
+		// #else
+	else if (TRUE)
+#endif
 	{
 		irqprint("ISR: %s,IRQ: %d. 2nd-level IRQ[%d]\n", __FUNCTION__, 31, num);
 	}
 	(intr1_service[(num)])(); // Dispatch to service handler.
 }
-const char *Exception_Code[] = { NULL,
+const char* Exception_Code[] = { NULL,
 								"Instruction access error",
 								"Illegal instruction",
 								"Break point",
@@ -987,13 +989,13 @@ DWORD SECTION(".interrupt.kernel_trap") kernel_trap(uintptr_t mcause, uintptr_t 
 {
 	UNUSED_VAR(sp);
 	VBYTE trap_flag = 0x1f & mcause;
-	void *pc = (void *)read_csr(mepc);
+	void* pc = (void*)read_csr(mepc);
 	DWORD val;
-	if((int)pc % 2)
+	if ((int)pc % 2)
 	{
 		val = *(BYTEP)pc;
 	}
-	else if((int)pc % 4)
+	else if ((int)pc % 4)
 	{
 		val = *(WORDP)pc;
 	}
