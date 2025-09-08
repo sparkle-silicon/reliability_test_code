@@ -542,7 +542,9 @@ int __weak main(void)
 		dprint("This is internal flash main\n");
 	}
 	dprint("CPU freq at %d Hz\n", CPU_FREQ);
-
+	TaskParams Params;
+    Add_Task((TaskFunction)Mailbox_Read_FLASHID_Trigger, Params, &task_head);
+	Add_Task((TaskFunction)Mailbox_Read_EFUSE_Trigger, Params, &task_head);
 	main_loop();
 	return 0;
 }
