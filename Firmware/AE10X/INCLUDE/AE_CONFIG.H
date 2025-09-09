@@ -25,7 +25,7 @@
    *****************************************************************************/
 #define SCI_POLLING_CONTROL 0 // 由于龙芯平台SCI有效时间为15ms，如果为龙芯平台需要把该宏打开
 
-#define SOFTWARE_TRIM_CONTROL 0   //打开软件trim 32k/96m
+#define SOFTWARE_TRIM_CONTROL 1   //打开软件trim 32k/96m
 
 #define FLASH_TO_IRAM0 0             // 打开crypto代码从flash搬运到IRAM0功能
 #define MAILBOX_SMS_UPDATE_SUPPORT 1 // 打开4K SMS方式验证更新

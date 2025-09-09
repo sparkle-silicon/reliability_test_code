@@ -25,13 +25,13 @@
 #include "AE_UPDATE.H"
 #include "KERNEL_SLEEP_RESET.H"
 #include "KERNEL_INCLUDE.H"
-/*-----------------------------------------------------------------------------
- * Local Parameter Definition
- *---------------------------------------------------------------------------*/
+ /*-----------------------------------------------------------------------------
+  * Local Parameter Definition
+  *---------------------------------------------------------------------------*/
 
-//-----------------------------------------------------------------------------
-// Oem 1ms Events/Hook Here
-//-----------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------
+  // Oem 1ms Events/Hook Here
+  //-----------------------------------------------------------------------------
 extern BYTE Moudle_test(void);
 void __weak Hook_1msEvent(BYTE EventId)
 {
@@ -41,6 +41,8 @@ void __weak Hook_1msEvent(BYTE EventId)
     Event_Center(EventId);    // Polling system event
     Sys_PowerState_Control(); // System Power Control
     // KBD_ListeningEvent();
+
+    Moudle_test();
 
 #if SCI_POLLING_CONTROL
     SCI_Send();
@@ -82,22 +84,22 @@ void __weak Hook_10msEventB(void)
 void __weak Hook_50msEventA(void)
 {
 #if 0
-//MAILBOX SMSha256 updata 测试用例
-    if(REG8((SRAM_BASE_ADDR + 0x100)) == 0xAB)
+    //MAILBOX SMSha256 updata 测试用例
+    if (REG8((SRAM_BASE_ADDR + 0x100)) == 0xAB)
     {
         printf("准备更新固件\n");
         TaskParams Params;
         Add_Task((TaskFunction)Flash_Update_Function, Params, &task_head);//sms update
     }
 #endif
-//子系统dram更新测试用例
+    //子系统dram更新测试用例
 #if 1
-    if(update_crypram_flag == 1)
+    if (update_crypram_flag == 1)
     {
         Cryp_Update_Function();
         update_crypram_flag = 0;
     }
-    if(update_intflash_flag == 1)
+    if (update_intflash_flag == 1)
     {
         ExtFlash_Update_Function();
         update_intflash_flag = 0;
@@ -106,18 +108,22 @@ void __weak Hook_50msEventA(void)
 }
 //-----------------------------------------------------------------------------
 void __weak Hook_50msEventB(void)
-{}
+{
+}
 //-----------------------------------------------------------------------------
 void __weak Hook_50msEventC(void)
-{}
+{
+}
 //-----------------------------------------------------------------------------
 // Oem 100ms Events/Hook Here
 //-----------------------------------------------------------------------------
 void __weak Hook_100msEventA(void)
-{}
+{
+}
 //-----------------------------------------------------------------------------
 void __weak Hook_100msEventB(void)
-{}
+{
+}
 //-----------------------------------------------------------------------------
 void __weak Hook_100msEventC(void)
 {
@@ -127,10 +133,12 @@ void __weak Hook_100msEventC(void)
 // Oem 500ms Events/Hook Here
 //-----------------------------------------------------------------------------
 void __weak Hook_500msEventA(void)
-{}
+{
+}
 //-----------------------------------------------------------------------------
 void __weak Hook_500msEventB(void)
-{}
+{
+}
 //-----------------------------------------------------------------------------
 void __weak Hook_500msEventC(void)
 {
@@ -150,10 +158,10 @@ void __weak Hook_1secEventA(void) // get all temp
 #endif
     // printf("C2EINT:%x,C2EINFO0:%x,C2EINFO1:%x\n", C2EINT, C2EINFO0, C2EINFO1);
 
-    if(*((VBYTE *)(0x203B9)) == 1)
+    if (*((VBYTE*)(0x203B9)) == 1)
     {
         // printf("0x203B9:%x\n", *((VBYTE *)(0x203B9)));
-        *((VBYTE *)(0x203B9)) = 0;
+        *((VBYTE*)(0x203B9)) = 0;
 
         // Mailbox_Test();
         // Mailbox_FW_Extension_Trigger();
@@ -163,27 +171,27 @@ void __weak Hook_1secEventA(void) // get all temp
         //  Mailbox_Read_EFUSE_Trigger();
         Mailbox_WriteRootKey_Trigger();
     }
-    if(*((VBYTE *)(0x203B9)) == 2)
+    if (*((VBYTE*)(0x203B9)) == 2)
     {
-        *((VBYTE *)(0x203B9)) = 0;
+        *((VBYTE*)(0x203B9)) = 0;
         Mailbox_UpdateHMACKey_Trigger();
     }
 
-    if(*((VBYTE *)(0x203B9)) == 3)
+    if (*((VBYTE*)(0x203B9)) == 3)
     {
-        *((VBYTE *)(0x203B9)) = 0;
+        *((VBYTE*)(0x203B9)) = 0;
         //Mailbox_IncrementCounter_Trigger(0x3FFE);
     }
 
-    if(*((VBYTE *)(0x203B9)) == 4)
+    if (*((VBYTE*)(0x203B9)) == 4)
     {
-        *((VBYTE *)(0x203B9)) = 0;
+        *((VBYTE*)(0x203B9)) = 0;
         Mailbox_RequestCounter_Trigger();
     }
 
-    if(*((VBYTE *)(0x203B9)) == 5)
+    if (*((VBYTE*)(0x203B9)) == 5)
     {
-        *((VBYTE *)(0x203B9)) = 0;
+        *((VBYTE*)(0x203B9)) = 0;
         Mailbox_ReadParameter_Trigger();
     }
 }
@@ -192,15 +200,15 @@ void __weak Hook_1secEventB(void) // get fan rpm
 {
 #if SUPPORT_FAN1 || SUPPORT_FAN2
     DWORD Polling0 = TACH_Get_Polling(0);
-    if(Polling0 != -1)
+    if (Polling0 != -1)
     {
         TACH0_Speed = (DWORD)TACH_RPM(Polling0);
         dprint("FAN2 RPM is %u\n", TACH0_Speed);
     }
 #endif
-// GPIO1_DDR0 |=0x1; 
-// GPIO1_DR0 |=0x1;
-// GPIO1_DR0 &=~0x1;
+    // GPIO1_DDR0 |=0x1; 
+    // GPIO1_DR0 |=0x1;
+    // GPIO1_DR0 &=~0x1;
 }
 //-----------------------------------------------------------------------------
 u32 RunTimeStamp = 0;
@@ -431,10 +439,10 @@ void __weak Hook_1minEvent(void)
 
 #if SUPPORT_8042DEBUG_OUTPUT
     MinuteCnt++;
-    if(MinuteCnt >= 2)
+    if (MinuteCnt >= 2)
     {
         MinuteCnt = 0;
-        for(int i = 0; i <= Debug_Num; i++)
+        for (int i = 0; i <= Debug_Num; i++)
         {
             dprint("Cnt:%d,Data:%x\n", i, Debug_8042[Debug_Num]);
             Debug_8042[Debug_Num] = 0;
@@ -451,14 +459,15 @@ void __weak Hook_1minEvent(void)
 //
 //-----------------------------------------------------------------------------
 void Service_WaitPS2_Handle(void)
-{}
+{
+}
 /* ----------------------------------------------------------------------------
  * FUNCTION: Service_LPCRST
  * LPC RESET
  * ------------------------------------------------------------------------- */
 void Service_LPCRST(void)
 {
-    if(F_Service_LPCRST == 1)
+    if (F_Service_LPCRST == 1)
     {
         F_Service_LPCRST = 0;
         A20GATE_ON(); // FIXME xia
