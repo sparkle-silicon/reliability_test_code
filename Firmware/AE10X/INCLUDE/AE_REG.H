@@ -21,18 +21,18 @@
 #define AE_REG_H
 
 #include <AE_CONFIG.H>
-/***************************************************
- * path and name: /.../AE10X/INCLUDE/AE_REG.H
- * function：
- *          define base reg addr
- *          define reg size
- *          define offset
- *          define offset reg addr
- *          define base addr
- * author: Linyu
- * last edit time:2023/02/15
- ***************************************************/
-/*-------------------------------------include AE_GLOBAL to config -------------------------------------*/
+ /***************************************************
+  * path and name: /.../AE10X/INCLUDE/AE_REG.H
+  * function：
+  *          define base reg addr
+  *          define reg size
+  *          define offset
+  *          define offset reg addr
+  *          define base addr
+  * author: Linyu
+  * last edit time:2023/02/15
+  ***************************************************/
+  /*-------------------------------------include AE_GLOBAL to config -------------------------------------*/
 #include <AE_GLOBAL.H>
 /*-------------------------------------Set up general purpose register address arithmetic -------------------------------------*/
 #define REG_ADDR(base, offset) (base + offset)

@@ -27,12 +27,12 @@ void trim_set(void)
 
 	sysctl_iomux_config(GPIOA, 15, 0x3);//将GPB7设置为BYPASS OSC32K
 
-#if 1	//1号片
+#if 0	//1号片
 #define LOW_32K_TRIM_DVAL 105
 #define HIGH_24M_CTRIM_DVAL 0x8
 #define HIGH_24M_FTRIM_DVAL 0x1d
 #endif
-#if 0	//2号片
+#if 1	//2号片
 #define LOW_32K_TRIM_DVAL 106
 #define HIGH_24M_CTRIM_DVAL 0x9
 #define HIGH_24M_FTRIM_DVAL 0x1d
@@ -547,13 +547,13 @@ void spim_init(void)
 {
 #if SPI_MODULE_EN
 	spim_MoudleClock_EN;
-	sysctl_iomux_spim(SPIM_MOSI_SEL, SPIM_MISO_SEL, SPIM_QE_SEL);
+	sysctl_iomux_spim();
 #if SPIM_CS_EN
 	/*By default, a slave device does not multiplexing the chip select signal and utilizes hardware
 	circuitry to manage the chip select signal. For two or more devices, the default
 	configuration involves the use of two chip select signals for control. If there are specific
 	requirements, it is possible to disable the reuse of unnecessary chip select signals.*/
-	sysctl_iomux_spim_cs(SPIM_CS_SEL);
+	sysctl_iomux_spim_cs();
 #endif
 	SPI_Init(0, SPIM_CPOL_LOW, SPIM_CPHA_FE, SPIM_MSB, 0x7, 1);
 	dprint("SPI init done.\n");
@@ -569,14 +569,14 @@ void pwm_tach_init(void)
 	PWM_CLOCK_Init(); // defined PWM_CLKn_PRESCALE PWM_CTRnm PWM_TCLK_PRESCALE config
 #if (PWM0_EN_Init)
 	sysctl_iomux_pwm0();
-	// PWM_Init_channel(PWM_CHANNEL0, PWM_LOW, PWM_CLK0, PWM_CTR0, 98, 0);
-	PWM_CTR0_1 = 0x104;//0x163;
-	PWM_CTR2_3 = 0x101;
-	PWM_DCR0_1 = 0x101;
-	PWM_DCR2_3 = 0x101;
-	PWM_DCR4_5 = 0x101;
-	PWM_DCR6_7 = 0x101;
-	PWM_CTRL = 0xff01;
+	PWM_Init_channel(PWM_CHANNEL0, PWM_LOW, PWM_CLK0, PWM_CTR0, 98, 0);
+	// PWM_CTR0_1 = 0x104;//0x163;
+	// PWM_CTR2_3 = 0x101;
+	// PWM_DCR0_1 = 0x101;
+	// PWM_DCR2_3 = 0x101;
+	// PWM_DCR4_5 = 0x101;
+	// PWM_DCR6_7 = 0x101;
+	// PWM_CTRL = 0xff01;
 #endif
 #if (PWM1_EN_Init)
 	sysctl_iomux_pwm1();

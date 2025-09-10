@@ -429,30 +429,23 @@ void sysctl_iomux_ps2_1(uint32_t clk_sel, uint32_t data_sel)
 //      none
 //
 //*****************************************************************************
-void sysctl_iomux_spim(uint32_t mosi_sel, uint32_t miso_sel, uint32_t Quad_Enable)
+void sysctl_iomux_spim()
 {
 	sysctl_iomux_config(GPIOA, 6, 2);  // spim_sck
-	if (mosi_sel == 0)
-		sysctl_iomux_config(GPIOA, 19, 2); // spim_mosi
-	else if (mosi_sel == 1)
-		sysctl_iomux_config(GPIOA, 21, 2); // spim_miso
-	if (miso_sel == 0)
-		sysctl_iomux_config(GPIOA, 22, 2); // spim_mosi
-	else if (miso_sel == 1)
-		sysctl_iomux_config(GPIOA, 20, 3); // spim_miso
-	if (Quad_Enable)
+	sysctl_iomux_config(GPIOA, 19, 2); // spim_mosi
+	sysctl_iomux_config(GPIOA, 21, 2); // spim_miso
+	if (SPIM_QE_SEL)
 	{
-		sysctl_iomux_config(GPIOB, 4, 2); // spim_io2
+		sysctl_iomux_config(GPIOC, 15, 2); // spim_io2
 		sysctl_iomux_config(GPIOC, 14, 2); // spim_io3
 	}
 }
-void sysctl_iomux_spim_cs(uint32_t csn0_sel)
+void sysctl_iomux_spim_cs()
 {
-	if (csn0_sel == 0)
+	if (SPIM_CS_SEL == 0)
 		sysctl_iomux_config(GPIOB, 18, 2); // csn0
-	else if (csn0_sel == 1)
-		sysctl_iomux_config(GPIOC, 15, 1); // csn0
-	sysctl_iomux_config(GPIOB, 31, 1); // csn1
+	else
+		sysctl_iomux_config(GPIOB, 4, 2); // csn1
 }
 
 //*****************************************************************************
@@ -928,7 +921,7 @@ int GPIO_Config(int GPIO, int gpio_no, int mode, int op_val, int int_lv, int pol
 			//dprint("触发方式:%#x\n", GPIOA_REG((GPIO_IOF_EN + (gpio_no / 8))));
 			//dprint("触发极性:%#x\n", GPIOA_REG((GPIO_IOF_SEL + (gpio_no / 8))));
 		}
-	}
+}
 	else if (GPIO == 2)
 	{
 		if (mode == 1) // output

@@ -20,7 +20,7 @@
 #include "AE_CONFIG.H"
 #include "AE_FUNC.H"
 #include "KERNEL_MEMORY.H"
-/*AE_API_GPIO_H*/
+ /*AE_API_GPIO_H*/
 #define OutputMode_High			0x01
 #define OutputMode_Inverse      0x02
 #define InputMode_High			0x01
@@ -270,8 +270,8 @@ extern void sysctl_iomux_disable_uartb(void);
 
 extern void sysctl_iomux_ps2_0(uint32_t clk_sel, uint32_t data_sel);
 extern void sysctl_iomux_ps2_1(uint32_t clk_sel, uint32_t data_sel);
-extern void sysctl_iomux_spim(uint32_t mosi_sel, uint32_t miso_sel, uint32_t Quad_Enable);
-extern void sysctl_iomux_spim_cs(uint32_t csn0_sel);
+extern void sysctl_iomux_spim(void);
+extern void sysctl_iomux_spim_cs(void);
 extern void sysctl_iomux_pwm0(void);
 extern void sysctl_iomux_pwm1(void);
 extern void sysctl_iomux_pwm2(void);
