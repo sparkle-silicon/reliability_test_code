@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-06-17 17:00:06
+ * @LastEditTime: 2025-09-12 15:04:46
  * @Description: This is about the  national crypto algorithm implementation
  *
  *
@@ -112,151 +112,152 @@ void kbc_init(void)
 }
 void i2c0_pull_up(uint32_t clk_sel, uint32_t data_sel)
 {
-	if (clk_sel == 0)
+	if(clk_sel == 0)
 	{
-		if ((I2C0_EXTERNAL_PULL_UP == 0) && (IS_GPIOA11(LOW) || I2C0_INTERNAL_PULL_UP))
+		if((I2C0_EXTERNAL_PULL_UP == 0) && (IS_GPIOA11(LOW) || I2C0_INTERNAL_PULL_UP))
 			GPIO_Pullup_Config(GPIOA, 11);
 	}
-	else if (clk_sel == 1)
+	else if(clk_sel == 1)
 	{
-		if ((I2C0_EXTERNAL_PULL_UP == 0) && (IS_GPIOB10(LOW) || I2C0_INTERNAL_PULL_UP))
+		if((I2C0_EXTERNAL_PULL_UP == 0) && (IS_GPIOB10(LOW) || I2C0_INTERNAL_PULL_UP))
 			GPIO_Pullup_Config(GPIOB, 10);
 	}
-	if (data_sel == 0)
+	if(data_sel == 0)
 	{
-		if ((I2C0_EXTERNAL_PULL_UP == 0) && (IS_GPIOA12(LOW) || I2C0_INTERNAL_PULL_UP))
+		if((I2C0_EXTERNAL_PULL_UP == 0) && (IS_GPIOA12(LOW) || I2C0_INTERNAL_PULL_UP))
 			GPIO_Pullup_Config(GPIOA, 12);
 	}
-	else if (data_sel == 1)
+	else if(data_sel == 1)
 	{
-		if ((I2C0_EXTERNAL_PULL_UP == 0) && (IS_GPIOB11(LOW) || I2C0_INTERNAL_PULL_UP))
+		if((I2C0_EXTERNAL_PULL_UP == 0) && (IS_GPIOB11(LOW) || I2C0_INTERNAL_PULL_UP))
 			GPIO_Pullup_Config(GPIOB, 11);
 	}
 }
 void i2c1_pull_up(void)
 {
 	{
-		if ((I2C1_EXTERNAL_PULL_UP == 0) && (IS_GPIOA17(LOW) || I2C1_INTERNAL_PULL_UP))
+		if((I2C1_EXTERNAL_PULL_UP == 0) && (IS_GPIOA17(LOW) || I2C1_INTERNAL_PULL_UP))
 			GPIO_Pullup_Config(GPIOA, 17);
 	}
 	{
-		if ((I2C1_EXTERNAL_PULL_UP == 0) && (IS_GPIOA18(LOW) || I2C1_INTERNAL_PULL_UP))
+		if((I2C1_EXTERNAL_PULL_UP == 0) && (IS_GPIOA18(LOW) || I2C1_INTERNAL_PULL_UP))
 			GPIO_Pullup_Config(GPIOA, 18);
 	}
 }
 void i2c2_pull_up(uint32_t clk_sel)
 {
-	if (clk_sel == 0)
+	if(clk_sel == 0)
 	{
-		if ((I2C2_EXTERNAL_PULL_UP == 0) && (IS_GPIOA23(LOW) || I2C2_INTERNAL_PULL_UP))
+		if((I2C2_EXTERNAL_PULL_UP == 0) && (IS_GPIOA23(LOW) || I2C2_INTERNAL_PULL_UP))
 			GPIO_Pullup_Config(GPIOA, 23);
 	}
-	else if (clk_sel == 1)
+	else if(clk_sel == 1)
 	{
-		if ((I2C2_EXTERNAL_PULL_UP == 0) && (IS_GPIOB14(LOW) || I2C2_INTERNAL_PULL_UP))
+		if((I2C2_EXTERNAL_PULL_UP == 0) && (IS_GPIOB14(LOW) || I2C2_INTERNAL_PULL_UP))
 			GPIO_Pullup_Config(GPIOB, 14);
 	}
 	{
-		if ((I2C2_EXTERNAL_PULL_UP == 0) && (IS_GPIOB15(LOW) || I2C2_INTERNAL_PULL_UP))
+		if((I2C2_EXTERNAL_PULL_UP == 0) && (IS_GPIOB15(LOW) || I2C2_INTERNAL_PULL_UP))
 			GPIO_Pullup_Config(GPIOB, 15);
 	}
 }
 void i2c3_pull_up(void)
 {
 	{
-		if ((I2C3_EXTERNAL_PULL_UP == 0) && (IS_GPIOB25(LOW) || I2C3_INTERNAL_PULL_UP))
+		if((I2C3_EXTERNAL_PULL_UP == 0) && (IS_GPIOB25(LOW) || I2C3_INTERNAL_PULL_UP))
 			GPIO_Pullup_Config(GPIOB, 25);
 	}
 	{
-		if ((I2C3_EXTERNAL_PULL_UP == 0) && (IS_GPIOB26(LOW) || I2C3_INTERNAL_PULL_UP))
+		if((I2C3_EXTERNAL_PULL_UP == 0) && (IS_GPIOB26(LOW) || I2C3_INTERNAL_PULL_UP))
 			GPIO_Pullup_Config(GPIOB, 26);
 	}
 }
 void i2c4_pull_up(void)
 {
 	{
-		if ((I2C4_EXTERNAL_PULL_UP == 0) && (IS_GPIOA4(LOW) || I2C4_INTERNAL_PULL_UP))
-			GPIO_Pullup_Config(GPIOA, 4);
+		if((I2C5_EXTERNAL_PULL_UP == 0) && (IS_GPIOB0(LOW) || I2C5_INTERNAL_PULL_UP))
+			GPIO_Pullup_Config(GPIOB, 0);
 	}
 	{
-		if ((I2C4_EXTERNAL_PULL_UP == 0) && (IS_GPIOA5(LOW) || I2C4_INTERNAL_PULL_UP))
-			GPIO_Pullup_Config(GPIOA, 5);
+		if((I2C5_EXTERNAL_PULL_UP == 0) && (IS_GPIOB7(LOW) || I2C5_INTERNAL_PULL_UP))
+			GPIO_Pullup_Config(GPIOB, 7);
 	}
 }
 void i2c5_pull_up(void)
 {
 	{
-		if ((I2C5_EXTERNAL_PULL_UP == 0) && (IS_GPIOB0(LOW) || I2C5_INTERNAL_PULL_UP))
-			GPIO_Pullup_Config(GPIOB, 0);
+		if((I2C4_EXTERNAL_PULL_UP == 0) && (IS_GPIOA4(LOW) || I2C4_INTERNAL_PULL_UP))
+			GPIO_Pullup_Config(GPIOA, 4);
 	}
 	{
-		if ((I2C5_EXTERNAL_PULL_UP == 0) && (IS_GPIOB7(LOW) || I2C5_INTERNAL_PULL_UP))
-			GPIO_Pullup_Config(GPIOB, 7);
+		if((I2C4_EXTERNAL_PULL_UP == 0) && (IS_GPIOA5(LOW) || I2C4_INTERNAL_PULL_UP))
+			GPIO_Pullup_Config(GPIOA, 5);
 	}
+
 }
 void i2c6_pull_up(void)
 {
 	{
-		if ((I2C6_EXTERNAL_PULL_UP == 0) && (IS_GPIOA24(LOW) || I2C6_INTERNAL_PULL_UP))
+		if((I2C6_EXTERNAL_PULL_UP == 0) && (IS_GPIOA24(LOW) || I2C6_INTERNAL_PULL_UP))
 			GPIO_Pullup_Config(GPIOA, 24);  //SMCLK6
 	}
 	{
-		if ((I2C6_EXTERNAL_PULL_UP == 0) && (IS_GPIOA25(LOW) || I2C6_INTERNAL_PULL_UP))
+		if((I2C6_EXTERNAL_PULL_UP == 0) && (IS_GPIOA25(LOW) || I2C6_INTERNAL_PULL_UP))
 			GPIO_Pullup_Config(GPIOA, 25);  //SMDAT6
 	}
 }
 void i2c7_pull_up(void)
 {
 	{
-		if ((I2C7_EXTERNAL_PULL_UP == 0) && (IS_GPIOA10(LOW) || I2C7_INTERNAL_PULL_UP))
+		if((I2C7_EXTERNAL_PULL_UP == 0) && (IS_GPIOA10(LOW) || I2C7_INTERNAL_PULL_UP))
 			GPIO_Pullup_Config(GPIOA, 10);  //SMCLK7
 	}
 	{
-		if ((I2C7_EXTERNAL_PULL_UP == 0) && (IS_GPIOB24(LOW) || I2C7_INTERNAL_PULL_UP))
+		if((I2C7_EXTERNAL_PULL_UP == 0) && (IS_GPIOB24(LOW) || I2C7_INTERNAL_PULL_UP))
 			GPIO_Pullup_Config(GPIOB, 24);  //SMDAT7
 	}
 }
 void i2c8_pull_up(void)
 {
 	{
-		if ((I2C8_EXTERNAL_PULL_UP == 0) && (IS_GPIOA13(LOW) || I2C8_INTERNAL_PULL_UP))
+		if((I2C8_EXTERNAL_PULL_UP == 0) && (IS_GPIOA13(LOW) || I2C8_INTERNAL_PULL_UP))
 			GPIO_Pullup_Config(GPIOA, 13);  //SMCLK8
 	}
 	{
-		if ((I2C8_EXTERNAL_PULL_UP == 0) && (IS_GPIOC14(LOW) || I2C8_INTERNAL_PULL_UP))
+		if((I2C8_EXTERNAL_PULL_UP == 0) && (IS_GPIOC14(LOW) || I2C8_INTERNAL_PULL_UP))
 			GPIO_Pullup_Config(GPIOC, 14);  //SMDAT8
 	}
 }
 
 void tach0_pull_up(uint32_t tach_sel)
 {
-	if (tach_sel == 0)
+	if(tach_sel == 0)
 	{
-		if ((TACH0_EXTERNAL_PULL_UP == 0) && (IS_GPIOA30(LOW) || TACH0_INTERNAL_PULL_UP))
+		if((TACH0_EXTERNAL_PULL_UP == 0) && (IS_GPIOA30(LOW) || TACH0_INTERNAL_PULL_UP))
 			GPIO_Pullup_Config(GPIOA, 30);
 	}
-	else if (tach_sel == 1)
+	else if(tach_sel == 1)
 	{
-		if ((TACH0_EXTERNAL_PULL_UP == 0) && (IS_GPIOA22(LOW) || TACH0_INTERNAL_PULL_UP))
+		if((TACH0_EXTERNAL_PULL_UP == 0) && (IS_GPIOA22(LOW) || TACH0_INTERNAL_PULL_UP))
 			GPIO_Pullup_Config(GPIOA, 22);
 	}
 
 }
 void tach1_pull_up(uint32_t tach_sel)
 {
-	if (tach_sel == 0)
+	if(tach_sel == 0)
 	{
-		if ((TACH1_EXTERNAL_PULL_UP == 0) && (IS_GPIOA31(LOW) || TACH1_INTERNAL_PULL_UP))
+		if((TACH1_EXTERNAL_PULL_UP == 0) && (IS_GPIOA31(LOW) || TACH1_INTERNAL_PULL_UP))
 			GPIO_Pullup_Config(GPIOA, 31);
 	}
-	else if (tach_sel == 1)
+	else if(tach_sel == 1)
 	{
-		if ((TACH1_EXTERNAL_PULL_UP == 0) && (IS_GPIOC9(LOW) || TACH1_INTERNAL_PULL_UP))
+		if((TACH1_EXTERNAL_PULL_UP == 0) && (IS_GPIOC9(LOW) || TACH1_INTERNAL_PULL_UP))
 			GPIO_Pullup_Config(GPIOC, 9);
 	}
-	else if (tach_sel == 2)
+	else if(tach_sel == 2)
 	{
-		if ((TACH1_EXTERNAL_PULL_UP == 0) && (IS_GPIOC14(LOW) || TACH1_INTERNAL_PULL_UP))
+		if((TACH1_EXTERNAL_PULL_UP == 0) && (IS_GPIOC14(LOW) || TACH1_INTERNAL_PULL_UP))
 			GPIO_Pullup_Config(GPIOC, 14);
 	}
 
@@ -264,76 +265,76 @@ void tach1_pull_up(uint32_t tach_sel)
 void tach2_pull_up(void)
 {
 	{
-		if ((TACH2_EXTERNAL_PULL_UP == 0) && (IS_GPIOC8(LOW) || TACH2_INTERNAL_PULL_UP))
+		if((TACH2_EXTERNAL_PULL_UP == 0) && (IS_GPIOC8(LOW) || TACH2_INTERNAL_PULL_UP))
 			GPIO_Pullup_Config(GPIOC, 8);
 	}
 }
 void tach3_pull_up(uint32_t tach_sel)
 {
-	if (tach_sel == 0)
+	if(tach_sel == 0)
 	{
-		if ((TACH3_EXTERNAL_PULL_UP == 0) && (IS_GPIOC9(LOW) || TACH3_INTERNAL_PULL_UP))
+		if((TACH3_EXTERNAL_PULL_UP == 0) && (IS_GPIOC9(LOW) || TACH3_INTERNAL_PULL_UP))
 			GPIO_Pullup_Config(GPIOC, 9);
 	}
-	else if (tach_sel == 1)
+	else if(tach_sel == 1)
 	{
-		if ((TACH3_EXTERNAL_PULL_UP == 0) && (IS_GPIOC11(LOW) || TACH3_INTERNAL_PULL_UP))
+		if((TACH3_EXTERNAL_PULL_UP == 0) && (IS_GPIOC11(LOW) || TACH3_INTERNAL_PULL_UP))
 			GPIO_Pullup_Config(GPIOC, 11);
 	}
 }
 void ps2_0_pull_up(uint32_t clk_sel, uint32_t data_sel)
 {
-	if (clk_sel == 0)
+	if(clk_sel == 0)
 	{
-		if ((PS2_0_EXTERNAL_PULL_UP == 0) && (IS_GPIOB8(LOW) || PS2_0_INTERNAL_PULL_UP))
+		if((PS2_0_EXTERNAL_PULL_UP == 0) && (IS_GPIOB8(LOW) || PS2_0_INTERNAL_PULL_UP))
 			GPIO_Pullup_Config(GPIOB, 8);
 	}
-	else if (clk_sel == 1)
+	else if(clk_sel == 1)
 	{
-		if ((PS2_0_EXTERNAL_PULL_UP == 0) && (IS_GPIOB10(LOW) || PS2_0_INTERNAL_PULL_UP))
+		if((PS2_0_EXTERNAL_PULL_UP == 0) && (IS_GPIOB10(LOW) || PS2_0_INTERNAL_PULL_UP))
 			GPIO_Pullup_Config(GPIOB, 10);
 	}
-	else if (clk_sel == 2)
+	else if(clk_sel == 2)
 	{
-		if ((PS2_0_EXTERNAL_PULL_UP == 0) && (IS_GPIOB27(LOW) || PS2_0_INTERNAL_PULL_UP))
+		if((PS2_0_EXTERNAL_PULL_UP == 0) && (IS_GPIOB27(LOW) || PS2_0_INTERNAL_PULL_UP))
 			GPIO_Pullup_Config(GPIOB, 27);
 	}
-	if (data_sel == 0)
+	if(data_sel == 0)
 	{
-		if ((PS2_0_EXTERNAL_PULL_UP == 0) && (IS_GPIOB9(LOW) || PS2_0_INTERNAL_PULL_UP))
+		if((PS2_0_EXTERNAL_PULL_UP == 0) && (IS_GPIOB9(LOW) || PS2_0_INTERNAL_PULL_UP))
 			GPIO_Pullup_Config(GPIOB, 9);
 	}
-	else if (data_sel == 1)
+	else if(data_sel == 1)
 	{
-		if ((PS2_0_EXTERNAL_PULL_UP == 0) && (IS_GPIOB11(LOW) || PS2_0_INTERNAL_PULL_UP))
+		if((PS2_0_EXTERNAL_PULL_UP == 0) && (IS_GPIOB11(LOW) || PS2_0_INTERNAL_PULL_UP))
 			GPIO_Pullup_Config(GPIOB, 11);
 	}
-	else if (data_sel == 2)
+	else if(data_sel == 2)
 	{
-		if ((PS2_0_EXTERNAL_PULL_UP == 0) && (IS_GPIOB28(LOW) || PS2_0_INTERNAL_PULL_UP))
+		if((PS2_0_EXTERNAL_PULL_UP == 0) && (IS_GPIOB28(LOW) || PS2_0_INTERNAL_PULL_UP))
 			GPIO_Pullup_Config(GPIOB, 28);
 	}
 }
 void ps2_1_pull_up(uint32_t clk_sel, uint32_t data_sel)
 {
-	if (clk_sel == 0)
+	if(clk_sel == 0)
 	{
-		if ((PS2_1_EXTERNAL_PULL_UP == 0) && (IS_GPIOB12(LOW) || PS2_1_INTERNAL_PULL_UP))
+		if((PS2_1_EXTERNAL_PULL_UP == 0) && (IS_GPIOB12(LOW) || PS2_1_INTERNAL_PULL_UP))
 			GPIO_Pullup_Config(GPIOB, 12);
 	}
-	else if (clk_sel == 1)
+	else if(clk_sel == 1)
 	{
-		if ((PS2_1_EXTERNAL_PULL_UP == 0) && (IS_GPIOB10(LOW) || PS2_1_INTERNAL_PULL_UP))
+		if((PS2_1_EXTERNAL_PULL_UP == 0) && (IS_GPIOB10(LOW) || PS2_1_INTERNAL_PULL_UP))
 			GPIO_Pullup_Config(GPIOB, 10);
 	}
-	if (data_sel == 0)
+	if(data_sel == 0)
 	{
-		if ((PS2_1_EXTERNAL_PULL_UP == 0) && (IS_GPIOB13(LOW) || PS2_1_INTERNAL_PULL_UP))
+		if((PS2_1_EXTERNAL_PULL_UP == 0) && (IS_GPIOB13(LOW) || PS2_1_INTERNAL_PULL_UP))
 			GPIO_Pullup_Config(GPIOB, 13);
 	}
-	else if (data_sel == 1)
+	else if(data_sel == 1)
 	{
-		if ((PS2_1_EXTERNAL_PULL_UP == 0) && (IS_GPIOB13(LOW) || PS2_1_INTERNAL_PULL_UP))
+		if((PS2_1_EXTERNAL_PULL_UP == 0) && (IS_GPIOB13(LOW) || PS2_1_INTERNAL_PULL_UP))
 			GPIO_Pullup_Config(GPIOB, 11);
 	}
 
@@ -342,26 +343,26 @@ void ps2_1_pull_up(uint32_t clk_sel, uint32_t data_sel)
 void cec_pull_up(void)
 {
 	{
-		if ((CEC_EXTERNAL_PULL_UP == 0) && (IS_GPIOB8(LOW) || CEC_INTERNAL_PULL_UP))
+		if((CEC_EXTERNAL_PULL_UP == 0) && (IS_GPIOB8(LOW) || CEC_INTERNAL_PULL_UP))
 			GPIO_Pullup_Config(GPIOB, 8); // gpd6,d7 pull up
 	}
 }
 void kbs_pull_up(void)
 {
-	for (register unsigned char i = 8; i <= 31; i++)
+	for(register unsigned char i = 8; i <= 31; i++)
 	{
 		//考虑KBS扫描逻辑，不做低电平判断
-		if ((((KBS_EXTERNAL_PULL_UP) & (1 << (i - 8))) == 0) && ((((KBS_INTERNAL_PULL_UP) & (1 << (i - 8))) == (1 << (i - 8)))))
+		if((((KBS_EXTERNAL_PULL_UP) & (1 << (i - 8))) == 0) && ((((KBS_INTERNAL_PULL_UP) & (1 << (i - 8))) == (1 << (i - 8)))))
 			GPIO_Pullup_Config(GPIOE, i); // gpe all pull up
 	}
 #if (KBD_8_n_SWITCH == 17 || KBD_8_n_SWITCH == 18)
 	//考虑KBS扫描逻辑，不做低电平判断
-	if ((((KBS_EXTERNAL_PULL_UP) & (1 << (24))) == 0) && ((((KBS_INTERNAL_PULL_UP) & (1 << (24))) == (1 << (24)))))
+	if((((KBS_EXTERNAL_PULL_UP) & (1 << (24))) == 0) && ((((KBS_INTERNAL_PULL_UP) & (1 << (24))) == (1 << (24)))))
 		GPIO_Pullup_Config(GPIOA, 19); // C3 kso 16
 #endif
 #if (KBD_8_n_SWITCH == 18)
 	//考虑KBS扫描逻辑，不做低电平判断
-	if ((((KBS_EXTERNAL_PULL_UP) & (1 << (25))) == 0) && ((((KBS_INTERNAL_PULL_UP) & (1 << (25))) == (1 << (25)))))
+	if((((KBS_EXTERNAL_PULL_UP) & (1 << (25))) == 0) && ((((KBS_INTERNAL_PULL_UP) & (1 << (25))) == (1 << (25)))))
 		GPIO_Pullup_Config(GPIOA, 21); // C3 kso 17
 #endif
 }
@@ -407,9 +408,9 @@ void uart_init(void)
 	flag |= BIT5;
 	baud[5] = serial_init(UARTB_CHANNEL, UARTB_BAUD);
 #endif
-	for (cnt = 0; cnt < 6; cnt++)
+	for(cnt = 0; cnt < 6; cnt++)
 	{
-		if (flag & BIT(cnt))
+		if(flag & BIT(cnt))
 		{
 			dprint("Actual baud rate of the serial port %X == %d\n", ((cnt < 4) ? cnt : ((cnt == 5) ? 0xB : 0xA)), baud[cnt]);
 		}
@@ -558,7 +559,7 @@ void spim_init(void)
 	SPI_Init(0, SPIM_CPOL_LOW, SPIM_CPHA_FE, SPIM_MSB, 0x7, 1);
 	dprint("SPI init done.\n");
 #endif
-}
+	}
 void pwm_tach_init(void)
 {
 
@@ -826,7 +827,7 @@ void time_init(void)
 	timer3_MoudleClock_EN;			 // us delay
 	TIMER_Init(TIMER3, 1, 0x0, 0x1); // delay~=0.083us
 
-	while ((TIMER_TRIS & 0xf) != 0xf)
+	while((TIMER_TRIS & 0xf) != 0xf)
 		;
 	TIMER_TEOI; // clear all interrupt
 	dprint("Timer init done\n");
@@ -908,7 +909,7 @@ void exit(int __status)
 NORETURN USED void _exit(int __status)
 {
 	dprint("exit status doc %d\n", __status);
-	while (1)
+	while(1)
 		;
 }
 #endif
