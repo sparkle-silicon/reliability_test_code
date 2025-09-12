@@ -301,6 +301,7 @@ int main(int argc, char **argv)
     for(uint32_t i = 0; i < 16; i++)
     {
         EFUSE_WD(i) = efuse_data.efuse_data[i];
+        printf("EFUSE_WD[%d] = %#x\n", i, EFUSE_WD(i));
     }
 #endif
            // 更新配置
