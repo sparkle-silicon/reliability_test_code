@@ -136,12 +136,12 @@ int main(int argc, char **argv)
     {
         // printf("GEt %s of EFUSE_WD[0]\n", argv[1]);
         input_val[0] = strtol(argv[1], NULL, 16);
-        printf("GEt %#x of EFUSE_WD[0]\n", input_val[0]);
+        printf("GET %#x of EFUSE_WD[0]\n", input_val[0]);
         if(argc >= 3)
         {
             // printf("GEt %s of EFUSE_WD[1]\n", argv[2]);
             input_val[1] = strtol(argv[2], NULL, 16);
-            printf("GEt %#x of EFUSE_WD[0]\n", input_val[1]);
+            printf("GET %#x of EFUSE_WD[1]\n", input_val[1]);
         }
         data = input_val;
 
