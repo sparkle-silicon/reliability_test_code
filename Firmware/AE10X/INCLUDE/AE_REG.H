@@ -3868,7 +3868,7 @@
 #define SMBUS6_REG_ADDR(offset) REG_ADDR(SMBUS6_BASE_ADDR, offset)
 #define SMBUS7_REG_ADDR(offset) REG_ADDR(SMBUS7_BASE_ADDR, offset)
 #define SMBUS8_REG_ADDR(offset) REG_ADDR(SMBUS8_BASE_ADDR, offset)
-#define SMBUSn_REG_ADDR(channel,offset) REG_ADDR((SMBUS0_BASE_ADDR+((((channel)>=7?6:((channel)>=4?1:(channel))))<<8)), offset)
+#define SMBUSn_REG_ADDR(channel,offset) REG_ADDR((SMBUS0_BASE_ADDR+(((channel)+((channel)>=7?6:((channel)>=4?1:0)))<<8)), offset)
 // #define SMBUSn_REGn_ADDR(channel,offset,regn) SMBUSn_REG_ADDR(channel,(offset+(regn&1)))
 #define SMBUS0_REG(offset) REG16(SMBUS0_REG_ADDR(offset))
 #define SMBUS1_REG(offset) REG16(SMBUS1_REG_ADDR(offset))
