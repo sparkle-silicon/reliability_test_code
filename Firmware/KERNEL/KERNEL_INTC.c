@@ -2165,7 +2165,6 @@ void intr1_uart1(void)
 			SYSCTL_PIO1_UDCFG |= BIT3;
 		} // 接收错误
 	}
-	UART1_RX;
 #if (ENABLE_COMMAND_SUPPORT && COMMAND_UART_SWITCH == 1)
 	if (F_Service_CMD == 1)
 	{

@@ -225,7 +225,7 @@ void __weak Hook_1secEventC(void) // update new rpm
     printf("RunTimeStamp:%d\n",RunTimeStamp);
     if(RunTimeStamp % 5 == 0)
     {
-        Enter_LowPower_Mode();
+
     }
 
 #if FAN_Dynamic_Adj
