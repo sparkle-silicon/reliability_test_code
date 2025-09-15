@@ -521,8 +521,34 @@ VBYTEP OPTIMIZE0 USED SPIF_Read_Interface(register DWORD size, register DWORD ad
 // FUNCTION: main
 // main entry
 //----------------------------------------------------------------------------
+void ALIGNED(4) GLE01_RomCode_Transport_FlashToIRAM0(void)
+{
+  asm volatile("la a0, 0xC0000"); // 搬运的FLASH起始地址(0x80000+256K)
+  asm volatile("la a1, 0xC8000"); // 搬运的FLASH终止地址(0x80000+256K+32K)
+  asm volatile("la a2, 0x28000"); // 搬运的IRAM0目标地址
+
+  asm volatile("1:");
+  asm volatile("lw t0, (a0)");
+  asm volatile("sw t0, (a2)");
+  asm volatile("addi a0, a0, 4");
+  asm volatile("addi a2, a2, 4");
+  asm volatile("bltu a0, a1, 1b");
+
+  return;
+}
+void GLE01_RomCode_Transport(void)
+{
+  Disable_Interrupt_Main_Switch();
+  GLE01_RomCode_Transport_FlashToIRAM0();
+  // GLE01_RomCode_Ptr = Load_Smfi_To_Dram(GLE01_RomCode_Transport_FlashToIRAM0, 0x200);
+  // (*GLE01_RomCode_Ptr)(); // Do Function at malloc address
+  Enable_Interrupt_Main_Switch();
+  SYSCTL_CRYPTODBG_FLAG |= 1;
+  dprint("GLE01 ROMCODE Transport Flash to IRAM0\n");
+}
 int __weak main(void)
 {
+	GLE01_RomCode_Transport();
 	AutoON_Check_AfterUpdate(); // 检查更新后重启设定标志
 #if DEBUG
 	printr(printf_instructions_msg);
@@ -542,7 +568,10 @@ int __weak main(void)
 		dprint("This is internal flash main\n");
 	}
 	dprint("CPU freq at %d Hz\n", CPU_FREQ);
-
+	//GPIO_Config(GPIOA, 0, 1, 0, 0, 0);
+	// TaskParams Params;
+    // Add_Task((TaskFunction)Mailbox_Read_FLASHID_Trigger, Params, &task_head);
+	// Add_Task((TaskFunction)Mailbox_Read_EFUSE_Trigger, Params, &task_head);
 	main_loop();
 	return 0;
 }

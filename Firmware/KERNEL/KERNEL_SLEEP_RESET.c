@@ -16,22 +16,25 @@
 #include "KERNEL_SLEEP_RESET.H"
 #include "CUSTOM_POWER.H"
 #include "KERNEL_TIMER.H"
+int32_t SYSCTL_PIO0_CFG_CONTEXT = 0;
+int32_t SYSCTL_PIO1_CFG_CONTEXT = 0;
+int32_t SYSCTL_PIO2_CFG_CONTEXT = 0;
+int32_t SYSCTL_PIO3_CFG_CONTEXT = 0;
+int32_t SYSCTL_PIO4_CFG_CONTEXT = 0;
+int32_t SYSCTL_PIO5_CFG_CONTEXT = 0;
 int32_t SYSCTL_MODEN0_CONTEXT = 0;
 int32_t SYSCTL_MODEN1_CONTEXT = 0;
 int32_t SYSCTL_PIO0_IECFG_CONTEXT = 0;
 int32_t SYSCTL_PIO1_IECFG_CONTEXT = 0;
 int32_t SYSCTL_PIO2_IECFG_CONTEXT = 0;
 int32_t SYSCTL_PIO3_IECFG_CONTEXT = 0;
-int32_t SYSCTL_CLKDIV_I3C_CONTEXT = 0;
-int32_t SYSCTL_CLKDIV_PECI_CONTEXT = 0;
-int32_t SYSCTL_RESERVER_CONTEXT = 0;
-int32_t SYSCTL_DVDD_EN_CONTEXT = 0;
 int32_t SYSCTL_SWITCH_PLL_CONTEXT = 0;
 int32_t SYSCTL_CLKDIV_OSC96M_CONTEXT = 0;
-int32_t RET_CTRL = 0;
-// int32_t SYSCTL_DVDD_EN_CONTEXT = 0;
-// int32_t SYSCTL_SWITCH_PLL_CONTEXT = 0;
-// int32_t SYSCTL_CLKDIV_OSC96M_CONTEXT = 0;
+int32_t SYSCTL_PAD_PECI_CONTEXT = 0;
+int32_t SYSCTL_PMUCSR_CONTEXT = 0;
+int32_t SYSCTL_RET_CTRL_CONTEXT = 0;
+int32_t ADC_CTRL_CONTEXT = 0;
+int32_t SYSCTL_PMU_CFG_CONTEXT = 0;
 
 /* ----------------------------------------------------------------------------
  * FUNCTION:   Module_SoftReset
@@ -79,6 +82,83 @@ void CPU_Sleep(void)
 {
 	asm volatile("wfi");
 }
+
+void ALIGNED(4) OPTIMIZE(0) CPU_SLP_RES(void)
+{
+	volatile int i = 0;
+	// for (i = 0;i < 10000;i++)
+	// {
+	//    nop;
+	// }
+	//mem retn
+	SYSCTL_RET_CTRL=0x0;
+	//flash pin
+	SYSCTL_PIO1_IECFG = 0x0;//外部spif pin
+	//SYSCTL_PIO3_CFG = 0x0;
+	//dvdd
+	SYSCTL_DVDD_EN |= ((BIT(1)|BIT(2)|BIT(4)|BIT(5)|BIT(6)|BIT(7)|BIT(10)|BIT(11)) << 12);//iso enable
+	SYSCTL_DVDD_EN &= ~(BIT(1)|BIT(2)|BIT(4)|BIT(5)|BIT(6)|BIT(7)|BIT(10)|BIT(11));
+	//flash power down
+	// while (!(SPIF_READY & SPIF_RDY));
+	// while (SPIF_STATUS & 0xf);
+	// SPIF_FIFO_TOP = 0xb9;
+	// for (int i = 0;i < 10000;i++)
+	// {
+	//    nop;
+	// }
+	// while (!(SPIF_READY & SPIF_RDY));
+	// while (!(SPIF_STATUS & 0x4));
+	// while (!(SPIF_READY & SPIF_RDY));
+	// for (int i = 0;i < 10000;i++)
+	// {
+	//    nop;
+	// }
+	//cpu sleep
+	asm volatile("wfi");
+
+	for (i = 0;i < 10000;i++)
+	{
+	   nop;
+	}
+	//restore
+	SYSCTL_DVDD_EN |= (BIT(1)|BIT(2)|BIT(4)|BIT(5)|BIT(6)|BIT(7)|BIT(10)|BIT(11));
+	REG8(0xbffff)=0;
+	nop;nop;nop;nop;nop;nop;
+	SYSCTL_DVDD_EN &= ~((BIT(1)|BIT(2)|BIT(4)|BIT(5)|BIT(6)|BIT(7)|BIT(10)|BIT(11)) << 12);//iso enable
+	SYSCTL_PIO0_CFG = SYSCTL_PIO0_CFG_CONTEXT;
+	SYSCTL_PIO1_CFG = SYSCTL_PIO1_CFG_CONTEXT;
+	SYSCTL_PIO2_CFG = SYSCTL_PIO2_CFG_CONTEXT;
+	SYSCTL_PIO3_CFG = SYSCTL_PIO3_CFG_CONTEXT;
+	SYSCTL_PIO4_CFG = SYSCTL_PIO4_CFG_CONTEXT;
+	SYSCTL_PIO5_CFG = SYSCTL_PIO5_CFG_CONTEXT;
+	SYSCTL_MODEN0 = SYSCTL_MODEN0_CONTEXT;
+	SYSCTL_MODEN1 = SYSCTL_MODEN1_CONTEXT;
+	SYSCTL_PIO0_IECFG = SYSCTL_PIO0_IECFG_CONTEXT;
+	SYSCTL_PIO1_IECFG = SYSCTL_PIO1_IECFG_CONTEXT;
+	SYSCTL_PIO2_IECFG = SYSCTL_PIO2_IECFG_CONTEXT;
+	SYSCTL_PIO3_IECFG = SYSCTL_PIO3_IECFG_CONTEXT;
+	SYSCTL_CLKDIV_OSC96M = SYSCTL_CLKDIV_OSC96M_CONTEXT;
+	SYSCTL_SWITCH_PLL = SYSCTL_SWITCH_PLL_CONTEXT;
+	SYSCTL_PAD_PECI = SYSCTL_PAD_PECI_CONTEXT;
+	SYSCTL_PMUCSR = SYSCTL_PMUCSR_CONTEXT;
+	SYSCTL_RET_CTRL = SYSCTL_RET_CTRL_CONTEXT;
+	ADC_CTRL = ADC_CTRL_CONTEXT;
+	SYSCTL_PMU_CFG = SYSCTL_PMU_CFG_CONTEXT;
+	// PRINTF_TX='\n';
+	// PRINTF_TX='R';
+	// PRINTF_TX='E';
+	// PRINTF_TX='S';
+	// PRINTF_TX='\n';
+	for (i = 0;i < 10000;i++)
+	{
+	   nop;nop;nop;
+	}
+	// PRINTF_TX='\n';
+	// PRINTF_TX='R';
+	// PRINTF_TX='E';
+	// PRINTF_TX='S';
+	// PRINTF_TX='\n';
+}
 /* ----------------------------------------------------------------------------
  * FUNCTION:   Save_Context
  *
@@ -88,24 +168,25 @@ void CPU_Sleep(void)
  * ------------------------------------------------------------------------- */
 void Save_Context(void)
 {
+	SYSCTL_PIO0_CFG_CONTEXT = SYSCTL_PIO0_CFG;
+	SYSCTL_PIO1_CFG_CONTEXT = SYSCTL_PIO1_CFG;
+	SYSCTL_PIO2_CFG_CONTEXT = SYSCTL_PIO2_CFG;
+	SYSCTL_PIO3_CFG_CONTEXT = SYSCTL_PIO3_CFG;
+	SYSCTL_PIO4_CFG_CONTEXT = SYSCTL_PIO4_CFG;
+	SYSCTL_PIO5_CFG_CONTEXT = SYSCTL_PIO5_CFG;
 	SYSCTL_MODEN0_CONTEXT = SYSCTL_MODEN0;
 	SYSCTL_MODEN1_CONTEXT = SYSCTL_MODEN1;
 	SYSCTL_PIO0_IECFG_CONTEXT = SYSCTL_PIO0_IECFG;
 	SYSCTL_PIO1_IECFG_CONTEXT = SYSCTL_PIO1_IECFG;
 	SYSCTL_PIO2_IECFG_CONTEXT = SYSCTL_PIO2_IECFG;
 	SYSCTL_PIO3_IECFG_CONTEXT = SYSCTL_PIO3_IECFG;
-	SYSCTL_CLKDIV_I3C_CONTEXT = SYSCTL_CLKDIV_I3C;
-	SYSCTL_CLKDIV_PECI_CONTEXT = SYSCTL_CLKDIV_PECI;
-	SYSCTL_DVDD_EN_CONTEXT = SYSCTL_DVDD_EN;
 	SYSCTL_SWITCH_PLL_CONTEXT = SYSCTL_SWITCH_PLL;
 	SYSCTL_CLKDIV_OSC96M_CONTEXT = SYSCTL_CLKDIV_OSC96M;//降频3M
-	RET_CTRL = *(volatile uint32_t *)(0x30510);
-// 	SYSCTL_DVDD_EN_CONTEXT = SYSCTL_DVDD_EN;
-// 	SYSCTL_SWITCH_PLL_CONTEXT = SYSCTL_SWITCH_PLL;
-// 	SYSCTL_CLKDIV_OSC96M_CONTEXT = SYSCTL_CLKDIV_OSC96M;//降频3M
-	// printf("BE:MODE0:%x,MODE1:%x\n",SYSCTL_MODEN0,SYSCTL_MODEN1);
-	// printf("BE:IE0:%x,IE1:%x,IE2:%x,IE3:%x,IE4:%x,IE5:%x\n",SYSCTL_PIO0_IECFG,SYSCTL_PIO1_IECFG,SYSCTL_PIO2_IECFG,SYSCTL_PIO3_IECFG,SYSCTL_CLKDIV_I3C,SYSCTL_CLKDIV_PECI);
-	// GPIO_Config(GPIOA, 0, 1, 0, 1, 1);
+	SYSCTL_PAD_PECI_CONTEXT=SYSCTL_PAD_PECI;
+	SYSCTL_PMUCSR_CONTEXT = SYSCTL_PMUCSR;
+	SYSCTL_RET_CTRL_CONTEXT = SYSCTL_RET_CTRL;
+	ADC_CTRL_CONTEXT = ADC_CTRL;
+	SYSCTL_PMU_CFG_CONTEXT = SYSCTL_PMU_CFG;
 }
 /* ----------------------------------------------------------------------------
  * FUNCTION:   Restore_Context
@@ -116,18 +197,25 @@ void Save_Context(void)
  * ------------------------------------------------------------------------- */
 void Restore_Context(void)
 {
+	SYSCTL_PIO0_CFG = SYSCTL_PIO0_CFG_CONTEXT;
+	SYSCTL_PIO1_CFG = SYSCTL_PIO1_CFG_CONTEXT;
+	SYSCTL_PIO2_CFG = SYSCTL_PIO2_CFG_CONTEXT;
+	SYSCTL_PIO3_CFG = SYSCTL_PIO3_CFG_CONTEXT;
+	SYSCTL_PIO4_CFG = SYSCTL_PIO4_CFG_CONTEXT;
+	SYSCTL_PIO5_CFG = SYSCTL_PIO5_CFG_CONTEXT;
 	SYSCTL_MODEN0 = SYSCTL_MODEN0_CONTEXT;
 	SYSCTL_MODEN1 = SYSCTL_MODEN1_CONTEXT;
 	SYSCTL_PIO0_IECFG = SYSCTL_PIO0_IECFG_CONTEXT;
 	SYSCTL_PIO1_IECFG = SYSCTL_PIO1_IECFG_CONTEXT;
 	SYSCTL_PIO2_IECFG = SYSCTL_PIO2_IECFG_CONTEXT;
 	SYSCTL_PIO3_IECFG = SYSCTL_PIO3_IECFG_CONTEXT;
-	SYSCTL_CLKDIV_I3C = SYSCTL_CLKDIV_I3C_CONTEXT;
-	SYSCTL_CLKDIV_PECI = SYSCTL_CLKDIV_PECI_CONTEXT;
-	SYSCTL_DVDD_EN = SYSCTL_DVDD_EN_CONTEXT;
 	SYSCTL_CLKDIV_OSC96M = SYSCTL_CLKDIV_OSC96M_CONTEXT;
 	SYSCTL_SWITCH_PLL = SYSCTL_SWITCH_PLL_CONTEXT;
-	*(volatile uint32_t *)(0x30510) = RET_CTRL;
+	SYSCTL_PAD_PECI = SYSCTL_PAD_PECI_CONTEXT;
+	SYSCTL_PMUCSR = SYSCTL_PMUCSR_CONTEXT;
+	SYSCTL_RET_CTRL = SYSCTL_RET_CTRL_CONTEXT;
+	ADC_CTRL = ADC_CTRL_CONTEXT;
+	SYSCTL_PMU_CFG = SYSCTL_PMU_CFG_CONTEXT;
 }
 void CPU_Timer_Set()
 {
@@ -195,6 +283,7 @@ void Low_Power_Set(void)
 	// asm volatile("wfi");
 }
 #endif
+#define SUPPORT_DEEPSLEEP
 void Enter_LowPower_Mode(void)
 {
 	printf("enter lowpower mode\n");
@@ -202,84 +291,110 @@ void Enter_LowPower_Mode(void)
 	PWRSW_Config(0, 0);
 #endif
 #if SUPPORT_GPIO_WAKEUP
-	GPIO_Config(GPIOB, 4, 2, 0, 1, 1);
+	GPIO_Config(GPIOA, 3, 2, 0, 1, 0);
 #endif
 	//1.置位标志位，保护现场
 	Low_Power_Flag = 1;
 	Save_Context();
 	//2.关闭模块功能，减少功耗
-	// CHIP_Sleep();
-	// CHIP_Deep_Sleep();
+#ifdef SUPPORT_SLEEP
+	CHIP_Sleep();
+#endif
+#ifdef SUPPORT_DEEPSLEEP
+	CHIP_Deep_Sleep();
+#endif
+#ifdef SUPPORT_HIBERNATION
 	CHIP_Hibernation();
+#endif
+#if SUPPORT_GPIO_WAKEUP
+	GPIO_Input_EN(GPIOA, 3, ENABLE);
+#endif
+	printf("SYSCTL_PIO0_IECFG:0x%x\n",SYSCTL_PIO0_IECFG);
 	//开启wfi模式，降低CPU运行
-	CPU_Sleep();
+	Disable_Interrupt_Main_Switch();                  // Disable All Interrupt
+	Smf_Ptr = Load_Smfi_To_Dram(CPU_SLP_RES, 0x400);
+	if(Smf_Ptr!=0)
+    	(*Smf_Ptr)(); // Do Function at malloc address
+	Enable_Interrupt_Main_Switch();
+   	free(Smf_Ptr);  // 释放通过 malloc 分配的内存空间
+   	Smf_Ptr = NULL; // 将指针设置为 NULL，以避免悬空指针问题
+	//CPU_Sleep();
 }
 void Exit_LowPower_Mode(void)
 {
 	if(Low_Power_Flag)
 	{
-		*(volatile uint32_t *)(0x2780) = 0x0;
+		//*(volatile uint32_t *)(0x2780) = 0x0;
 		Low_Power_Flag = 0;
 		Restore_Context();
 		printf("exit lowpower mode\n");
+		printf("trap test\n");printf("trap test\n");printf("trap test\n");
 	}
 }
 void CHIP_Sleep(void)
 {
-	printf("Sleep mode\n");
-	GPIO_Input_EN(GPIOA, 3, ENABLE);
-	GPIO_Config(GPIOA, 3, 2, 0, 1, 0);
-	SYSCTL_RESERVER = BIT(28);
+	dprint("Sleep mode\n");
+	SYSCTL_PAD_PECI|=BIT1;
+	//Enable WFI Mode
+	SYSCTL_PMUCSR &= 0xFFFFeFFF;
+	SYSCTL_PMUCSR |= BIT(20);
 	//[2]:main_clk_sel  [3]:enable deepsleep [0]:swtich pll
 	SYSCTL_SWITCH_PLL = (0x1 << 1) | (0x1 << 2) | (0x1 << 5);
-	*(volatile uint32_t *)(0x30510) = 0x8ff;
-	SYSCTL_DVDD_EN |= 0b10001111011 << 13;//iso enable 
-	SYSCTL_DVDD_EN = 0xf6709;//poweroff
-	ADC_PM = 0x3;//ADC low power config bit0 close ldo and bit1 close comp
-	SYSCTL_PMUCSR = 0xFFFFFC7F;	//PMU_CFG
-
-	SYSCTL_PIO0_IECFG = 0xffffffff;//关闭io输入脚，未适配
-	SYSCTL_PIO1_IECFG = 0xffffffff;
-	SYSCTL_PIO2_IECFG = 0xffffffff;
-	SYSCTL_PIO3_IECFG = 0xffffffff;
-	SYSCTL_CLKDIV_PECI = 0x0;
-	SYSCTL_CLKDIV_OSC96M = 0x1f;//如果main_slc没设置为1,则主频降为3M，设置为1则降为32k
-
-	SYSCTL_MODEN0 = 0x1fffffff;//关闭模块（未适配）
-	SYSCTL_MODEN1 = 0x1ffffff;//关闭模块（未适配）
-	GPIO0_DEBOUNCE0 = 0x0;
+	//adc power down
+	ADC_CTRL = 0x0;
+	//PMU_CFG
+	SYSCTL_PMU_CFG&=0xFFFFFC7F;//PMU_CFG
+	//ie off
+	SYSCTL_PIO0_IECFG = 0x0;
+	//SYSCTL_PIO1_IECFG = 0x00f00000;//外部spif pin
+	SYSCTL_PIO2_IECFG = 0x0;
+	SYSCTL_PIO3_IECFG = 0x0;
+	//switch osc to 3m
+	SYSCTL_CLKDIV_OSC96M=0x3F;
+	//io mux
+	SYSCTL_PIO0_CFG=0;
+	SYSCTL_PIO1_CFG=0;
+	SYSCTL_PIO2_CFG=0;
+	SYSCTL_PIO3_CFG=0x5500;
+	SYSCTL_PIO4_CFG=0;
+	SYSCTL_PIO5_CFG=0;
+	//mode en
+	SYSCTL_MODEN0 = GPIO_EN|UART0_EN;
+	SYSCTL_MODEN1 =  DRAM_EN |SYSCTL_EN | SPIF_EN | APB_EN |GPIODB_EN| CACHE_EN  | IVT_EN | ROM_EN;
 }
 
 void CHIP_Deep_Sleep(void)
 {
-	printf("Deep_Sleep mode\n");
-	GPIO_Input_EN(GPIOA, 3, ENABLE);
-	GPIO_Config(GPIOA, 3, 2, 0, 1, 0);
-	sysctl_iomux_config(GPIOA, 26, 0);//防止触发LPC_RST中断
+	dprint("Deep_Sleep mode\n");
+	SYSCTL_PAD_PECI|=BIT1;
 	// SYSCTL_RESERVER = BIT(28);
 	SYSCTL_PMUCSR &= 0xFFFFeFFF;
 	SYSCTL_PMUCSR |= BIT(20);//Enable WFI Mode deepsleep flag
-
-	*(volatile uint32_t *)(0x30510) = 0xfff;
-	*(volatile uint32_t *)(0x30510) &= ~(BIT(6) | BIT(7));
-
-	SYSCTL_DVDD_EN |= 0b10001111011 << 13;//iso enable
-	SYSCTL_DVDD_EN = 0x8f6709;
-
-	// SYSCTL_PIO1_CFG = 0x0;
-	SYSCTL_PIO0_IECFG = 0x7008008;
-	SYSCTL_PIO1_IECFG = 0x8;
+	//mem retn
+	//SYSCTL_RET_CTRL=0;
+	//PMU_CFG
+	SYSCTL_PMU_CFG&=0xFFFFFC7F;//PMU_CFG
+	//ie off
+	SYSCTL_PIO0_IECFG = 0x0;
+	//SYSCTL_PIO1_IECFG = 0x00f00000;//外部spif pin
 	SYSCTL_PIO2_IECFG = 0x0;
-	SYSCTL_PIO3_IECFG = 0xFF000000;
-	ADC_PM = 0b11;//ADC low power config bit0 close ldo and bit1 close comp
-	SYSCTL_CLKDIV_PECI = 0x0;
-	SYSCTL_SWITCH_PLL = (0x1 << 5) | (0x1 << 3) | (0x1 << 1);//bit5  , bit4:dslp2 mode = 1 main_clk_sel = 0 ,disable_osc80m = 1,sleep mode=1,dlsp=1,,
-	SYSCTL_MODEN0 = UART0_EN | GPIO_EN | PWM_EN | (0x1 << 13);
-	SYSCTL_MODEN1 = DRAM_EN | SYSCTL_EN | SPIF_EN | APB_EN | GPIODB_EN | CACHE_EN | IRAM_EN | ICTL_EN | IVT_EN | ROM_EN | (0x1 << 23) | (0x1 << 24);
-	GPIO0_DEBOUNCE0 = 0x0;
+	SYSCTL_PIO3_IECFG = 0x0;
+	//adc power down
+	ADC_CTRL = 0x0;//ADC low power config bit0 close ldo and bit1 close comp
+	//[3]:enable deepsleep [0]:swtich pll
+	SYSCTL_SWITCH_PLL = (0x1 << 5) | (0x1 << 3) | (0x1 << 1);
+	//io mux
+	SYSCTL_PIO0_CFG=0;
+	SYSCTL_PIO1_CFG=0;
+	SYSCTL_PIO2_CFG=0;
+	SYSCTL_PIO3_CFG=0x5500;
+	SYSCTL_PIO4_CFG=0;
+	SYSCTL_PIO5_CFG=0;
+	//mode en
+	SYSCTL_MODEN0 = GPIO_EN;
+	SYSCTL_MODEN1 =  DRAM_EN |SYSCTL_EN | SPIF_EN | APB_EN |GPIODB_EN| CACHE_EN  | IVT_EN | ROM_EN;
 }
 
-//废弃
 #if 0
 void CHIP_Deep_Sleep2(void)
 {
@@ -308,13 +423,15 @@ void CHIP_Deep_Sleep2(void)
 #endif
 void CHIP_Hibernation(void)
 {
-	printf("Hibernation mode\n");
-	GPIO_Input_EN(GPIOA, 11, ENABLE);
-	GPIO_Config(GPIOA, 11, 2, 0, 1, 0);
-	*(volatile uint8_t *)(0x2780) = 0x2;
-	// printf("0x2780:%x\n", *(volatile uint8_t *)0x2780);
-	nop;
-	*(volatile uint8_t *)(0x2780) = 0x3 | 0x1 << 4;
-	// printf("0x2780_1:%x\n", *(volatile uint8_t *)0x2780);
+	dprint("Hibernation mode\n");
+	if(REG8(0x2780)&0x1)
+	{
+		REG8(0x2780)=0;
+		for(volatile int i=0;i<100000;i++)
+		{
+			nop;
+		}
+	}
+	REG8(0x2780) = 0x1|Hibernation_Wakeup_GPIO;
 }
 
