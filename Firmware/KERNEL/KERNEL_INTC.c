@@ -195,9 +195,6 @@ void intr0_gpio_a0(void)
 		// BRAM_EC_Write();
 		GPIO0_EOI0 |= (0x1 << 0); // clear int
 	}
-#if SUPPORT_GPIO_WAKEUP
-	Exit_LowPower_Mode();
-#endif
 #if TEST_INTC
 #if INTC_MODE
 	printf("intr0_gpio_a0 mask\n");
@@ -244,10 +241,7 @@ void intr0_gpio_a3(void)
 	Intr_num[35]++;
 #endif
 	GPIO0_EOI0 |= (0x1 << 3); // clear int
-	Exit_LowPower_Mode();
-#if SUPPORT_GPIO_WAKEUP
 
-#endif
 #if TEST_INTC
 #if INTC_MODE
 	printf("intr0_gpio_a3 mask\n");
@@ -379,8 +373,6 @@ void intr0_gpio_a11(void)
 	ICTL0_INTEN1 &= ~(0x1 << 3);
 #endif
 #endif
-	// printf("intr0_gpio_a11\n");
-	// Exit_LowPower_Mode();
 	GPIO0_EOI1 |= (0x1 << 3); // clear int
 }
 void intr0_gpio_a12(void)
@@ -749,9 +741,6 @@ void intr0_gpio_b4(void)
 	Intr_num[68]++;
 #endif
 	GPIO1_EOI0 |= 0x1 << 4; // 清除中断
-#if SUPPORT_GPIO_WAKEUP
-	Exit_LowPower_Mode();
-#endif
 #if TEST_INTC
 #if INTC_MODE
 	printf("intr0_gpio_b4 mask\n");
@@ -948,7 +937,6 @@ void intr0_gpio_b17(void)
 	Intr_num[81]++;
 #endif
 	GPIO1_EOI2 |= 0x1 << 1; //clear interrupt
-	Exit_LowPower_Mode();
 #if TEST_INTC
 #if INTC_MODE
 	printf("intr0_gpio_b17 mask\n");
@@ -2177,6 +2165,7 @@ void intr1_uart1(void)
 			SYSCTL_PIO1_UDCFG |= BIT3;
 		} // 接收错误
 	}
+	UART1_RX;
 #if (ENABLE_COMMAND_SUPPORT && COMMAND_UART_SWITCH == 1)
 	if (F_Service_CMD == 1)
 	{

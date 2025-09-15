@@ -19,6 +19,9 @@
 #include "AE_REG.H"
 #include "AE_CONFIG.H"
 #include <KERNEL_RTC.H>
+#define Hibernation_Wakeup_GPIOA11 0x2
+#define Hibernation_Wakeup_GPIOB4  0x4
+#define Hibernation_Wakeup_GPIOB17 0x8
 /*--------------------Soft reset module flag-----------------*/
 #define ICTL_RST_REG_POS 1
 #define ICTL_RST_BIT_POS 6
@@ -34,6 +37,7 @@
 #define Moudle_RESET_REG0               REG32(Moudle_RESET_REG0_ADDR)
 #define Moudle_RESET_REG1               REG32(Moudle_RESET_REG1_ADDR)
 /*--------------------------------------------------------------------------*/
+#define Hibernation_Wakeup_GPIO Hibernation_Wakeup_GPIOA11
 extern void Module_SoftReset(int, int);
 extern void CPU_Sleep(void);
 extern void Save_Context(void);

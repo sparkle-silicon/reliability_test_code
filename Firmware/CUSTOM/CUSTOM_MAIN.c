@@ -217,7 +217,8 @@ extern uint8_t MatchADCChannelToData(uint8_t channelx, uint16_t ADC_Databuffer_c
 void __weak Hook_1secEventC(void) // update new rpm
 {
     RunTimeStamp++;
-    if(RunTimeStamp == 5)
+    printf("RunTimeStamp:%d\n",RunTimeStamp);
+    if(RunTimeStamp % 5 == 0)
     {
         Enter_LowPower_Mode();
     }

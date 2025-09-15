@@ -27,12 +27,12 @@ void trim_set(void)
 
 	sysctl_iomux_config(GPIOA, 15, 0x3);//将GPB7设置为BYPASS OSC32K
 
-#if 1	//1号片
+#if 0	//1号片
 #define LOW_32K_TRIM_DVAL 105
 #define HIGH_24M_CTRIM_DVAL 0x8
 #define HIGH_24M_FTRIM_DVAL 0x1d
 #endif
-#if 0	//2号片
+#if 1	//2号片
 #define LOW_32K_TRIM_DVAL 106
 #define HIGH_24M_CTRIM_DVAL 0x9
 #define HIGH_24M_FTRIM_DVAL 0x1d
