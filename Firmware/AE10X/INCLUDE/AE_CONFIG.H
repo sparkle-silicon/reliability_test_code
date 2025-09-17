@@ -335,7 +335,6 @@
 #define ADC5_EN_Init 0 & ADC_CLOCK_EN
 #define ADC6_EN_Init 0 & ADC_CLOCK_EN
 #define ADC7_EN_Init 0 & ADC_CLOCK_EN
-#define ADC7_EN_Init 0 & ADC_CLOCK_EN
 //CEC
 #define CEC_EXTERNAL_PULL_UP 1
 #define CEC_INTERNAL_PULL_UP 0
