@@ -177,22 +177,6 @@ void __interrupt SECTION(".interrupt.CPUT_HANDLER") CPUT_HANDLER(void)
 	Intr_num[1]++;
 #endif
 	irqprint(irq_string, __FUNCTION__, 1);
-#if SUPPORT_CPUTIMER_WAKEUP
-	if (Low_Power_Flag)
-	{
-		// Low_Power_Flag = 0;
-		// Restore_Context();
-		Exit_LowPower_Mode();
-		// stop timer
-		write_csr(0xBDB, 0x1);
-		// clear timer
-		write_csr(0xBDA, 0x0);
-		// disable timer
-		int32_t val = read_csr(0xBD1);
-		write_csr(0xBD1, (val & 0xfffffffd));
-		F_Service_WakeUp = 1;
-	}
-#endif
 };
 void __interrupt SECTION(".interrupt.CPUR_HANDLER") CPUR_HANDLER(void)
 {
@@ -296,16 +280,6 @@ void __interrupt SECTION(".interrupt.PWRSW_HANDLER") PWRSW_HANDLER(void)
 #if (SYSCTL_CLOCK_EN)
 	SYSCTL_PWRSWCSR |= 0x20; // clear interrupt status flag
 #endif
-#if SUPPORT_PWRSW_WAKEUP
-	SYSCTL_MODEN1 |= DRAM_EN | SYSCTL_EN;//回复现场会配置sysctl和dram
-#if DEBUG
-	SYSCTL_MODEN1 |= APB_EN;//uart挂在apb下
-	SYSCTL_MODEN0 |= ((UARTA_EN >> ((!(PRINTF_UART_SWITCH & 0b100)) << 1)) >> (PRINTF_UART_SWITCH & 0b11));//优先开启调试功能
-#else
-#endif
-	nop;
-	Exit_LowPower_Mode();
-#endif
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[5]++;
 #endif
@@ -329,14 +303,6 @@ void __interrupt SECTION(".interrupt.KBS_SDV_HANDLER") KBS_SDV_HANDLER(void)
 	Intr_num[7]++;
 #endif
 	irqprint(irq_string, __FUNCTION__, 7);
-#if SUPPORT_KBS_WAKEUP
-	if (Low_Power_Flag)
-	{
-		if (SystemIsS3)
-			Exit_LowPower_Mode(); // support KBS wake cpu up when S3
-	}
-#endif
-	// if(KBS_KSDSR & BIT0)
 	F_Service_KBS = 1;
 	KBS_KSDSR = BIT0;
 };

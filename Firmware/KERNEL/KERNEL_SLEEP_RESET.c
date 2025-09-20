@@ -113,9 +113,15 @@ void ALIGNED(4) OPTIMIZE(0) CPU_SLP_RES(void)
 	// {
 	//    nop;
 	// }
+	#ifdef SUPPORT_DEEPSLEEP
+	//vcore->1.0V
+	SYSCTL_PMU_CFG&=(~(0xff<<10));
+	SYSCTL_PMU_CFG|=22<<10;
+	#endif
 	//cpu sleep
 	asm volatile("wfi");
-
+	nop;nop;nop;nop;nop;nop;
+	SYSCTL_PMU_CFG = SYSCTL_PMU_CFG_CONTEXT;
 	for (i = 0;i < 10000;i++)
 	{
 	   nop;
@@ -143,12 +149,6 @@ void ALIGNED(4) OPTIMIZE(0) CPU_SLP_RES(void)
 	SYSCTL_PMUCSR = SYSCTL_PMUCSR_CONTEXT;
 	SYSCTL_RET_CTRL = SYSCTL_RET_CTRL_CONTEXT;
 	ADC_CTRL = ADC_CTRL_CONTEXT;
-	SYSCTL_PMU_CFG = SYSCTL_PMU_CFG_CONTEXT;
-	// PRINTF_TX='\n';
-	// PRINTF_TX='R';
-	// PRINTF_TX='E';
-	// PRINTF_TX='S';
-	// PRINTF_TX='\n';
 	for (i = 0;i < 10000;i++)
 	{
 	   nop;nop;nop;
@@ -231,68 +231,10 @@ void CPU_Timer_Set()
 	// start timer
 	write_csr(0xBDB, 0x0);
 }
-//deepsleep2测试环境,已废弃
-#if 0
-void Low_Power_Set(void)
-{
-	GPIO_Input_EN(GPIOA, 11, ENABLE);
-	GPIO_Config(GPIOA, 11, 2, 0, 1, 0);
-	*(volatile uint32_t *)(0x3050c) = 0x0;
-	*(volatile uint32_t *)(0x30510) = 0x0;
-	SYSCTL_RESERVER = BIT(28);
-	// SYSCTL_DVDD_EN |= BIT4 | BIT5 | BIT6;
-	// SYSCTL_DVDD_EN &= ~(BIT0 | BIT1 | BIT2);
-	SYSCTL_DVDD_EN = 0xffffff;
-	// SYSCTL_SWITCH_PLL &= ~BIT2;//main_clk_sel = 0
-	SYSCTL_PMUCSR |= BIT(20) | BIT0;//Enable WFI Mode deepsleep2 flag
-	SYSCTL_PIO1_CFG = 0x0;
-	SYSCTL_RST0 = 0x0;
-	SYSCTL_PIO0_IECFG = 0xffffffff;
-	// SYSCTL_PIO0_IECFG = 0x7008008;//PIOA3输入使能
-//printf("SYSCTL_PIO0_IECFG:0x%x\n", SYSCTL_PIO0_IECFG);
-	// SYSCTL_PIO1_IECFG = 0x8;
-	SYSCTL_PIO1_IECFG = 0xffffffff;
-	//printf("SYSCTL_PIO1_IECFG:0x%x\n", SYSCTL_PIO1_IECFG);
-	// SYSCTL_PIO2_IECFG = 0x0;
-	SYSCTL_PIO2_IECFG = 0xffffffff;
-	//printf("SYSCTL_PIO2_IECFG:0x%x\n", SYSCTL_PIO2_IECFG);
-	// SYSCTL_PIO3_IECFG = 0x3000000;
-	SYSCTL_PIO3_IECFG = 0xffffffff;
-	//printf("SYSCTL_PIO3_IECFG:0x%x\n", SYSCTL_PIO3_IECFG);
-	ADC_PM = 0b11;//ADC low power config bit0 close ldo and bit1 close comp
-	//printf("SYSCTL_SWITCH_PLL:0x%x\n", SYSCTL_SWITCH_PLL);
-	////mode 0 uart0 run gpio run 
-	//SYSCTL_CLKDIV_SPIS = 0x0;
-	SYSCTL_CLKDIV_PECI = 0x0;
-	SYSCTL_SWITCH_PLL = (0x1 << 3) | (0x1 << 4) | (0x1 << 1) | (0x0 << 2) | (0x1 << 5);//sleep mode=1,dlsp=1,disable_osc80m = 1,main_clk_sel = 0
-	printf("SYSCTL_SWITCH_PLL:0x%x\n", SYSCTL_SWITCH_PLL);
-	// SYSCTL_MODEN0 = UART0_EN | GPIO_EN | PWM_EN| UART1_EN;
-	// SYSCTL_MODEN0 = 0x00302180;//BRAM GPIO mailebox uart0 uart1
-	// SYSCTL_MODEN0 = 0x10100100;
-	SYSCTL_MODEN0 = 0x1fffffff;
-	// SYSCTL_MODEN1 = DRAM_EN | SYSCTL_EN | SPIF_EN | APB_EN | GPIODB_EN | CACHE_EN | 0x00800000 | ICTL_EN | 0x00040000;
-	// SYSCTL_MODEN1 = 0x19cffff;//crypto_cpu IRAM ROM | 0x100000
-	SYSCTL_MODEN1 = 0x1ffffff;
-	// SYSCTL_MODEN1 = 0x10c0e00;
-	GPIO0_DEBOUNCE0 = 0x0;
-// #if SUPPORT_GPIO_WAKEUP	
-// 	GPIO_Config(GPIOA, 0, 2, 0, 1, 0);
-// #endif
-	//sysctl_iomux_pwm1();
-	//PWM_Init_channel(PWM_CHANNEL1, PWM_HIGH, PWM_CLK0, PWM_CTR0, 50, 0);
-	// asm volatile("wfi");
-}
-#endif
-#define SUPPORT_DEEPSLEEP
+
 void Enter_LowPower_Mode(void)
 {
 	printf("enter lowpower mode\n");
-#if SUPPORT_PWRSW_WAKEUP
-	PWRSW_Config(0, 0);
-#endif
-#if SUPPORT_GPIO_WAKEUP
-	GPIO_Config(GPIOA, 3, 2, 0, 1, 0);
-#endif
 	//1.置位标志位，保护现场
 	Low_Power_Flag = 1;
 	Save_Context();
@@ -306,10 +248,14 @@ void Enter_LowPower_Mode(void)
 #ifdef SUPPORT_HIBERNATION
 	CHIP_Hibernation();
 #endif
+#if SUPPORT_PWRSW_WAKEUP
+	GPIO_Input_EN(GPIOA, 11, ENABLE);
+	PWRSW_Config(0, 0);
+#endif
 #if SUPPORT_GPIO_WAKEUP
 	GPIO_Input_EN(GPIOA, 3, ENABLE);
+	GPIO_Config(GPIOA, 3, 2, 0, 1, 0);
 #endif
-	printf("SYSCTL_PIO0_IECFG:0x%x\n",SYSCTL_PIO0_IECFG);
 	//开启wfi模式，降低CPU运行
 	Disable_Interrupt_Main_Switch();                  // Disable All Interrupt
 	Smf_Ptr = Load_Smfi_To_Dram(CPU_SLP_RES, 0x400);
@@ -334,6 +280,16 @@ void Exit_LowPower_Mode(void)
 void CHIP_Sleep(void)
 {
 	dprint("Sleep mode\n");
+	VDWORD TEMP_MODEN0 = 0;
+	VDWORD TEMP_MODEN1 = 0;
+#if SUPPORT_GPIO_WAKEUP
+	TEMP_MODEN0 |= GPIO_EN;
+#endif
+#if SUPPORT_PWRSW_WAKEUP
+	SYSCTL_PWRSWCSR&=~0x1;
+#endif
+	TEMP_MODEN1 =  DRAM_EN |SYSCTL_EN | SPIF_EN | APB_EN |GPIODB_EN| CACHE_EN  | IVT_EN | ROM_EN;
+	//peci pad off
 	SYSCTL_PAD_PECI|=BIT1;
 	//Enable WFI Mode
 	SYSCTL_PMUCSR &= 0xFFFFeFFF;
@@ -348,26 +304,55 @@ void CHIP_Sleep(void)
 	SYSCTL_PIO0_IECFG = 0x0;
 	//SYSCTL_PIO1_IECFG = 0x00f00000;//外部spif pin
 	SYSCTL_PIO2_IECFG = 0x0;
-	SYSCTL_PIO3_IECFG = 0x0;
 	//switch osc to 3m
 	SYSCTL_CLKDIV_OSC96M=0x3F;
 	//io mux
-	SYSCTL_PIO0_CFG=0;
+#if SUPPORT_KBS_WAKEUP
+	TEMP_MODEN0 |= KBS_EN;
+	SYSCTL_PIO5_CFG&=0xfffc0000;
+#if (KBD_8_n_SWITCH == 16)
 	SYSCTL_PIO1_CFG=0;
-	SYSCTL_PIO2_CFG=0;
-	SYSCTL_PIO3_CFG=0x5500;
-	SYSCTL_PIO4_CFG=0;
+#elif (KBD_8_n_SWITCH == 17)
+	SYSCTL_PIO1_CFG&=0b01<<6;
+#elif (KBD_8_n_SWITCH == 18)
+	SYSCTL_PIO1_CFG&=0b11<<6||0b11<<10;
+#endif
+	SYSCTL_PIO3_IECFG &= 0xff0000;
+#else
 	SYSCTL_PIO5_CFG=0;
+	SYSCTL_PIO1_CFG=0;
+	SYSCTL_PIO3_IECFG = 0x0;
+#endif
+	SYSCTL_PIO0_CFG=0;
+	SYSCTL_PIO2_CFG=0;
+	SYSCTL_PIO3_CFG&=0xff00;
+	SYSCTL_PIO4_CFG=0;
 	//mode en
-	SYSCTL_MODEN0 = GPIO_EN|UART0_EN;
-	SYSCTL_MODEN1 =  DRAM_EN |SYSCTL_EN | SPIF_EN | APB_EN |GPIODB_EN| CACHE_EN  | IVT_EN | ROM_EN;
+	SYSCTL_MODEN0 = TEMP_MODEN0;
+	SYSCTL_MODEN1 = TEMP_MODEN1;
 }
 
 void CHIP_Deep_Sleep(void)
 {
 	dprint("Deep_Sleep mode\n");
+	VDWORD TEMP_MODEN0 = 0;
+	VDWORD TEMP_MODEN1 = 0;
+#if SUPPORT_GPIO_WAKEUP
+	TEMP_MODEN0 |= GPIO_EN;
+#endif
+#if SUPPORT_PWRSW_WAKEUP
+	SYSCTL_PWRSWCSR&=~0x1;
+#endif
+
+	TEMP_MODEN1 =  DRAM_EN |SYSCTL_EN | SPIF_EN | APB_EN |GPIODB_EN| CACHE_EN  | IVT_EN | ROM_EN;
+	//mask gpio interrupt
+	// GPIO0_INTMASK0=0xff;GPIO0_INTMASK1=0xff;GPIO0_INTMASK2=0xff;GPIO0_INTMASK3=0xff;
+	// GPIO1_INTMASK0=0xff;GPIO1_INTMASK1=0xff;GPIO1_INTMASK2=0xff;GPIO1_INTMASK3=0xff;
+	// GPIO2_INTMASK0=0xff;GPIO2_INTMASK1=0xff;
+	// GPIO3_INTMASK0=0xff;GPIO3_INTMASK1=0xff;GPIO3_INTMASK2=0xff;
+	//PECI pad off
 	SYSCTL_PAD_PECI|=BIT1;
-	// SYSCTL_RESERVER = BIT(28);
+	//Enable WFI Mode
 	SYSCTL_PMUCSR &= 0xFFFFeFFF;
 	SYSCTL_PMUCSR |= BIT(20);//Enable WFI Mode deepsleep flag
 	//mem retn
@@ -378,21 +363,34 @@ void CHIP_Deep_Sleep(void)
 	SYSCTL_PIO0_IECFG = 0x0;
 	//SYSCTL_PIO1_IECFG = 0x00f00000;//外部spif pin
 	SYSCTL_PIO2_IECFG = 0x0;
-	SYSCTL_PIO3_IECFG = 0x0;
 	//adc power down
 	ADC_CTRL = 0x0;//ADC low power config bit0 close ldo and bit1 close comp
 	//[3]:enable deepsleep [0]:swtich pll
 	SYSCTL_SWITCH_PLL = (0x1 << 5) | (0x1 << 3) | (0x1 << 1);
 	//io mux
-	SYSCTL_PIO0_CFG=0;
+#if SUPPORT_KBS_WAKEUP
+	TEMP_MODEN0 |= KBS_EN;
+	SYSCTL_PIO5_CFG&=0xfffc0000;
+#if (KBD_8_n_SWITCH == 16)
 	SYSCTL_PIO1_CFG=0;
-	SYSCTL_PIO2_CFG=0;
-	SYSCTL_PIO3_CFG=0x5500;
-	SYSCTL_PIO4_CFG=0;
+#elif (KBD_8_n_SWITCH == 17)
+	SYSCTL_PIO1_CFG&=0b01<<6;
+#elif (KBD_8_n_SWITCH == 18)
+	SYSCTL_PIO1_CFG&=0b11<<6||0b11<<10;
+#endif
+	SYSCTL_PIO3_IECFG &= 0xff0000;
+#else
 	SYSCTL_PIO5_CFG=0;
+	SYSCTL_PIO1_CFG=0;
+	SYSCTL_PIO3_IECFG = 0x0;
+#endif
+	SYSCTL_PIO0_CFG=0x0;
+	SYSCTL_PIO2_CFG=0;
+	SYSCTL_PIO3_CFG&=0xff00;
+	SYSCTL_PIO4_CFG=0;
 	//mode en
-	SYSCTL_MODEN0 = GPIO_EN;
-	SYSCTL_MODEN1 =  DRAM_EN |SYSCTL_EN | SPIF_EN | APB_EN |GPIODB_EN| CACHE_EN  | IVT_EN | ROM_EN;
+	SYSCTL_MODEN0 = TEMP_MODEN0;
+	SYSCTL_MODEN1 = TEMP_MODEN1;
 }
 
 #if 0

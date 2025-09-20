@@ -19,6 +19,9 @@
 #include "AE_REG.H"
 #include "AE_CONFIG.H"
 #include <KERNEL_RTC.H>
+
+#define SUPPORT_SLEEP
+
 #define Hibernation_Wakeup_GPIOA11 0x2
 #define Hibernation_Wakeup_GPIOB4  0x4
 #define Hibernation_Wakeup_GPIOB17 0x8
@@ -45,7 +48,8 @@ extern void Restore_Context(void);
 extern void Low_Power_Set(void);
 extern void Enter_LowPower_Mode(void);
 extern void Exit_LowPower_Mode(void);
-
+extern void CHIP_Sleep(void);
+extern void CHIP_Deep_Sleep(void);
 extern void CHIP_Hibernation(void);
 extern void Test_OSC32K(void);
 #endif
