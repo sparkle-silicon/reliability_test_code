@@ -17,7 +17,7 @@
 #define __KERNEL_CEC_H_
 #include "AE_GLOBAL.H"
 #include "AE_REG.H"
-#define CEC0_mode_select                      1//"1": as initiator; "0" as follower
+#define CEC0_mode_select                      0//"1": as initiator; "0" as follower
 #define CEC1_mode_select                      0//"1": as initiator; "0" as follower
 #define CEC_Destination_address              0x0F//option. and the "F" mean broadcast
 #define CEC_Initiator_address                0x0F//as device address while CEC used to follower 
