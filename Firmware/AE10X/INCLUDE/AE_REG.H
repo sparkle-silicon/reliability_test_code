@@ -6113,6 +6113,21 @@
 #define CEC1_TIMING0 CEC1_REG(CEC1_TIMING0_OFFSET)
 #define CEC1_TIMING1 CEC1_REG(CEC1_TIMING1_OFFSET)
 #define CEC1_TIMING2 CEC1_REG(CEC1_TIMING2_OFFSET)
+
+#define CECn_REG_ADDR(channel,offset) REG_ADDR(((CEC0_BASE_ADDR+ ((channel?1:0) * 0x80))), offset)
+#define CECn_REG(channel,offset) REG16(CECn_REG_ADDR(channel,offset))
+#define CECn_CTRL(channel) CECn_REG(channel,CEC0_CTRL_OFFSET)
+#define CECn_ADDR(channel) CECn_REG(channel,CEC0_ADDR_OFFSET)
+#define CECn_CPSR(channel) CECn_REG(channel,CEC0_CPSR_OFFSET)
+#define CECn_SR(channel) CECn_REG(channel,CEC0_SR_OFFSET)
+#define CECn_IER(channel) CECn_REG(channel,CEC0_IER_OFFSET)
+#define CECn_ISR(channel) CECn_REG(channel,CEC0_ISR_OFFSET)
+#define CECn_FIFOCNT(channel) CECn_REG(channel,CEC0_FIFOCNT_OFFSET)
+#define CECn_DA(channel) CECn_REG(channel,CEC1_DA_OFFSET)
+#define CECn_TIMING0(channel) CECn_REG(channel,CEC0_TIMING0_OFFSET)
+#define CECn_TIMING1(channel) CECn_REG(channel,CEC0_TIMING1_OFFSET)
+#define CECn_TIMING2(channel) CECn_REG(channel,CEC0_TIMING2_OFFSET)
+
 /***********************************ADC  Register Set**********************************/
 #define ADC_BASE_ADDR 0x4800UL
 #define ADC_REG_SIZE DEC16

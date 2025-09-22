@@ -125,7 +125,7 @@
 #define ADC_MODULE_EN 0
 #define UART_MODULE_EN 1
   // reserved
-#define CEC_MODULE_EN 0
+#define CEC_MODULE_EN 1
 #define OWI_MODULE_EN 0
 #define RTC_MODULE_EN 0
 #define PECI_MODULE_EN 0
@@ -336,8 +336,12 @@
 #define ADC6_EN_Init 0 & ADC_CLOCK_EN
 #define ADC7_EN_Init 0 & ADC_CLOCK_EN
 //CEC
-#define CEC_EXTERNAL_PULL_UP 1
-#define CEC_INTERNAL_PULL_UP 0
+#define CEC0_EN_Init 1 & CEC_CLOCK_EN
+#define CEC1_EN_Init 1 & CEC_CLOCK_EN
+#define CEC0_EXTERNAL_PULL_UP 1
+#define CEC0_INTERNAL_PULL_UP 0
+#define CEC1_EXTERNAL_PULL_UP 1
+#define CEC1_INTERNAL_PULL_UP 0
 
 //KBS
 //                             0123456789ABCDEFGHIJKLMNO

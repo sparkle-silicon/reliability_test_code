@@ -33,7 +33,6 @@ __BEGIN_DECLS
 #define UARTn_LCR 0x3
 #define DLAB BIT7
 #define printdbg dprint
-extern void cec_pull_up(void);
 extern void Module_init();
 extern void uart_init(void);
 extern void smbus_init(void);

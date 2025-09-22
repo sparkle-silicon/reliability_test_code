@@ -17,16 +17,26 @@
 #define __KERNEL_CEC_H_
 #include "AE_GLOBAL.H"
 #include "AE_REG.H"
-#define CEC_mode_select                      1//"1": as initiator; "0" as follower
+#define CEC0_mode_select                      1//"1": as initiator; "0" as follower
+#define CEC1_mode_select                      0//"1": as initiator; "0" as follower
 #define CEC_Destination_address              0x0F//option. and the "F" mean broadcast
 #define CEC_Initiator_address                0x0F//as device address while CEC used to follower 
-//the bit of cec interrupt_enable_register
+ //the bit of cec interrupt_enable_register
 #define CEC_Int_Receive_Head                 0x01
 #define CEC_Int_Receive_Block                0x02
 #define CEC_Int_Receive_Frame                0x04
 #define CEC_Int_Send_Block                   0x08
 #define CEC_Int_Send_Frame                   0x10
 #define CEC_Int_erro                         0x20
+ //the bit of cec sr_register
+#define CEC_SR_Busy                          0x01
+#define CEC_SR_Rbc                           0x02
+#define CEC_SR_Reom                          0x04
+#define CEC_SR_Sendackst                     0x08
+#define CEC_SR_Sackerr                       0x10
+#define CEC_SR_Lineerr                       0x20
+#define CEC_SR_Biterr                        0x10
+#define CEC_SR_Errder                        0x20
 //the bit of cec control_register
 #define CEC_Ctr_en                           0x01//CEC enable 
 #define CEC_Ctr_send                         0x02//Send FIFOs after this bit written "1"
@@ -38,16 +48,16 @@
 #define CEC_Ctr_Clean_tFIFO                  0x80//"1": clear the send FIFOs 
 //the bit of cec interrup statue
 #define CEC_intStatue_rhis                   0x01//receive header int
-#define CEC_intStatue_rbis                   0x02//receive block int
+#define CEC_intStatue_fbis                   0x02//receive block int
 #define CEC_intStatue_rfis                   0x04//receive frame int
 #define CEC_intStatue_sbis                   0x08//send block int
 #define CEC_intStatue_sfis                   0x10//send frame int
 #define CEC_intStatue_erris                  0x20//action erro int
 //the bit of EOM in block
 #define CEC_send_EOM                         0x100
-void CEC_Write(WORD value, BYTE offset);
-WORD CEC_Read(BYTE offset);
-extern void CEC_initiator_init(void);
-extern void CEC_follower_init(void);
-extern void CEC_Frame_send(char *data, BYTE len, BYTE broadcast);
+// void CEC_Write(WORD value, BYTE offset);
+// WORD CEC_Read(BYTE offset);
+extern void CEC_initiator_init(BYTE channel);
+extern void CEC_follower_init(BYTE channel);
+extern void CEC_Frame_send(BYTE channel, char* data, BYTE len, BYTE broadcast);
 #endif

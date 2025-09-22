@@ -15,7 +15,7 @@
  */
 #include "TEST_INTC.H"
 #if TEST
-extern uint32_t *Lpc_Mon_Ptr;
+extern uint32_t* Lpc_Mon_Ptr;
 void intr0_gpio_a0(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
@@ -917,7 +917,7 @@ void intr1_cec(void) // 30
         CEC_Write(0, CEC_CTRL_OFFSET); // disable the CEC
     }
     int_stat = CEC_Read(CEC_ISR_OFFSET);
-#if CEC_mode_select // initiator
+#if CEC0_mode_select // initiator
     if (int_stat & CEC_intStatue_sbis)
     {
     }
@@ -928,7 +928,7 @@ void intr1_cec(void) // 30
     if (int_stat & CEC_intStatue_rhis)
     {
     }
-    if (int_stat & CEC_intStatue_rbis)
+    if (int_stat & CEC_intStatue_fbis)
     {
     }
     if (int_stat & CEC_intStatue_rfis)
@@ -1545,7 +1545,7 @@ void intr1_lpc_mon(void)
 #endif
 #endif
     //*((volatile uint8_t *)(0x30810)) = 0x1f;
-    *(Lpc_Mon_Ptr + LPC_MON_CNT) = *((volatile uint32_t *)(0x30814)); // when data full region 4byte
+    * (Lpc_Mon_Ptr + LPC_MON_CNT) = *((volatile uint32_t*)(0x30814)); // when data full region 4byte
     dprint("LPC_MON Data is 0x%lx\n", *(Lpc_Mon_Ptr + LPC_MON_CNT));
     // dprint("INTR_RAW is 0x%lx\n", INTR_RAW);
     if ((*(Lpc_Mon_Ptr + LPC_MON_CNT)) & (0x40404040))
@@ -1579,66 +1579,66 @@ void intr1_TRNG(void)
 }
 #endif
 const FUNCT_PTR_V_V intr0_service[] =
-    {
-        intr0_gpio_a0,  // 0
-        intr0_gpio_a1,  // 1
-        intr0_gpio_a2,  // 2
-        intr0_gpio_a3,  // 3
-        intr0_gpio_a4,  // 4
-        intr0_gpio_a5,  // 5
-        intr0_gpio_a6,  // 6
-        intr0_gpio_a7,  // 7
-        intr0_gpio_a8,  // 8
-        intr0_gpio_a9,  // 9
-        intr0_gpio_a10, // 10
-        intr0_gpio_a11, // 11
-        intr0_gpio_a12, // 12
-        intr0_gpio_a13, // 13
-        intr0_gpio_a14, // 14
-        intr0_gpio_a15, // 15
-        intr0_gpio_a16, // 16
-        intr0_gpio_a17, // 17
-        intr0_gpio_a18, // 18
-        intr0_gpio_a19, // 19
-        intr0_gpio_a20, // 20
-        intr0_gpio_a21, // 21
-        intr0_gpio_a22, // 22
-        intr0_gpio_a23, // 23
-        intr0_gpio_a24, // 24
-        intr0_gpio_a25, // 25
-        intr0_gpio_a26, // 26
-        intr0_gpio_a27, // 27
-        intr0_gpio_a28, // 28
-        intr0_gpio_a29, // 29
-        intr0_gpio_a30, // 30
-        intr0_gpio_a31, // 31
-        intr0_gpio_b0,  // 32
-        intr0_gpio_b1,  // 33
-        intr0_gpio_b2,  // 34
-        intr0_gpio_b3,  // 35
-        intr0_gpio_b4,  // 36
-        intr0_gpio_b5,  // 37
-        intr0_gpio_b6,  // 38
-        intr0_gpio_b7,  // 39
-        intr0_gpio_b8,  // 40
-        intr0_gpio_b9,  // 41
-        intr0_gpio_b10, // 42
-        intr0_gpio_b11, // 43
-        intr0_gpio_b12, // 44
-        intr0_gpio_b13, // 45
-        intr0_gpio_b14, // 46
-        intr0_gpio_b15, // 47
-        intr0_gpio_b16, // 48
-        intr0_gpio_b17, // 49
-        intr0_gpio_b18, // 50
-        intr0_gpio_b19, // 51
-        intr0_gpio_b20, // 52
-        intr0_gpio_b21, // 53
-        intr0_gpio_b22, // 54
-        intr0_gpio_b23, // 55
-        intr0_gpio_b24, // 56
-        intr0_gpio_b25, // 57
-        intr0_gpio_b26, // 58
+{
+    intr0_gpio_a0,  // 0
+    intr0_gpio_a1,  // 1
+    intr0_gpio_a2,  // 2
+    intr0_gpio_a3,  // 3
+    intr0_gpio_a4,  // 4
+    intr0_gpio_a5,  // 5
+    intr0_gpio_a6,  // 6
+    intr0_gpio_a7,  // 7
+    intr0_gpio_a8,  // 8
+    intr0_gpio_a9,  // 9
+    intr0_gpio_a10, // 10
+    intr0_gpio_a11, // 11
+    intr0_gpio_a12, // 12
+    intr0_gpio_a13, // 13
+    intr0_gpio_a14, // 14
+    intr0_gpio_a15, // 15
+    intr0_gpio_a16, // 16
+    intr0_gpio_a17, // 17
+    intr0_gpio_a18, // 18
+    intr0_gpio_a19, // 19
+    intr0_gpio_a20, // 20
+    intr0_gpio_a21, // 21
+    intr0_gpio_a22, // 22
+    intr0_gpio_a23, // 23
+    intr0_gpio_a24, // 24
+    intr0_gpio_a25, // 25
+    intr0_gpio_a26, // 26
+    intr0_gpio_a27, // 27
+    intr0_gpio_a28, // 28
+    intr0_gpio_a29, // 29
+    intr0_gpio_a30, // 30
+    intr0_gpio_a31, // 31
+    intr0_gpio_b0,  // 32
+    intr0_gpio_b1,  // 33
+    intr0_gpio_b2,  // 34
+    intr0_gpio_b3,  // 35
+    intr0_gpio_b4,  // 36
+    intr0_gpio_b5,  // 37
+    intr0_gpio_b6,  // 38
+    intr0_gpio_b7,  // 39
+    intr0_gpio_b8,  // 40
+    intr0_gpio_b9,  // 41
+    intr0_gpio_b10, // 42
+    intr0_gpio_b11, // 43
+    intr0_gpio_b12, // 44
+    intr0_gpio_b13, // 45
+    intr0_gpio_b14, // 46
+    intr0_gpio_b15, // 47
+    intr0_gpio_b16, // 48
+    intr0_gpio_b17, // 49
+    intr0_gpio_b18, // 50
+    intr0_gpio_b19, // 51
+    intr0_gpio_b20, // 52
+    intr0_gpio_b21, // 53
+    intr0_gpio_b22, // 54
+    intr0_gpio_b23, // 55
+    intr0_gpio_b24, // 56
+    intr0_gpio_b25, // 57
+    intr0_gpio_b26, // 58
 #if (defined(AE103))
         intr0_gpio_b27, // 59
         intr0_gpio_b28, // 60
@@ -1648,22 +1648,22 @@ const FUNCT_PTR_V_V intr0_service[] =
 #endif
 };
 const FUNCT_PTR_V_V intr1_service[] =
-    {
-        //                102 103
-        intr1_gpio_c0,  // 0
-        intr1_gpio_c1,  // 1
-        intr1_gpio_c2,  // 2
-        intr1_gpio_c3,  // 3
-        intr1_gpio_c4,  // 4
-        intr1_gpio_c5,  // 5
-        intr1_gpio_c6,  // 6
-        intr1_gpio_c7,  // 7
-        intr1_gpio_c8,  // 8
-        intr1_gpio_c9,  // 9
-        intr1_gpio_c10, // 10
-        intr1_gpio_c11, // 11
-        intr1_gpio_c12, // 12
-        intr1_gpio_c13, // 13
+{
+    //                102 103
+    intr1_gpio_c0,  // 0
+    intr1_gpio_c1,  // 1
+    intr1_gpio_c2,  // 2
+    intr1_gpio_c3,  // 3
+    intr1_gpio_c4,  // 4
+    intr1_gpio_c5,  // 5
+    intr1_gpio_c6,  // 6
+    intr1_gpio_c7,  // 7
+    intr1_gpio_c8,  // 8
+    intr1_gpio_c9,  // 9
+    intr1_gpio_c10, // 10
+    intr1_gpio_c11, // 11
+    intr1_gpio_c12, // 12
+    intr1_gpio_c13, // 13
 #if (defined(AE103))
         intr1_gpio_c14, //     14
         intr1_gpio_c15, //     15

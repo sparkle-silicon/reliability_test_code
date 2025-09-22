@@ -219,11 +219,13 @@ extern void ADC_Cont_Sample_Init_Single(uint8_t channelx, u_int8_t ADC_Databuffe
 extern void ADC_Cont_Sample_Init_Multi(uint8_t mode, uint8_t Data_Select, uint8_t Chanal_8_mode);
 extern uint8_t MatchADCChannelToData(uint8_t channelx, uint16_t ADC_Databuffer_channelx);
 
+char cec_sdata[8] = { 1,2,3,4,5,6,7,8 };
+
 void __weak Hook_1secEventC(void) // update new rpm
 {
     RunTimeStamp++;
-    printf("RunTimeStamp:%d\n",RunTimeStamp);
-    if(RunTimeStamp % 5 == 0)
+    // printf("RunTimeStamp:%d\n", RunTimeStamp);
+    if (RunTimeStamp % 5 == 0)
     {
 
     }
