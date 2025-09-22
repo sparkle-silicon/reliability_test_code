@@ -20,7 +20,11 @@
 #include "AE_CONFIG.H"
 #include <KERNEL_RTC.H>
 
-#define SUPPORT_SLEEP
+#define SUPPORT_DEEPSLEEP
+#define SUPPORT_GPIO_WAKEUP 1     // GPIO中断唤醒
+#define SUPPORT_RTC_WAKEUP 0      // RTC定时器唤醒
+#define SUPPORT_PWRSW_WAKEUP 0    // PWRSW唤醒
+#define SUPPORT_KBS_WAKEUP 1      // 键盘按键唤醒
 
 #define Hibernation_Wakeup_GPIOA11 0x2
 #define Hibernation_Wakeup_GPIOB4  0x4

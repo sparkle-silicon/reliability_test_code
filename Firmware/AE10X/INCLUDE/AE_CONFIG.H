@@ -34,11 +34,6 @@
    /****************************************************************************
     *  Functional support
     *****************************************************************************/
-#define SUPPORT_LOWPOWER 0    // 低功耗
-#define SUPPORT_GPIO_WAKEUP 1 // GPIO中断唤醒
-#define SUPPORT_RTC_WAKEUP 0 // RTC定时器唤醒
-#define SUPPORT_PWRSW_WAKEUP 0    // 长按GPIOB4唤醒
-#define SUPPORT_KBS_WAKEUP 0      // 键盘按键唤醒
 #define SUPPORT_KBS_REPEAT 0      // Enabled KBS REPEAT FUNCTION
 #define SUPPORT_MATRIX_UTILITY 0  // Enabled PMC Matrix Utility Support
 

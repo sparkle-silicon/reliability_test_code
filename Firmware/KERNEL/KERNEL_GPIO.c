@@ -210,9 +210,6 @@ void enable_necessary_input(DWORD port, DWORD io, unsigned port_type)
  */
 void sysctl_iomux_config(DWORD port, DWORD io, unsigned port_type)
 {
-#if SUPPORT_LOWPOWER
-	enable_necessary_input(port, io, port_type);
-#endif
 	DWORD addr;
 	DWORD cfg_val;
 	if (port <= 3)
