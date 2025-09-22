@@ -704,9 +704,16 @@ void sysctl_iomux_adc7()
 //      none
 //
 //*****************************************************************************
-void sysctl_iomux_cec()
+void sysctl_iomux_cec0(uint8_t cec0_sel)
 {
-	sysctl_iomux_config(GPIOB, 8, 2);
+	if (cec0_sel == 0)
+		sysctl_iomux_config(GPIOA, 13, 1);
+	else
+		sysctl_iomux_config(GPIOB, 8, 2);
+}
+void sysctl_iomux_cec1(void)
+{
+	sysctl_iomux_config(GPIOB, 31, 2);
 }
 void sysctl_iomux_owi()
 {
@@ -921,7 +928,7 @@ int GPIO_Config(int GPIO, int gpio_no, int mode, int op_val, int int_lv, int pol
 			//dprint("触发方式:%#x\n", GPIOA_REG((GPIO_IOF_EN + (gpio_no / 8))));
 			//dprint("触发极性:%#x\n", GPIOA_REG((GPIO_IOF_SEL + (gpio_no / 8))));
 		}
-}
+	}
 	else if (GPIO == 2)
 	{
 		if (mode == 1) // output

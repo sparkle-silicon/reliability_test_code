@@ -340,12 +340,21 @@ void ps2_1_pull_up(uint32_t clk_sel, uint32_t data_sel)
 
 
 }
-void cec_pull_up(void)
+void cec0_pull_up(uint8_t cec0_sel)
 {
-	{
-		if ((CEC_EXTERNAL_PULL_UP == 0) && (IS_GPIOB8(LOW) || CEC_INTERNAL_PULL_UP))
-			GPIO_Pullup_Config(GPIOB, 8); // gpd6,d7 pull up
+	if (cec0_sel == 0) {
+		if ((CEC0_EXTERNAL_PULL_UP == 0) && (IS_GPIOA13(LOW) || CEC0_INTERNAL_PULL_UP))
+			GPIO_Pullup_Config(GPIOA, 13);
 	}
+	else {
+		if ((CEC0_EXTERNAL_PULL_UP == 0) && (IS_GPIOB8(LOW) || CEC0_INTERNAL_PULL_UP))
+			GPIO_Pullup_Config(GPIOB, 8);
+	}
+}
+void cec1_pull_up(void)
+{
+	if ((CEC1_EXTERNAL_PULL_UP == 0) && (IS_GPIOB31(LOW) || CEC1_INTERNAL_PULL_UP))
+		GPIO_Pullup_Config(GPIOB, 31);
 }
 void kbs_pull_up(void)
 {
@@ -723,13 +732,27 @@ void cec_init(void)
 {
 #if (CEC_MODULE_EN)
 	cec_MoudleClock_EN;
-	sysctl_iomux_cec();
-	cec_pull_up();
-#if CEC_mode_select
-	CEC_initiator_init();
+
+#if CEC0_EN_Init
+	sysctl_iomux_cec0(0);
+	cec0_pull_up(0);
+#if CEC0_mode_select
+	CEC_initiator_init(0);
 #else
-	CEC_follower_init();
+	CEC_follower_init(0);
 #endif
+#endif
+
+#if CEC1_EN_Init
+	sysctl_iomux_cec1();
+	cec1_pull_up();
+#if CEC1_mode_select
+	CEC_initiator_init(1);
+#else
+	CEC_follower_init(1);
+#endif
+#endif
+
 	dprint("cec init done.\n");
 #endif
 }

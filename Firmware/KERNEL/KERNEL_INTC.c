@@ -1553,15 +1553,23 @@ void intr1_cec0(void) // 25
 #endif
 
 	DWORD stat, int_stat;
-	stat = CEC_Read(CEC0_SR_OFFSET);
-	if ((stat & 0xF0) != 0)
+	stat = CECn_SR(0);
+	if ((stat & (CEC_SR_Sackerr | CEC_SR_Lineerr | CEC_SR_Biterr | CEC_SR_Errder)) != 0)
 	{
-		irqprint("CEC statu : %#x\n", stat);
-		irqprint("statu erro ! \n");
-		CEC_Write(0, CEC0_CTRL_OFFSET); // disable the CEC
+		irqprint("CEC statu error: %#x\n", stat);
 	}
-	int_stat = CEC_Read(CEC0_ISR_OFFSET);
-#if CEC_mode_select // initiator
+
+	if (stat & CEC_SR_Reom)
+	{
+		BYTE fifo_rcnt = 0;
+		fifo_rcnt = CECn_FIFOCNT(0) & 0x1f;
+		for (int i = 0;i < fifo_rcnt;i++)
+		{
+			irqprint("cecdata:%x\n", CECn_DA(0) & 0xff);
+		}
+	}
+	int_stat = CECn_ISR(0);
+#if CEC0_mode_select // initiator
 	if (int_stat & CEC_intStatue_sbis)
 	{
 	}
@@ -1572,14 +1580,14 @@ void intr1_cec0(void) // 25
 	if (int_stat & CEC_intStatue_rhis)
 	{
 	}
-	if (int_stat & CEC_intStatue_rbis)
+	if (int_stat & CEC_intStatue_fbis)
 	{
 	}
 	if (int_stat & CEC_intStatue_rfis)
 	{
 	}
 #endif
-	CEC_Write(int_stat, CEC0_ISR_OFFSET); // clear the CEC_INT
+	CECn_ISR(0) = int_stat;
 }
 
 void intr1_cec1(void) // 26
@@ -1599,15 +1607,23 @@ void intr1_cec1(void) // 26
 #endif
 
 	DWORD stat, int_stat;
-	stat = CEC_Read(CEC1_SR_OFFSET);
-	if ((stat & 0xF0) != 0)
+	stat = CECn_SR(1);
+	if ((stat & (CEC_SR_Sackerr | CEC_SR_Lineerr | CEC_SR_Biterr | CEC_SR_Errder)) != 0)
 	{
-		irqprint("CEC statu : %#x\n", stat);
-		irqprint("statu erro ! \n");
-		CEC_Write(0, CEC1_CTRL_OFFSET); // disable the CEC
+		irqprint("CEC statu error: %#x\n", stat);
 	}
-	int_stat = CEC_Read(CEC1_ISR_OFFSET);
-#if CEC_mode_select // initiator
+
+	if (stat & CEC_SR_Reom)	//如果eom位置起
+	{
+		BYTE fifo_rcnt = 0;
+		fifo_rcnt = CECn_FIFOCNT(1) & 0x1f;
+		for (int i = 0;i < fifo_rcnt;i++)
+		{
+			irqprint("cecdata:%x\n", CECn_DA(1) & 0xff);
+		}
+	}
+	int_stat = CECn_ISR(1);
+#if CEC1_mode_select // initiator
 	if (int_stat & CEC_intStatue_sbis)
 	{
 	}
@@ -1618,14 +1634,14 @@ void intr1_cec1(void) // 26
 	if (int_stat & CEC_intStatue_rhis)
 	{
 	}
-	if (int_stat & CEC_intStatue_rbis)
+	if (int_stat & CEC_intStatue_fbis)
 	{
 	}
 	if (int_stat & CEC_intStatue_rfis)
 	{
 	}
 #endif
-	CEC_Write(int_stat, CEC1_ISR_OFFSET); // clear the CEC_INT
+	CECn_ISR(1) = int_stat;
 }
 
 void intr1_smbus4(void) // 27
