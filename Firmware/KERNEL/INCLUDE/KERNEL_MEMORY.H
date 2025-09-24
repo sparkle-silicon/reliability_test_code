@@ -13,9 +13,9 @@
  * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
-//-------------------------------------------------
-// Common Header Include
-//-------------------------------------------------
+ //-------------------------------------------------
+ // Common Header Include
+ //-------------------------------------------------
 #ifndef KERNEL_MEMORY_H
 #define KERNEL_MEMORY_H
 #include "AE_GLOBAL.H"
@@ -35,23 +35,23 @@
 #define MEMORY_032SIZE DEC32
 #define MEMORY_016SIZE DEC16
 #define MEMORY_008SIZE HEX08
-/*************************************************
- * MEMORY MAP (2K RAM RANGE FOR DEFINITION)
- **************************************************
- *
- *  0x0000-0x00FF : GLOBAL  VARIABLES
- *
- *  0x0100-0x18FF : KERNEL & CHIP LEVEL VATIABLES
- *
- *  0x1900-0x19FF : EC SPACE VARIABLES
- *
- *************************************************/
-/****************************************************************
---------------------- MEMORY SECTION 0 --------------------------
-------------------- GLOBAL TEMP VARIABLES -----------------------
-****************************************************************/
+ /*************************************************
+  * MEMORY MAP (2K RAM RANGE FOR DEFINITION)
+  **************************************************
+  *
+  *  0x0000-0x00FF : GLOBAL  VARIABLES
+  *
+  *  0x0100-0x18FF : KERNEL & CHIP LEVEL VATIABLES
+  *
+  *  0x1900-0x19FF : EC SPACE VARIABLES
+  *
+  *************************************************/
+  /****************************************************************
+  --------------------- MEMORY SECTION 0 --------------------------
+  ------------------- GLOBAL TEMP VARIABLES -----------------------
+  ****************************************************************/
 #define Global_Var_BASE MEMORY_BASE0_ADDR
-/*Service Flag*/
+  /*Service Flag*/
 #define Service_BASE Global_Var_BASE // 0x20000
 // Hi-Level Service
 #define F_Service_WakeUp (*(VBYTEP)(Service_BASE + 0)) // CPUTIMER_WAKEUP
@@ -370,12 +370,11 @@
 #define SM_MemBase (SPIF_MemBase + MEMORY_032SIZE) // 0x20270
 /*SWUC Module*/
 #define SWUC_MemBase (SM_MemBase + MEMORY_032SIZE) // 0x20290
-/*Power switch*/
-#define PSW_MemBase (SWUC_MemBase + MEMORY_008SIZE) // 0x20298
-/*PPORT Module*/
-#define PPORT_MemBase (PSW_MemBase + MEMORY_008SIZE) // 0x202A0
+/*I3C Module*/
+#define I3C_MemBase (SWUC_MemBase + MEMORY_008SIZE) // 0x20298
+#define i3c_error (*(VBYTEP)(I3C_MemBase + 0x0))
 // POWER
-#define POWER_MemBase (PPORT_MemBase + MEMORY_008SIZE) // 0x202A8
+#define POWER_MemBase (I3C_MemBase + MEMORY_016SIZE) // 0x202A8
 #define DelayDoPowerSeq (*(VDWORDP)(POWER_MemBase + 0x0))
 #define System_PowerState (*(VBYTEP)(POWER_MemBase + 0x4))
 #define F_PST_BUSY          BIT(7)
