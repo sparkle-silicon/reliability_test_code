@@ -202,6 +202,11 @@
 #define i3c_dprint(fmt, args...)
 #endif
 
+#define I3C0_EN_Init 1 & I3C0_CLOCK_EN
+#define I3C1_EN_Init 1 & I3C1_CLOCK_EN
+#define I3C2_EN_Init 1 & I3C2_CLOCK_EN
+#define I3C3_EN_Init 1 & I3C3_CLOCK_EN
+
 extern DWORD I3c_Channel_Baseaddr(BYTE i3c_mux);
 extern void I3c_WriteREG_DWORD(DWORD value, WORD regoffset, BYTE i3c_mux);
 extern DWORD I3c_ReadREG_DWORD(WORD regoffset, BYTE i3c_mux);

@@ -21,6 +21,7 @@
 
 void trim_set(void)
 {
+#if SOFTWARE_TRIM_CONTROL
 	sysctl_iomux_config(GPIOB, 31, 0x0);//将GPH7设置为GPIO，即设置为默认不输出
 	GPIO_Input_EN(GPIOB, 31, DISABLE);  //GPH[7]的IE配为0
 	REG32(0x30518) |= ((1 << 0) | (1 << 9)); //寄存器0x3_0518的bit0和bit9均置1 
@@ -56,6 +57,7 @@ void trim_set(void)
 	// trim = (REG32(0x304D8) >> offset) & mask_20m_ftrim;
 	trim = HIGH_24M_FTRIM_DVAL;
 	REG32(0x304D8) = (REG32(0x304D8) & (~(mask_20m_ftrim << offset))) | ((trim & mask_20m_ftrim) << offset);//LOW//HIGH
+#endif
 }
 
 void ps2_0_frequency(void)
@@ -871,6 +873,34 @@ void time_init(void)
 #endif
 }
 
+void i3c_init(void)
+{
+#if I3C_MODULE_EN
+#if I3C0_EN_Init
+	i3c0_MoudleClock_EN;
+	sysctl_iomux_master0();
+	I3C_Master_Init(0x6A, SDR_DEFAULT_SPEED, I3C_MASTER0);
+#endif
+
+#if I3C1_EN_Init
+	i3c1_MoudleClock_EN;
+	I3C_Master_Init(0x6A, SDR_DEFAULT_SPEED, I3C_MASTER1);
+#endif
+
+#if I3C2_EN_Init
+	i3c2_MoudleClock_EN;
+	I3c_Slave_Init(0x6A, I3C_SLAVE0);
+#endif
+
+#if I2C3_EN_Init
+	i3c3_MoudleClock_EN;
+	sysctl_iomux_slave1();
+	I3c_Slave_Init(0x6A, I3C_SLAVE1);
+#endif
+	dprint("i3c_init done.\n");
+#endif
+}
+
 void __weak SECTION(".init.module") Module_init(void)
 {
 
@@ -879,46 +909,45 @@ void __weak SECTION(".init.module") Module_init(void)
 
 	// 2. Initialize APB CLOCK BUS ENABLE
 	apb_MoudleClock_EN;
-
-#if SOFTWARE_TRIM_CONTROL
+	// x. soft trim
 	trim_set();
-#endif
-
 	// 3.Initialize The GPIO
 	gpio_init();
-
 	// 4.Initialize The Serial Port
 	uart_init();
 	// 5.Initialize The SMBUS
 	smbus_init();
-	// 6.Initialize The SPI
+	// 6.Initialize The I3C
+	i3c_init();
+	// 7.Initialize The SPI
 	spim_init();
-	// 7.Initialize The PWM and The TACH
+	// 8.Initialize The PWM and The TACH
 	pwm_tach_init();
-	// 8.Initialize The KBC and The PMC
+	// 9.Initialize The KBC and The PMC
 	kbc_pmc_init();
-	// 9.Initialize  The KBS
+	// 10.Initialize  The KBS
 	kbs_init();
 #if ( 0)
-	// 13.Initialize The CEC
+	// 11.Initialize The CEC
 	cec_init();
-	// 14.Initialize The OWI
+	// 12.Initialize The OWI
 	owi_init();
-	// 15.Initialize The OWI
+	// 13.Initialize The OWI
 	rtc_init();
-	// 16.Initialize The PECI
+	// 14.Initialize The PECI
 	peci_init();
-	// 17.Initialize The eSPI
+	// 15.Initialize The eSPI
 	espi_init();
 #endif
-	// 17.Initialize The ADC
+	// 16.Initialize The ADC
 	adc_init();
-	// 18. Initialize The timer and The watch dog
+	// 17. Initialize The timer and The watch dog
 	time_init();
-	// 19.Initialize The Mailboxs
+	// 17.Initialize The Mailbox
 	mailbox_init();
-
+	// 18.Initialize The SPIF
 	SPIF_Init();
+	// 19.Initialize The LPC
 	sysctl_iomux_lpc();
 
 	dprint("End init \n");
