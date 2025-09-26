@@ -73,43 +73,6 @@ DWORD I3c_ReadREG_DWORD(WORD regoffset, BYTE i3c_mux)
 }
 
 /**
-* @brief MASTER接口初始化函数
-*
-* @param regoffset 寄存器地址偏移
-* @param i3c_mux 配置选择，如I3C_MASTER0、I3C_MASTER1
-* @return true/false
-*
-* @note 配置接口为MASTER功能
-*/
-BYTE I3C_Master_Init(BYTE addr, uint32_t speed, BYTE i3c_mux)
-{
-    if ((i3c_mux != I3C_MASTER0) && (i3c_mux != I3C_MASTER1))
-        return FALSE;
-    uint32_t cnt = (CHIP_CLOCK_INT_HIGH / speed);
-    uint32_t hcnt = ((cnt * 1) / 2);    //50%占空比
-    uint32_t lcnt = (cnt - hcnt);
-    if (hcnt >= PP_TIMING_HCNT_MAX)hcnt = PP_TIMING_HCNT_MAX;
-    if (lcnt >= PP_TIMING_HCNT_MAX)lcnt = PP_TIMING_LCNT_MAX;
-    if (hcnt <= PP_TIMING_HCNT_MIN)hcnt = PP_TIMING_HCNT_MIN;
-    if (lcnt <= PP_TIMING_LCNT_MIN)lcnt = PP_TIMING_LCNT_MIN;
-    cnt = hcnt + lcnt;
-
-    //Controls whether or not I3c_master is enabled And I2C Slave Present 
-    I3c_WriteREG_DWORD((I3C_MASTER_DEVICE_CTRL_ENABLE | I3C_MASTER_DEVICE_CTRL_I2C_SLAVE_PRESENT), DEVICE_CTRL_OFFSET, i3c_mux);
-    //Set Device Static Address And Type of device I2C
-    I3c_WriteREG_DWORD((I3C_MASTER_DEV_ADDR_TABLE_LOC1_DEVICE_I2C | I3C_MASTER_DEV_ADDR_TABLE_LOC1_STATIC_ADDRESS(addr)), DEV_ADDR_TABLE_LOC1_OFFSET, i3c_mux);
-    //Set I3C PP_TIMING
-    I3c_WriteREG_DWORD((I3C_MASTER_SCL_I3C_PP_TIMING_LCNT(cnt) | I3C_MASTER_SCL_I3C_PP_TIMING_HCNT(cnt)), SCL_I3C_PP_TIMING_OFFSET, i3c_mux);
-    //Set IBI SIR Request Rejection Control of Command Queue Ready,Transmit And Receive And IBI  Buffer Threshold
-    I3c_WriteREG_DWORD((I3C_MASTER_INTR_STATUS_EN_BUS_RESET_DONE_STS_EN | I3C_MASTER_INTR_STATUS_EN_TRANSFER_ERR_STS_EN | I3C_MASTER_INTR_STATUS_EN_TRANSFER_ABORT_STS_EN | I3C_MASTER_INTR_STATUS_EN_RESP_READY_STS_EN | I3C_MASTER_INTR_STATUS_EN_CMD_QUEUE_READY_STS_EN | I3C_MASTER_INTR_STATUS_EN_TX_THLD_STS_EN | I3C_MASTER_INTR_STATUS_EN_RX_THLD_STS_EN), INTR_STATUS_EN_OFFSET, i3c_mux);
-    //DMA  master resp thld
-    I3c_WriteREG_DWORD((I3C_MASTER_QUEUE_THLD_CTRL_RESP_BUF_THLD(0x0) | I3C_MASTER_QUEUE_THLD_CTRL_CMD_EMPTY_BUF_THLD(0x1)), QUEUE_THLD_CTRL_OFFSET, i3c_mux);
-    //Set data buff thld
-    I3c_WriteREG_DWORD((I3C_MASTER_DATA_BUFFER_THLD_CTRL_TX_START_THLD(TX_EMPTY_BUF_THLD_1) | I3C_MASTER_DATA_BUFFER_THLD_CTRL_RX_START_THLD(RX_BUF_THLD_1)) | (I3C_MASTER_DATA_BUFFER_THLD_CTRL_RX_BUF_THLD(RX_BUF_THLD_1) | I3C_MASTER_DATA_BUFFER_THLD_CTRL_TX_EMPTY_BUF_THLD(TX_EMPTY_BUF_THLD_1)), DATA_BUFFER_THLD_CTRL_OFFSET, i3c_mux);
-    return TRUE;
-}
-
-/**
 * @brief MASTER读取及清除错误状态函数
 *
 * @param i3c_mux 配置选择，如I3C_MASTER0、I3C_MASTER1
@@ -230,7 +193,47 @@ uint32_t I3C_Master_IntStatus(BYTE i3c_mux)
 }
 
 /**
-* @brief MASTER写操作函数
+* @brief Legacy I2C MASTER接口初始化函数
+*
+* @param regoffset 寄存器地址偏移
+* @param i3c_mux 配置选择，如I3C_MASTER0、I3C_MASTER1
+* @return true/false
+*
+* @note 配置接口为MASTER功能
+*/
+BYTE I3C_Legacy_Master_Init(BYTE addr, uint32_t speed, BYTE i3c_mux)
+{
+    if ((i3c_mux != I3C_MASTER0) && (i3c_mux != I3C_MASTER1))
+        return FALSE;
+    uint32_t cnt = (CHIP_CLOCK_INT_HIGH / speed);
+    uint32_t hcnt = ((cnt * 1) / 2);    //50%占空比
+    uint32_t lcnt = (cnt - hcnt);
+    if (hcnt >= 0x7fff)hcnt = 0x7fff;
+    if (lcnt >= 0x7fff)lcnt = 0x7fff;
+    cnt = hcnt + lcnt;
+    speed = (CHIP_CLOCK_INT_HIGH / cnt);//实际配置速率
+    i2c_legacy_fm_plus_flag = (speed > 400000 ? 1 : 0);
+
+    //Controls whether or not I3c_master is enabled And I2C Slave Present 
+    I3c_WriteREG_DWORD((I3C_MASTER_DEVICE_CTRL_ENABLE | I3C_MASTER_DEVICE_CTRL_I2C_SLAVE_PRESENT), DEVICE_CTRL_OFFSET, i3c_mux);
+    //Set Device Static Address And Type of device I2C
+    I3c_WriteREG_DWORD((I3C_MASTER_DEV_ADDR_TABLE_LOC1_DEVICE_I2C | I3C_MASTER_DEV_ADDR_TABLE_LOC1_STATIC_ADDRESS(addr)), DEV_ADDR_TABLE1_LOC1_OFFSET, i3c_mux);
+    //Set I3C fm/fmp Count. 
+    if (i2c_legacy_fm_plus_flag)
+        I3c_WriteREG_DWORD((I3C_MASTER_SCL_I2C_FMP_TIMING_LCNT(lcnt) | I3C_MASTER_SCL_I2C_FMP_TIMING_HCNT(hcnt)), SCL_I2C_FMP_TIMING_OFFSET, i3c_mux);
+    else
+        I3c_WriteREG_DWORD((I3C_MASTER_SCL_I2C_FM_TIMING_LCNT(lcnt) | I3C_MASTER_SCL_I2C_FM_TIMING_HCNT(hcnt)), SCL_I2C_FM_TIMING_OFFSET, i3c_mux);
+    //Set IBI SIR Request Rejection Control of Command Queue Ready,Transmit And Receive And IBI  Buffer Threshold
+    I3c_WriteREG_DWORD((I3C_MASTER_INTR_STATUS_EN_BUS_RESET_DONE_STS_EN | I3C_MASTER_INTR_STATUS_EN_TRANSFER_ERR_STS_EN | I3C_MASTER_INTR_STATUS_EN_TRANSFER_ABORT_STS_EN | I3C_MASTER_INTR_STATUS_EN_RESP_READY_STS_EN | I3C_MASTER_INTR_STATUS_EN_CMD_QUEUE_READY_STS_EN | I3C_MASTER_INTR_STATUS_EN_TX_THLD_STS_EN | I3C_MASTER_INTR_STATUS_EN_RX_THLD_STS_EN), INTR_STATUS_EN_OFFSET, i3c_mux);
+    //DMA  master resp thld
+    I3c_WriteREG_DWORD((I3C_MASTER_QUEUE_THLD_CTRL_RESP_BUF_THLD(0x0) | I3C_MASTER_QUEUE_THLD_CTRL_CMD_EMPTY_BUF_THLD(0x1)), QUEUE_THLD_CTRL_OFFSET, i3c_mux);
+    //Set data buff thld
+    I3c_WriteREG_DWORD((I3C_MASTER_DATA_BUFFER_THLD_CTRL_TX_START_THLD(TX_EMPTY_BUF_THLD_1) | I3C_MASTER_DATA_BUFFER_THLD_CTRL_RX_START_THLD(RX_BUF_THLD_1)) | (I3C_MASTER_DATA_BUFFER_THLD_CTRL_RX_BUF_THLD(RX_BUF_THLD_1) | I3C_MASTER_DATA_BUFFER_THLD_CTRL_TX_EMPTY_BUF_THLD(TX_EMPTY_BUF_THLD_1)), DATA_BUFFER_THLD_CTRL_OFFSET, i3c_mux);
+    return TRUE;
+}
+
+/**
+* @brief legacy i2c MASTER写操作函数
 *
 * @param data 写入值
 * @param regoffset 寄存器地址偏移
@@ -239,7 +242,7 @@ uint32_t I3C_Master_IntStatus(BYTE i3c_mux)
 *
 * @note 无
 */
-BYTE I3c_Master_Write(uint8_t* data, uint16_t bytelen, BYTE i3c_mux)
+BYTE I3C_Legacy_Master_Write(uint8_t* data, uint16_t bytelen, BYTE i3c_mux)
 {
     uint8_t* data_ptr = data;
     uint32_t data_len = bytelen;
@@ -271,7 +274,7 @@ BYTE I3c_Master_Write(uint8_t* data, uint16_t bytelen, BYTE i3c_mux)
         }
         nop;
     }//等待命令队列就绪
-    I3c_WriteREG_DWORD(I3C_MASTER_COMMAND_QUEUE_PORT_COMMAND_TRANSFER_COMMAND | I3C_MASTER_COMMAND_QUEUE_PORT_TRANSFER_COMMAND_Write | I3C_MASTER_COMMAND_QUEUE_PORT_TRANSFER_COMMAND_STOP | I3C_MASTER_COMMAND_QUEUE_PORT_TRANSFER_COMMAND_SPEED(SDR0_SPEED), COMMAND_QUEUE_PORT_OFFSET, i3c_mux);
+    I3c_WriteREG_DWORD(I3C_MASTER_COMMAND_QUEUE_PORT_COMMAND_TRANSFER_COMMAND | I3C_MASTER_COMMAND_QUEUE_PORT_TRANSFER_COMMAND_Write | I3C_MASTER_COMMAND_QUEUE_PORT_TRANSFER_COMMAND_STOP | I3C_MASTER_COMMAND_QUEUE_PORT_TRANSFER_COMMAND_SPEED(i2c_legacy_fm_plus_flag), COMMAND_QUEUE_PORT_OFFSET, i3c_mux);
     for (uint32_t timeout = I3C_TIMEOUT; (I3C_Master_IntStatus(i3c_mux) & I3C_MASTER_INTR_STATUS_CMD_QUEUE_READY_STS) == 0; timeout--)
     {
         if (timeout == 0 || i3c_error)
@@ -308,7 +311,7 @@ BYTE I3c_Master_Write(uint8_t* data, uint16_t bytelen, BYTE i3c_mux)
 }
 
 /**
-* @brief MASTER读操作函数
+* @brief legacy i2c MASTER读操作函数
 *
 * @param regoffset 寄存器地址偏移
 * @param i3c_mux 配置选择，如I3C_MASTER0、I3C_MASTER1
@@ -316,7 +319,7 @@ BYTE I3c_Master_Write(uint8_t* data, uint16_t bytelen, BYTE i3c_mux)
 *
 * @note 无
 */
-uint8_t I3c_Master_Read(uint8_t* data, uint16_t bytelen, BYTE i3c_mux)
+uint8_t I3C_Legacy_Master_Read(uint8_t* data, uint16_t bytelen, BYTE i3c_mux)
 {
     if ((i3c_mux != I3C_MASTER0) && (i3c_mux != I3C_MASTER1))
     {
@@ -343,7 +346,7 @@ uint8_t I3c_Master_Read(uint8_t* data, uint16_t bytelen, BYTE i3c_mux)
         }
         nop;
     } // 等待CMD_COMPLETE中断
-    I3c_WriteREG_DWORD(I3C_MASTER_COMMAND_QUEUE_PORT_COMMAND_TRANSFER_COMMAND | I3C_MASTER_COMMAND_QUEUE_PORT_TRANSFER_COMMAND_Read | I3C_MASTER_COMMAND_QUEUE_PORT_TRANSFER_COMMAND_STOP | I3C_MASTER_COMMAND_QUEUE_PORT_TRANSFER_COMMAND_SPEED(SDR0_SPEED), COMMAND_QUEUE_PORT_OFFSET, i3c_mux);
+    I3c_WriteREG_DWORD(I3C_MASTER_COMMAND_QUEUE_PORT_COMMAND_TRANSFER_COMMAND | I3C_MASTER_COMMAND_QUEUE_PORT_TRANSFER_COMMAND_Read | I3C_MASTER_COMMAND_QUEUE_PORT_TRANSFER_COMMAND_STOP | I3C_MASTER_COMMAND_QUEUE_PORT_TRANSFER_COMMAND_SPEED(i2c_legacy_fm_plus_flag), COMMAND_QUEUE_PORT_OFFSET, i3c_mux);
     for (uint32_t timeout = I3C_TIMEOUT; (I3C_Master_IntStatus(i3c_mux) & I3C_MASTER_INTR_STATUS_CMD_QUEUE_READY_STS) == 0; timeout--)
     {
         if (timeout == 0 || i3c_error)
@@ -381,7 +384,7 @@ uint8_t I3c_Master_Read(uint8_t* data, uint16_t bytelen, BYTE i3c_mux)
 }
 
 /**
-* @brief MASTER读写流操作函数
+* @brief Legacy i2c MASTER读写流操作函数
 *
 * @param i3c_addr 设备地址
 * @param Var 写入数据指针
@@ -393,31 +396,74 @@ uint8_t I3c_Master_Read(uint8_t* data, uint16_t bytelen, BYTE i3c_mux)
 *
 * @note 无
 */
-BYTE I3C_Master_W2R_Stream(BYTE i3c_addr, BYTE* w_var, WORD w_cnt, BYTE* r_var, WORD r_cnt, BYTE i3c_mux)
+BYTE I3C_Lagacy_Master_W2R_Stream(BYTE i3c_addr, BYTE* w_var, WORD w_cnt, BYTE* r_var, WORD r_cnt, BYTE i3c_mux)
 {
     if ((i3c_mux != I3C_MASTER0) && (i3c_mux != I3C_MASTER1))
     {
         i3c_dprint("controller select fault\n");
         return FALSE;
     }
-    if (I3C_Master_Init(i3c_addr, SDR_DEFAULT_SPEED, i3c_mux) == FALSE)
+    if (I3C_Legacy_Master_Init(i3c_addr, SDR_DEFAULT_SPEED, i3c_mux) == FALSE)
     {
         return FALSE;
     }
     if (w_cnt != 0)
     {
-        if (I3c_Master_Write(w_var, w_cnt, i3c_mux) == FALSE)
+        if (I3C_Legacy_Master_Write(w_var, w_cnt, i3c_mux) == FALSE)
         {
             return FALSE;
         }
     }
     if (r_cnt != 0)
     {
-        if (I3c_Master_Read(r_var, r_cnt, i3c_mux) == FALSE)
+        if (I3C_Legacy_Master_Read(r_var, r_cnt, i3c_mux) == FALSE)
         {
             return FALSE;
         }
     }
+    return TRUE;
+}
+
+void I3C_MASTER_ENTDAA()
+{
+
+}
+
+
+/**
+* @brief MASTER接口初始化函数
+*
+* @param regoffset 寄存器地址偏移
+* @param i3c_mux 配置选择，如I3C_MASTER0、I3C_MASTER1
+* @return true/false
+*
+* @note 配置接口为MASTER功能
+*/
+BYTE I3C_Master_Init(BYTE addr, uint32_t speed, BYTE i3c_mux)
+{
+    if ((i3c_mux != I3C_MASTER0) && (i3c_mux != I3C_MASTER1))
+        return FALSE;
+    uint32_t cnt = (CHIP_CLOCK_INT_HIGH / speed);
+    uint32_t hcnt = ((cnt * 1) / 2);    //50%占空比
+    uint32_t lcnt = (cnt - hcnt);
+    if (hcnt >= PP_TIMING_HCNT_MAX)hcnt = PP_TIMING_HCNT_MAX;
+    if (lcnt >= PP_TIMING_HCNT_MAX)lcnt = PP_TIMING_LCNT_MAX;
+    if (hcnt <= PP_TIMING_HCNT_MIN)hcnt = PP_TIMING_HCNT_MIN;
+    if (lcnt <= PP_TIMING_LCNT_MIN)lcnt = PP_TIMING_LCNT_MIN;
+    cnt = hcnt + lcnt;
+
+    //Controls whether or not I3c_master is enabled And I2C Slave Present 
+    I3c_WriteREG_DWORD((I3C_MASTER_DEVICE_CTRL_ENABLE | I3C_MASTER_DEVICE_CTRL_I2C_SLAVE_PRESENT), DEVICE_CTRL_OFFSET, i3c_mux);
+    //Set Device Static Address And Type of device I2C
+    I3c_WriteREG_DWORD((I3C_MASTER_DEV_ADDR_TABLE_LOC1_DEVICE_I3C | I3C_MASTER_DEV_ADDR_TABLE_LOC1_STATIC_ADDRESS(addr)), DEV_ADDR_TABLE1_LOC1_OFFSET, i3c_mux);
+    //Set I3C PP_TIMING
+    I3c_WriteREG_DWORD((I3C_MASTER_SCL_I3C_PP_TIMING_LCNT(cnt) | I3C_MASTER_SCL_I3C_PP_TIMING_HCNT(cnt)), SCL_I3C_PP_TIMING_OFFSET, i3c_mux);
+    //Set IBI SIR Request Rejection Control of Command Queue Ready,Transmit And Receive And IBI  Buffer Threshold
+    I3c_WriteREG_DWORD((I3C_MASTER_INTR_STATUS_EN_BUS_RESET_DONE_STS_EN | I3C_MASTER_INTR_STATUS_EN_TRANSFER_ERR_STS_EN | I3C_MASTER_INTR_STATUS_EN_TRANSFER_ABORT_STS_EN | I3C_MASTER_INTR_STATUS_EN_RESP_READY_STS_EN | I3C_MASTER_INTR_STATUS_EN_CMD_QUEUE_READY_STS_EN | I3C_MASTER_INTR_STATUS_EN_TX_THLD_STS_EN | I3C_MASTER_INTR_STATUS_EN_RX_THLD_STS_EN), INTR_STATUS_EN_OFFSET, i3c_mux);
+    //DMA  master resp thld
+    I3c_WriteREG_DWORD((I3C_MASTER_QUEUE_THLD_CTRL_RESP_BUF_THLD(0x0) | I3C_MASTER_QUEUE_THLD_CTRL_CMD_EMPTY_BUF_THLD(0x1)), QUEUE_THLD_CTRL_OFFSET, i3c_mux);
+    //Set data buff thld
+    I3c_WriteREG_DWORD((I3C_MASTER_DATA_BUFFER_THLD_CTRL_TX_START_THLD(TX_EMPTY_BUF_THLD_1) | I3C_MASTER_DATA_BUFFER_THLD_CTRL_RX_START_THLD(RX_BUF_THLD_1)) | (I3C_MASTER_DATA_BUFFER_THLD_CTRL_RX_BUF_THLD(RX_BUF_THLD_1) | I3C_MASTER_DATA_BUFFER_THLD_CTRL_TX_EMPTY_BUF_THLD(TX_EMPTY_BUF_THLD_1)), DATA_BUFFER_THLD_CTRL_OFFSET, i3c_mux);
     return TRUE;
 }
 
@@ -512,8 +558,8 @@ BYTE I3C_SLAVE_INT_DISABLE(DWORD tpye, BYTE i3c_mux)
 
 //         vDelayXus(20);
 
-//         // BYTE rx_data = I3c_Master_Read(I3C_MASTER1);
-//         I3c_Master_Read(I3C_MASTER1);
+//         // BYTE rx_data = I3C_Legacy_Master_Read(I3C_MASTER1);
+//         I3C_Legacy_Master_Read(I3C_MASTER1);
 //     }
 
 // }

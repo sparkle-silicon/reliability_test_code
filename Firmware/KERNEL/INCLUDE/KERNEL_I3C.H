@@ -21,12 +21,60 @@
 #include "AE_CONFIG.H"
 #include "AE_DEBUGGER.H"
 
+ /** CCC Command Definitions of broadcast**/
+#define ENEC_BC_CMD 0x00
+#define DISEC_BC_CMD 0x01
+#define ENTAS0_BC_CMD 0x02
+#define ENTAS1_BC_CMD 0x03
+#define ENTAS2_BC_CMD 0x04
+#define ENTAS3_BC_CMD 0x05
+#define RSTDAA_BC_CMD 0x06
+#define ENTDAA_BC_CMD 0x07
+#define DEFSLVS_BC_CMD 0x08
+#define SETMWL_BC_CMD 0x09
+#define SETMRL_BC_CMD 0x0A
+#define ENTTM_BC_CMD 0x0B
+#define ENTHDR0_BC_CMD 0x20
+#define ENTHDR1_BC_CMD 0x21
+#define ENTHDR2_BC_CMD 0x22
+#define ENTHDR3_BC_CMD 0x23
+#define ENTHDR4_BC_CMD 0x24
+#define ENTHDR5_BC_CMD 0x25
+#define ENTHDR6_BC_CMD 0x26
+#define ENTHDR7_BC_CMD 0x27
+#define SETXTIME_BC_CMD 0x28
+/** CCC Command Definitions of direct**/
+#define ENEC_DR_CMD 0x80
+#define DISEC_DR_CMD 0x81
+#define ENTAS0_DR_CMD 0x82
+#define ENTAS1_DR_CMD 0x83
+#define ENTAS2_DR_CMD 0x84
+#define ENTAS3_DR_CMD 0x85
+#define RSTDAA_DR_CMD 0x86
+#define SETDASA_DR_CMD 0x87
+#define SETNEWDA_DR_CMD 0x88
+#define SETMWL_DR_CMD 0x89
+#define SETMRL_DR_CMD 0x8A
+#define GETMWL_DR_CMD 0x8B
+#define GETMRL_DR_CMD 0x8C
+#define GETPID_DR_CMD 0x8D
+#define GETBCR_DR_CMD 0x8E
+#define GETDCR_DR_CMD 0x8F
+#define GETSTATUS_DR_CMD 0x90
+#define GETACCMST_DR_CMD 0x91
+#define SETBRGTGT_DR_CMD 0x93
+#define GETMXDS_DR_CMD 0x94
+#define GETHDRCAP_DR_CMD 0x95
+#define SETXTIME_DR_CMD 0x98
+#define GETXTIME_DR_CMD 0x99
+
+//i3c_mux select
 #define I3C_MASTER0 0
 #define I3C_MASTER1 1
 #define I3C_SLAVE0 2
 #define I3C_SLAVE1 3
 
- //以下内容只是寄存器位的部分情况，详细内容请阅读I3C的寄存器手册  
+//bits definition of register
 #define I3C_MASTER_DEVICE_CTRL_IBA_INCLUDE 0x00000001UL
 #define I3C_MASTER_DEVICE_CTRL_I2C_SLAVE_PRESENT 0x00000080UL
 #define I3C_MASTER_DEVICE_CTRL_HOT_JOIN_CTRL 0x00000100UL
@@ -213,9 +261,9 @@ extern DWORD I3c_ReadREG_DWORD(WORD regoffset, BYTE i3c_mux);
 extern BYTE I3C_Master_Init(BYTE addr, uint32_t speed, BYTE i3c_mux);
 extern uint32_t I3C_Master_ErrorStatus(BYTE i3c_mux);
 extern uint32_t I3C_Master_IntStatus(BYTE i3c_mux);
-extern BYTE I3c_Master_Write(uint8_t* data, uint16_t bytelen, BYTE i3c_mux);
-extern uint8_t I3c_Master_Read(uint8_t* data, uint16_t bytelen, BYTE i3c_mux);
-extern BYTE I3C_Master_W2R_Stream(BYTE i3c_addr, BYTE* w_var, WORD w_cnt, BYTE* r_var, WORD r_cnt, BYTE i3c_mux);
+extern BYTE I3C_Legacy_Master_Write(uint8_t* data, uint16_t bytelen, BYTE i3c_mux);
+extern uint8_t I3C_Legacy_Master_Read(uint8_t* data, uint16_t bytelen, BYTE i3c_mux);
+extern BYTE I3C_Lagacy_Master_W2R_Stream(BYTE i3c_addr, BYTE* w_var, WORD w_cnt, BYTE* r_var, WORD r_cnt, BYTE i3c_mux);
 extern void I3c_Slave_Init(BYTE addr, BYTE i3c_mux);
 extern BYTE I3C_SLAVE_INT_ENABLE(DWORD tpye, BYTE i3c_mux);
 extern BYTE I3C_SLAVE_INT_DISABLE(DWORD tpye, BYTE i3c_mux);

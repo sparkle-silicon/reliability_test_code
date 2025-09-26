@@ -373,6 +373,7 @@
 /*I3C Module*/
 #define I3C_MemBase (SWUC_MemBase + MEMORY_008SIZE) // 0x20298
 #define i3c_error (*(VBYTEP)(I3C_MemBase + 0x0))
+#define i2c_legacy_fm_plus_flag (*(VBYTEP)(I3C_MemBase + 0x1))
 // POWER
 #define POWER_MemBase (I3C_MemBase + MEMORY_016SIZE) // 0x202A8
 #define DelayDoPowerSeq (*(VDWORDP)(POWER_MemBase + 0x0))
