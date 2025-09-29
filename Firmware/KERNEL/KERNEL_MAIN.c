@@ -542,7 +542,6 @@ int __weak main(void)
 		dprint("This is internal flash main\n");
 	}
 	dprint("CPU freq at %d Hz\n", CPU_FREQ);
-
 	main_loop();
 	return 0;
 }

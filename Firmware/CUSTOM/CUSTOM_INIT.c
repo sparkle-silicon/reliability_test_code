@@ -140,11 +140,6 @@ void SECTION(".init.Default") Default_Config()
 	// 默认频率配置
 	Default_Freq();
 	// 低功耗模式配置
-#if SUPPORT_LOWPOWER
-	Default_ModuleClock_LowPower();
-	Default_GPIO_LowPower();
-	SYSCTL_PWRSWCSR = PWRSW_EN | PWRSW_WDTIME_1000ms | PWRSW_INT_WDT | PWRSW_DBTIMEL_64ms; // 使能PWR超时计时，1000ms，有wdt中断，
-#endif
 }
 //----------------------------------------------------------------------------
 // FUNCTION: Device_init

@@ -557,7 +557,7 @@ FUNCT_PTR_V_V Load_Smfi_To_Dram(FUNCT_PTR_V_V func, const int malloc_size)
    VDWORD malloc_cnt = 0;
    FUNCT_PTR_V_V func_ptr;
    func_ptr = malloc(malloc_size);
-   dprint("func_ptr value is 0x%x\n", (unsigned int)func_ptr);
+   //dprint("func_ptr value is 0x%x\n", (unsigned int)func_ptr);
 
    if(!func_ptr)
       dprint("attention! malloc failed!\n");
@@ -577,7 +577,7 @@ FUNCT_PTR_V_V Load_Smfi_To_Dram(FUNCT_PTR_V_V func, const int malloc_size)
       Tmp_XPntr++;
       Tmp_code_pointer++;
    }
-   dprint("Load Smfi Function to DRAM finish!\n");
+   //dprint("Load Smfi Function to DRAM finish!\n");
    return func_ptr;
 }
 /**

@@ -19,6 +19,16 @@
 #include "AE_REG.H"
 #include "AE_CONFIG.H"
 #include <KERNEL_RTC.H>
+
+#define SUPPORT_DEEPSLEEP
+#define SUPPORT_GPIO_WAKEUP 1     // GPIO中断唤醒
+#define SUPPORT_RTC_WAKEUP 0      // RTC定时器唤醒
+#define SUPPORT_PWRSW_WAKEUP 0    // PWRSW唤醒
+#define SUPPORT_KBS_WAKEUP 1      // 键盘按键唤醒
+
+#define Hibernation_Wakeup_GPIOA11 0x2
+#define Hibernation_Wakeup_GPIOB4  0x4
+#define Hibernation_Wakeup_GPIOB17 0x8
 /*--------------------Soft reset module flag-----------------*/
 #define ICTL_RST_REG_POS 1
 #define ICTL_RST_BIT_POS 6
@@ -34,6 +44,7 @@
 #define Moudle_RESET_REG0               REG32(Moudle_RESET_REG0_ADDR)
 #define Moudle_RESET_REG1               REG32(Moudle_RESET_REG1_ADDR)
 /*--------------------------------------------------------------------------*/
+#define Hibernation_Wakeup_GPIO Hibernation_Wakeup_GPIOA11
 extern void Module_SoftReset(int, int);
 extern void CPU_Sleep(void);
 extern void Save_Context(void);
@@ -41,7 +52,8 @@ extern void Restore_Context(void);
 extern void Low_Power_Set(void);
 extern void Enter_LowPower_Mode(void);
 extern void Exit_LowPower_Mode(void);
-
+extern void CHIP_Sleep(void);
+extern void CHIP_Deep_Sleep(void);
 extern void CHIP_Hibernation(void);
 extern void Test_OSC32K(void);
 #endif

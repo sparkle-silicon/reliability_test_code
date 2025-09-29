@@ -25,7 +25,7 @@
    *****************************************************************************/
 #define SCI_POLLING_CONTROL 0 // 由于龙芯平台SCI有效时间为15ms，如果为龙芯平台需要把该宏打开
 
-#define SOFTWARE_TRIM_CONTROL 1   //打开软件trim 32k/96m
+#define SOFTWARE_TRIM_CONTROL 0   //打开软件trim 32k/96m
 
 #define FLASH_TO_IRAM0 0             // 打开crypto代码从flash搬运到IRAM0功能
 #define MAILBOX_SMS_UPDATE_SUPPORT 1 // 打开4K SMS方式验证更新
@@ -34,12 +34,6 @@
    /****************************************************************************
     *  Functional support
     *****************************************************************************/
-#define SUPPORT_LOWPOWER 0    // 低功耗
-#define SUPPORT_GPIO_WAKEUP 0 // GPIO中断唤醒
-#define SUPPORT_RTC_WAKEUP 0 // RTC定时器唤醒
-#define SUPPORT_CPUTIMER_WAKEUP 0 // CPU定时器唤醒
-#define SUPPORT_PWRSW_WAKEUP 0    // 长按GPIOB4唤醒
-#define SUPPORT_KBS_WAKEUP 0      // 键盘按键唤醒
 #define SUPPORT_KBS_REPEAT 0      // Enabled KBS REPEAT FUNCTION
 #define SUPPORT_MATRIX_UTILITY 0  // Enabled PMC Matrix Utility Support
 
@@ -125,7 +119,7 @@
 #define ADC_MODULE_EN 0
 #define UART_MODULE_EN 1
   // reserved
-#define CEC_MODULE_EN 0
+#define CEC_MODULE_EN 1
 #define OWI_MODULE_EN 0
 #define RTC_MODULE_EN 0
 #define PECI_MODULE_EN 0
@@ -335,10 +329,13 @@
 #define ADC5_EN_Init 0 & ADC_CLOCK_EN
 #define ADC6_EN_Init 0 & ADC_CLOCK_EN
 #define ADC7_EN_Init 0 & ADC_CLOCK_EN
-#define ADC7_EN_Init 0 & ADC_CLOCK_EN
 //CEC
-#define CEC_EXTERNAL_PULL_UP 1
-#define CEC_INTERNAL_PULL_UP 0
+#define CEC0_EN_Init 0 & CEC_CLOCK_EN
+#define CEC1_EN_Init 0 & CEC_CLOCK_EN
+#define CEC0_EXTERNAL_PULL_UP 1
+#define CEC0_INTERNAL_PULL_UP 0
+#define CEC1_EXTERNAL_PULL_UP 1
+#define CEC1_INTERNAL_PULL_UP 0
 
 //KBS
 //                             0123456789ABCDEFGHIJKLMNO

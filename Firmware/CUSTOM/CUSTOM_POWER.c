@@ -1570,7 +1570,7 @@ void SB_PowerButton_Monitor(void)
 #define PWRSW_RSTOEN BIT(8)/*GPIOC5(pin71) 500ms low value*/
 #define PWRSW_TBT(tbt) ((tbt&0x3fff)<<9)/*Ttbt = ref_clock * (PWRSW_TBT + 1)*/
 #define PWRSW_DBBT(dbbt) ((dbbt&0x1ff)<<23)/*Tdbbt = ref_clock * (PWRSW_DBBT + 1)*/
-#define PWRSW_PIN_SEL 3
+#define PWRSW_PIN_SEL 2
 void PWRSW_Config(BYTE timeout, BYTE mode)
 {
 #if PWRSW_PIN_SEL==1
@@ -1580,7 +1580,7 @@ void PWRSW_Config(BYTE timeout, BYTE mode)
 #elif PWRSW_PIN_SEL==3
     sysctl_iomux_config(GPIOB, 17, 3);
 #endif
-    sysctl_iomux_config(GPIOC, 5, 3); // 设置GPC5复用功能
+    //sysctl_iomux_config(GPIOC, 5, 3); // 设置GPC5复用功能
 #if (SYSCTL_CLOCK_EN)
     u_int32_t pwrswcsr = 0;
     pwrswcsr |= PWRSW_WDTIME(timeout) | PWRSW_EN;
