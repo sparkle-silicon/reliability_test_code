@@ -891,13 +891,13 @@ void i3c_init(void)
 #if I3C2_EN_Init
 	i3c2_MoudleClock_EN;
 	sysctl_iomux_slave0();
-	// I3c_Slave_Init(0x6A, I3C_SLAVE0);
+	// I3C_Slave_Init(0x6A, I3C_SLAVE0);
 #endif
 
 #if I2C3_EN_Init
 	i3c3_MoudleClock_EN;
 	sysctl_iomux_slave1();
-	// I3c_Slave_Init(0x6A, I3C_SLAVE1);
+	// I3C_Slave_Init(0x6A, I3C_SLAVE1);
 #endif
 	dprint("i3c_init done.\n");
 #endif
