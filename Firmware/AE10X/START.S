@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-05-30 18:04:06
+ * @LastEditTime: 2025-10-03 17:50:42
  * @Description: 
  * 
  * 
@@ -162,6 +162,20 @@ __scatterload_shareram://将SRAM的空间清零
 	sw zero, (a0)
 	addi a0, a0, 4
 	bltu a0, a1, 1b
+#if 0
+__scatterload_iram0:
+2:
+	la a0, 0xC0000//256k-288k作为rom代码段
+    la a1, 0x28000//32k
+	la a2, 0x30000
+	bgeu a1, a2, 2f
+1:
+	lw t0, (a0)
+	sw t0, (a1)
+	addi a0, a0, 4
+	addi a1, a1, 4
+	bltu a1, a2, 1b
+#endif
  #if 0//将FLASH中ROM的内容拷贝到SRAM（FPGA 中将ROM看作可写的RAN空间）中 
 #if (!defined(DUBLE_FIRMWARE2))   
 __scatterload_rom:
