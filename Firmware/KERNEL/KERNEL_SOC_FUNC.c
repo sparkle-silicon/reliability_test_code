@@ -880,25 +880,25 @@ void i3c_init(void)
 #if I3C0_EN_Init
 	i3c0_MoudleClock_EN;
 	sysctl_iomux_master0();
-	// I3C_Master_Init(0x6A, SDR_DEFAULT_SPEED, I3C_MASTER0);
+	I3C_Master_Init(SDR_DEFAULT_SPEED, I3C_MASTER0);
 #endif
 
 #if I3C1_EN_Init
 	i3c1_MoudleClock_EN;
 	sysctl_iomux_master1();
-	// I3C_Master_Init(0x6A, SDR_DEFAULT_SPEED, I3C_MASTER1);
+	I3C_Master_Init(SDR_DEFAULT_SPEED, I3C_MASTER1);
 #endif
 
 #if I3C2_EN_Init
 	i3c2_MoudleClock_EN;
 	sysctl_iomux_slave0();
-	// I3C_Slave_Init(0x6A, I3C_SLAVE0);
+	I3C_Slave_Init(0x5A, I3C_SLAVE0);
 #endif
 
 #if I2C3_EN_Init
 	i3c3_MoudleClock_EN;
 	sysctl_iomux_slave1();
-	// I3C_Slave_Init(0x6A, I3C_SLAVE1);
+	I3C_Slave_Init(0x6A, I3C_SLAVE1);
 #endif
 	dprint("i3c_init done.\n");
 #endif

@@ -17,8 +17,10 @@
 #include "KERNEL_I3C.H"
 #include <math.h>
 
-BYTE DEV_DYNAMIC_ADDR_TABLE[] = { 0x3A,0x3B,0x3C,0x3D };    //动态地址表是MASTER需要分配给SLAVE的,需要开发人员定义  
-BYTE DEV_STATIC_ADDR_TABLE[] = { 0 };     //静态地址表是开发人员需要查阅SLAVE设备DATASHEET获取后填入
+BYTE MASTER0_DEV_DYNAMIC_ADDR_TABLE[] = { 0x3A,0x3B,0x3C,0x3D };    //动态地址表是MASTER需要分配给SLAVE的,需要开发人员定义 
+BYTE MASTER1_DEV_DYNAMIC_ADDR_TABLE[] = { 0x3A,0x3B,0x3C,0x3D };    //动态地址表是MASTER需要分配给SLAVE的,需要开发人员定义  
+BYTE MASTER0_DEV_STATIC_ADDR_TABLE[] = { 0 };     //静态地址表是开发人员需要查阅SLAVE设备DATASHEET获取后填入
+BYTE MASTER1_DEV_STATIC_ADDR_TABLE[] = { 0 };     //静态地址表是开发人员需要查阅SLAVE设备DATASHEET获取后填入
 uint8_t get_status[2] = { 0 };  //ibi 请求读状态
 //device char table structure define
 typedef union DEV_CHAR_TABLE
@@ -44,7 +46,8 @@ typedef union DEV_CHAR_TABLE
         } loc4;
     } dct_bits;
 } sDEV_CHAR_TABLE;
-sDEV_CHAR_TABLE dev_read_char_table[] = { 0 };
+sDEV_CHAR_TABLE master0_dev_read_char_table[] = { 0 };
+sDEV_CHAR_TABLE master1_dev_read_char_table[] = { 0 };
 
 /**
 * @brief I3C地址转换函数
@@ -530,7 +533,10 @@ BYTE I3C_MASTER_ENTDAA(sDEV_CHAR_TABLE* dct, BYTE* addr, BYTE i3c_mux)
     //DEV_ADDR_TABLE1_LOC1 is a fifo,can be written several times
     BYTE dev_num = 0;
     BYTE dev_tmpcnt = 0;
-    dev_num = sizeof(DEV_DYNAMIC_ADDR_TABLE);
+    if (i3c_mux == I3C_MASTER0)
+        dev_num = sizeof(MASTER0_DEV_DYNAMIC_ADDR_TABLE);
+    else if (i3c_mux == I3C_MASTER0)
+        dev_num = sizeof(MASTER1_DEV_DYNAMIC_ADDR_TABLE);
     while (dev_tmpcnt < dev_num) //循环发命令
     {
         //Set Device Static Address And Type of device I3C
@@ -1187,12 +1193,21 @@ repeat_ibi:
         uint8_t new_static_addr = (uint8_t)((ibi_id >> 1) & 0x7F);
         if ((ibi_id & 0x00000001UL) == 0)//hot-join
         {
-            DEV_STATIC_ADDR_TABLE[(sizeof(DEV_STATIC_ADDR_TABLE) + 1)] = new_static_addr;    //store new dynamic addr to DEV_STATIC_ADDR_TABLE
-            //specify a dynamic addr
-            I3C_MASTER_ENTDAA(dev_read_char_table, DEV_DYNAMIC_ADDR_TABLE, i3c_mux);
+            if (i3c_mux == I3C_MASTER0)
+            {
+                MASTER0_DEV_STATIC_ADDR_TABLE[(sizeof(MASTER0_DEV_STATIC_ADDR_TABLE) + 1)] = new_static_addr;    //store new dynamic addr to DEV_STATIC_ADDR_TABLE
+                I3C_MASTER_ENTDAA(master0_dev_read_char_table, MASTER0_DEV_DYNAMIC_ADDR_TABLE, i3c_mux); //specify a dynamic addr
+            }
+
+            else if (i3c_mux == I3C_MASTER1)
+            {
+                MASTER1_DEV_STATIC_ADDR_TABLE[(sizeof(MASTER1_DEV_STATIC_ADDR_TABLE) + 1)] = new_static_addr;    //store new dynamic addr to DEV_STATIC_ADDR_TABLE
+                I3C_MASTER_ENTDAA(master1_dev_read_char_table, MASTER1_DEV_DYNAMIC_ADDR_TABLE, i3c_mux); //specify a dynamic addr
+            }
         }
         else {  //if no data and rw =1,then get ibi status
             I3C_MASTER_DR_CCC_READ(new_static_addr, get_status, 2, GETSTATUS_DR_CMD, 0, 0, i3c_mux);
+            i3c_dprint("ibi status:0x%04x\n", get_status);
         }
     }
     if ((I3C_ReadREG_DWORD(QUEUE_STATUS_LEVEL_OFFSET, i3c_mux) & QUEUE_STATUS_LEVEL_IBI_STS_CNT) > 0)
