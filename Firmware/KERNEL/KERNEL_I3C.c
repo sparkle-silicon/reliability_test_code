@@ -486,6 +486,8 @@ BYTE I3C_Master_Init(uint32_t speed, BYTE i3c_mux)
 
     //Controls whether or not I3C_master is enabled And I2C Slave Present 
     I3C_WriteREG_DWORD(DEVICE_CTRL_ENABLE | DEVICE_CTRL_IBA_INCLUDE, DEVICE_CTRL_OFFSET, i3c_mux);
+    //Set I3C OD_TIMING
+    I3C_WriteREG_DWORD((SCL_I3C_OD_TIMING_LCNT(cnt) | SCL_I3C_OD_TIMING_HCNT(cnt)), SCL_I3C_OD_TIMING_OFFSET, i3c_mux);
     //Set I3C PP_TIMING
     I3C_WriteREG_DWORD((SCL_I3C_PP_TIMING_LCNT(cnt) | SCL_I3C_PP_TIMING_HCNT(cnt)), SCL_I3C_PP_TIMING_OFFSET, i3c_mux);
     //Set intr status en
@@ -493,12 +495,15 @@ BYTE I3C_Master_Init(uint32_t speed, BYTE i3c_mux)
     //Set intr signal en
     I3C_WriteREG_DWORD(INTR_SIGNAL_EN_IBI_THLD_SIGNAL_EN, INTR_SIGNAL_EN_OFFSET, i3c_mux);
     //set queue thld ctrl
-    temp_data = I3C_ReadREG_DWORD(QUEUE_THLD_CTRL_OFFSET, i3c_mux);
+    temp_data = 0;
     temp_data &= QUEUE_THLD_CTRL_RESP_BUF_THLD0 & QUEUE_THLD_CTRL_CMD_EMPTY_BUF_THLD0 & QUEUE_THLD_CTRL_IBI_STATUS_THLD0;
     temp_data |= QUEUE_THLD_CTRL_IBI_DATA_THLD(1);
     I3C_WriteREG_DWORD(temp_data, QUEUE_THLD_CTRL_OFFSET, i3c_mux);
     //Set data buff thld ctrl
-    I3C_WriteREG_DWORD((DATA_BUFFER_THLD_CTRL_TX_START_THLD(TX_EMPTY_BUF_THLD_64) | DATA_BUFFER_THLD_CTRL_RX_START_THLD(RX_BUF_THLD_1)) | (DATA_BUFFER_THLD_CTRL_RX_BUF_THLD(RX_BUF_THLD_1) | DATA_BUFFER_THLD_CTRL_TX_EMPTY_BUF_THLD(TX_EMPTY_BUF_THLD_1)), DATA_BUFFER_THLD_CTRL_OFFSET, i3c_mux);
+    temp_data = I3C_ReadREG_DWORD(DATA_BUFFER_THLD_CTRL_OFFSET, i3c_mux);
+    temp_data &= DATA_BUFFER_THLD_CTRL_RX_START_THLD0 & DATA_BUFFER_THLD_CTRL_TX_EMPTY_BUF_THLD0 & DATA_BUFFER_THLD_CTRL_RX_BUF_THLD0;
+    temp_data |= DATA_BUFFER_THLD_CTRL_TX_START_THLD(TX_EMPTY_BUF_THLD_64);
+    I3C_WriteREG_DWORD(temp_data, DATA_BUFFER_THLD_CTRL_OFFSET, i3c_mux);
 
     return TRUE;
 }
@@ -1216,7 +1221,8 @@ void I3C_Slave_Init(BYTE addr, BYTE i3c_mux)
     //配置静态地址
     DWORD rdata;
     rdata = I3C_ReadREG_DWORD(CONFIG_OFFSET, i3c_mux);
-    rdata |= (addr << 25);
+    rdata &= (~0xFE000000);
+    rdata |= (addr << 25) | CONFIG_SLVENA;
     I3C_WriteREG_DWORD(rdata, CONFIG_OFFSET, i3c_mux);
     I3C_WriteREG_DWORD(((I3C_ReadREG_DWORD(TCCLOCK_OFFSET, i3c_mux) & 0x000000FF) | ((((uint32_t)(HIGHT_CHIP_CLOCK * 2 / 1000000)) << 8) & 0x0000FF00)), TCCLOCK_OFFSET, i3c_mux);   //设置TCCLOCK
     I3C_WriteREG_DWORD(0x0, INTSET_OFFSET, i3c_mux);   //中断全部失能
@@ -1260,6 +1266,76 @@ BYTE I3C_SLAVE_INT_DISABLE(DWORD tpye, BYTE i3c_mux)
         return FALSE;
     }
     I3C_WriteREG_DWORD((I3C_ReadREG_DWORD(INTSET_OFFSET, i3c_mux) & (~tpye)), INTSET_OFFSET, i3c_mux);
+    return TRUE;
+}
+
+/**
+* @brief SLAVE ibi hotjoin函数
+*
+* @param addr slave static addr
+* @param idpartnu 部件编号
+* @param dcr 设备类型
+* @param bcr 总线能力
+* @param i3c_mux 配置选择，如I3C_SLAVE0、I3C_SLAVE1
+* @return 操作结果
+*
+* @note 调用此接口发起slave ibi hotjoin
+*/
+BYTE I3C_SLAVE_IBI_HOTJOIN(uint8_t addr, uint8_t idpartno, uint8_t dcr, uint8_t bcr, BYTE i3c_mux)
+{
+    uint32_t temp_data = 0;
+    if ((i3c_mux != I3C_SLAVE0) && (i3c_mux != I3C_SLAVE1))
+    {
+        i3c_dprint("controller select fault\n");
+        return FALSE;
+    }
+
+    temp_data |= idpartno;
+    I3C_WriteREG_DWORD(temp_data, IDPARTNO_OFFSET, i3c_mux);    //set idpartno
+    temp_data = 0;
+    temp_data |= IDEXT_DCR(dcr) | IDEXT_BCR(bcr);
+    I3C_WriteREG_DWORD(temp_data, IDEXT_OFFSET, i3c_mux);   //set dcr&bcr
+    temp_data = 0;
+    temp_data |= HOTJOIN_REQUEST;
+    I3C_WriteREG_DWORD(temp_data, CTRL_OFFSET, i3c_mux);   //set event
+    temp_data = 0;
+    temp_data |= CONFIG_ADDR(addr) | CONFIG_SLVENA;
+    I3C_WriteREG_DWORD(temp_data, CONFIG_OFFSET, i3c_mux);   //config 7bit static addr & slvena
+    return TRUE;
+}
+
+/**
+* @brief SLAVE ibi data函数
+*
+* @param addr slave static addr
+* @param ibi_data ibi需要发送的data
+* @param idpartnu 部件编号
+* @param dcr 设备类型
+* @param bcr 总线能力
+* @param i3c_mux 配置选择，如I3C_SLAVE0、I3C_SLAVE1
+* @return 操作结果
+*
+* @note 调用此接口发起ibi 发送data
+*/
+BYTE I3C_SLAVE_IBI_DATA(uint8_t addr, uint8_t ibi_data, uint8_t idpartno, uint8_t dcr, uint8_t bcr, BYTE i3c_mux)
+{
+    uint32_t temp_data = 0;
+    if ((i3c_mux != I3C_SLAVE0) && (i3c_mux != I3C_SLAVE1))
+    {
+        i3c_dprint("controller select fault\n");
+        return FALSE;
+    }
+    temp_data |= idpartno;
+    I3C_WriteREG_DWORD(temp_data, IDPARTNO_OFFSET, i3c_mux);    //set idpartno
+    temp_data = 0;
+    temp_data |= IDEXT_DCR(dcr) | IDEXT_BCR(bcr);
+    I3C_WriteREG_DWORD(temp_data, IDEXT_OFFSET, i3c_mux);   //set dcr&bcr
+    temp_data = 0;
+    temp_data |= CONFIG_ADDR(addr) | CONFIG_SLVENA;
+    I3C_WriteREG_DWORD(temp_data, CONFIG_OFFSET, i3c_mux);   //config 7bit static addr & slvena
+    temp_data = 0;
+    temp_data |= START_IBI | IBI_DATA(ibi_data);
+    I3C_WriteREG_DWORD(temp_data, CTRL_OFFSET, i3c_mux);   //set event
     return TRUE;
 }
 

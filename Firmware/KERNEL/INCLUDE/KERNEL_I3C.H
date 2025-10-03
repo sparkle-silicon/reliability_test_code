@@ -21,6 +21,7 @@
 #include "AE_CONFIG.H"
 #include "AE_DEBUGGER.H"
 
+ /* * * * * MASTER * * * * */
  /** CCC Command Definitions of broadcast**/
 #define ENEC_BC_CMD 0x00
 #define DISEC_BC_CMD 0x01
@@ -150,9 +151,12 @@
 #define QUEUE_THLD_CTRL_IBI_STATUS_THLD0 (~0xFF000000UL)  
 #define QUEUE_THLD_CTRL_IBI_STATUS_THLD(thld) (((thld)<<24)&0xFF000000UL) 
 
+#define DATA_BUFFER_THLD_CTRL_TX_EMPTY_BUF_THLD0 (~0x00000007UL)
 #define DATA_BUFFER_THLD_CTRL_TX_EMPTY_BUF_THLD(thld) ((thld)&0x00000007UL)
+#define DATA_BUFFER_THLD_CTRL_RX_BUF_THLD0 (~0x00000700UL)
 #define DATA_BUFFER_THLD_CTRL_RX_BUF_THLD(thld) (((thld)<<8)&0x00000700UL)
 #define DATA_BUFFER_THLD_CTRL_TX_START_THLD(thld) (((thld)<<16)&0x00070000UL)
+#define DATA_BUFFER_THLD_CTRL_RX_START_THLD0 (~0x07000000UL)
 #define DATA_BUFFER_THLD_CTRL_RX_START_THLD(thld) (((thld)<<24)&0x07000000UL)
 
 #define INTR_STATUS_TX_THLD_STS 0x00000001UL
@@ -267,18 +271,30 @@
 
 //SDR SPEED
 #define SDR_DEFAULT_SPEED 8000000
+//write/read
+#define I3C_MASTER_WRITE 0
+#define I3C_MASTER_READ 1
 
- /* * SLAVE * */
+/* * * * * SLAVE * * * * */
 #define RXPEND_ENABLE 0x800     //第11位-接收FIFO满中断
 #define TXSEND_ENABLE 0x1000     //第12位-发送FIFO空中断
+
+#define START_IBI 0x00000001UL
+#define START_MAIN_PTP_REQUEST 0x00000002UL
+#define HOTJOIN_REQUEST 0x00000003UL
+#define IBI_DATA(data) (((data)<<8) & 0x0000FF00UL)
+
+#define CONFIG_ADDR(addr) (((addr)<<25) & 0xFE000000UL) //7bit static addr
+#define CONFIG_SLVENA 0x00000001UL
+
+#define IDEXT_DCR(dcr) (((dcr)<<8) & 0x0000FF00UL)
+#define IDEXT_BCR(bcr) (((bcr)<<16)& 0x00FF0000UL)
+
 //DMA Control register
 #define DMAFB_RX_DISABLE HEX00
 #define DMAFB_RX_ENABLE HEX01
 #define DMATB_TX_DISABLE HEX00
 #define DMATB_TX_ENABLE HEX01
-
-#define I3C_MASTER_WRITE 0
-#define I3C_MASTER_READ 1
 
 #define I3C_TIMEOUT I2CTimeOut
 #if I3C_DEBUG 
