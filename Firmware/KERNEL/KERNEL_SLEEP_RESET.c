@@ -16,6 +16,9 @@
 #include "KERNEL_SLEEP_RESET.H"
 #include "CUSTOM_POWER.H"
 #include "KERNEL_TIMER.H"
+int8_t KBS_KSDC1R_CONTEXT = 0;
+int8_t KBS_KSDC2R_CONTEXT = 0;
+int8_t KBS_KSDC3R_CONTEXT = 0;
 int32_t SYSCTL_PIO0_CFG_CONTEXT = 0;
 int32_t SYSCTL_PIO1_CFG_CONTEXT = 0;
 int32_t SYSCTL_PIO2_CFG_CONTEXT = 0;
@@ -86,33 +89,29 @@ void CPU_Sleep(void)
 void ALIGNED(4) OPTIMIZE(0) CPU_SLP_RES(void)
 {
 	volatile int i = 0;
-	// for (i = 0;i < 10000;i++)
-	// {
-	//    nop;
-	// }
+	//flash power down
+	MAILBOX_SELF_CMD = MAILBOX_CMD_FLASH_ENTERLOWPOWER; // 命令字
+    MAILBOX_SET_IRQ(MAILBOX_Control_IRQ_NUMBER);   // 触发子系统中断
+	MAILBOX_WAIT_IRQ(MAILBOX_CMD_FLASH_ENTERLOWPOWER,MAILBOX_Control_IRQ_NUMBER);
+	MAILBOX_CLEAR_IRQ(MAILBOX_Control_IRQ_NUMBER); // 清除中断状态
+	if(!MAILBOX_OTHER_INFO1)
+	{
+		MAILBOX_SELF_CMD = MAILBOX_CMD_FLASH_ENTERLOWPOWER; // 命令字
+		MAILBOX_SET_IRQ(MAILBOX_Control_IRQ_NUMBER);   // 触发子系统中断
+		MAILBOX_WAIT_IRQ(MAILBOX_CMD_FLASH_ENTERLOWPOWER,MAILBOX_Control_IRQ_NUMBER);
+		MAILBOX_CLEAR_IRQ(MAILBOX_Control_IRQ_NUMBER); // 清除中断状态
+	}
 	//mem retn
-	SYSCTL_RET_CTRL=0x0;
+	//SYSCTL_RET_CTRL=0x0;
 	//flash pin
 	SYSCTL_PIO1_IECFG = 0x0;//外部spif pin
+	SYSCTL_PIO3_IECFG &=0x00ffffff;//内部spif pin
 	//SYSCTL_PIO3_CFG = 0x0;
 	//dvdd
-	SYSCTL_DVDD_EN |= ((BIT(1)|BIT(2)|BIT(4)|BIT(5)|BIT(6)|BIT(7)|BIT(10)|BIT(11)) << 12);//iso enable
-	SYSCTL_DVDD_EN &= ~(BIT(1)|BIT(2)|BIT(4)|BIT(5)|BIT(6)|BIT(7)|BIT(10)|BIT(11));
-	//flash power down
-	// while (!(SPIF_READY & SPIF_RDY));
-	// while (SPIF_STATUS & 0xf);
-	// SPIF_FIFO_TOP = 0xb9;
-	// for (int i = 0;i < 10000;i++)
-	// {
-	//    nop;
-	// }
-	// while (!(SPIF_READY & SPIF_RDY));
-	// while (!(SPIF_STATUS & 0x4));
-	// while (!(SPIF_READY & SPIF_RDY));
-	// for (int i = 0;i < 10000;i++)
-	// {
-	//    nop;
-	// }
+	SYSCTL_DVDD_EN |= ((BIT(1)|BIT(2)|BIT(4)|BIT(5)|BIT(6)|BIT(7)|BIT(11)) << 12);//iso enable
+	SYSCTL_DVDD_EN &= ~(BIT(1)|BIT(2)|BIT(4)|BIT(5)|BIT(6)|BIT(7)|BIT(11));
+	//mode en
+	SYSCTL_MODEN1 &= ~(CRYPTO_EN|SPIFE_EN|SPIF_EN|CACHE_EN);
 	#ifdef SUPPORT_DEEPSLEEP
 	//vcore->1.0V
 	SYSCTL_PMU_CFG&=(~(0xff<<10));
@@ -122,15 +121,11 @@ void ALIGNED(4) OPTIMIZE(0) CPU_SLP_RES(void)
 	asm volatile("wfi");
 	nop;nop;nop;nop;nop;nop;
 	SYSCTL_PMU_CFG = SYSCTL_PMU_CFG_CONTEXT;
-	for (i = 0;i < 10000;i++)
-	{
-	   nop;
-	}
 	//restore
-	SYSCTL_DVDD_EN |= (BIT(1)|BIT(2)|BIT(4)|BIT(5)|BIT(6)|BIT(7)|BIT(10)|BIT(11));
+	SYSCTL_DVDD_EN |= (BIT(1)|BIT(2)|BIT(4)|BIT(5)|BIT(6)|BIT(7)|BIT(11));
 	REG8(0xbffff)=0;
 	nop;nop;nop;nop;nop;nop;
-	SYSCTL_DVDD_EN &= ~((BIT(1)|BIT(2)|BIT(4)|BIT(5)|BIT(6)|BIT(7)|BIT(10)|BIT(11)) << 12);//iso enable
+	SYSCTL_DVDD_EN &= ~((BIT(1)|BIT(2)|BIT(4)|BIT(5)|BIT(6)|BIT(7)|BIT(11)) << 12);//iso enable
 	SYSCTL_PIO0_CFG = SYSCTL_PIO0_CFG_CONTEXT;
 	SYSCTL_PIO1_CFG = SYSCTL_PIO1_CFG_CONTEXT;
 	SYSCTL_PIO2_CFG = SYSCTL_PIO2_CFG_CONTEXT;
@@ -149,15 +144,31 @@ void ALIGNED(4) OPTIMIZE(0) CPU_SLP_RES(void)
 	SYSCTL_PMUCSR = SYSCTL_PMUCSR_CONTEXT;
 	SYSCTL_RET_CTRL = SYSCTL_RET_CTRL_CONTEXT;
 	ADC_CTRL = ADC_CTRL_CONTEXT;
+#if SUPPORT_KBS_WAKEUP
+	KBS_KSDC1R = KBS_KSDC1R_CONTEXT;
+	KBS_KSDC2R = KBS_KSDC2R_CONTEXT;
+	KBS_KSDC3R = KBS_KSDC3R_CONTEXT;
+#endif 
+	for (i = 0;i < 1000;i++)
+	{
+	   nop;nop;nop;
+	}
+	//flash exit power down
+	MAILBOX_SELF_CMD = MAILBOX_CMD_FLASH_EXITLOWPOWER; // 命令字
+    MAILBOX_SET_IRQ(MAILBOX_Control_IRQ_NUMBER);   // 触发子系统中断
+	MAILBOX_WAIT_IRQ(MAILBOX_CMD_FLASH_EXITLOWPOWER,MAILBOX_Control_IRQ_NUMBER);
+	MAILBOX_CLEAR_IRQ(MAILBOX_Control_IRQ_NUMBER); // 清除中断状态
+	if(!MAILBOX_OTHER_INFO1)
+	{
+		MAILBOX_SELF_CMD = MAILBOX_CMD_FLASH_EXITLOWPOWER; // 命令字
+		MAILBOX_SET_IRQ(MAILBOX_Control_IRQ_NUMBER);   // 触发子系统中断
+		MAILBOX_WAIT_IRQ(MAILBOX_CMD_FLASH_EXITLOWPOWER,MAILBOX_Control_IRQ_NUMBER);
+		MAILBOX_CLEAR_IRQ(MAILBOX_Control_IRQ_NUMBER); // 清除中断状态
+	}
 	for (i = 0;i < 10000;i++)
 	{
 	   nop;nop;nop;
 	}
-	// PRINTF_TX='\n';
-	// PRINTF_TX='R';
-	// PRINTF_TX='E';
-	// PRINTF_TX='S';
-	// PRINTF_TX='\n';
 }
 /* ----------------------------------------------------------------------------
  * FUNCTION:   Save_Context
@@ -168,6 +179,11 @@ void ALIGNED(4) OPTIMIZE(0) CPU_SLP_RES(void)
  * ------------------------------------------------------------------------- */
 void Save_Context(void)
 {
+#if SUPPORT_KBS_WAKEUP
+	KBS_KSDC1R_CONTEXT = KBS_KSDC1R;
+	KBS_KSDC2R_CONTEXT = KBS_KSDC2R;
+	KBS_KSDC3R_CONTEXT = KBS_KSDC3R;
+#endif 
 	SYSCTL_PIO0_CFG_CONTEXT = SYSCTL_PIO0_CFG;
 	SYSCTL_PIO1_CFG_CONTEXT = SYSCTL_PIO1_CFG;
 	SYSCTL_PIO2_CFG_CONTEXT = SYSCTL_PIO2_CFG;
@@ -256,15 +272,24 @@ void Enter_LowPower_Mode(void)
 	GPIO_Input_EN(GPIOA, 3, ENABLE);
 	GPIO_Config(GPIOA, 3, 2, 0, 1, 0);
 #endif
+#if SUPPORT_KBS_WAKEUP
+	if((SYSCTL_PIO3_UDCFG&0xff0000)!=0xff0000)//kbs in pull up
+	{
+		SYSCTL_PIO3_UDCFG|=0x00ff0000;
+		for(volatile int i=0;i<100000;i++)
+		{
+			nop;nop;nop;
+		}
+	}
+#endif
 	//开启wfi模式，降低CPU运行
 	Disable_Interrupt_Main_Switch();                  // Disable All Interrupt
-	Smf_Ptr = Load_Smfi_To_Dram(CPU_SLP_RES, 0x400);
+	Smf_Ptr = Load_Smfi_To_Dram(CPU_SLP_RES, 0x600);
 	if(Smf_Ptr!=0)
     	(*Smf_Ptr)(); // Do Function at malloc address
 	Enable_Interrupt_Main_Switch();
    	free(Smf_Ptr);  // 释放通过 malloc 分配的内存空间
    	Smf_Ptr = NULL; // 将指针设置为 NULL，以避免悬空指针问题
-	//CPU_Sleep();
 }
 void Exit_LowPower_Mode(void)
 {
@@ -291,7 +316,8 @@ void CHIP_Sleep(void)
 #if SUPPORT_KBS_WAKEUP
 	TEMP_MODEN0 |= KBS_EN;
 #endif
-	TEMP_MODEN1 =  DRAM_EN |SYSCTL_EN | SPIF_EN | APB_EN |GPIODB_EN| CACHE_EN  | IVT_EN | ROM_EN;
+	TEMP_MODEN0 |=MAILBOX_EN;
+	TEMP_MODEN1 =  DRAM_EN |SYSCTL_EN | SPIF_EN | APB_EN |GPIODB_EN| CACHE_EN  | IVT_EN | ROM_EN|CRYPTO_EN|SPIFE_EN;
 	//mode en
 	SYSCTL_MODEN0 = TEMP_MODEN0;
 	SYSCTL_MODEN1 = TEMP_MODEN1;
@@ -318,19 +344,19 @@ void CHIP_Sleep(void)
 #if (KBD_8_n_SWITCH == 16)
 	SYSCTL_PIO1_CFG=0;
 #elif (KBD_8_n_SWITCH == 17)
-	SYSCTL_PIO1_CFG&=0b01<<6;
+	SYSCTL_PIO1_CFG&=0b11<<6;
 #elif (KBD_8_n_SWITCH == 18)
-	SYSCTL_PIO1_CFG&=0b11<<6||0b11<<10;
+	SYSCTL_PIO1_CFG&=(0b11<<6|0b11<<10);
 #endif
-	SYSCTL_PIO3_IECFG &= 0xff0000;
+	SYSCTL_PIO3_IECFG = 0xffff0000;
 #else
 	SYSCTL_PIO5_CFG=0;
 	SYSCTL_PIO1_CFG=0;
-	SYSCTL_PIO3_IECFG = 0x0;
+	SYSCTL_PIO3_IECFG = 0xff000000;//内部flash pin
 #endif
 	SYSCTL_PIO0_CFG=0;
 	SYSCTL_PIO2_CFG=0;
-	SYSCTL_PIO3_CFG&=0xff00;
+	SYSCTL_PIO3_CFG&=0xff00;//外部flash pin
 	SYSCTL_PIO4_CFG=0;
 }
 
@@ -347,8 +373,12 @@ void CHIP_Deep_Sleep(void)
 #endif
 #if SUPPORT_KBS_WAKEUP
 	TEMP_MODEN0 |= KBS_EN;
+    KBS_KSDC3R = 0;
+    KBS_KSDC2R = (KBS_KSDC1R&(~0xf));//1切换为0的延迟时间 24μs
+	KBS_KSDC1R = (KBS_KSDC1R&(~0x7))|0x1; // round 2
 #endif
-	TEMP_MODEN1 =  DRAM_EN |SYSCTL_EN | SPIF_EN | APB_EN |GPIODB_EN| CACHE_EN  | IVT_EN | ROM_EN;
+	TEMP_MODEN0 |=MAILBOX_EN;
+	TEMP_MODEN1 =  DRAM_EN |SYSCTL_EN | SPIF_EN | APB_EN |GPIODB_EN| CACHE_EN  | IVT_EN | ROM_EN|CRYPTO_EN|SPIFE_EN;
 	//mode en
 	SYSCTL_MODEN0 = TEMP_MODEN0;
 	SYSCTL_MODEN1 = TEMP_MODEN1;
@@ -380,15 +410,15 @@ void CHIP_Deep_Sleep(void)
 #if (KBD_8_n_SWITCH == 16)
 	SYSCTL_PIO1_CFG=0;
 #elif (KBD_8_n_SWITCH == 17)
-	SYSCTL_PIO1_CFG&=0b01<<6;
+	SYSCTL_PIO1_CFG&=0b11<<6;
 #elif (KBD_8_n_SWITCH == 18)
-	SYSCTL_PIO1_CFG&=0b11<<6||0b11<<10;
+	SYSCTL_PIO1_CFG&=(0b11<<6|0b11<<10);
 #endif
-	SYSCTL_PIO3_IECFG &= 0xff0000;
+	SYSCTL_PIO3_IECFG &= 0xffff0000;
 #else
 	SYSCTL_PIO5_CFG=0;
 	SYSCTL_PIO1_CFG=0;
-	SYSCTL_PIO3_IECFG = 0x0;
+	SYSCTL_PIO3_IECFG = 0xff000000;//内部flash pin
 #endif
 	SYSCTL_PIO0_CFG=0x0;
 	SYSCTL_PIO2_CFG=0;

@@ -20,7 +20,7 @@
 #include "AE_CONFIG.H"
 #include "KERNEL_GPIO.H"
 #include "KERNEL_IRQ.H"
-/*************时钟模块控制宏*************/
+ /*************时钟模块控制宏*************/
 #define SPIM_CLOCK_EN 1
 #define CAN3_CLOCK_EN 1
 #define CAN2_CLOCK_EN 1
@@ -70,6 +70,10 @@
 #define SYSCTL_CLOCK_EN 1
 #define DRAM_CLOCK_EN 1
 #define APB_CLOCK_EN 1 // E-P总线使能控制
+#define I3C0_CLOCK_EN 1
+#define I3C1_CLOCK_EN 1
+#define I3C2_CLOCK_EN 1
+#define I3C3_CLOCK_EN 1
 /*************时钟模块控制宏*************/
 // SYSCTL MOUDLE ENABLE BIT
 // SYSCTL_MODE0
@@ -90,20 +94,26 @@
 #define SMB2_EN 0x00020000
 #define SMB3_EN 0x00010000
 #define WDT_EN 0x00008000
+#define I3C3_EN 0x00004000
+#define MAILBOX_EN 0x00002000
 #define ADC_EN 0x00001000
 #define PWM_EN 0x00000800
 #define UARTA_EN 0x00000400
 #define UARTB_EN 0x00000200
 #define UART0_EN 0x00000100
 #define UART1_EN 0x00000080
-#define SPIM_EN 0x00000001
-#define SMB6_EN 0x00000002
-#define SMB7_EN 0x00000004
+#define I3C2_EN 0x00000040
+#define I3C1_EN 0x00000020
+#define I3C0_EN 0x00000010
 #define SMB8_EN 0x00000008
+#define SMB7_EN 0x00000004
+#define SMB6_EN 0x00000002
+#define SPIM_EN 0x00000001
 // SYSCTL_MODE1
 /*yujiang add*/
 #define IRAM_EN 0x00800000
 /*yujiang add*/
+#define CRYPTO_EN 0x1000000
 #define PECI_EN 0x00400000
 #define RTC_EN 0x00200000
 #define ROM_EN 0x00100000
@@ -119,7 +129,7 @@
 #define DRAM_EN 0x00000400
 #define SYSCTL_EN 0x00000200
 #define SM2_EN 0x00000100
-#define SM3_EN 0x00000080
+#define SPIFE_EN 0x00000080
 #define EFUSE_EN 0x00000040
 #define GPIODB_EN 0x00000020
 #define SRAM_EN 0x00000010
@@ -195,7 +205,6 @@ uint32_t get_cpu_freq();
 extern void Disable_Interrupt_Main_Switch(void);
 extern void Enable_Interrupt_Main_Switch(void);
 void Default_Config();
-extern void Vtable_Tansport(void);
 #if SPIM_CLOCK_EN
 #define spim_MoudleClock_EN SYSCTL_MODEN0 |= SPIM_EN;
 #else
@@ -336,6 +345,26 @@ extern void Vtable_Tansport(void);
 #define timer1_MoudleClock_EN SYSCTL_MODEN0 |= TMR1_EN;
 #else
 #define timer1_MoudleClock_EN SYSCTL_MODEN0 &= (~TMR1_EN);
+#endif
+#if I3C0_CLOCK_EN
+#define i3c0_MoudleClock_EN SYSCTL_MODEN0 |= I3C0_EN;
+#else
+#define i3c0_MoudleClock_EN SYSCTL_MODEN0 &= (~I3C0_EN);
+#endif
+#if I3C1_CLOCK_EN
+#define i3c1_MoudleClock_EN SYSCTL_MODEN0 |= I3C1_EN;
+#else
+#define i3c1_MoudleClock_EN SYSCTL_MODEN0 &= (~I3C1_EN);
+#endif
+#if I3C2_CLOCK_EN
+#define i3c2_MoudleClock_EN SYSCTL_MODEN0 |= I3C2_EN;
+#else
+#define i3c2_MoudleClock_EN SYSCTL_MODEN0 &= (~I3C2_EN);
+#endif
+#if I3C3_CLOCK_EN
+#define i3c3_MoudleClock_EN SYSCTL_MODEN0 |= I3C3_EN;
+#else
+#define i3c3_MoudleClock_EN SYSCTL_MODEN0 &= (~I3C3_EN);
 #endif
 #if TIMER0_CLOCK_EN
 #define timer0_MoudleClock_EN SYSCTL_MODEN1 |= TMR0_EN;
