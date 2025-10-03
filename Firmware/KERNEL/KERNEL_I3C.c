@@ -493,10 +493,6 @@ BYTE I3C_Master_Init(uint32_t speed, BYTE i3c_mux)
     I3C_WriteREG_DWORD((SCL_I3C_OD_TIMING_LCNT(cnt) | SCL_I3C_OD_TIMING_HCNT(cnt)), SCL_I3C_OD_TIMING_OFFSET, i3c_mux);
     //Set I3C PP_TIMING
     I3C_WriteREG_DWORD((SCL_I3C_PP_TIMING_LCNT(cnt) | SCL_I3C_PP_TIMING_HCNT(cnt)), SCL_I3C_PP_TIMING_OFFSET, i3c_mux);
-    //Set intr status en
-    I3C_WriteREG_DWORD((INTR_STATUS_EN_BUS_RESET_DONE_STS_EN | INTR_STATUS_EN_TRANSFER_ERR_STS_EN | INTR_STATUS_EN_TRANSFER_ABORT_STS_EN | INTR_STATUS_EN_RESP_READY_STS_EN | INTR_STATUS_EN_IBI_THLD_STS_EN | INTR_STATUS_EN_CMD_QUEUE_READY_STS_EN | INTR_STATUS_EN_TX_THLD_STS_EN | INTR_STATUS_EN_RX_THLD_STS_EN), INTR_STATUS_EN_OFFSET, i3c_mux);
-    //Set intr signal en
-    I3C_WriteREG_DWORD(INTR_SIGNAL_EN_IBI_THLD_SIGNAL_EN, INTR_SIGNAL_EN_OFFSET, i3c_mux);
     //set queue thld ctrl
     temp_data = 0;
     temp_data &= QUEUE_THLD_CTRL_RESP_BUF_THLD0 & QUEUE_THLD_CTRL_CMD_EMPTY_BUF_THLD0 & QUEUE_THLD_CTRL_IBI_STATUS_THLD0;
@@ -507,6 +503,10 @@ BYTE I3C_Master_Init(uint32_t speed, BYTE i3c_mux)
     temp_data &= DATA_BUFFER_THLD_CTRL_RX_START_THLD0 & DATA_BUFFER_THLD_CTRL_TX_EMPTY_BUF_THLD0 & DATA_BUFFER_THLD_CTRL_RX_BUF_THLD0;
     temp_data |= DATA_BUFFER_THLD_CTRL_TX_START_THLD(TX_EMPTY_BUF_THLD_64);
     I3C_WriteREG_DWORD(temp_data, DATA_BUFFER_THLD_CTRL_OFFSET, i3c_mux);
+    //Set intr status en
+    I3C_WriteREG_DWORD((INTR_STATUS_EN_BUS_RESET_DONE_STS_EN | INTR_STATUS_EN_TRANSFER_ERR_STS_EN | INTR_STATUS_EN_TRANSFER_ABORT_STS_EN | INTR_STATUS_EN_RESP_READY_STS_EN | INTR_STATUS_EN_IBI_THLD_STS_EN | INTR_STATUS_EN_CMD_QUEUE_READY_STS_EN | INTR_STATUS_EN_TX_THLD_STS_EN | INTR_STATUS_EN_RX_THLD_STS_EN), INTR_STATUS_EN_OFFSET, i3c_mux);
+    //Set intr signal en
+    I3C_WriteREG_DWORD(INTR_SIGNAL_EN_IBI_THLD_SIGNAL_EN | INTR_SIGNAL_EN_RX_THLD_SIGNAL_EN, INTR_SIGNAL_EN_OFFSET, i3c_mux);
 
     return TRUE;
 }
@@ -1135,6 +1135,12 @@ BYTE I3C_MASTER_PV_WRITE_THEN_READ_WITH7E(uint8_t dynamic_addr, uint8_t* wdata, 
     uint32_t wdata_len = wbytelen;
     uint8_t* rdata_ptr = rdata;
     uint32_t rdata_len = rbytelen;
+    uint32_t temp_data = 0;
+
+    //需要提前禁掉INTR_STATUS_RX_THLD_STS中断，采取在函数等状态位的方式来读
+    temp_data = I3C_ReadREG_DWORD(INTR_SIGNAL_EN_OFFSET, i3c_mux) & (~INTR_SIGNAL_EN_RX_THLD_SIGNAL_EN);
+    I3C_WriteREG_DWORD(temp_data, INTR_SIGNAL_EN_OFFSET, i3c_mux);
+
     if (wdata_ptr == NULL || wdata_len == 0 || rdata_ptr == NULL || rdata_len == 0)
     {
         i3c_dprint("argument error\n");
@@ -1148,6 +1154,16 @@ BYTE I3C_MASTER_PV_WRITE_THEN_READ_WITH7E(uint8_t dynamic_addr, uint8_t* wdata, 
             return FALSE;
         }
     }
+    for (uint32_t timeout = I3C_TIMEOUT; (I3C_Master_IntStatus(i3c_mux) & INTR_STATUS_RX_THLD_STS) == 0; timeout--)
+    {
+        if (timeout == 0 || i3c_error)
+        {
+            i3c_dprint("fail:INTR_STATUS=%#x\n", I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux));
+            i3c_error = 0;
+            return FALSE;
+        }
+        vDelayXus(10);
+    }
     if (rbytelen != 0)
     {
         if (I3C_MASTER_PV_READ_WITH7E(dynamic_addr, rdata, rbytelen, i3c_mux) == FALSE)
@@ -1155,6 +1171,9 @@ BYTE I3C_MASTER_PV_WRITE_THEN_READ_WITH7E(uint8_t dynamic_addr, uint8_t* wdata, 
             return FALSE;
         }
     }
+    //读完数据后重新使能INTR_STATUS_RX_THLD_STS中断
+    temp_data = I3C_ReadREG_DWORD(INTR_SIGNAL_EN_OFFSET, i3c_mux) | (INTR_SIGNAL_EN_RX_THLD_SIGNAL_EN);
+    I3C_WriteREG_DWORD(temp_data, INTR_SIGNAL_EN_OFFSET, i3c_mux);
     return TRUE;
 }
 
@@ -1344,13 +1363,53 @@ BYTE I3C_SLAVE_IBI_DATA(uint8_t addr, uint8_t ibi_data, uint8_t idpartno, uint8_
     I3C_WriteREG_DWORD(temp_data, IDPARTNO_OFFSET, i3c_mux);    //set idpartno
     temp_data = 0;
     temp_data |= IDEXT_DCR(dcr) | IDEXT_BCR(bcr);
-    I3C_WriteREG_DWORD(temp_data, IDEXT_OFFSET, i3c_mux);   //set dcr&bcr
+    I3C_WriteREG_DWORD(temp_data, IDEXT_OFFSET, i3c_mux);      //set dcr&bcr
     temp_data = 0;
     temp_data |= CONFIG_ADDR(addr) | CONFIG_SLVENA;
     I3C_WriteREG_DWORD(temp_data, CONFIG_OFFSET, i3c_mux);   //config 7bit static addr & slvena
     temp_data = 0;
     temp_data |= START_IBI | IBI_DATA(ibi_data);
     I3C_WriteREG_DWORD(temp_data, CTRL_OFFSET, i3c_mux);   //set event
+    return TRUE;
+}
+
+/**
+* @brief SLAVE ibi data函数
+*
+* @param data 需要写入的数据
+* @param bytelen 需要写入的数据长度
+* @param i3c_mux 配置选择，如I3C_SLAVE0、I3C_SLAVE1
+* @return 操作结果
+*
+* @note 调用此接口发起ibi 发送data
+*/
+BYTE I3C_SLAVE_WRITE(uint8_t* data, uint8_t bytelen, BYTE i3c_mux)
+{
+    uint8_t* data_ptr = data;
+    uint32_t data_len = bytelen;
+    uint32_t temp_data = 0;
+
+    if (data_ptr == NULL || data_len == 0)
+    {
+        i3c_dprint("argument error\n");
+        return FALSE;
+    }
+    if ((i3c_mux != I3C_MASTER0) && (i3c_mux != I3C_MASTER1))
+    {
+        i3c_dprint("controller select fault\n");
+        return FALSE;
+    }
+
+    while (data_len--)
+    {
+        temp_data = 0;
+        if (data_len == 1)
+        {
+            temp_data |= WDATAB_LASTBYTE;
+        }
+        temp_data |= *(data_ptr + (bytelen - data_len));
+        I3C_WriteREG_DWORD(temp_data, WDATAB_OFFSET, i3c_mux);
+    }
     return TRUE;
 }
 
