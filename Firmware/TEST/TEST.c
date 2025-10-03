@@ -2109,7 +2109,7 @@ BYTE Moudle_test(void)
 			printf("*0x32000:%x\n", *((unsigned char*)0x32000));
 
 			// 开时钟：bit7
-			SYSCTL_MODEN1 |= SM3_EN;
+			SYSCTL_MODEN1 |= SPIFE_EN;
 			//初始化
 			*((unsigned char*)0x32400) = 0xff;
 			printf("*0x32400:%x\n", *((unsigned char*)0x32400));

@@ -113,6 +113,7 @@
 /*yujiang add*/
 #define IRAM_EN 0x00800000
 /*yujiang add*/
+#define CRYPTO_EN 0x1000000
 #define PECI_EN 0x00400000
 #define RTC_EN 0x00200000
 #define ROM_EN 0x00100000
@@ -128,7 +129,7 @@
 #define DRAM_EN 0x00000400
 #define SYSCTL_EN 0x00000200
 #define SM2_EN 0x00000100
-#define SM3_EN 0x00000080
+#define SPIFE_EN 0x00000080
 #define EFUSE_EN 0x00000040
 #define GPIODB_EN 0x00000020
 #define SRAM_EN 0x00000010

@@ -376,6 +376,7 @@ void kbs_pull_up(void)
 	if ((((KBS_EXTERNAL_PULL_UP) & (1 << (25))) == 0) && ((((KBS_INTERNAL_PULL_UP) & (1 << (25))) == (1 << (25)))))
 		GPIO_Pullup_Config(GPIOA, 21); // C3 kso 17
 #endif
+	SYSCTL_PIO3_UDCFG|=0x00ff0000;//kbs in maintain pull up 
 }
 void gpio_init(void)
 {
