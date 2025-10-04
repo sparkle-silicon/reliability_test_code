@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-04 18:36:40
+ * @LastEditTime: 2025-10-04 18:43:10
  * @Description:
  *
  *
@@ -194,11 +194,17 @@ void Default_Iram0(void)
 	{
 		uint32_t *iram_cache = (uint32_t *)NULL;
 		uint32_t *iram0 = (uint32_t *)IRAM0_BASE_ADDR;
-		if(iram_cache != NULL)
-		{
-			for(size_t i = 0; i < 33; i++)//32个中断向量表+1个异常中断跳转指令
+		{//数据搬运
+			if(iram_cache != NULL)
 			{
-				iram0[i] = iram_cache[i];
+				for(size_t i = 0; i < (32 * 1024 / 4); i++)//32个中断向量表+1个异常中断跳转指令
+				{
+					iram0[i] = iram_cache[i];
+				}
+				if((!SYSCTL_ESTAT_EFUSE_EC_DEBUG) && (!SYSCTL_ESTAT_EFUSE_CRYPTO_DEBUG))//确认子系统处于等待置位的状态
+				{
+					SYSCTL_CRYPTODBG_FLAG |= BIT(0);//子系统开始运行
+				}
 			}
 		}
 	}
