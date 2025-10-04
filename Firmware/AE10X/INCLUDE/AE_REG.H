@@ -6429,6 +6429,7 @@
 /***********************************DRAM  Register Set**********************************/
 #define DRAM_BASE_ADDR 0x20000UL // 0x27FFF-32k
 #define IRAM_BASE_ADDR 0x28000UL // 0x2FFFF-32k
+#define IRAM0_BASE_ADDR IRAM_BASE_ADDR
 /***********************************SPI FLASH  Register Set**********************************/
 #define SPI_FLASH_BASE_ADDR 0x30000UL
 #define SPIF_REG_SIZE DEC32
@@ -6950,7 +6951,7 @@
 // #define PUTFLASHNPDB eSPI_QUEUE1_REG(PUTFLASHNPDB_OFFSET)
 #define PUTFLASHNPDB (VBYTEP)(eSPI_QUEUE1_BASE_ADDR + PUTFLASHNPDB_OFFSET)
 
-#define IRAM1_BASE_ADDR 0x34000UL
+#define IRAM0_BASE_ADDR 0x28000UL
 
 #define FLASH_BASE_ADDR 0x80000UL
 

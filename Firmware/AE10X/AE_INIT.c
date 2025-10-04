@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-04 15:16:39
+ * @LastEditTime: 2025-10-04 17:24:50
  * @Description:
  *
  *
@@ -48,6 +48,7 @@ void SECTION(".init.dbinit") DoubleBoot_Init(void)
           (*func_ptr)();
       }
       break;
+      //内外部FLASH跳转选择
     default:
       break;
   }

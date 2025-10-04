@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-04 17:05:27
+ * @LastEditTime: 2025-10-04 17:41:17
  * @Description:
  *
  *
@@ -157,7 +157,7 @@
 #define WDT_RST       (1UL << 15) // WDT模块复位控制
 #define I3C3_RST      (1UL << 14) // I3C3模块复位控制
 #define HOST_RST      (1UL << 13) // HOST模块复位控制
-#define ADC_RST       (1UL << 12) // ADC模块复位控制
+#define ADC_ANA_RST   (1UL << 12) // ADC模块模拟电路复位控制
 #define PWM_RST       (1UL << 11) // PWM模块复位控制
 #define UARTA_RST     (1UL << 10) // UARTA模块复位控制
 #define UARTB_RST     (1UL << 9)  // UARTB模块复位控制
@@ -173,15 +173,15 @@
 //-----------------------------------------------------------------------------
 // SYSCTL_RST1 寄存器位定义
 //-----------------------------------------------------------------------------
-#define ADC_CLK_DIG_RST   (1UL << 30)     // ADC CLK硬复位逻辑设备使能控制
-#define PECI_RST          (1UL << 29)     // PECI硬复位逻辑设备使能控制
-#define RTC_RST           (1UL << 28)     // RTC硬复位逻辑设备使能控制
-#define SMB4_RST          (1UL << 26)     // SMBUS4硬复位逻辑设备使能控制
-#define SMB5_RST          (1UL << 25)     // SMBUS5硬复位逻辑设备使能控制
-#define CEC_RST           (1UL << 23)     // CEC硬复位逻辑设备使能控制
-// #define ADC_RST           (1UL << 22)     // ADC硬复位逻辑设备使能控制
-#define ESPI_RST           (1UL << 21)     // ESPI硬复位逻辑设备使能控制
-#define CRYPTO_CPU_RST     (1UL << 17)     // CRYPTO CPU引脚硬复位host域控制使能
+#define ADC_CLK_DIG_RST   (1UL << 30)     // ADC 数字逻辑时钟复位控制
+#define PECI_RST          (1UL << 29)     // PECI模块复位控制
+#define RTC_RST           (1UL << 28)     // RTC模块复位控制
+#define SMB4_RST          (1UL << 26)     // SMBUS4模块复位控制
+#define SMB5_RST          (1UL << 25)     // SMBUS5模块复位控制
+#define CEC_RST           (1UL << 23)     // CEC模块复位控制
+#define ADC_DIG_RST       (1UL << 22)     // ADC模块数字逻辑复位控制
+#define ESPI_RST           (1UL << 21)     // ESPI模块复位控制
+#define CRYPTO_CPU_RST     (1UL << 17)     // CRYPTO CPU模块复位控制
 #define CHIP_RST           (1UL << 16)     // 全芯片的复位控制
 #define APB_RST            (1UL << 15)     // APB总线复位控制
 #define SYSCTL_RST         (1UL << 14)     // SYSCTL模块复位控制

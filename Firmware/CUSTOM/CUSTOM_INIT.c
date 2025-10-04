@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-04 17:18:26
+ * @LastEditTime: 2025-10-04 17:47:47
  * @Description:
  *
  *
@@ -140,16 +140,39 @@ void Default_Vector(void)
 	}
 }
 /*
+ * @brief 配置IRam0
+ */
+void Default_Iram0(void)
+{
+	if(SYSCTL_PIO_CFG & BIT1)//使用外部FLASH
+	{
+		uint32_t *iram_cache = (uint32_t *)NULL;
+		uint32_t *iram0 = (uint32_t *)IRAM0_BASE_ADDR;
+		if(iram_cache != NULL)
+		{
+			for(size_t i = 0; i < 33; i++)//32个中断向量表+1个异常中断跳转指令
+			{
+				iram0[i] = iram_cache[i];
+			}
+		}
+	}
+	else//内部FLASH
+	{//Rom初始化完成,不需要再来
+	}
+}
+/*
  * @brief 进行一些默认配置,防止异常
  */
 void SECTION(".init.Default") Default_Config()
 {
 	// 默认频率配置
 	Default_Freq();
-	//默认中断向量表配置
-	Default_Vector();
 	//默认需要开启的模块使能
 	Default_Module_Enable();
+	//默认中断向量表配置
+	Default_Vector();
+	//默认搬运iram0数据
+	Default_Iram0();
 	//默认模块复位配置(防止后续初始化异常使用)
 	Default_Module_Reset();
 	//默认模块关闭配置(降低功耗),也是时钟关闭
