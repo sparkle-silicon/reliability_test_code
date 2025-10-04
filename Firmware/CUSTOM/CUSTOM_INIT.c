@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-04 18:43:10
+ * @LastEditTime: 2025-10-04 18:45:01
  * @Description:
  *
  *
@@ -192,7 +192,7 @@ void Default_Iram0(void)
 {
 	if(SYSCTL_PIO_CFG & BIT1)//使用外部FLASH
 	{
-		uint32_t *iram_cache = (uint32_t *)NULL;
+		uint32_t *iram_cache = (uint32_t *)NULL;//0xC0000
 		uint32_t *iram0 = (uint32_t *)IRAM0_BASE_ADDR;
 		{//数据搬运
 			if(iram_cache != NULL)

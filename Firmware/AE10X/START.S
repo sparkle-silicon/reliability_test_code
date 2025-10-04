@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-04 15:16:02
+ * @LastEditTime: 2025-10-04 18:44:22
  * @Description: 
  * 
  * 
@@ -147,33 +147,6 @@ __scatterload_shareram://将SRAM的空间清零
 	sw zero, (a0)
 	addi a0, a0, 4
 	bltu a0, a1, 1b
-#if 0//留与C代码中进行初始化(内部不需要)
-__scatterload_vector://中断向量表
-2:
-	la a0, vector_base
-	la a1, 0x30800
-	la a2, 0x30884
-1:
-	lw t0, (a0)
-	sw t0, (a1)
-	addi a0, a0, 4
-	addi a1, a1, 4
-	bltu a1, a2, 1b
-#endif
-#if 0//保留,因为存在一种使用iram0的情况.到时侯只需要修改该部分代码即可得到iram+外部FLASH运行的情况
-__scatterload_iram0:
-2:
-	la a0, 0xC0000//256k-288k作为rom代码段
-    la a1, 0x28000//32k
-	la a2, 0x30000
-	bgeu a1, a2, 2f
-1:
-	lw t0, (a0)
-	sw t0, (a1)
-	addi a0, a0, 4
-	addi a1, a1, 4
-	bltu a1, a2, 1b
-#endif
  #if 0//将FLASH中ROM代码拷贝到ROM中 ,暂时保留,测试代码,正式无效
 #if (!defined(DUBLE_FIRMWARE2))   
 __scatterload_rom:
