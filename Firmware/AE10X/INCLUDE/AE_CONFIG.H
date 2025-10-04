@@ -16,24 +16,22 @@
 #ifndef AE_CONFIG_H
 #define AE_CONFIG_H
  /****************************************************************************
-  * Include Headfile
-  *****************************************************************************/
+* Include Headfile
+*****************************************************************************/
 #include "AE_GLOBAL.H"
 #include "AE_REG.H"
-  /****************************************************************************
-   * 平台选择
-   *****************************************************************************/
+/****************************************************************************
+ * 平台选择
+ *****************************************************************************/
 #define SCI_POLLING_CONTROL 0 // 由于龙芯平台SCI有效时间为15ms，如果为龙芯平台需要把该宏打开
-
 #define SOFTWARE_TRIM_CONTROL 0   //打开软件trim 32k/96m
-
 #define FLASH_TO_IRAM0 0             // 打开crypto代码从flash搬运到IRAM0功能
 #define MAILBOX_SMS_UPDATE_SUPPORT 1 // 打开4K SMS方式验证更新
 #define secure_area 0x80000          // 不能更新的安全区域 512K
 
-   /****************************************************************************
-    *  Functional support
-    *****************************************************************************/
+ /****************************************************************************
+ *  Functional support
+ *****************************************************************************/
 #define SUPPORT_LOWPOWER 0    // 低功耗
 #define SUPPORT_GPIO_WAKEUP 1 // GPIO中断唤醒
 #define SUPPORT_RTC_WAKEUP 0 // RTC定时器唤醒
@@ -42,8 +40,11 @@
 #define SUPPORT_KBS_REPEAT 0      // Enabled KBS REPEAT FUNCTION
 #define SUPPORT_MATRIX_UTILITY 0  // Enabled PMC Matrix Utility Support
 
+ //I3C Interface control
+#define I3C_MASTER0_INTFMODE MASTER_I3C_MODE //i3c master0接口模式选择 MASTER_I3C_MODE/MASTER_I3C_MODE
+#define I3C_MASTER1_INTFMODE MASTER_I3C_MODE //i3c master1接口模式选择 MASTER_I3C_MODE/MASTER_I3C_MODE
 
-    // ACPI Function Setting
+// ACPI Function Setting
 #define SUPPORT_ACPI_SMB_EC 0     // Enable ACPI SMBus via EC
 #define SUPPORT_ACPI_SMI 0        // Use SMI in ACPI Mode(No recommend)
 #define SUPPORT_QEvent_Pending 0  // QEvent Pending support
@@ -123,7 +124,7 @@
 #define KBC_MODULE_EN 0
 #define ADC_MODULE_EN 0
 #define UART_MODULE_EN 1
-#define I3C_MODULE_EN 1
+#define I3C_MODULE_EN 0
   // reserved
 #define CEC_MODULE_EN 1
 #define OWI_MODULE_EN 0
@@ -346,7 +347,7 @@
 //KBS
 //                             0123456789ABCDEFGHIJKLMNO
 #define KBS_EXTERNAL_PULL_UP 0b1111111111111111111111111
-#define KBS_INTERNAL_PULL_UP 0b0000000000000000000000000 
+#define KBS_INTERNAL_PULL_UP 0b0000000000000000000000000
 #if (CEC_MODULE_EN & PS2_0_EN)
 #warning "You want use KBSOUT[16] ,but SPIM Enable, They reuse the same pin"
 #endif

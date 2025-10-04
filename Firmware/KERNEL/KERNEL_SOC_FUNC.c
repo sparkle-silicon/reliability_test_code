@@ -18,6 +18,7 @@
 #include "AE_CONFIG.H"
 #include "CUSTOM_BATTERY.H"
 #include "KERNEL_MAILBOX.H"
+#include "KERNEL_I3C.H"
 
 void trim_set(void)
 {
@@ -875,19 +876,32 @@ void time_init(void)
 
 void i3c_init(void)
 {
+	/****************** master init ******************/
 #if I3C_MODULE_EN
 #if I3C0_EN_Init
 	i3c0_MoudleClock_EN;
 	sysctl_iomux_master0();
+#if (I3C_MASTER0_INTFMODE == MASTER_I3C_MODE)
 	I3C_Master_Init(SDR_DEFAULT_SPEED, I3C_MASTER0);
+	I3C_MASTER_ENTDAA(master0_dev_read_char_table, MASTER0_DEV_DYNAMIC_ADDR_TABLE, I3C_MASTER0); //specify a dynamic addr
+#elif (I3C_MASTER0_INTFMODE == MASTER_I2C_MODE)
+	I3C_Legacy_Master_Init(SDR_DEFAULT_SPEED, I3C_MASTER0);
+#endif
 #endif
 
 #if I3C1_EN_Init
 	i3c1_MoudleClock_EN;
 	sysctl_iomux_master1();
+#if (I3C_MASTER1_INTFMODE == MASTER_I3C_MODE)
 	I3C_Master_Init(SDR_DEFAULT_SPEED, I3C_MASTER1);
+	I3C_MASTER_ENTDAA(master1_dev_read_char_table, MASTER1_DEV_DYNAMIC_ADDR_TABLE, I3C_MASTER1); //specify a dynamic addr
+#elif (I3C_MASTER1_INTFMODE == MASTER_I2C_MODE)
+	I3C_Legacy_Master_Init(SDR_DEFAULT_SPEED, I3C_MASTER1);
+#endif
+	dprint("i3c_master_init done.\n");
 #endif
 
+	/****************** slave init ******************/
 #if I3C2_EN_Init
 	i3c2_MoudleClock_EN;
 	sysctl_iomux_slave0();
@@ -899,7 +913,7 @@ void i3c_init(void)
 	sysctl_iomux_slave1();
 	I3C_Slave_Init(0x6A, I3C_SLAVE1);
 #endif
-	dprint("i3c_init done.\n");
+	dprint("i3c_slave_init done.\n");
 #endif
 }
 
