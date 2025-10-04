@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-04 18:45:01
+ * @LastEditTime: 2025-10-04 18:48:29
  * @Description:
  *
  *
@@ -61,8 +61,8 @@ void Default_Module_Reset(void)
  */
 void Default_Module_Enable()//Module Clock Enable
 {
-	SYSCTL_MODEN0 |= (0);
-	SYSCTL_MODEN1 |= (0);
+	SYSCTL_MODEN0 |= (0xFFFFFFFF);
+	SYSCTL_MODEN1 |= (0xFFFFFFFF);
 }
 void Default_Module_Disable()//Module Clock Disabled
 {
@@ -217,19 +217,20 @@ void Default_Iram0(void)
  */
 void SECTION(".init.Default") Default_Config()
 {
-	// 默认频率配置
-	Default_Freq();
-	//默认需要开启的模块使能
+
+	//1.默认需要开启的模块使能(保障模块正常运行)
 	Default_Module_Enable();
-	//默认中断向量表配置
-	Default_Vector();
-	//默认搬运iram0数据
-	Default_Iram0();
-	//默认模块复位配置(防止后续初始化异常使用)
+	//2.默认模块复位配置(防止后续初始化异常使用)
 	Default_Module_Reset();
-	//默认模块关闭配置(降低功耗),也是时钟关闭
+	//3.默认频率配置
+	Default_Freq();
+	//4.默认中断向量表配置
+	Default_Vector();
+	//5.默认搬运iram0数据
+	Default_Iram0();
+	//6.默认模块关闭配置(降低功耗),也是时钟关闭
 	Default_Module_Disable();
-	//默认GPIO输入关闭功能(降低功耗),也是输入使能关闭
+	//7.默认GPIO输入关闭功能(降低功耗),也是输入使能关闭
 	// Default_GPIO_InputSet();
 }
 //----------------------------------------------------------------------------
