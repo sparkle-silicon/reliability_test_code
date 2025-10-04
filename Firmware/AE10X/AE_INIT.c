@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-06-04 17:57:12
+ * @LastEditTime: 2025-10-04 15:16:39
  * @Description:
  *
  *
@@ -20,7 +20,7 @@
  */
 void SECTION(".init.dbinit") DoubleBoot_Init(void)
 {
-#if 0
+#if 1
   // 1.get OEM Set Double Boot Addr and Code Space ID
   register FUNCT_PTR_V_V func_ptr = Get_DoubleBoot_ADDR();
   if(func_ptr == NULL)
@@ -67,10 +67,9 @@ void SECTION(".init.dbinit") DoubleBoot_Init(void)
 void SECTION(".init.flow") Init()
 {
 
-// 0. check update over init
+  // 0. check update over init
   AE_UPDATE_NO_INIT_FUNCTION;
-
-// 1.double boot
+  // 1.double boot
   DoubleBoot_Init();
   // 2.default Set Operating Environment
   Default_Config();

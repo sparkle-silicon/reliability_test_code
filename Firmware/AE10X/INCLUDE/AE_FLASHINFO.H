@@ -1,7 +1,7 @@
 /*
  * @Author: dejavuwdh
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-06-16 18:07:24
+ * @LastEditTime: 2025-10-04 16:24:55
  * @Description:
  *
  *
@@ -16,7 +16,7 @@
 #ifndef AE_FLASHINFO_H
 #define AE_FLASHINFO_H
 #include "AE_GLOBAL.H"
-#include "AE_INCLUDE.H"
+// #include "AE_INCLUDE.H"
 #if PRINTF_UART_SWITCH == 0
 #define UART_BAUD UART0_BAUD
 #elif PRINTF_UART_SWITCH == 1
@@ -38,9 +38,9 @@ extern BYTE _rom;
 extern BYTE _rom_var;
 extern BYTE _MAGIC_NUMBER;
 extern BYTE RAM_ADDR;
-typedef enum FLASH_PIN { NOPIN_FLASH = -1, PIN8528_FLASH = 0, PIN5571_FLASH } SPIF_PIN;
-typedef enum FLASH_SELECT { NOSELECT_FLASH = -1, INTERNAL_FLASH = 0, EXTERNAL_FLASH } SPIF_INT_EXT;
-typedef enum FLASH_MODE { NOCONFIGMODE = -1, DUAL_FLASH = 0, QUAD_FLASH } SPIF_MODE;
+typedef enum FLASH_PIN{ NOPIN_FLASH = -1, PIN8528_FLASH = 0, PIN5571_FLASH } SPIF_PIN;
+typedef enum FLASH_SELECT{ NOSELECT_FLASH = -1, INTERNAL_FLASH = 0, EXTERNAL_FLASH } SPIF_INT_EXT;
+typedef enum FLASH_MODE{ NOCONFIGMODE = -1, DUAL_FLASH = 0, QUAD_FLASH } SPIF_MODE;
 #define ECC_BIGINT32_MAXLEN 	(512>>5)//16dword  //(384>>5)//12dword
 #define RSA_MODULUS_BITS_MAX 4096//512byte//3072//384byte//模数长度最大
 #define RSA_MODULUS_LEN_MAX ((RSA_MODULUS_BITS_MAX + 31) >>5)//   bit/8/4 word类型
@@ -89,20 +89,17 @@ typedef struct//2*52=104byte/2*68=136byte
     ECC_STU_BIGINT32_BYTE  stuQy;
 } ECC_STU_PUBKEY_BYTE;
 
-typedef struct
-{
+typedef struct{
     uint32_t bits;                     /* length in bits of modulus */
     uint32_t modulus[RSA_MODULUS_LEN_MAX];  /* modulus */
     uint32_t exponent[RSA_MODULUS_LEN_MAX]; /* public exponent */
 } STU_RSA_PUBKEY;
-typedef struct
-{
+typedef struct{
     uint32_t bits;                     /* length in bits of modulus */
     uint8_t modulus[RSA_MODULUS_LEN_MAX << 2];  /* modulus */
     uint8_t exponent[RSA_MODULUS_LEN_MAX << 2]; /* public exponent */
 } STU_RSA_PUBKEY_BYTE;
-typedef struct
-{
+typedef struct{
     uint32_t bits;                     /* length in bits of modulus */
     uint32_t modulus[RSA_MODULUS_LEN_MAX];  /* modulus */
     uint32_t publicExponent[RSA_MODULUS_LEN_MAX];     /* public exponent */
@@ -111,8 +108,7 @@ typedef struct
     uint32_t primeExponent[2][RSA_PRIME_LEN_MAX];     /* exponents for CRT */
     uint32_t coefficient[RSA_PRIME_LEN_MAX];//inv          /* CRT coefficient */
 } STU_RSA_PRIVKEY;
-typedef struct
-{
+typedef struct{
     uint32_t bits;                     /* length in bits of modulus */
     uint8_t modulus[RSA_MODULUS_LEN_MAX << 2];  /* modulus *///n：模数
     uint8_t publicExponent[RSA_MODULUS_LEN_MAX << 2];     /* public exponent */// e：公钥指数
@@ -121,8 +117,7 @@ typedef struct
     uint8_t primeExponent[2][RSA_PRIME_LEN_MAX << 2];     /* exponents for CRT */ // dmp1：e*dmp1 = 1 (mod (p-1)), dmq1：e*dmq1 = 1 (mod (q-1))
     uint8_t coefficient[RSA_PRIME_LEN_MAX << 2];//inv          /* CRT coefficient */ q*iqmp = 1 (mod p ) : coefficient*prime1 mod modulus =1 
 } STU_RSA_PRIVKEY_BYTE;
-typedef struct
-{
+typedef struct{
     uint32_t bits;                           /* length in bits of modulus */
     int useFermat4;                              /* public exponent (1 = F4, 0 = 3) */
 } STU_RSA_KEY;
@@ -134,33 +129,28 @@ typedef struct _rom_data//关于FLASH的一些信息
     uint32_t EXTFlash_ID;//外部FLASH ID如果外部FLASH ID发生变动，需要除了版本号以外校验签名是否一致
     uint32_t FixedFlashInfo_Addr : 24;//外部flash中固件的相对位置位置(上次MIRROR位置,绝对地址)
 } srom_data;
-typedef union _publickey
-{
+typedef union _publickey{
     STU_RSA_PUBKEY rsa;
     STU_RSA_PUBKEY_BYTE rsa_byte;
     ECC_STU_PUBKEY ecc;//含SM2的椭圆曲线公钥
     ECC_STU_PUBKEY_BYTE ecc_byte;//含SM2的椭圆曲线公钥
 } upublickey;
-typedef union _signature
-{
+typedef union _signature{
     uint32_t rsa[RSA_MODULUS_LEN_MAX];//rsa
     uint8_t rsa_byte[RSA_MODULUS_LEN_MAX << 2];//rsa
     uint32_t hash[512 >> 5];
     uint8_t hash_byte[512 >> 3];
-    struct
-    {
+    struct{
         ECC_STU_BIGINT32 R;
         ECC_STU_BIGINT32 S;
     }ecc;
-    struct
-    {
+    struct{
         ECC_STU_BIGINT32_BYTE R;
         ECC_STU_BIGINT32_BYTE S;
     }ecc_byte;
 } usignature;
 
-typedef struct _patch_typdef
-{
+typedef struct _patch_typdef{
     uDword data;
     BYTE addrl;
     BYTE addrh : 5;
@@ -170,8 +160,7 @@ typedef struct _patch_typdef
 
 
 
-typedef struct _DynamicFlashInfo
-{
+typedef struct _DynamicFlashInfo{
     uint8_t Firmware_ID[16]; // 识别码，确认安全验签位置，和开头识别码做区分
     usignature sign;     // 安全签名
     upublickey publickey;// 公钥
@@ -192,8 +181,7 @@ typedef struct _DynamicFlashInfo
 #define Firmware_nKsize 128
 
 #define MIRROR_ADDR 0x0
-typedef struct _FixedFlashInfo
-{
+typedef struct _FixedFlashInfo{
     uint8_t Firmware_ID[11]; // 识别码
     uint8_t Compiler_Version[21]; // 版本号-根据这个识别要不要更新外部FLASH
     uint32_t IVT;//中断向量表起始位置Interrupt_Vector_Table（相对Mirror_Addr的起始地址）
@@ -201,11 +189,9 @@ typedef struct _FixedFlashInfo
     uint32_t Backup_OFFSET;//备份区的相对位置（相对Mirror_Addr的偏移地址）
     uint32_t DynamicFlashInfo;//尾部FLASH相关位置 
     spatch_typdef PATCH[8];
-    union
-    {
+    union{
         uint32_t SYSCTL_RESERVERD;
-        struct
-        {
+        struct{
             uint32_t ENABLE_USED : 1;//:0：禁止外部FLASH使用（内部FLASH信息权限）1：允许外部FLASH使用
             uint32_t LAST8M_DISABLE : 1;//0:从后8M开始读取 1: 全16M
             uint32_t LowAddr_OFFSET : 2;//低4位选择0:只MIRROR上次地址，1:64k为间隔，2:16k查找范围，3:4k查找范围（默认）

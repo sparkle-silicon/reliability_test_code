@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-03 17:50:42
+ * @LastEditTime: 2025-10-04 15:16:02
  * @Description: 
  * 
  * 
@@ -102,16 +102,14 @@ _start://标签位置
 	.globl __scatterload_ram//全局标签_start
 	.type __scatterload_ram,@function//定义为函数
 __scatterload_ram://将FLASH中指定的内容拷贝到RAM中
-
 	 /* 使用与上述相同的原理，通过一个循环，将 数据从Flash中搬运到DLM中*/
-#if (defined(flash)||defined(crypto))
-//更新后防止被复写
+#if (defined(flash)||defined(crypto))//更新后防止被复写
     la a1,0x304C0
     lw a0,0(a1)
     andi a0,a0,0x8
     bnez a0,__scatterload_data  //若0x304C0的bit3为1，则表示为固件更新后的首次启动，不能清除EC SPACE和通用内存空间，需跳过此部分
 __scatterload_globalmem://将EC_SPACE和通用内存空间的空间清零
-2:	    //ec space
+2:	
     la a0, MEM_ADDR
 	la a1, DATA_ADDR
 	bgeu a0, a1, 2f
@@ -131,10 +129,8 @@ __scatterload_data: //将常量数据从flash搬运到ram中
 	addi a0, a0, 4
 	addi a1, a1, 4
 	bltu a1, a2, 1b
-__scatterload_bss:
+__scatterload_bss://BSS段是链接器预留的未初始化变量所处的地址段，引导程序必须对其初始化为0
 2:
-	//BSS段是链接器预留的未初始化变量所处的地址段，引导程序必须对其初始化为0
-	//此处通过一个循环来初始化BSS段
 	la a0, __bss_start
 	la a1, _end
 	bgeu a0, a1, 2f
@@ -142,7 +138,17 @@ __scatterload_bss:
 	sw zero, (a0)
 	addi a0, a0, 4
 	bltu a0, a1, 1b
-__scatterload_vector:
+__scatterload_shareram://将SRAM的空间清零
+2:
+    la a0, 0x31000
+	la a1, 0x32000
+	bgeu a0, a1, 2f
+1:
+	sw zero, (a0)
+	addi a0, a0, 4
+	bltu a0, a1, 1b
+#if 0//留与C代码中进行初始化(内部不需要)
+__scatterload_vector://中断向量表
 2:
 	la a0, vector_base
 	la a1, 0x30800
@@ -153,16 +159,8 @@ __scatterload_vector:
 	addi a0, a0, 4
 	addi a1, a1, 4
 	bltu a1, a2, 1b
-__scatterload_shareram://将SRAM的空间清零
-2:	    //sram
-    la a0, 0x31000
-	la a1, 0x32000
-	bgeu a0, a1, 2f
-1:
-	sw zero, (a0)
-	addi a0, a0, 4
-	bltu a0, a1, 1b
-#if 0
+#endif
+#if 0//保留,因为存在一种使用iram0的情况.到时侯只需要修改该部分代码即可得到iram+外部FLASH运行的情况
 __scatterload_iram0:
 2:
 	la a0, 0xC0000//256k-288k作为rom代码段
@@ -176,7 +174,7 @@ __scatterload_iram0:
 	addi a1, a1, 4
 	bltu a1, a2, 1b
 #endif
- #if 0//将FLASH中ROM的内容拷贝到SRAM（FPGA 中将ROM看作可写的RAN空间）中 
+ #if 0//将FLASH中ROM代码拷贝到ROM中 ,暂时保留,测试代码,正式无效
 #if (!defined(DUBLE_FIRMWARE2))   
 __scatterload_rom:
 2:

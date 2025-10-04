@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-01-02 16:58:36
+ * @LastEditTime: 2025-10-04 16:24:38
  * @Description:
  *
  *
@@ -21,6 +21,7 @@
 #include "AE_INIT.H"
 #include "KERNEL_MEMORY.H"
 #include "CUSTOM_FAN.H"
+#include "AE_FLASHINFO.H"
 #define PWRSW_RSTOEN 0x100
 #define PWRSW_DBTIMEL_64ms 0x40
 #define PWRSW_DBTIMEL_96ms 0x80

@@ -99,8 +99,8 @@ extern void DMA_INIT(BYTE TT_FC, BYTE BLK_TS, BYTE SRC_PER, BYTE DEST_PER, DWORD
 #define DMA_SRC_SOFTWARE_HS HEX01
 
 //DW_ahb_dmac Enable bit
-#define DMA_DIS HEX00
-#define DMA_EN HEX01
+#define DMA_Disable HEX00
+#define DMA_Enable HEX01
 
 //Channel Enable
 #define DMA_CH_DIS HEX00

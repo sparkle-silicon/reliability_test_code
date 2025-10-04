@@ -84,7 +84,7 @@ void RTC_Deep_Sleep_Test(u32 sleep_time)
     SYSCTL_SWITCH_PLL = BIT3 | BIT0;
     // SYSCTL_MODEN0 = UART0_EN; //
     SYSCTL_MODEN0 = 0;
-    SYSCTL_MODEN1 = RTC_EN | SPIF_EN | CACHE_EN;
+    SYSCTL_MODEN1 = RTC_EN | SPIFE_EN | CACHE_EN;
     SYSCTL_DVDD_EN |= BIT4 | BIT5 | BIT6;
     SYSCTL_DVDD_EN &= ~(BIT0 | BIT1 | BIT2);
     CPU_Sleep();
@@ -100,7 +100,7 @@ void RTC_Sleep_Test(u32 sleep_time)
     Set_RTC_PreScaler(0xA0);
         // vDelayXus(120);
     SYSCTL_MODEN0 = 0x100;
-    SYSCTL_MODEN1 = RTC_EN | SPIF_EN | CACHE_EN;
+    SYSCTL_MODEN1 = RTC_EN | SPIFE_EN | CACHE_EN;
     SYSCTL_DVDD_EN |= BIT4 | BIT5 | BIT6;
     SYSCTL_DVDD_EN &= ~(BIT0 | BIT1 | BIT2);
     CPU_Sleep();

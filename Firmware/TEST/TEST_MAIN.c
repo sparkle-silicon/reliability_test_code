@@ -420,12 +420,12 @@ int main()
 // // 	//mode 0 no run 
 // // 	//SYSCTL_MODEN0 = 0;
 // // 	//modle 1 spif(bit3)run  cache(19)run 
-// // 	//SYSCTL_MODEN1 = SPIF_EN | CACHE_EN;
+// // 	//SYSCTL_MODEN1 = SPIFE_EN | CACHE_EN;
 // // //#else//GPIOB4_NOSET
 // // 	////mode 0 uart0 run gpio run 
 // // 	SYSCTL_MODEN0 = UART0_EN | GPIO_EN | PWM_EN;
 // // 		//modle 1 spif(bit3)run  cache(19)run 
-// // 	SYSCTL_MODEN1 = DRAM_EN | SYSCTL_EN | SPIF_EN | APB_EN | GPIODB_EN | CACHE_EN | IRAM_EN | ICTL_EN | IVT_EN;
+// // 	SYSCTL_MODEN1 = DRAM_EN | SYSCTL_EN | SPIFE_EN | APB_EN | GPIODB_EN | CACHE_EN | IRAM_EN | ICTL_EN | IVT_EN;
 // // 	GPIO0_DEBOUNCE0 = 0x0;
 // // 	//printf("SYSCTL_MODEN1:0x%x\n", SYSCTL_MODEN1);
 // // // SYSCTL_MODEN0 = 0xffffffff;
@@ -488,12 +488,12 @@ int main()
 // // 	//mode 0 no run 
 // // 	SYSCTL_MODEN0 = 0;
 // // 	//modle 1 spif(bit3)run  cache(19)run 
-// // 	SYSCTL_MODEN1 = SPIF_EN | CACHE_EN;
+// // 	SYSCTL_MODEN1 = SPIFE_EN | CACHE_EN;
 // // #else//GPIOB4_NOSET
 // // 	////mode 0 uart0 run gpio run 
 // // 	SYSCTL_MODEN0 = UART0_EN | GPIO_EN;
 // // 	//modle 1 spif(bit3)run  cache(19)run 
-// // 	SYSCTL_MODEN1 = SPIF_EN | CACHE_EN | ICTL_EN;
+// // 	SYSCTL_MODEN1 = SPIFE_EN | CACHE_EN | ICTL_EN;
 // // #endif
 // // 	asm volatile("wfi");
 // }
@@ -559,7 +559,7 @@ int main()
 // 	//mode 0 pwm(bit11)run
 // 	SYSCTL_MODEN0 = PWM_EN;
 // 	//modle 1 spif(bit3)run apb(11)run cache(19)run 
-// 	SYSCTL_MODEN1 = SPIF_EN | APB_EN | CACHE_EN | RTC_EN;
+// 	SYSCTL_MODEN1 = SPIFE_EN | APB_EN | CACHE_EN | RTC_EN;
 // 	CPU_Sleep();
 // }
 // #endif

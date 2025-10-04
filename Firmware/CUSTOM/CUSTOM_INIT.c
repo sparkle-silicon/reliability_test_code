@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-06-04 16:53:32
+ * @LastEditTime: 2025-10-04 17:18:26
  * @Description:
  *
  *
@@ -14,8 +14,7 @@
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
 #include "CUSTOM_INIT.H"
-#include "CUSTOM_FAN.H"
-#include "AE_ANX7447_UCSI.H"
+
 // u_int32_t CHIP_CLOCK_SWITCH = CHIP_CLOCK_SWITCH; // 1(96) 2(48) 3(32) 4（24）5（19.2）分频数（时钟）  
 /****************************************************************************
 * SPKAE10X Init FLOW :
@@ -46,48 +45,29 @@ FUNCT_PTR_V_V Get_DoubleBoot_ADDR(void)
 	return db_ptr;
 }
 /*
- * @brief 如果开启启动低功耗，可通过此函数配置模块时钟默认开启状态
- * @id boot0 id: = 0xff1
- * @return (id<<20)|(addr)
+ * @brief 针对需要复位重新初始化的部分模块
  */
-void Default_ModuleClock_LowPower()
+void Default_Module_Reset(void)
 {
-	SYSCTL_MODEN0 &= ~(SPIM_EN); // SPIM
-	SYSCTL_MODEN0 &= ~(UART1_EN);		   // UART1
-	SYSCTL_MODEN0 &= ~(UARTA_EN | UARTB_EN | UART0_EN); // UART0AB
-	SYSCTL_MODEN0 &= ~(PWM_EN);							// PWM
-	SYSCTL_MODEN0 &= ~(ADC_EN);							// ADC
-	SYSCTL_MODEN0 &= ~(WDT_EN);							// WDT
-	SYSCTL_MODEN1 &= ~(CEC_EN); // CEC
-	SYSCTL_MODEN0 &= ~(SMB0_EN | SMB1_EN | SMB2_EN | SMB3_EN); // SMBUS3=0
-	SYSCTL_MODEN0 &= ~(GPIO_EN);// GPIO
-	SYSCTL_MODEN0 &= ~(BRAM_EN);					 // BRAM
-	SYSCTL_MODEN0 &= ~(SWUC_EN);					 // SWUC
-	SYSCTL_MODEN0 &= ~(SHM_EN);						 // SHM
-	SYSCTL_MODEN0 &= ~(PMCKBC_EN);					 // PMCKBC
-	SYSCTL_MODEN0 &= ~(PS2_0_EN | PS2_1_EN);		 // PS2_0
-	SYSCTL_MODEN0 &= ~(KBS_EN);						 // KBS
-	SYSCTL_MODEN0 &= ~(TMR1_EN | TMR2_EN | TMR3_EN); // TIMER3-1
-	SYSCTL_MODEN1 &= ~(TMR0_EN); // TIMER0
-	SYSCTL_MODEN1 &= ~(ICTL_EN);// ICTL is necessary
-	// SYSCTL_MODEN1 &= ~(H2E_EN);// H2E is necessary
-	// SYSCTL_MODEN1&=~(SPIF_EN);// SPIF is necessary
-	SYSCTL_MODEN1 &= ~(SRAM_EN);// SRAM
-	SYSCTL_MODEN1 &= ~(GPIODB_EN);// GPIODB
-	// SYSCTL_MODEN1&=~(SYSCTL_EN);// SYSCTL is necessary
-	// SYSCTL_MODEN1&=~(DRAM_EN);// DRAM is necessary
-	// SYSCTL_MODEN1&=~(APB_EN);// PB is necessary
-	//SYSCTL_MODEN1 &= ~(ESPI_EN);
-	// SYSCTL_MODEN1 &= ~(TRNG_EN);
-	SYSCTL_MODEN1 &= ~(SMB4_EN | SMB5_EN);
-	SYSCTL_MODEN1 &= ~(CEC_EN);
-	SYSCTL_MODEN1 &= ~(OWI_EN);
-	// SYSCTL_MODEN1 &= ~(CACHE_EN);
-	// SYSCTL_MODEN1 &= ~(LPCMON_EN);
-	// SYSCTL_MODEN1 &= ~(ROM_EN);
-	// SYSCTL_MODEN1 &= ~(RTC_EN);
-	// SYSCTL_MODEN1 &= ~(PECI_EN);
+	SYSCTL_RST0 &= ~(0);
+	SYSCTL_RST0 |= (0);
+	SYSCTL_RST1 &= ~(0);
+	SYSCTL_RST1 |= (0);
 
+
+}
+/*
+ * @brief 针对需要绝对使能或者可以关闭的模块的部分模块
+ */
+void Default_Module_Enable()//Module Clock Enable
+{
+	SYSCTL_MODEN0 |= (0);
+	SYSCTL_MODEN1 |= (0);
+}
+void Default_Module_Disable()//Module Clock Disabled
+{
+	SYSCTL_MODEN0 &= ~(0);
+	SYSCTL_MODEN1 &= ~(0);
 }
 /*
  * @brief 如果开启启动低功耗，可通过以下两个函数配置引脚默认状态
@@ -101,7 +81,7 @@ void Default_PinIO_Set(int val, int GPIO, int idx, int lens)
 		GPIO_Input_EN(GPIO, idx + i, (!((val & BIT(i)) >> i)));
 	}
 }
-void Default_GPIO_LowPower()
+void Default_GPIO_InputSet()
 {
 	Default_PinIO_Set(PinA0_7_InOut, GPIOA, 0, 7);
 	Default_PinIO_Set(PinA8_15_InOut, GPIOA, 8, 7);
@@ -115,31 +95,67 @@ void Default_GPIO_LowPower()
 	Default_PinIO_Set(PinC8_15_InOut, GPIOC, 8, 7);
 	Default_PinIO_Set(PinD0_7_InOut, GPIOD, 0, 7);
 	Default_PinIO_Set(PinD8_InOut, GPIOD, 8, 1);
-
 	Default_PinIO_Set(PinE0_7_InOut, GPIOE, 0, 7);
 	Default_PinIO_Set(PinE8_15_InOut, GPIOE, 8, 7);
 	Default_PinIO_Set(PinE16_23_InOut, GPIOE, 16, 7);
 }
 /*
- * @brief 配置PLL默认时钟
+ * @brief 配置主时钟分频
  */
 void Default_Freq(void)
 {
-	// if(CHIP_CLOCK_SWITCH == 0)
-	// 	CHIP_CLOCK_SWITCH = 1;
-	SYSCTL_CLKDIV_OSC96M = (CHIP_CLOCK_SWITCH - 1); // 配置内部时钟分频
-	nop;
-	nop;
-	nop;
+	if(SYSCTL_PIO_CFG & BIT1)//使用外部FLASH
+	{
+		if(CHIP_CLOCK_SWITCH > 1)//外部FLASH不能使用96MHz,SPIF不支持
+		{
+			SYSCTL_CLKDIV_OSC96M = (CHIP_CLOCK_SWITCH - 1); //配置主时钟分频
+		}
+		else
+		{//使用默认的24MHz
+			SYSCTL_CLKDIV_OSC96M = (4 - 1);//配置主时钟分频
+		}
+	}
+	else//内部FLASH
+	{//Rom初始化完成,不需要再来
+		// SYSCTL_CLKDIV_OSC96M = (CHIP_CLOCK_SWITCH - 1); //配置主时钟分频
+	}
+	nop; nop;//等待两个时钟周期
 }
 /*
- * @brief 如果启动低功耗，可通过此函数配置
+ * @brief 配置中断向量表
+ */
+void Default_Vector(void)
+{
+	if(SYSCTL_PIO_CFG & BIT1)//使用外部FLASH
+	{
+		uint32_t *vector = (uint32_t *)&vector_base;
+		uint32_t *ivt = (uint32_t *)IVT_BASE_ADDR;
+		for(size_t i = 0; i < 33; i++)//32个中断向量表+1个异常中断跳转指令
+		{
+			ivt[i] = vector[i];
+		}
+	}
+	else//内部FLASH
+	{//Rom初始化完成,不需要再来
+	}
+}
+/*
+ * @brief 进行一些默认配置,防止异常
  */
 void SECTION(".init.Default") Default_Config()
 {
 	// 默认频率配置
 	Default_Freq();
-	// 低功耗模式配置
+	//默认中断向量表配置
+	Default_Vector();
+	//默认需要开启的模块使能
+	Default_Module_Enable();
+	//默认模块复位配置(防止后续初始化异常使用)
+	Default_Module_Reset();
+	//默认模块关闭配置(降低功耗),也是时钟关闭
+	Default_Module_Disable();
+	//默认GPIO输入关闭功能(降低功耗),也是输入使能关闭
+	// Default_GPIO_InputSet();
 }
 //----------------------------------------------------------------------------
 // FUNCTION: Device_init
