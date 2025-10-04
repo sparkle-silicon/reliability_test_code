@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-04 18:32:24
+ * @LastEditTime: 2025-10-04 18:36:40
  * @Description:
  *
  *
@@ -103,7 +103,6 @@ void Default_GPIO_InputSet()
 // 通知子系统进行升降频
 void Default_Mailbox_SetClockFrequency(BYTE ClockDiv)
 {
-	static volatile sFixedFlashInfo *flash_fix_info_ptr = NULL;
 //告知主系统更新行为
 	MAILBOX_SELF_CMD = MAILBOX_CMD_FREQ_SYNC;
 	MAILBOX_SELF_INFO1 = ClockDiv; // 通知子系统设置多少分频
