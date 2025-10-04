@@ -17,37 +17,14 @@
 #include "KERNEL_I3C.H"
 #include <math.h>
 
+ //data structure define
 BYTE MASTER0_DEV_DYNAMIC_ADDR_TABLE[] = { 0x3A,0x3B,0x3C,0x3D };    //动态地址表是MASTER需要分配给SLAVE的,需要开发人员定义 
 BYTE MASTER1_DEV_DYNAMIC_ADDR_TABLE[] = { 0x3A,0x3B,0x3C,0x3D };    //动态地址表是MASTER需要分配给SLAVE的,需要开发人员定义  
 BYTE MASTER0_DEV_STATIC_ADDR_TABLE[] = { 0 };     //静态地址表是开发人员需要查阅SLAVE设备DATASHEET获取后填入
 BYTE MASTER1_DEV_STATIC_ADDR_TABLE[] = { 0 };     //静态地址表是开发人员需要查阅SLAVE设备DATASHEET获取后填入
 uint8_t get_status[2] = { 0 };  //ibi 请求读状态
-//device char table structure define
-typedef union DEV_CHAR_TABLE
-{
-    u32 dev_char_table1_loc[4];
-    struct
-    {
-        struct {
-            uint32_t lsb_provisional_id : 32;
-        } loc1;
-        struct {
-            uint32_t reserved_loc2;
-            uint32_t lsb_provisional_id : 32;
-        } loc2;
-        struct {
-            uint32_t reserved_loc3 : 16;
-            uint32_t bcr : 8;
-            uint32_t dcr : 8;
-        } loc3;
-        struct {
-            uint32_t reserved_loc4 : 24;
-            uint32_t dev_dynamic_addr : 8;
-        } loc4;
-    } dct_bits;
-} sDEV_CHAR_TABLE;
-sDEV_CHAR_TABLE master0_dev_read_char_table[] = { 0 };
-sDEV_CHAR_TABLE master1_dev_read_char_table[] = { 0 };
+sDEV_CHAR_TABLE master0_dev_read_char_table[] = { 0 };  //读取master0 dct
+sDEV_CHAR_TABLE master1_dev_read_char_table[] = { 0 };  //读取master0 dct
 
 /**
 * @brief I3C地址转换函数
@@ -515,13 +492,13 @@ BYTE I3C_Master_Init(uint32_t speed, BYTE i3c_mux)
 * @brief I3C MASTER ENTDAA函数
 *
 * @param dct DCT动态地址表指针,用于动态地址分配后存放DCT
-* @param addr DCT动态地址表指针,必须填DEV_ADDR_TABLE
+* @param dynamic_addr DAT动态地址表指针,必须填DEV_DYNAMIC_ADDR_TABLE
 * @param i3c_mux 配置选择，如I3C_MASTER0、I3C_MASTER1
 * @return true/false
 *
 * @note 初始化配置设备动态地址
 */
-BYTE I3C_MASTER_ENTDAA(sDEV_CHAR_TABLE* dct, BYTE* addr, BYTE i3c_mux)
+BYTE I3C_MASTER_ENTDAA(sDEV_CHAR_TABLE* dct, BYTE* dynamic_addr, BYTE i3c_mux)
 {
     uint32_t temp_data = 0;
     if ((i3c_mux != I3C_MASTER0) && (i3c_mux != I3C_MASTER1))
@@ -541,9 +518,9 @@ BYTE I3C_MASTER_ENTDAA(sDEV_CHAR_TABLE* dct, BYTE* addr, BYTE i3c_mux)
     {
         //Set Device Static Address And Type of device I3C
         temp_data &= (DEV_ADDR_TABLE_LOC1_DEVICE_I3C);
-        temp_data |= DEV_ADDR_TABLE_LOC1_DEV_DYNAMIC_ADDR(*(addr + dev_tmpcnt));
-        if (DEV_ADDR_TABLE_LOC1_DEV_DYNAMIC_ADDR_PARITY(*(addr + dev_tmpcnt)) != 0)
-            temp_data |= DEV_ADDR_TABLE_LOC1_DEV_DYNAMIC_ADDR_PARITY(*(addr + dev_tmpcnt));
+        temp_data |= DEV_ADDR_TABLE_LOC1_DEV_DYNAMIC_ADDR(*(dynamic_addr + dev_tmpcnt));
+        if (DEV_ADDR_TABLE_LOC1_DEV_DYNAMIC_ADDR_PARITY(*(dynamic_addr + dev_tmpcnt)) != 0)
+            temp_data |= DEV_ADDR_TABLE_LOC1_DEV_DYNAMIC_ADDR_PARITY(*(dynamic_addr + dev_tmpcnt));
         else
             temp_data &= DEV_ADDR_TABLE_LOC1_DEV_DYNAMIC_ADDR_PARITY0;
         I3C_WriteREG_DWORD(temp_data, DEV_ADDR_TABLE1_LOC1_OFFSET, i3c_mux);
@@ -1199,11 +1176,12 @@ repeat_ibi:
     if (((ibi_queue_status & IBI_QUEUE_STATUS_IBI_STATUS) == 0) && (data_length > 0))
     {
         uint8_t times = ceil(data_length / 4);
-        while (times--)
+        uint8_t read_times = times;
+        while (read_times--)
         {
-            uint32_t* ibi_ptr = malloc(data_length);
+            uint32_t* ibi_ptr = (uint32_t*)malloc(data_length);
             i3c_dprint("ibi_ptr:%x\n", ibi_ptr);
-            *(ibi_ptr + times) = I3C_ReadREG_DWORD(IBI_QUEUE_DATA_OFFSET, i3c_mux);
+            *(ibi_ptr + times - read_times - 1) = I3C_ReadREG_DWORD(IBI_QUEUE_DATA_OFFSET, i3c_mux);    //read ibi data to memory
         }
     }
     else {
@@ -1229,7 +1207,7 @@ repeat_ibi:
             i3c_dprint("ibi status:0x%04x\n", get_status);
         }
     }
-    if ((I3C_ReadREG_DWORD(QUEUE_STATUS_LEVEL_OFFSET, i3c_mux) & QUEUE_STATUS_LEVEL_IBI_STS_CNT) > 0)
+    if ((I3C_ReadREG_DWORD(QUEUE_STATUS_LEVEL_OFFSET, i3c_mux) & QUEUE_STATUS_LEVEL_IBI_STS_CNT) > 0)   //have other ibi req
         goto repeat_ibi;
     else
         //enable intr signal en
@@ -1403,11 +1381,11 @@ BYTE I3C_SLAVE_WRITE(uint8_t* data, uint8_t bytelen, BYTE i3c_mux)
     while (data_len--)
     {
         temp_data = 0;
-        if (data_len == 1)
+        if (data_len == 0)
         {
-            temp_data |= WDATAB_LASTBYTE;
+            temp_data |= WDATAB_LASTBYTE;   //lastbyte need set flag
         }
-        temp_data |= *(data_ptr + (bytelen - data_len));
+        temp_data |= *(data_ptr + bytelen - data_len - 1);
         I3C_WriteREG_DWORD(temp_data, WDATAB_OFFSET, i3c_mux);
     }
     return TRUE;
