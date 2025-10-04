@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-04 15:42:43
+ * @LastEditTime: 2025-10-04 18:21:39
  * @Description:
  *              define base reg addr
  *              define reg size
@@ -6950,8 +6950,6 @@
 /* PUT_FLASH_NP Data Byte 0-63 (PUTFLASHNPDB0-63) Address Offset: 80h-BFh */
 // #define PUTFLASHNPDB eSPI_QUEUE1_REG(PUTFLASHNPDB_OFFSET)
 #define PUTFLASHNPDB (VBYTEP)(eSPI_QUEUE1_BASE_ADDR + PUTFLASHNPDB_OFFSET)
-
-#define IRAM0_BASE_ADDR 0x28000UL
 
 #define FLASH_BASE_ADDR 0x80000UL
 

@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-04 17:47:47
+ * @LastEditTime: 2025-10-04 18:32:24
  * @Description:
  *
  *
@@ -99,6 +99,31 @@ void Default_GPIO_InputSet()
 	Default_PinIO_Set(PinE8_15_InOut, GPIOE, 8, 7);
 	Default_PinIO_Set(PinE16_23_InOut, GPIOE, 16, 7);
 }
+/**/
+// 通知子系统进行升降频
+void Default_Mailbox_SetClockFrequency(BYTE ClockDiv)
+{
+	static volatile sFixedFlashInfo *flash_fix_info_ptr = NULL;
+//告知主系统更新行为
+	MAILBOX_SELF_CMD = MAILBOX_CMD_FREQ_SYNC;
+	MAILBOX_SELF_INFO1 = ClockDiv; // 通知子系统设置多少分频
+	// 触发子系统中断
+	MAILBOX_SET_IRQ(MAILBOX_Control_IRQ_NUMBER);
+	MAILBOX_WAIT_IRQ(MAILBOX_CMD_FREQ_SYNC, MAILBOX_Control_IRQ_NUMBER); // 等待子系统回复
+	MAILBOX_CLEAR_IRQ(MAILBOX_Control_IRQ_NUMBER); // 清除中断状态
+	//修改SPIF resume和下一次suspend之间的时间，要求最小100us
+	uint32_t trsmax = ((CHIP_CLOCK_INT_HIGH / 10000) / (ClockDiv + 1));
+	if(trsmax >= (1 << 13))trsmax = ((1 << 13) - 1);
+	SYSCTL_TRSMAX = trsmax;//修改SPIF CLOCK中的100us间隔时间,需要再频率之前修改，修改完以后可能出问题，需要重新配置频率才能修复
+	//配置时钟
+	SYSCTL_CLKDIV_OSC96M = ClockDiv;
+	nop; nop; //等待分频生效
+	//告知子系统更新完成
+	MAILBOX_SELF_CMD = MAILBOX_CMD_FREQ_SYNC;
+	MAILBOX_SET_IRQ(MAILBOX_Control_IRQ_NUMBER);
+	MAILBOX_WAIT_IRQ(MAILBOX_CMD_FREQ_SYNC, MAILBOX_Control_IRQ_NUMBER); // 等待子系统回复
+	MAILBOX_CLEAR_IRQ(MAILBOX_Control_IRQ_NUMBER); // 清除中断状态
+}
 /*
  * @brief 配置主时钟分频
  */
@@ -106,20 +131,42 @@ void Default_Freq(void)
 {
 	if(SYSCTL_PIO_CFG & BIT1)//使用外部FLASH
 	{
+		uint32_t clock_div = (4 - 1);//使用默认的24MHz
 		if(CHIP_CLOCK_SWITCH > 1)//外部FLASH不能使用96MHz,SPIF不支持
 		{
-			SYSCTL_CLKDIV_OSC96M = (CHIP_CLOCK_SWITCH - 1); //配置主时钟分频
+			clock_div = (CHIP_CLOCK_SWITCH - 1); //配置主时钟分频
+		}
+		if((!SYSCTL_ESTAT_EFUSE_EC_DEBUG) && (!SYSCTL_ESTAT_EFUSE_CRYPTO_DEBUG))//如果是走ec_debug并且子系统没起来
+		{
+				//修改SPIF resume和下一次suspend之间的时间，要求最小100us
+			uint32_t trsmax = ((CHIP_CLOCK_INT_HIGH / 10000) / (clock_div + 1));
+			if(trsmax >= (1 << 13))trsmax = ((1 << 13) - 1);
+			SYSCTL_TRSMAX = trsmax;//修改SPIF CLOCK中的100us间隔时间,需要再频率之前修改，修改完以后可能出问题，需要重新配置频率才能修复
+			SYSCTL_CLKDIV_OSC96M = clock_div;
+			nop; nop;
 		}
 		else
-		{//使用默认的24MHz
-			SYSCTL_CLKDIV_OSC96M = (4 - 1);//配置主时钟分频
+		{
+			Default_Mailbox_SetClockFrequency(CHIP_CLOCK_SWITCH - 1);
 		}
+
 	}
 	else//内部FLASH
 	{//Rom初始化完成,不需要再来
-		// SYSCTL_CLKDIV_OSC96M = (CHIP_CLOCK_SWITCH - 1); //配置主时钟分频
+		// if((!SYSCTL_ESTAT_EFUSE_EC_DEBUG) && (!SYSCTL_ESTAT_EFUSE_CRYPTO_DEBUG))//如果是走ec_debug并且子系统没起来
+		// {
+		// 		//修改SPIF resume和下一次suspend之间的时间，要求最小100us
+		// 	uint32_t trsmax = ((CHIP_CLOCK_INT_HIGH / 10000) / CHIP_CLOCK_SWITCH);
+		// 	if(trsmax >= (1 << 13))trsmax = ((1 << 13) - 1);
+		// 	SYSCTL_TRSMAX = trsmax;//修改SPIF CLOCK中的100us间隔时间,需要再频率之前修改，修改完以后可能出问题，需要重新配置频率才能修复
+		// 	SYSCTL_CLKDIV_OSC96M = (CHIP_CLOCK_SWITCH - 1);
+		// 	nop; nop;
+		// }
+		// else
+		// {
+		// 	Default_Mailbox_SetClockFrequency(CHIP_CLOCK_SWITCH - 1);
+		// }
 	}
-	nop; nop;//等待两个时钟周期
 }
 /*
  * @brief 配置中断向量表
