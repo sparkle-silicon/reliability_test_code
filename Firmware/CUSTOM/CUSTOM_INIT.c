@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-04 18:48:29
+ * @LastEditTime: 2025-10-08 20:31:04
  * @Description:
  *
  *
@@ -128,6 +128,7 @@ void Default_Mailbox_SetClockFrequency(BYTE ClockDiv)
  */
 void Default_Freq(void)
 {
+	//时钟初始化
 	if(SYSCTL_PIO_CFG & BIT1)//使用外部FLASH
 	{
 		uint32_t clock_div = (4 - 1);//使用默认的24MHz
@@ -166,6 +167,57 @@ void Default_Freq(void)
 		// 	Default_Mailbox_SetClockFrequency(CHIP_CLOCK_SWITCH - 1);
 		// }
 	}
+	//Oscillator Calibration时钟校准
+	if((SYSCTL_OSCTRIM & 0x007FEFFF) == 0x00338880)
+	{
+	#if SOFTWARE_TRIM_CONTROL
+	#define TEST_CHIPNUMBER 0
+	#if (TEST_CHIPNUMBER!=0)
+		{//Bypass OSC Output	
+			sysctl_iomux_config(GPIOB, 31, 0x0);//将GPH7设置为GPIO，即设置为默认不输出
+			GPIO_Input_EN(GPIOB, 31, DISABLE);  //GPH[7]的IE配为0
+			SYSCTL_PMU_CFG |= ((1 << 0) | (1 << 9)); //寄存器0x3_0518(PMU test enable )的bit0和bit9(PMU BUF enable)均置1 
+			sysctl_iomux_config(GPIOA, 15, 0x3);//将GPB7设置为BYPASS OSC32K
+		}
+#endif
+		{
+		#if (TEST_CHIPNUMBER==1)	//1号片
+		#define LOW_32K_FTRIM_DVAL 0x69
+		#define LOW_32K_TTRIM_DVAL 0x8
+		#define HIGH_24M_FTRIM_DVAL 0x1d
+		#define HIGH_24M_TTRIM_DVAL 0x8
+		#elif TEST_CHIPNUMBER==2	//2号片
+		#define LOW_32K_FTRIM_DVAL 0x6A
+		#define LOW_32K_TTRIM_DVAL 0x8
+		#define HIGH_24M_FTRIM_DVAL 0x1d
+		#define HIGH_24M_TTRIM_DVAL 0x9
+		#else//默认值(不推荐改变该值)
+		#define LOW_32K_FTRIM_DVAL 0x80
+		#define LOW_32K_TTRIM_DVAL 0x8
+		#define HIGH_24M_FTRIM_DVAL 0x1C
+		#define HIGH_24M_TTRIM_DVAL 0x6
+		#endif
+			{//进行trim值填入
+				SYSCTL_OSCTRIM = (SYSCTL_OSCTRIM & (~(0x007FEFFF))) | \
+					((((LOW_32K_FTRIM_DVAL) & 0xFF) << 0) | (((LOW_32K_TTRIM_DVAL) & 0x0F) << 8) | \
+					(((HIGH_24M_FTRIM_DVAL) & 0x3F) << 13) | (((HIGH_24M_TTRIM_DVAL) & 0x0F) << 19));
+			}
+		}
+	#endif
+	}
+	else
+	{
+		//认为硬件trim完成
+	}
+	//高精准时钟功能开启
+#if SUPPORT_OSC96MHZ_CHOPEN
+	SYSCTL_OSCTRIM |= SYSCTL_OSCTRIM_CHOPEN;
+#else
+	SYSCTL_OSCTRIM &= ~SYSCTL_OSCTRIM_CHOPEN;
+
+#endif
+	//获取当前CPU频率
+	get_cpu_freq();
 }
 /*
  * @brief 配置中断向量表

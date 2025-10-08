@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-04 18:36:02
+ * @LastEditTime: 2025-10-08 20:29:24
  * @Description:
  *
  *
@@ -24,7 +24,7 @@
  * 平台选择
  *****************************************************************************/
 #define SCI_POLLING_CONTROL 0 // 由于龙芯平台SCI有效时间为15ms，如果为龙芯平台需要把该宏打开
-#define SOFTWARE_TRIM_CONTROL 0   //打开软件trim 32k/96m
+#define SOFTWARE_TRIM_CONTROL 0   //打开软件时钟校准(trim 32k/96m)
 #define FLASH_TO_IRAM0 0             // 打开crypto代码从flash搬运到IRAM0功能
 #define MAILBOX_SMS_UPDATE_SUPPORT 1 // 打开4K SMS方式验证更新
 #define secure_area 0x80000          // 不能更新的安全区域 512K
@@ -39,6 +39,7 @@
 #define SUPPORT_KBS_WAKEUP 0      // 键盘按键唤醒
 #define SUPPORT_KBS_REPEAT 0      // Enabled KBS REPEAT FUNCTION
 #define SUPPORT_MATRIX_UTILITY 0  // Enabled PMC Matrix Utility Support
+#define SUPPORT_OSC96MHZ_CHOPEN 0//时钟​斩波稳定使能​Chopper Stabilization Enable
 
  //I3C Interface control
 #define I3C_MASTER0_INTFMODE MASTER_I3C_MODE //i3c master0接口模式选择 MASTER_I3C_MODE/MASTER_I3C_MODE

@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-06-16 15:15:20
+ * @LastEditTime: 2025-10-08 20:27:06
  * @Description:
  *               define chip_type
  *               define identifier
@@ -96,8 +96,7 @@ typedef volatile unsigned int VDWORD;
 #define VWORDP VWORD *
 #define VDWORDP VDWORD *
 // type bit stuct
-typedef struct _Bit
-{
+typedef struct _Bit{
     BYTE bit0 : 1;
     BYTE bit1 : 1;
     BYTE bit2 : 1;
@@ -107,8 +106,7 @@ typedef struct _Bit
     BYTE bit6 : 1;
     BYTE bit7 : 1;
 } sBit;
-typedef struct _Mode
-{
+typedef struct _Mode{
     BYTE SYSCTL : 1;
     BYTE PNP : 1;
     BYTE SPIF : 1;
@@ -131,19 +129,16 @@ typedef struct _Mode
     BYTE SPIM : 1;
     BYTE P80 : 1;
 } sMode;
-typedef union _Byte
-{
+typedef union _Byte{
     BYTE byte;
     sBit bit;
 } uByte;
-typedef union _Word
-{
+typedef union _Word{
     WORD word;
     BYTE byte[2];
     sBit bit[2];
 } uWord;
-typedef union _Dword
-{
+typedef union _Dword{
     DWORD dword;
     WORD word[2];
     BYTE byte[4];
@@ -310,13 +305,11 @@ typedef void (*FUNCT_PTR_V_D_BP)(DWORD, BYTEP);
 typedef void (*FUNCT_PTR_B_D_D)(BYTE, DWORD, DWORD);
 typedef void (*FUNCT_PTR_V_D_BP_L)(DWORD, BYTE *, WORD);
 // kbs typedef
-typedef struct _A2_TABLE
-{
+typedef struct _A2_TABLE{
     BYTE comb;        // Combination Key Setting
     const BYTE *pntr; // Pointer to array for key
 } A2_TABLE;
-typedef struct BootHotKeyStruct
-{
+typedef struct BootHotKeyStruct{
     BYTE matrix;
     FUNCT_PTR_V_B pfunction;
 } sBootHotKeyStruct;
@@ -326,8 +319,7 @@ extern const BYTE sskey2_overlay_table[];
 extern const A2_TABLE sskey2_A2_table[];
 /*--------------------KBS typedef-----------------*/
 #pragma pack(1) // 1字节对齐
-typedef struct _scan
-{
+typedef struct _scan{
     /*buffer缓存相关的指针*/
     BYTE head : 4; /* Keyboard buffer head (0-15). 扫描缓存的头索引*/
     BYTE tail : 4; /* Keyboard buffer tail (0-15). 扫描缓存的尾索引*/
@@ -341,30 +333,25 @@ typedef struct _scan
     BYTE back : 1; /* Scan activity flag - break. break.产生break事件*/
     BYTE keys : 1; /* Scan activity flag - keys active.keys active. 按键活跃状态 */
 } sscan;
-typedef union _KEY
-{
+typedef union _KEY{
     BYTE byte;
-    struct
-    {
+    struct{
         BYTE ksi : 3; /* Bit 0 - 2. Bit address of the KI bit. 列号,0~8*/
         BYTE kso : 5; /* Bit 3 - 7. Bit address of the KO bit.行号 32位*/
     } index;
 } uKEY;
-typedef struct _sign
-{
+typedef struct _sign{
     DWORD r[8];
     DWORD s[8];
 } ssign;
-typedef struct _sign_string
-{
+typedef struct _sign_string{
     char head[2];
     char space1;
     char r[64];
     char space2;
     char s[64];
 } ssign_string;
-typedef struct _point
-{
+typedef struct _point{
     DWORD x[8];
     DWORD y[8];
 } spoint;
@@ -374,8 +361,7 @@ extern int main();
 extern sMode Mode;
 // extern u_int32_t CHIP_CLOCK_SWITCH;
 
-typedef struct _CryptoFlashInfo
-{
+typedef struct _CryptoFlashInfo{
     uint8_t Firmware_ID[16]; // 识别码，确认安全验签位置，和开头识别码做区分
     uint32_t Crc32Data;
     uint8_t HASH_AES_ECB_RTL_KEY[64];
@@ -410,6 +396,7 @@ typedef struct _CryptoFlashInfo
 #define SYSCTL_ESTAT_EFUSE_CRYPTO_CLKGATE_DISABLE               ((SYSCTL_ESTAT&0x02000000)>>25)//[25]
 #define SYSCTL_ESTAT_RESERVED                                   ((SYSCTL_ESTAT&0xFC000000)>>26)//[31:26]
 
+#define SYSCTL_OSCTRIM_CHOPEN BIT(23)
 #include <AE_REG.H>
 #include <AE_CONFIG.H>
 #include <AE_LIBC.H>

@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-12-14 17:22:10
+ * @LastEditTime: 2025-10-08 17:41:23
  * @Description:
  *
  *
@@ -61,8 +61,10 @@ uint32_t get_cycle_value()
 {
   return read_csr(mcycle);
 }
-uint32_t NOINLINE measure_cpu_freq(register size_t n)
+#if 1
+uint32_t NOINLINE measure_cpu_freq(size_t n)
 {
+#if 0//不走pll了
   enable_mcycle_minstret();
   register uint32_t start_mtime, delta_mtime;
   register uint32_t mtime_freq = get_timer_freq(); // get default freq（32k）
@@ -83,6 +85,11 @@ uint32_t NOINLINE measure_cpu_freq(register size_t n)
   disable_mcycle_minstret();
   // 24M时钟周期/32k时钟周期*预定32k的频率+24M时钟周期%32k时钟周期*预定32k频率/32K时钟频率
   return (delta_mcycle / delta_mtime) * mtime_freq + ((delta_mcycle % delta_mtime) * mtime_freq) / delta_mtime;
+#else
+  //后续如果有方案可以添加,目前暂时认为其为标准时钟
+  UNUSED_VAR(n);
+  return HIGHT_CHIP_CLOCK;
+#endif
 }
 uint32_t get_cpu_freq()
 {
@@ -92,6 +99,106 @@ uint32_t get_cpu_freq()
   CPU_FREQ = measure_cpu_freq(100);
   return CPU_FREQ;
 }
+#else
+#define MIN_MEASUREMENT_CYCLES 1000000  // 最小测量周期数
+#define CALIBRATION_SAMPLES 5           // 校准采样次数
+#define MTIME_FREQ_NOMINAL LOW_CHIP_CLOCK      // 标称32.768kHz频率
+#define CPU_FREQ_NOMINAL 96000000       // 标称96MHz频率
+
+// 精确延时函数（使用循环计数）
+static void precise_delay(uint32_t cycles)
+{
+  volatile uint32_t count = cycles;
+  while(count--);
+}
+
+// 测量函数（核心）
+static uint64_t measure_ratio(uint32_t n)
+{
+  enable_mcycle_minstret();
+
+  uint32_t start_mtime, end_mtime;
+  uint32_t start_mcycle, end_mcycle;
+
+  // 等待mtime变化确保起点准确
+  uint32_t tmp = mtime_lo();
+  do
+  {
+    start_mtime = mtime_lo();
+  }
+  while(start_mtime == tmp);
+
+  start_mcycle = read_csr(mcycle);
+
+  // 等待足够的mtime计数
+  uint32_t elapsed;
+  do
+  {
+    end_mtime = mtime_lo();
+    elapsed = (end_mtime >= start_mtime) ?
+      (end_mtime - start_mtime) :
+      (0xFFFFFFFF - start_mtime + end_mtime + 1);
+  }
+  while(elapsed < n);
+
+  end_mcycle = read_csr(mcycle);
+  disable_mcycle_minstret();
+
+  // 计算mcycle差值（处理溢出）
+  uint64_t delta_mcycle = (end_mcycle >= start_mcycle) ?
+    (end_mcycle - start_mcycle) :
+    (0xFFFFFFFF - start_mcycle + end_mcycle + 1);
+
+  return (delta_mcycle << 32) | elapsed; // 返回64位结果
+}
+
+// 主测量函数
+uint32_t NOINLINE measure_cpu_freq(void)
+{
+// 预热测量系统
+  measure_ratio(100);
+
+  // 多次测量取平均
+  uint64_t total_ratio = 0;
+  for(int i = 0; i < CALIBRATION_SAMPLES; i++)
+  {
+// 每次测量使用不同的时间基准
+    uint32_t n = MIN_MEASUREMENT_CYCLES + (i * 10000);
+
+    uint64_t result = measure_ratio(n);
+    uint64_t delta_mcycle = result >> 32;
+    uint32_t delta_mtime = result & 0xFFFFFFFF;
+
+    // 计算比例因子
+    uint64_t ratio = (delta_mcycle << 20) / delta_mtime;
+    total_ratio += ratio;
+
+    // 间隔延时，减少热影响
+    precise_delay(1000);
+  }
+
+  // 计算平均比例因子
+  uint64_t avg_ratio = total_ratio / CALIBRATION_SAMPLES;
+
+  // 计算实际频率（使用标称值作为基准）
+  uint64_t freq = (avg_ratio * MTIME_FREQ_NOMINAL) >> 20;
+
+  // 应用温度补偿（如果有温度传感器）
+#ifdef HAS_TEMP_SENSOR
+  int temp = read_temperature();
+  freq = apply_temp_compensation(freq, temp);
+#endif
+
+  return (uint32_t)freq;
+}
+uint32_t get_cpu_freq()
+{
+  // measure for real
+  CPU_FREQ = measure_cpu_freq();
+  return CPU_FREQ;
+}
+#endif
+
 // Debugger CPU Int Function
 void CPU_Int_Enable(BYTE type)
 {
