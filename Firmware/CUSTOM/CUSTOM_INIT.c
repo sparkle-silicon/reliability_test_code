@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-08 20:31:04
+ * @LastEditTime: 2025-10-08 20:34:08
  * @Description:
  *
  *
@@ -172,14 +172,14 @@ void Default_Freq(void)
 	{
 	#if SOFTWARE_TRIM_CONTROL
 	#define TEST_CHIPNUMBER 0
-	#if (TEST_CHIPNUMBER!=0)
+	#if (TEST_CHIPNUMBER!=0)&&0
 		{//Bypass OSC Output	
 			sysctl_iomux_config(GPIOB, 31, 0x0);//将GPH7设置为GPIO，即设置为默认不输出
 			GPIO_Input_EN(GPIOB, 31, DISABLE);  //GPH[7]的IE配为0
 			SYSCTL_PMU_CFG |= ((1 << 0) | (1 << 9)); //寄存器0x3_0518(PMU test enable )的bit0和bit9(PMU BUF enable)均置1 
 			sysctl_iomux_config(GPIOA, 15, 0x3);//将GPB7设置为BYPASS OSC32K
 		}
-#endif
+	#endif
 		{
 		#if (TEST_CHIPNUMBER==1)	//1号片
 		#define LOW_32K_FTRIM_DVAL 0x69
