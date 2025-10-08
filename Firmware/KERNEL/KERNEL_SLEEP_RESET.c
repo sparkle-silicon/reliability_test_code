@@ -102,7 +102,7 @@ void ALIGNED(4) OPTIMIZE(0) CPU_SLP_RES(void)
 		MAILBOX_CLEAR_IRQ(MAILBOX_Control_IRQ_NUMBER); // 清除中断状态
 	}
 	//mem retn
-	//SYSCTL_RET_CTRL=0x0;
+	SYSCTL_RET_CTRL &= ~(BIT(1)|BIT(2)|BIT(4)|BIT(5)|BIT(6)|BIT(7)|BIT(10)|BIT(11));//3μA
 	//flash pin
 	SYSCTL_PIO1_IECFG = 0x0;//外部spif pin
 	SYSCTL_PIO3_IECFG &= 0x00ffffff;//内部spif pin
@@ -111,6 +111,7 @@ void ALIGNED(4) OPTIMIZE(0) CPU_SLP_RES(void)
 	SYSCTL_DVDD_EN |= ((BIT(1) | BIT(2) | BIT(4) | BIT(5) | BIT(6) | BIT(7) | BIT(11)) << 12);//iso enable
 	SYSCTL_DVDD_EN &= ~(BIT(1) | BIT(2) | BIT(4) | BIT(5) | BIT(6) | BIT(7) | BIT(11));
 	//mode en
+	SYSCTL_MODEN1 &= ~MAILBOX_EN;
 	SYSCTL_MODEN1 &= ~(CRYPTO_EN|SPIFE_EN|SPIF_EN|CACHE_EN);
 	#ifdef SUPPORT_DEEPSLEEP
 	//vcore->1.0V
