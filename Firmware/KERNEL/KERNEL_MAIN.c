@@ -523,6 +523,7 @@ VBYTEP OPTIMIZE0 USED SPIF_Read_Interface(register DWORD size, register DWORD ad
 //----------------------------------------------------------------------------
 int __weak main(void)
 {
+	Enter_LowPower_Mode();
 	AutoON_Check_AfterUpdate(); // 检查更新后重启设定标志
 #if DEBUG
 	printr(printf_instructions_msg);
