@@ -101,7 +101,7 @@ void ALIGNED(4) OPTIMIZE(0) CPU_SLP_RES(void)
 		MAILBOX_WAIT_IRQ(MAILBOX_CMD_FLASH_ENTERLOWPOWER, MAILBOX_Control_IRQ_NUMBER);
 		MAILBOX_CLEAR_IRQ(MAILBOX_Control_IRQ_NUMBER); // 清除中断状态
 	}
-	for(i = 0; i < 200000; i++)
+	for(i = 0; i < 50000; i++)
 	{
 		nop; nop; nop;
 	}
