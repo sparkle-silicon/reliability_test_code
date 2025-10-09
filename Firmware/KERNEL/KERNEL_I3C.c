@@ -689,19 +689,9 @@ BYTE I3C_MASTER_BC_CCC_WRITE(uint8_t* data, uint16_t bytelen, BYTE cmd, uint8_t 
     uint8_t* data_ptr = data;
     uint32_t data_len = bytelen;
     uint32_t temp_data = 0;
-    if ((i3c_mux != I3C_MASTER0) && (i3c_mux != I3C_MASTER1))
-    {
-        i3c_dprint("controller select fault\n");
-        return FALSE;
-    }
-    if (data_ptr == NULL)
+    if (((i3c_mux != I3C_MASTER0) && (i3c_mux != I3C_MASTER1)) || (data_ptr == NULL) || (cmd > BROADCAST_CMD_MAX))
     {
         i3c_dprint("argument error\n");
-        return FALSE;
-    }
-    if (cmd > BROADCAST_CMD_MAX)
-    {
-        i3c_dprint("cmd error\n");
         return FALSE;
     }
 
@@ -796,19 +786,10 @@ BYTE I3C_MASTER_DR_CCC_WRITE(uint8_t static_addr, uint8_t* data, uint16_t bytele
     uint8_t* data_ptr = data;
     uint32_t data_len = bytelen;
     uint32_t temp_data = 0;
-    if ((i3c_mux != I3C_MASTER0) && (i3c_mux != I3C_MASTER1))
-    {
-        i3c_dprint("controller select fault\n");
-        return FALSE;
-    }
-    if (data_ptr == NULL)
+
+    if (((i3c_mux != I3C_MASTER0) && (i3c_mux != I3C_MASTER1)) || (data_ptr == NULL) || (cmd < DIRECTED_CMD_MIN))
     {
         i3c_dprint("argument error\n");
-        return FALSE;
-    }
-    if (cmd < DIRECTED_CMD_MIN)
-    {
-        i3c_dprint("cmd error\n");
         return FALSE;
     }
 
@@ -898,19 +879,10 @@ BYTE I3C_MASTER_DR_CCC_READ(uint8_t static_addr, uint8_t* data, uint16_t bytelen
     uint8_t* data_ptr = data;
     uint32_t data_len = bytelen;
     uint32_t temp_data = 0;
-    if (data_ptr == NULL || data_len == 0)
+
+    if (((i3c_mux != I3C_MASTER0) && (i3c_mux != I3C_MASTER1)) || (data_ptr == NULL) || (data_len == 0) || (cmd < DIRECTED_CMD_MIN))
     {
         i3c_dprint("argument error\n");
-        return FALSE;
-    }
-    if ((i3c_mux != I3C_MASTER0) && (i3c_mux != I3C_MASTER1))
-    {
-        i3c_dprint("controller select fault\n");
-        return FALSE;
-    }
-    if (cmd < DIRECTED_CMD_MIN)
-    {
-        i3c_dprint("cmd error\n");
         return FALSE;
     }
 
@@ -993,14 +965,10 @@ BYTE I3C_MASTER_PV_WRITE_WITH7E(uint8_t dynamic_addr, uint8_t* data, uint16_t by
     uint8_t* data_ptr = data;
     uint32_t data_len = bytelen;
     uint32_t temp_data = 0;
-    if (data_ptr == NULL || data_len == 0)
+
+    if (((i3c_mux != I3C_MASTER0) && (i3c_mux != I3C_MASTER1)) || (data_ptr == NULL) || (data_len == 0))
     {
         i3c_dprint("argument error\n");
-        return FALSE;
-    }
-    if ((i3c_mux != I3C_MASTER0) && (i3c_mux != I3C_MASTER1))
-    {
-        i3c_dprint("controller select fault\n");
         return FALSE;
     }
 
@@ -1074,14 +1042,10 @@ BYTE I3C_MASTER_PV_READ_WITH7E(uint8_t dynamic_addr, uint8_t* data, uint16_t byt
     uint8_t* data_ptr = data;
     uint32_t data_len = bytelen;
     uint32_t temp_data = 0;
-    if (data_ptr == NULL || data_len == 0)
+
+    if (((i3c_mux != I3C_MASTER0) && (i3c_mux != I3C_MASTER1)) || (data_ptr == NULL) || (data_len == 0))
     {
         i3c_dprint("argument error\n");
-        return FALSE;
-    }
-    if ((i3c_mux != I3C_MASTER0) && (i3c_mux != I3C_MASTER1))
-    {
-        i3c_dprint("controller select fault\n");
         return FALSE;
     }
 
@@ -1166,6 +1130,12 @@ BYTE I3C_MASTER_PV_WRITE_THEN_READ_WITH7E(uint8_t dynamic_addr, uint8_t* wdata, 
     uint8_t* rdata_ptr = rdata;
     uint32_t rdata_len = rbytelen;
     uint32_t temp_data = 0;
+
+    if ((i3c_mux != I3C_MASTER0) && (i3c_mux != I3C_MASTER1))
+    {
+        i3c_dprint("argument error\n");
+        return FALSE;
+    }
 
     //需要提前禁掉INTR_STATUS_RX_THLD_STS中断，采取在函数等状态位的方式来读
     temp_data = I3C_ReadREG_DWORD(INTR_SIGNAL_EN_OFFSET, i3c_mux) & (~INTR_SIGNAL_EN_RX_THLD_SIGNAL_EN);

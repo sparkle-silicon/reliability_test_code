@@ -902,9 +902,6 @@ void i3c_init(void)
 #if (I3C_MASTER0_INTFMODE == MASTER_I3C_MODE)
 	I3C_Master_Init(SDR_DEFAULT_SPEED, I3C_MASTER0);
 	I3C_MASTER_ENTDAA(master0_dev_read_char_table, MASTER0_DEV_DYNAMIC_ADDR_TABLE, I3C_MASTER0); //specify a dynamic addr
-	// vDelayXms(20);
-	// printf("SLAVE0的动态地址为:%x\n", I3C_ReadREG_DWORD(DYNADDR_OFFSET, I3C_SLAVE0));
-	// printf("SLAVE1的动态地址为:%x\n", I3C_ReadREG_DWORD(DYNADDR_OFFSET, I3C_SLAVE1));
 #elif (I3C_MASTER0_INTFMODE == MASTER_I2C_MODE)
 	I3C_Legacy_Master_Init(SDR_DEFAULT_SPEED, I3C_MASTER0);
 #endif
