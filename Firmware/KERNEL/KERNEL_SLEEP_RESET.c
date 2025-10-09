@@ -101,8 +101,10 @@ void ALIGNED(4) OPTIMIZE(0) CPU_SLP_RES(void)
 		MAILBOX_WAIT_IRQ(MAILBOX_CMD_FLASH_ENTERLOWPOWER, MAILBOX_Control_IRQ_NUMBER);
 		MAILBOX_CLEAR_IRQ(MAILBOX_Control_IRQ_NUMBER); // 清除中断状态
 	}
-	//mem retn
-	SYSCTL_RET_CTRL &= ~(BIT(1) | BIT(2) | BIT(4) | BIT(5) | BIT(6) | BIT(7) | BIT(10) | BIT(11));//3μA
+	for(i = 0; i < 50000; i++)
+	{
+		nop; nop; nop;
+	}
 	//flash pin
 	SYSCTL_PIO1_IECFG = 0x0;//外部spif pin
 	SYSCTL_PIO3_IECFG &= 0x00ffffff;//内部spif pin
@@ -112,25 +114,28 @@ void ALIGNED(4) OPTIMIZE(0) CPU_SLP_RES(void)
 	SYSCTL_DVDD_EN &= ~(BIT(1) | BIT(2) | BIT(4) | BIT(5) | BIT(6) | BIT(7) | BIT(11));
 	//mode en
 	SYSCTL_MODEN1 &= ~MAILBOX_EN;
-	SYSCTL_MODEN1 &= ~(CRYPTO_EN | SPIFE_EN | SPIFI_EN | CACHE_EN);
-#ifdef SUPPORT_DEEPSLEEP
-//vcore->1.0V
-	SYSCTL_PMU_CFG &= (~(0xff << 10));
-	SYSCTL_PMU_CFG |= 22 << 10;
-#endif
-#ifdef SUPPORT_SLEEP
-//switch osc to 3m
-	SYSCTL_CLKDIV_OSC96M = 0x3F;
-#endif
-//cpu sleep
+	SYSCTL_MODEN1 &= ~(CRYPTO_EN|SPIFE_EN|SPIFI_EN|CACHE_EN);
+	//mem retn
+	SYSCTL_RET_CTRL &= ~(BIT(1)|BIT(2)|BIT(4)|BIT(5)|BIT(6)|BIT(7)|BIT(8)|BIT(9)|BIT(10)|BIT(11));//3μA
+	#ifdef SUPPORT_DEEPSLEEP
+	//vcore->1.0V
+	SYSCTL_PMU_CFG&=(~(0xff<<10));
+	SYSCTL_PMU_CFG|=22<<10;
+	#endif
+	#ifdef SUPPORT_SLEEP
+	//switch osc to 3m
+	SYSCTL_CLKDIV_OSC96M=0x3F;
+	#endif
+	//cpu sleep
 	asm volatile("wfi");
 	nop; nop; nop; nop; nop; nop;
 	SYSCTL_PMU_CFG = SYSCTL_PMU_CFG_CONTEXT;
 	//restore
-	SYSCTL_DVDD_EN |= (BIT(1) | BIT(2) | BIT(4) | BIT(5) | BIT(6) | BIT(7) | BIT(11));
-	REG8(0xbffff) = 0;
-	nop; nop; nop; nop; nop; nop;
-	SYSCTL_DVDD_EN &= ~((BIT(1) | BIT(2) | BIT(4) | BIT(5) | BIT(6) | BIT(7) | BIT(11)) << 12);//iso enable
+	SYSCTL_DVDD_EN |= (BIT(1)|BIT(2)|BIT(4)|BIT(5)|BIT(6)|BIT(7)|BIT(11));
+	REG8(0xbffff)=0;
+	nop;nop;nop;nop;nop;nop;
+	SYSCTL_DVDD_EN &= ~((BIT(1)|BIT(2)|BIT(4)|BIT(5)|BIT(6)|BIT(7)|BIT(11)) << 12);//iso enable
+	SYSCTL_RET_CTRL = SYSCTL_RET_CTRL_CONTEXT;
 	SYSCTL_PIO0_CFG = SYSCTL_PIO0_CFG_CONTEXT;
 	SYSCTL_PIO1_CFG = SYSCTL_PIO1_CFG_CONTEXT;
 	SYSCTL_PIO2_CFG = SYSCTL_PIO2_CFG_CONTEXT;
@@ -147,7 +152,6 @@ void ALIGNED(4) OPTIMIZE(0) CPU_SLP_RES(void)
 	SYSCTL_SWITCH_PLL = SYSCTL_SWITCH_PLL_CONTEXT;
 	SYSCTL_PAD_PECI = SYSCTL_PAD_PECI_CONTEXT;
 	SYSCTL_PMUCSR = SYSCTL_PMUCSR_CONTEXT;
-	SYSCTL_RET_CTRL = SYSCTL_RET_CTRL_CONTEXT;
 	ADC_CTRL = ADC_CTRL_CONTEXT;
 #if SUPPORT_KBS_WAKEUP
 	KBS_KSDC1R = KBS_KSDC1R_CONTEXT;
@@ -341,8 +345,6 @@ void CHIP_Sleep(void)
 	SYSCTL_PIO0_IECFG = 0x0;
 	//SYSCTL_PIO1_IECFG = 0x00f00000;//外部spif pin
 	SYSCTL_PIO2_IECFG = 0x0;
-	//switch osc to 3m
-	SYSCTL_CLKDIV_OSC96M = 0x3F;
 	//io mux
 #if SUPPORT_KBS_WAKEUP
 	SYSCTL_PIO5_CFG &= 0xfffc0000;
