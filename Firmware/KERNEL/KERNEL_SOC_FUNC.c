@@ -836,44 +836,52 @@ void time_init(void)
 
 void i3c_init(void)
 {
-	/****************** master init ******************/
 #if I3C_MODULE_EN
+
+	/****************** slave init ******************/
+#if I3C2_EN_Init
+	i3c2_MoudleClock_EN;
+	sysctl_iomux_slave0();
+	I3C_Slave_Init(SLAVE0_SET_STATICADDR, SLAVE0_SET_IDPARTNO, SLAVE0_SET_DCR, SLAVE0_SET_BCR, I3C_SLAVE0);
+	dprint("i3c_slave0_init done.\n");
+#endif
+
+#if I2C3_EN_Init
+	i3c3_MoudleClock_EN;
+	sysctl_iomux_slave1();
+	I3C_Slave_Init(SLAVE1_SET_STATICADDR, SLAVE1_SET_IDPARTNO, SLAVE1_SET_DCR, SLAVE1_SET_BCR, I3C_SLAVE1);
+	dprint("i3c_slave1_init done.\n");
+#endif
+
+	/****************** master init ******************/
 #if I3C0_EN_Init
 	i3c0_MoudleClock_EN;
 	sysctl_iomux_master0();
+	// i3c0_pull_up();
+	I3C_WAIT_SDA_PU(I3C_MASTER0);//需要等SCL/SDA都拉高后才能进行初始化，否则会误触发IBI中断
 #if (I3C_MASTER0_INTFMODE == MASTER_I3C_MODE)
 	I3C_Master_Init(SDR_DEFAULT_SPEED, I3C_MASTER0);
 	I3C_MASTER_ENTDAA(master0_dev_read_char_table, MASTER0_DEV_DYNAMIC_ADDR_TABLE, I3C_MASTER0); //specify a dynamic addr
 #elif (I3C_MASTER0_INTFMODE == MASTER_I2C_MODE)
 	I3C_Legacy_Master_Init(SDR_DEFAULT_SPEED, I3C_MASTER0);
 #endif
+	dprint("i3c_master0_init done.\n");
 #endif
 
 #if I3C1_EN_Init
 	i3c1_MoudleClock_EN;
 	sysctl_iomux_master1();
+	i3c1_pull_up();
+	I3C_WAIT_SDA_PU(I3C_MASTER1);//需要等SCL/SDA都拉高后才能进行初始化，否则会误触发IBI中断
 #if (I3C_MASTER1_INTFMODE == MASTER_I3C_MODE)
 	I3C_Master_Init(SDR_DEFAULT_SPEED, I3C_MASTER1);
 	I3C_MASTER_ENTDAA(master1_dev_read_char_table, MASTER1_DEV_DYNAMIC_ADDR_TABLE, I3C_MASTER1); //specify a dynamic addr
 #elif (I3C_MASTER1_INTFMODE == MASTER_I2C_MODE)
 	I3C_Legacy_Master_Init(SDR_DEFAULT_SPEED, I3C_MASTER1);
 #endif
-	dprint("i3c_master_init done.\n");
+	dprint("i3c_master1_init done.\n");
 #endif
 
-	/****************** slave init ******************/
-#if I3C2_EN_Init
-	i3c2_MoudleClock_EN;
-	sysctl_iomux_slave0();
-	I3C_Slave_Init(0x5A, I3C_SLAVE0);
-#endif
-
-#if I2C3_EN_Init
-	i3c3_MoudleClock_EN;
-	sysctl_iomux_slave1();
-	I3C_Slave_Init(0x6A, I3C_SLAVE1);
-#endif
-	dprint("i3c_slave_init done.\n");
 #endif
 }
 

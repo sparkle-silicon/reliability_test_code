@@ -318,7 +318,8 @@ extern void sysctl_iomux_kbs(void);
 extern void sysctl_iomux_pport(void);
 extern void sysctl_iomux_lpc(void);
 extern void sysctl_iomux_peci(void);
-
+extern void i3c0_pull_up(void);
+extern void i3c1_pull_up(void);
 extern BYTE  GPIO_Pullup_Config(BYTE  GPIO, BYTE  Num);
 extern char IsGpioOut(DWORD port, DWORD io);
 extern int GPIO_Config(int GPIO, int gpio_no, int mode, int op_val, int int_lv, int pol);
