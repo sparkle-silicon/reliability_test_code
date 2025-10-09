@@ -1896,8 +1896,7 @@ void intr1_i3c0(void) // 32
 	ICTL1_INTEN4 &= ~(0x1 << 0);
 #endif
 #endif
-
-	irqprint("master0_intr_status:%x\n", MASTER0_INTR_STATUS);
+	I3C_Master_IntrStatus(I3C_MASTER0);
 }
 void intr1_i3c1(void) // 33
 {
@@ -1915,7 +1914,7 @@ void intr1_i3c1(void) // 33
 #endif
 #endif
 
-	irqprint("master1_intr_status:%x\n", MASTER1_INTR_STATUS);
+	I3C_Master_IntrStatus(I3C_MASTER1);
 }
 void intr1_i3c2(void) // 34
 {

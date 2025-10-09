@@ -897,7 +897,7 @@ void i3c_init(void)
 #if I3C0_EN_Init
 	i3c0_MoudleClock_EN;
 	sysctl_iomux_master0();
-	i3c0_pull_up();
+	// i3c0_pull_up();
 	I3C_WAIT_SDA_PU(I3C_MASTER0);//需要等SCL/SDA都拉高后才能进行初始化，否则会误触发IBI中断
 #if (I3C_MASTER0_INTFMODE == MASTER_I3C_MODE)
 	I3C_Master_Init(SDR_DEFAULT_SPEED, I3C_MASTER0);
@@ -914,7 +914,7 @@ void i3c_init(void)
 #if I3C1_EN_Init
 	i3c1_MoudleClock_EN;
 	sysctl_iomux_master1();
-	i3c1_pull_up();
+	// i3c1_pull_up();
 	I3C_WAIT_SDA_PU(I3C_MASTER1);//需要等SCL/SDA都拉高后才能进行初始化，否则会误触发IBI中断
 #if (I3C_MASTER1_INTFMODE == MASTER_I3C_MODE)
 	I3C_Master_Init(SDR_DEFAULT_SPEED, I3C_MASTER1);
