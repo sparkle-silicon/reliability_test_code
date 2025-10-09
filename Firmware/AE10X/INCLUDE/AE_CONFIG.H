@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-08 20:29:24
+ * @LastEditTime: 2025-10-08 20:51:25
  * @Description:
  *
  *
@@ -110,7 +110,7 @@
  /****************************************************************************
   * Module Enable
   *****************************************************************************/
-#define GPIO_MODULE_EN 0
+#define GPIO_MODULE_EN 1
 #define IRQC_MODULE_EN 1
 #define ICTL_MODULE_EN 1
 #define I2C_MODULE_EN 0

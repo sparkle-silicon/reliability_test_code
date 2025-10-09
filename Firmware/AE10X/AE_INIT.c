@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-04 17:24:50
+ * @LastEditTime: 2025-10-08 22:22:51
  * @Description:
  *
  *
@@ -42,13 +42,13 @@ void SECTION(".init.dbinit") DoubleBoot_Init(void)
       }
       break;
     case 0xFF2:                  // 启动片区1和2的选择
-      if(SYSCTL_ESTAT & BIT(6)) // 判断是否为看门狗复位
+      if(SYSCTL_ESTAT & BIT(6)) // 判断是否为PWRSW复位
       {
         if(func_ptr != (FUNCT_PTR_V_V)0x0) // 是否地址
           (*func_ptr)();
       }
       break;
-      //内外部FLASH跳转选择
+    case 0xFF3://切换FLASH后跳转选择
     default:
       break;
   }

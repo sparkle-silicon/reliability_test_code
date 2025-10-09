@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-06-13 19:44:39
+ * @LastEditTime: 2025-10-08 23:52:55
  * @Description:
  *
  *
@@ -45,9 +45,9 @@
 // #error 
 #warning "You want use UARTB,but SMBUS3(IIC3) Enable, They reuse the same pin"
 #endif
-#define SMBUS3_UARTB_SEL  UARTB_SEL
+#define DEFAULT_SMBUS3_UARTB_SEL  UARTB_SEL
 #else
-#define SMBUS3_UARTB_SEL  SMBUS3_SEL
+#define DEFAULT_SMBUS3_UARTB_SEL  SMBUS3_SEL
 #endif
 //******************************************************************************************
 //      Interrupt set and read
@@ -249,8 +249,7 @@
 #define NUM_OF_GPIOD 7
 #define NUM_OF_GPIOE 24
 /************GPIO Register define***************/
-struct GPIOPinState
-{
+struct GPIOPinState{
 	BYTE default_state_idx;	// default state is mux_state[default_state_idx]
 	BYTE mux_state[4]; // 0 is input, 1 is output
 };

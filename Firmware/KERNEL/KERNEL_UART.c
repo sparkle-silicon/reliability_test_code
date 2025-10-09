@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-06-13 20:25:51
+ * @LastEditTime: 2025-10-08 23:46:15
  * @Description:
  *
  *
@@ -15,7 +15,7 @@
  */
 #include "AE_INCLUDE.H"
 #include "KERNEL_UART.H"
-void serial_base(BYTE uart_num)
+int serial_base(BYTE uart_num)
 {
     uart_num &= 0b111;//保护机制
     switch(uart_num)
@@ -33,9 +33,10 @@ void serial_base(BYTE uart_num)
             g_uart_base = UARTB_BASE_ADDR;
             break;
         default:
-            g_uart_base = UARTA_BASE_ADDR;
+            g_uart_base = 0;
             break;
     }
+    return g_uart_base;
 }
 int serial_config(BYTE uart_num, DWORD baudrate)
 {
@@ -67,7 +68,7 @@ int serial_config(BYTE uart_num, DWORD baudrate)
 }
 int serial_init(DWORD uart_num, DWORD baudrate)
 {
-    serial_base(uart_num);
+    if(serial_base(uart_num) == 0)return -1;
     return serial_config(uart_num, baudrate);
 }
 int serial_deinit(DWORD uart_num)
@@ -290,7 +291,7 @@ WEAK int putchar(int ch) /**/
         print_number++;
         if(print_cnt >= PRINT_MAX_SIZE)
             print_cnt = 0;
-}
+    }
 #else
     if(str == '\n')
     {

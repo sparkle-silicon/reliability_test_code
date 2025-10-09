@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-08 20:34:08
+ * @LastEditTime: 2025-10-08 22:26:49
  * @Description:
  *
  *
@@ -44,6 +44,15 @@ FUNCT_PTR_V_V Get_DoubleBoot_ADDR(void)
 #endif
 	return db_ptr;
 }
+
+/*
+ * @brief 针对需要绝对使能或者可以关闭的模块的部分模块
+ */
+void Default_Module_Enable(void)//Module Clock Enable
+{
+	SYSCTL_MODEN0 |= (0xFFFFFFFF);
+	SYSCTL_MODEN1 |= (0xFFFFFFFF);
+}
 /*
  * @brief 针对需要复位重新初始化的部分模块
  */
@@ -53,54 +62,12 @@ void Default_Module_Reset(void)
 	SYSCTL_RST0 |= (0);
 	SYSCTL_RST1 &= ~(0);
 	SYSCTL_RST1 |= (0);
-
-
 }
 /*
- * @brief 针对需要绝对使能或者可以关闭的模块的部分模块
+ * @brief 配置时钟分频
+ * @function1 Default_Mailbox_SetClockFrequency(通知子系统进行升降频)
+ * @function2 Default_Freq
  */
-void Default_Module_Enable()//Module Clock Enable
-{
-	SYSCTL_MODEN0 |= (0xFFFFFFFF);
-	SYSCTL_MODEN1 |= (0xFFFFFFFF);
-}
-void Default_Module_Disable()//Module Clock Disabled
-{
-	SYSCTL_MODEN0 &= ~(0);
-	SYSCTL_MODEN1 &= ~(0);
-}
-/*
- * @brief 如果开启启动低功耗，可通过以下两个函数配置引脚默认状态
- * @function1 ：Default_PinIO_Set
- * @function2 ：Default_GPIO_LowPower
- */
-void Default_PinIO_Set(int val, int GPIO, int idx, int lens)
-{
-	for(register int i = 0; i <= lens; i++)
-	{
-		GPIO_Input_EN(GPIO, idx + i, (!((val & BIT(i)) >> i)));
-	}
-}
-void Default_GPIO_InputSet()
-{
-	Default_PinIO_Set(PinA0_7_InOut, GPIOA, 0, 7);
-	Default_PinIO_Set(PinA8_15_InOut, GPIOA, 8, 7);
-	Default_PinIO_Set(PinA16_23_InOut, GPIOA, 16, 7);
-	Default_PinIO_Set(PinA24_31_InOut, GPIOA, 24, 7);
-	Default_PinIO_Set(PinB0_7_InOut, GPIOB, 0, 7);
-	Default_PinIO_Set(PinB8_15_InOut, GPIOB, 8, 7);
-	Default_PinIO_Set(PinB16_23_InOut, GPIOB, 16, 7);
-	Default_PinIO_Set(PinB24_31_InOut, GPIOB, 24, 7);
-	Default_PinIO_Set(PinC0_7_InOut, GPIOC, 0, 7);
-	Default_PinIO_Set(PinC8_15_InOut, GPIOC, 8, 7);
-	Default_PinIO_Set(PinD0_7_InOut, GPIOD, 0, 7);
-	Default_PinIO_Set(PinD8_InOut, GPIOD, 8, 1);
-	Default_PinIO_Set(PinE0_7_InOut, GPIOE, 0, 7);
-	Default_PinIO_Set(PinE8_15_InOut, GPIOE, 8, 7);
-	Default_PinIO_Set(PinE16_23_InOut, GPIOE, 16, 7);
-}
-/**/
-// 通知子系统进行升降频
 void Default_Mailbox_SetClockFrequency(BYTE ClockDiv)
 {
 //告知主系统更新行为
@@ -123,9 +90,6 @@ void Default_Mailbox_SetClockFrequency(BYTE ClockDiv)
 	MAILBOX_WAIT_IRQ(MAILBOX_CMD_FREQ_SYNC, MAILBOX_Control_IRQ_NUMBER); // 等待子系统回复
 	MAILBOX_CLEAR_IRQ(MAILBOX_Control_IRQ_NUMBER); // 清除中断状态
 }
-/*
- * @brief 配置主时钟分频
- */
 void Default_Freq(void)
 {
 	//时钟初始化
@@ -214,7 +178,6 @@ void Default_Freq(void)
 	SYSCTL_OSCTRIM |= SYSCTL_OSCTRIM_CHOPEN;
 #else
 	SYSCTL_OSCTRIM &= ~SYSCTL_OSCTRIM_CHOPEN;
-
 #endif
 	//获取当前CPU频率
 	get_cpu_freq();
@@ -265,11 +228,60 @@ void Default_Iram0(void)
 	}
 }
 /*
+ * @brief 如果开启启动低功耗，可通过以下两个函数配置引脚默认状态
+ */
+void Default_Module_Disable(void)//Module Clock Disabled
+{
+	SYSCTL_MODEN0 &= ~(0);
+	SYSCTL_MODEN1 &= ~(0);
+}
+/*
+ * @brief 如果开启启动低功耗，可通过以下两个函数配置引脚默认状态
+ * @function1 ：Default_PinIO_Set
+ * @function2 ：Default_GPIO_LowPower
+ */
+void Default_PinIO_Set(int val, int GPIO, int idx, int lens)
+{
+	for(register int i = 0; i < lens; i++)
+	{
+		GPIO_Input_EN(GPIO, idx + i, (!((val & BIT(i)) >> i)));
+	}
+}
+void Default_GPIO_InputSet()
+{
+	Default_PinIO_Set(PinA0_7_InOut, GPIOA, 0, 8);
+	Default_PinIO_Set(PinA8_15_InOut, GPIOA, 8, 8);
+	Default_PinIO_Set(PinA16_23_InOut, GPIOA, 16, 8);
+	Default_PinIO_Set(PinA24_31_InOut, GPIOA, 24, 8);
+	Default_PinIO_Set(PinB0_7_InOut, GPIOB, 0, 8);
+	Default_PinIO_Set(PinB8_15_InOut, GPIOB, 8, 8);
+	Default_PinIO_Set(PinB16_23_InOut, GPIOB, 16, 8);
+	Default_PinIO_Set(PinB24_31_InOut, GPIOB, 24, 8);
+	Default_PinIO_Set(PinC0_7_InOut, GPIOC, 0, 8);
+	Default_PinIO_Set(PinC8_15_InOut, GPIOC, 8, 8);
+	Default_PinIO_Set(PinD0_7_InOut, GPIOD, 16, 8);
+	Default_PinIO_Set(PinD8_InOut, GPIOD, 24, 1);
+	Default_PinIO_Set(PinE0_7_InOut, GPIOE, 0, 8);
+	Default_PinIO_Set(PinE8_15_InOut, GPIOE, 8, 8);
+	Default_PinIO_Set(PinE16_23_InOut, GPIOE, 16, 8);
+#define PinEmbFLASH_MISO_InOut 0b0
+#define PinEmbFLASH_MOSI_InOut 0b0
+#define PinEmbFLASH_HOLD_InOut 0b0
+#define PinEmbFLASH_WP_InOut 0b0
+						//76543210
+#define PinEFLASH_InOut (0b11000000 | \
+						(((PinEmbFLASH_MISO_InOut & 0b1) << 0) | \
+						 ((PinEmbFLASH_MOSI_InOut & 0b1) << 1) | \
+						 ((PinEmbFLASH_HOLD_InOut & 0b1) << 4) | \
+						 ((PinEmbFLASH_WP_InOut & 0b1) << 5)))
+	Default_PinIO_Set(PinEFLASH_InOut, GPIOE, 24, 6);//8
+
+}
+/*
  * @brief 进行一些默认配置,防止异常
  */
 void SECTION(".init.Default") Default_Config()
 {
-
 	//1.默认需要开启的模块使能(保障模块正常运行)
 	Default_Module_Enable();
 	//2.默认模块复位配置(防止后续初始化异常使用)
@@ -283,7 +295,7 @@ void SECTION(".init.Default") Default_Config()
 	//6.默认模块关闭配置(降低功耗),也是时钟关闭
 	Default_Module_Disable();
 	//7.默认GPIO输入关闭功能(降低功耗),也是输入使能关闭
-	// Default_GPIO_InputSet();
+	Default_GPIO_InputSet();
 }
 //----------------------------------------------------------------------------
 // FUNCTION: Device_init

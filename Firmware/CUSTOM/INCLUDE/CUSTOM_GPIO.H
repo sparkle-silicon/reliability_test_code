@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-06-13 15:35:37
+ * @LastEditTime: 2025-10-08 22:43:28
  * @Description:
  *
  *
@@ -158,8 +158,8 @@
 #define PinE16_23_Init    0b00000000        // GPIO E[23:16] data register OUTPUT init
 #define PinE16_23_InOut   0b00000000        // GPIO E[23:16] data direction register init.0 is INPUT,1 is OUTPUT.
 #define PinE16_23_PullUp  0b00000000         // GPIO E[23:16] IO Pull Up control register init. And bit7, 0 is "Gph0 or Gph1 selects uartb function.", 1 is "Gph0 or Gph1 selects SMCLK3 function."
-                          // 0
-#define PinE0_23_IoMux    0b01          // GPIO E[7:0] IO multiplex control register init. refer to 'pin_iocfg.xlsx'
+                          // 6 5 4 3 2 1 0
+#define PinE0_23_IoMux    0b01010101010101  // GPIO E[23:0] IO multiplex control register init. refer to 'pin_iocfg.xlsx'
 /*-----------------------------------------------------------------------------
  * Special define
  *---------------------------------------------------------------------------*/

@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-08 20:31:36
+ * @LastEditTime: 2025-10-09 12:04:35
  * @Description: This is about the  national crypto algorithm implementation
  *
  *
@@ -354,9 +354,8 @@ void gpio_init(void)
 void uart_init(void)
 {
 #if UART_MODULE_EN
-	int cnt;
 	int flag = 0;
-	int baud[6];
+	int baud[4];
 #ifdef UART0_BAUD
 	uart0_MoudleClock_EN;
 	sysctl_iomux_uart0();
@@ -372,21 +371,20 @@ void uart_init(void)
 #ifdef UARTA_BAUD
 	uarta_MoudleClock_EN;
 	sysctl_iomux_uarta(UARTA_TX_SEL, UARTA_RX_SEL);
-	flag |= BIT4;
-	baud[4] = serial_init(UARTA_CHANNEL, UARTA_BAUD);
+	flag |= BIT2;
+	baud[2] = serial_init(UARTA_CHANNEL, UARTA_BAUD);
 #endif
 #ifdef UARTB_BAUD
-	SMBUS3_UARTB_SEL;
 	uartb_MoudleClock_EN;
 	sysctl_iomux_uartb();
-	flag |= BIT5;
-	baud[5] = serial_init(UARTB_CHANNEL, UARTB_BAUD);
+	flag |= BIT3;
+	baud[3] = serial_init(UARTB_CHANNEL, UARTB_BAUD);
 #endif
-	for(cnt = 0; cnt < 6; cnt++)
+	for(int cnt = 0; cnt < 4; cnt++)
 	{
 		if(flag & BIT(cnt))
 		{
-			dprint("Actual baud rate of the serial port %X == %d\n", ((cnt < 4) ? cnt : ((cnt == 5) ? 0xB : 0xA)), baud[cnt]);
+			dprint("Actual baud rate of the serial port %X == %d.\n", ((cnt < 2) ? cnt : (cnt + 8)), baud[cnt]);
 		}
 	}
 	dprint("Uart init done.\n");
@@ -881,11 +879,13 @@ void i3c_init(void)
 
 void __weak SECTION(".init.module") Module_init(void)
 {
-	// 3.Initialize The GPIO
+	// 1.Initialize The GPIO
 	gpio_init();
-	// 4.Initialize The Serial Port
+	// 2.Switch Default SMBUS3 or UARTB 
+	DEFAULT_SMBUS3_UARTB_SEL;
+	// 3.Initialize The Serial Port
 	uart_init();
-	// 5.Initialize The SMBUS
+	// 4.Initialize The SMBUS
 	smbus_init();
 	// 6.Initialize The I3C
 	i3c_init();
