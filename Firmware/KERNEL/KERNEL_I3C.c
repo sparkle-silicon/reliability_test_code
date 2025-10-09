@@ -515,15 +515,14 @@ BYTE I3C_Master_Init(uint32_t speed, BYTE i3c_mux)
     //Controls whether or not I3C_master is enabled And I2C Slave Present 
     I3C_WriteREG_DWORD(DEVICE_CTRL_ENABLE | DEVICE_CTRL_IBA_INCLUDE, DEVICE_CTRL_OFFSET, i3c_mux);
     //Set I3C OD_TIMING
-    I3C_WriteREG_DWORD((SCL_I3C_OD_TIMING_LCNT(0xe) | SCL_I3C_OD_TIMING_HCNT(0xe)), SCL_I3C_OD_TIMING_OFFSET, i3c_mux);
+    I3C_WriteREG_DWORD((SCL_I3C_OD_TIMING_LCNT(lcnt) | SCL_I3C_OD_TIMING_HCNT(hcnt)), SCL_I3C_OD_TIMING_OFFSET, i3c_mux);
     //Set I3C PP_TIMING
-    I3C_WriteREG_DWORD((SCL_I3C_PP_TIMING_LCNT(0xe) | SCL_I3C_PP_TIMING_HCNT(0xe)), SCL_I3C_PP_TIMING_OFFSET, i3c_mux);
+    I3C_WriteREG_DWORD((SCL_I3C_PP_TIMING_LCNT(lcnt) | SCL_I3C_PP_TIMING_HCNT(hcnt)), SCL_I3C_PP_TIMING_OFFSET, i3c_mux);
     //set queue thld ctrl
     temp_data = 0;
     temp_data &= QUEUE_THLD_CTRL_RESP_BUF_THLD0 & QUEUE_THLD_CTRL_CMD_EMPTY_BUF_THLD0 & QUEUE_THLD_CTRL_IBI_STATUS_THLD0;
     temp_data |= QUEUE_THLD_CTRL_IBI_DATA_THLD(1);
     I3C_WriteREG_DWORD(temp_data, QUEUE_THLD_CTRL_OFFSET, i3c_mux);
-    // i3c_dprint("master%x_queuethld:%x\n", i3c_mux, I3C_ReadREG_DWORD(QUEUE_THLD_CTRL_OFFSET, i3c_mux));
     //Set data buff thld ctrl
     temp_data = I3C_ReadREG_DWORD(DATA_BUFFER_THLD_CTRL_OFFSET, i3c_mux);
     temp_data &= DATA_BUFFER_THLD_CTRL_RX_START_THLD0 & DATA_BUFFER_THLD_CTRL_TX_EMPTY_BUF_THLD0 & DATA_BUFFER_THLD_CTRL_RX_BUF_THLD0;
@@ -531,11 +530,8 @@ BYTE I3C_Master_Init(uint32_t speed, BYTE i3c_mux)
     I3C_WriteREG_DWORD(temp_data, DATA_BUFFER_THLD_CTRL_OFFSET, i3c_mux);
     //Set intr status en
     I3C_WriteREG_DWORD((INTR_STATUS_EN_BUS_RESET_DONE_STS_EN | INTR_STATUS_EN_TRANSFER_ERR_STS_EN | INTR_STATUS_EN_TRANSFER_ABORT_STS_EN | INTR_STATUS_EN_RESP_READY_STS_EN | INTR_STATUS_EN_IBI_THLD_STS_EN | INTR_STATUS_EN_CMD_QUEUE_READY_STS_EN | INTR_STATUS_EN_TX_THLD_STS_EN | INTR_STATUS_EN_RX_THLD_STS_EN), INTR_STATUS_EN_OFFSET, i3c_mux);
-    // i3c_dprint("master%x_statusen:%x\n", i3c_mux, I3C_ReadREG_DWORD(INTR_STATUS_EN_OFFSET, i3c_mux));
     //Set intr signal en
     I3C_WriteREG_DWORD(INTR_SIGNAL_EN_IBI_THLD_SIGNAL_EN | INTR_SIGNAL_EN_RX_THLD_SIGNAL_EN, INTR_SIGNAL_EN_OFFSET, i3c_mux);
-    // i3c_dprint("master%x_signalen:%x\n", i3c_mux, I3C_ReadREG_DWORD(INTR_SIGNAL_EN_OFFSET, i3c_mux));
-    // i3c_dprint("master%x_intrforce:%x\n", i3c_mux, I3C_ReadREG_DWORD(INTR_FORCE_OFFSET, i3c_mux));
 
     return TRUE;
 }
@@ -576,10 +572,8 @@ BYTE I3C_MASTER_ENTDAA(sDEV_CHAR_TABLE* dct, BYTE* dynamic_addr, BYTE i3c_mux)
             temp_data |= DEV_ADDR_TABLE_LOC1_DEV_DYNAMIC_ADDR_PARITY(*(dynamic_addr + dev_tmpcnt));
         else
             temp_data &= DEV_ADDR_TABLE_LOC1_DEV_DYNAMIC_ADDR_PARITY0;
-        printf("temp_data:%x\n", temp_data);
         I3C_WriteREG_DWORD(temp_data, DEV_ADDR_TABLE1_LOC1_OFFSET, i3c_mux);
-        printf("dev_tmpcnt:%x,dev_num:%x\n", dev_tmpcnt, dev_num);
-        dev_tmpcnt++;
+
         //config cmd port
         temp_data = 0;
         temp_data &= (COMMAND_QUEUE_PORT_ADDRESS_ASSIGNMENT_DEV_INDX0);
@@ -599,12 +593,15 @@ BYTE I3C_MASTER_ENTDAA(sDEV_CHAR_TABLE* dct, BYTE* dynamic_addr, BYTE i3c_mux)
         Response_error_status = I3C_ReadREG_DWORD(RESPONSE_QUEUE_PORT_OFFSET, i3c_mux) & RESPONSE_QUEUE_PORT_ERR_STS_MASK;
         if (RESPONSE_QUEUE_PORT_ERR_STS_NO_ERROR == Response_error_status)
         {
+            temp_data = I3C_ReadREG_DWORD(DEV_CHAR_TABLE_POINTER_OFFSET, i3c_mux) & (~0xFFF80000);
+            temp_data |= (dev_tmpcnt >> 19);
+            I3C_WriteREG_DWORD(temp_data, DEV_CHAR_TABLE_POINTER_OFFSET, i3c_mux);
             //依次将所有设备的DCT属性读出并存入数组
             for (int i = 0; i < 4; i++)
             {
                 (dct + dev_tmpcnt)->dev_char_table1_loc[i] = I3C_ReadREG_DWORD(DEV_CHAR_TABLE1_LOC1_OFFSET + i * 4, i3c_mux);
-                printf("DCT:%d值为:%x\n", i, (dct + dev_tmpcnt)->dev_char_table1_loc[i]);
             }
+            dev_tmpcnt++;
         }
         else if (RESPONSE_QUEUE_PORT_ERR_STS_ADDRESS_NACKED == Response_error_status)
         {
@@ -612,7 +609,7 @@ BYTE I3C_MASTER_ENTDAA(sDEV_CHAR_TABLE* dct, BYTE* dynamic_addr, BYTE i3c_mux)
         }
         else
         {
-            i3c_dprint("fail:Response error = %#x\n", Response_error_status);
+            i3c_dprint("No%d's addr allocation failure,Response error = %#x\n", dev_tmpcnt, Response_error_status);
             return FALSE;
         }
     }
