@@ -124,7 +124,7 @@
 #define KBC_MODULE_EN 0
 #define ADC_MODULE_EN 0
 #define UART_MODULE_EN 1
-#define I3C_MODULE_EN 0
+#define I3C_MODULE_EN 1
   // reserved
 #define CEC_MODULE_EN 1
 #define OWI_MODULE_EN 0
@@ -367,7 +367,7 @@
 #define I2C_DEBUG 1 & DEBUG                           // 0:close printf   1:open printf
 #define IRQC_DEBUG 1 & DEBUG                          // 0:close printf   1:open printf
 #define ANX7447_UCSI_DEBUG 1 & DEBUG &SUPPORT_ANX7447 // 0:close printf   1:open printf
-#define I3C_DEBUG 0 & DEBUG                           // 0:close printf   1:open printf
+#define I3C_DEBUG 1 & DEBUG                           // 0:close printf   1:open printf
 
  /****************************************************************************
   * Test enable

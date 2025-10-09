@@ -614,10 +614,24 @@ void sysctl_iomux_master0()
 	sysctl_iomux_config(GPIOC, 11, 3);//i3c0_scl
 	sysctl_iomux_config(GPIOC, 12, 3);//i3c0_sda
 }
+void i3c0_pull_up(void)
+{
+	if ((I3C0_EXTERNAL_PULL_UP == 0) && (IS_GPIOC11(LOW) || I3C0_INTERNAL_PULL_UP))
+		GPIO_Pullup_Config(GPIOC, 11);
+	if ((I3C0_EXTERNAL_PULL_UP == 0) && (IS_GPIOC12(LOW) || I3C0_INTERNAL_PULL_UP))
+		GPIO_Pullup_Config(GPIOC, 12);
+}
 void sysctl_iomux_master1()
 {
 	sysctl_iomux_config(GPIOC, 13, 3);//i3c1_scl
 	sysctl_iomux_config(GPIOB, 1, 3); //i3c1_sda
+}
+void i3c1_pull_up(void)
+{
+	if ((I3C1_EXTERNAL_PULL_UP == 0) && (IS_GPIOC13(LOW) || I3C1_INTERNAL_PULL_UP))
+		GPIO_Pullup_Config(GPIOC, 11);
+	if ((I3C1_EXTERNAL_PULL_UP == 0) && (IS_GPIOB1(LOW) || I3C1_INTERNAL_PULL_UP))
+		GPIO_Pullup_Config(GPIOB, 1);
 }
 void sysctl_iomux_slave0()
 {
