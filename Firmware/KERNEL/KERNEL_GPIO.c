@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-10 17:55:56
+ * @LastEditTime: 2025-10-10 18:38:36
  * @Description:
  *
  *
@@ -641,24 +641,10 @@ void sysctl_iomux_master0()
 	sysctl_iomux_config(GPIOC, 11, 3);//i3c0_scl
 	sysctl_iomux_config(GPIOC, 12, 3);//i3c0_sda
 }
-void i3c0_pull_up(void)
-{
-	if((I3C0_EXTERNAL_PULL_UP == 0) && (IS_GPIOC11(LOW) || I3C0_INTERNAL_PULL_UP))
-		PIO_Pullup_Config(GPIOC, 11);
-	if((I3C0_EXTERNAL_PULL_UP == 0) && (IS_GPIOC12(LOW) || I3C0_INTERNAL_PULL_UP))
-		PIO_Pullup_Config(GPIOC, 12);
-}
 void sysctl_iomux_master1()
 {
 	sysctl_iomux_config(GPIOC, 13, 3);//i3c1_scl
 	sysctl_iomux_config(GPIOB, 1, 3); //i3c1_sda
-}
-void i3c1_pull_up(void)
-{
-	if((I3C1_EXTERNAL_PULL_UP == 0) && (IS_GPIOC13(LOW) || I3C1_INTERNAL_PULL_UP))
-		PIO_Pullup_Config(GPIOC, 11);
-	if((I3C1_EXTERNAL_PULL_UP == 0) && (IS_GPIOB1(LOW) || I3C1_INTERNAL_PULL_UP))
-		PIO_Pullup_Config(GPIOB, 1);
 }
 void sysctl_iomux_slave0()
 {
@@ -670,7 +656,6 @@ void sysctl_iomux_slave1()
 	sysctl_iomux_config(GPIOB, 8, 3);//i3c3_scl
 	sysctl_iomux_config(GPIOB, 9, 3);//i3c3_sda
 }
-
 //*****************************************************************************
 //
 //  To setup pmc iomux
@@ -783,17 +768,20 @@ static void sysctl_iomux_switch_kbs_jtag(VBYTE func)
 	if(func <= 1)
 	{
 		sysctl_iomux_config(GPIOE, 0, (func & 0x3));
-		sysctl_iomux_config(GPIOE, 10, (func & 0x3));
-		sysctl_iomux_config(GPIOE, 11, (func & 0x3));
-		sysctl_iomux_config(GPIOE, 12, (func & 0x3));
-		sysctl_iomux_config(GPIOE, 13, (func & 0x3));
+		//和UART1冲突
 		sysctl_iomux_config(GPIOE, 14, (func & 0x3));
 		sysctl_iomux_config(GPIOE, 15, (func & 0x3));
-	}
-	else
-	{
 
 	}
+	//E10-E15单独控制,jtag
+	sysctl_iomux_config(GPIOE, 10, (func & 0x3));
+	sysctl_iomux_config(GPIOE, 11, (func & 0x3));
+	sysctl_iomux_config(GPIOE, 12, (func & 0x3));
+	sysctl_iomux_config(GPIOE, 13, (func & 0x3));
+	//uart1由sysctl_iomux_uart1单独控制
+	// sysctl_iomux_config(GPIOE, 14, (func & 0x3));
+	// sysctl_iomux_config(GPIOE, 15, (func & 0x3));
+
 }
 //*****************************************************************************
 //
@@ -931,7 +919,7 @@ BYTE PIO_Pullup_Config(BYTE GPIO, BYTE Num)
 }
 //*****************************************************************************
 //
-//  To setup i2c pull up
+//  To setup i2c and i2 pull up
 //
 //  parameter :
 //      none
@@ -1057,6 +1045,34 @@ void i2c8_pull_up(void)
 		if((I2C8_EXTERNAL_PULL_UP == 0) && (IS_GPIOC14(LOW) || I2C8_INTERNAL_PULL_UP))
 			PIO_Pullup_Config(GPIOC, 14);  //SMDAT8
 	}
+}
+void i3c0_pull_up(void)
+{
+	if((I3C0_EXTERNAL_PULL_UP == 0) && (IS_GPIOC11(LOW) || I3C0_INTERNAL_PULL_UP))
+		PIO_Pullup_Config(GPIOC, 11);
+	if((I3C0_EXTERNAL_PULL_UP == 0) && (IS_GPIOC12(LOW) || I3C0_INTERNAL_PULL_UP))
+		PIO_Pullup_Config(GPIOC, 12);
+}
+void i3c1_pull_up(void)
+{
+	if((I3C1_EXTERNAL_PULL_UP == 0) && (IS_GPIOC13(LOW) || I3C1_INTERNAL_PULL_UP))
+		PIO_Pullup_Config(GPIOC, 13);
+	if((I3C1_EXTERNAL_PULL_UP == 0) && (IS_GPIOB1(LOW) || I3C1_INTERNAL_PULL_UP))
+		PIO_Pullup_Config(GPIOB, 1);
+}
+void i3c2_pull_up(void)
+{
+	if((I3C2_EXTERNAL_PULL_UP == 0) && (IS_GPIOB2(LOW) || I3C2_INTERNAL_PULL_UP))
+		PIO_Pullup_Config(GPIOB, 2);
+	if((I3C2_EXTERNAL_PULL_UP == 0) && (IS_GPIOB3(LOW) || I3C2_INTERNAL_PULL_UP))
+		PIO_Pullup_Config(GPIOB, 3);
+}
+void i3c3_pull_up(void)
+{
+	if((I3C3_EXTERNAL_PULL_UP == 0) && (IS_GPIOB8(LOW) || I3C3_INTERNAL_PULL_UP))
+		PIO_Pullup_Config(GPIOB, 8);
+	if((I3C3_EXTERNAL_PULL_UP == 0) && (IS_GPIOB9(LOW) || I3C3_INTERNAL_PULL_UP))
+		PIO_Pullup_Config(GPIOB, 9);
 }
 //*****************************************************************************
 //
