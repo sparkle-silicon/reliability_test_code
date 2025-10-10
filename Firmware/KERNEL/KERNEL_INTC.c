@@ -1896,8 +1896,7 @@ void intr1_i3c0(void) // 32
 	ICTL1_INTEN4 &= ~(0x1 << 0);
 #endif
 #endif
-
-	irqprint("null 32\n");
+	I3C_Master_IntrStatus(I3C_MASTER0);
 }
 void intr1_i3c1(void) // 33
 {
@@ -1915,7 +1914,7 @@ void intr1_i3c1(void) // 33
 #endif
 #endif
 
-	irqprint("null 33\n");
+	I3C_Master_IntrStatus(I3C_MASTER1);
 }
 void intr1_i3c2(void) // 34
 {
@@ -1956,7 +1955,7 @@ void intr1_i3c2(void) // 34
 	// 	// 3. 清除中断标志
 	// 	INTCLR_0 = (1 << 12);
 	// }
-	irqprint("null 34\n");
+	irqprint("slave0_intr_status:%x\n", SLAVE0_STATUS);
 }
 void intr1_i3c3(void) // 35
 {
@@ -1995,7 +1994,7 @@ void intr1_i3c3(void) // 35
 	// 	// 3. 清除中断标志
 	// 	INTCLR_1 = (1 << 12);
 	// }
-	irqprint("null 35\n");
+	irqprint("slave1_intr_status:%x\n", SLAVE1_STATUS);
 }
 void intr1_null36(void) // 36
 {

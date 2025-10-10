@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-10 17:49:52
+ * @LastEditTime: 2025-10-10 18:22:06
  * @Description: This is about the  national crypto algorithm implementation
  *
  *
@@ -134,25 +134,26 @@ void smbus_init(void)
 	dprint("I2c_channel_init done.\n");
 #endif
 }
-void I3C_Channel_Init(uint8_t channel, uint32_t speed, uint8_t master_role, uint8_t addr)
+void I3C_Channel_Init(uint8_t channel, uint32_t speed, uint32_t MasterRole_SlaveId, uint32_t MasterDct_SlaveDcr, uint32_t MasterDynamicAddr_SlaveBcr, uint8_t addr)
 {
 	switch(channel)
 	{
 		case I3C_MASTER0:case I3C_MASTER1:
-			if(master_role == I3C_MASTER_I3C_MODE)
+			I3C_WAIT_SDA_PU(channel);//需要等SCL/SDA都拉高后才能进行初始化，否则会误触发IBI中断
+			if(MasterRole_SlaveId == I3C_MASTER_I3C_MODE)
 			{
 				I3C_Master_Init(speed, channel);
-				sDEV_CHAR_TABLE *dct = ((channel == I3C_MASTER0) ? master0_dev_read_char_table : ((channel == I3C_MASTER1) ? master1_dev_read_char_table : NULL));
-				BYTE *dynamic_addr = ((channel == I3C_MASTER0) ? MASTER0_DEV_DYNAMIC_ADDR_TABLE : ((channel == I3C_MASTER1) ? MASTER1_DEV_DYNAMIC_ADDR_TABLE : NULL));
+				sDEV_CHAR_TABLE *dct = (sDEV_CHAR_TABLE *)MasterDct_SlaveDcr;
+				BYTE *dynamic_addr = (BYTE *)MasterDynamicAddr_SlaveBcr;
 				I3C_MASTER_ENTDAA(dct, dynamic_addr, channel); //specify a dynamic addr
 			}
-			else if(master_role == I3C_MASTER_I2C_MODE)
+			else if(MasterRole_SlaveId == I3C_MASTER_I2C_MODE)
 			{
 				I3C_Legacy_Master_Init(addr, speed, channel);
 			}
 			break;
 		case I3C_SLAVE0:case I3C_SLAVE1:
-			I3C_Slave_Init(addr, channel);
+			I3C_Slave_Init(addr, MasterRole_SlaveId, MasterDct_SlaveDcr, MasterDynamicAddr_SlaveBcr, channel);
 			break;
 		default:
 			break;
@@ -165,12 +166,14 @@ void i3c_init(void)
 #if I3C0_EN_Init
 	i3c0_MoudleClock_EN;
 	sysctl_iomux_master0();
-	I3C_Channel_Init(I3C_MASTER0, I3C_MASTER0_SPEED, I3C_MASTER0_DEFAULT_ROLE, I3C_MASTER0_DEFAULT_ADDR);
+	i3c0_pull_up();
+	I3C_Channel_Init(I3C_MASTER0, I3C_MASTER0_SPEED, I3C_MASTER0_DEFAULT_ROLE, I3C_MASTER0_DEFAULT_DCT, I3C_MASTER0_DEFAULT_DYNAMICADDR, I3C_MASTER0_DEFAULT_ADDR);
 #endif
 #if I3C1_EN_Init
 	i3c1_MoudleClock_EN;
 	sysctl_iomux_master1();
-	I3C_Channel_Init(I3C_MASTER1, I3C_MASTER1_SPEED, I3C_MASTER1_DEFAULT_ROLE, I3C_MASTER1_DEFAULT_ADDR);
+	i3c1_pull_up();
+	I3C_Channel_Init(I3C_MASTER1, I3C_MASTER1_SPEED, I3C_MASTER1_DEFAULT_ROLE, I3C_MASTER1_DEFAULT_DCT, I3C_MASTER1_DEFAULT_DYNAMICADDR, I3C_MASTER1_DEFAULT_ADDR);
 #endif
 	dprint("i3c master init done.\n");
 
@@ -178,12 +181,12 @@ void i3c_init(void)
 #if I3C2_EN_Init
 	i3c2_MoudleClock_EN;
 	sysctl_iomux_slave0();
-	I3C_Channel_Init(I3C_SLAVE0, I3C_SLAVE0_SPEED, I3C_SLAVE0_DEFAULT_ROLE, I3C_SLAVE0_DEFAULT_ADDR);
+	I3C_Channel_Init(I3C_SLAVE0, I3C_SLAVE0_SPEED, I3C_SLAVE0_DEFAULT_IDPARTNO, I3C_SLAVE0_DEFAULT_DCR, I3C_SLAVE0_DEFAULT_BCR, I3C_SLAVE0_DEFAULT_ADDR);
 #endif
 #if I2C3_EN_Init
 	i3c3_MoudleClock_EN;
 	sysctl_iomux_slave1();
-	I3C_Channel_Init(I3C_SLAVE1, I3C_SLAVE1_SPEED, I3C_SLAVE1_DEFAULT_ROLE, I3C_SLAVE1_DEFAULT_ADDR);
+	I3C_Channel_Init(I3C_SLAVE1, I3C_SLAVE1_SPEED, I3C_SLAVE1_DEFAULT_IDPARTNO, I3C_SLAVE1_DEFAULT_DCR, I3C_SLAVE1_DEFAULT_BCR, I3C_SLAVE1_DEFAULT_ADDR);
 #endif
 #endif
 	dprint("i3c slave init done.\n");

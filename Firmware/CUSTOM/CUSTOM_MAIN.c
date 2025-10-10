@@ -25,6 +25,7 @@
 #include "AE_UPDATE.H"
 #include "KERNEL_SLEEP_RESET.H"
 #include "KERNEL_INCLUDE.H"
+#include "KERNEL_I3C.H"
  /*-----------------------------------------------------------------------------
   * Local Parameter Definition
   *---------------------------------------------------------------------------*/
@@ -191,6 +192,21 @@ void __weak Hook_1secEventA(void) // get all temp
         *((VBYTE*)(0x203B9)) = 0;
         Mailbox_ReadParameter_Trigger();
     }
+
+    if (*((VBYTE*)(0x203B9)) == 6)
+    {
+        *((VBYTE*)(0x203B9)) = 0;
+        SYSCTL_RST0 |= 0x40;
+        SYSCTL_RST0 &= (~0x40);
+        vDelayXms(1);
+        sysctl_iomux_slave0();
+        I3C_Slave_Init(SLAVE0_SET_STATICADDR, SLAVE0_SET_IDPARTNO, SLAVE0_SET_DCR, SLAVE0_SET_BCR, I3C_SLAVE0);
+        vDelayXms(10);
+        I3C_MASTER_ENTDAA(master0_dev_read_char_table, MASTER0_DEV_DYNAMIC_ADDR_TABLE, I3C_MASTER0); //specify a dynamic addr
+        vDelayXms(1);
+        printf("SLAVE0的动态地址为:%x\n", I3C_ReadREG_DWORD(DYNADDR_OFFSET, I3C_SLAVE0));
+        printf("SLAVE1的动态地址为:%x\n", I3C_ReadREG_DWORD(DYNADDR_OFFSET, I3C_SLAVE1));
+    }
 }
 //-----------------------------------------------------------------------------
 void __weak Hook_1secEventB(void) // get fan rpm
@@ -201,7 +217,7 @@ void __weak Hook_1secEventB(void) // get fan rpm
     {
         TACH0_Speed = (DWORD)TACH_RPM(Polling0);
         dprint("FAN2 RPM is %u\n", TACH0_Speed);
-    }
+}
 #endif
     // GPIO1_DDR0 |=0x1; 
     // GPIO1_DR0 |=0x1;
@@ -258,7 +274,7 @@ void __weak Hook_1minEvent(void)
             dprint("Cnt:%d,Data:%x\n", i, Debug_8042[Debug_Num]);
             Debug_8042[Debug_Num] = 0;
         }
-    }
+}
 #endif
 }
 //-----------------------------------------------------------------------------

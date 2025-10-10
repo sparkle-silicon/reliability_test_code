@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-10 17:41:38
+ * @LastEditTime: 2025-10-10 18:26:08
  * @Description:
  *
  *
@@ -301,21 +301,39 @@
 #define I3C_MASTER0_SPEED  SDR_DEFAULT_SPEED
 #define I3C_MASTER0_DEFAULT_ROLE  I3C_MASTER0_INTFMODE
 #define I3C_MASTER0_DEFAULT_ADDR 0x00
+#define I3C_MASTER0_DEFAULT_DCT ((uint32_t)&master0_dev_read_char_table[0])
+#define I3C_MASTER0_DEFAULT_DYNAMICADDR ((uint32_t)&MASTER0_DEV_DYNAMIC_ADDR_TABLE[0])
+#define I3C0_EXTERNAL_PULL_UP 1
+#define I3C0_INTERNAL_PULL_UP 0
 
 #define I3C1_EN_Init 1 & I3C1_CLOCK_EN
 #define I3C_MASTER1_SPEED  SDR_DEFAULT_SPEED
 #define I3C_MASTER1_DEFAULT_ROLE  I3C_MASTER1_INTFMODE
 #define I3C_MASTER1_DEFAULT_ADDR 0x00
+#define I3C_MASTER1_DEFAULT_DCT ((uint32_t)&master1_dev_read_char_table[0])
+#define I3C_MASTER1_DEFAULT_DYNAMICADDR ((uint32_t)&MASTER0_DEV_DYNAMIC_ADDR_TABLE[0])
+#define I3C1_EXTERNAL_PULL_UP 1
+#define I3C1_INTERNAL_PULL_UP 0
 
 #define I3C2_EN_Init 1 & I3C2_CLOCK_EN
 #define I3C_SLAVE0_SPEED  0
-#define I3C_SLAVE0_DEFAULT_ROLE  I3C_MASTER_NO_MODE
-#define I3C_SLAVE0_DEFAULT_ADDR 0x00
+#define I3C_SLAVE0_DEFAULT_IDPARTNO SLAVE0_SET_IDPARTNO
+#define I3C_SLAVE0_DEFAULT_ADDR SLAVE0_SET_STATICADDR
+#define I3C_SLAVE0_DEFAULT_DCR SLAVE0_SET_DCR
+#define I3C_SLAVE0_DEFAULT_BCR SLAVE0_SET_BCR
+#define I3C2_EXTERNAL_PULL_UP 1
+#define I3C2_INTERNAL_PULL_UP 0
 
 #define I3C3_EN_Init 1 & I3C3_CLOCK_EN
 #define I3C_SLAVE1_SPEED  0
-#define I3C_SLAVE1_DEFAULT_ROLE  I3C_MASTER_NO_MODE
-#define I3C_SLAVE1_DEFAULT_ADDR 0x00
+#define I3C_SLAVE1_DEFAULT_IDPARTNO SLAVE1_SET_IDPARTNO
+#define I3C_SLAVE1_DEFAULT_ADDR SLAVE1_SET_STATICADDR
+#define I3C_SLAVE1_DEFAULT_DCR SLAVE1_SET_DCR
+#define I3C_SLAVE1_DEFAULT_BCR SLAVE1_SET_BCR
+#define I3C_SLAVE1_DEFAULT_ADDR SLAVE1_SET_STATICADDR
+
+#define I3C3_EXTERNAL_PULL_UP 1
+#define I3C3_INTERNAL_PULL_UP 0
 
 //SPI初始化
 #if SPI_MODULE_EN
@@ -407,7 +425,7 @@
 #define I2C_DEBUG 1 & DEBUG                           // 0:close printf   1:open printf
 #define IRQC_DEBUG 1 & DEBUG                          // 0:close printf   1:open printf
 #define ANX7447_UCSI_DEBUG 1 & DEBUG &SUPPORT_ANX7447 // 0:close printf   1:open printf
-#define I3C_DEBUG 0 & DEBUG                           // 0:close printf   1:open printf
+#define I3C_DEBUG 1 & DEBUG                           // 0:close printf   1:open printf
 
  /****************************************************************************
   * Test enable

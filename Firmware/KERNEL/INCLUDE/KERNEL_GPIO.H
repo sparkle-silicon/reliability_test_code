@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-09 17:21:07
+ * @LastEditTime: 2025-10-10 17:54:33
  * @Description:
  *
  *
@@ -323,7 +323,8 @@ extern void sysctl_iomux_crypto_jtag(void);
 extern void sysctl_iomux_jtag(void);
 extern void sysctl_iomux_lpc(void);
 extern void sysctl_iomux_peci(void);
-
+extern void i3c0_pull_up(void);
+extern void i3c1_pull_up(void);
 extern void i2c0_pull_up(uint32_t clk_sel, uint32_t data_sel);
 extern void i2c1_pull_up(void);
 extern void i2c2_pull_up(uint32_t clk_sel);

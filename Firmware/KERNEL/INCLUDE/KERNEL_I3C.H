@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-10 17:43:58
+ * @LastEditTime: 2025-10-10 17:53:34
  * @Description:
  *
  *
@@ -260,8 +260,8 @@
 
 #define PP_TIMING_HCNT_MAX 0xff
 #define PP_TIMING_LCNT_MAX 0xff
-#define PP_TIMING_HCNT_MIN 0x5
-#define PP_TIMING_LCNT_MIN 0x5
+#define PP_TIMING_HCNT_MIN 0x0e
+#define PP_TIMING_LCNT_MIN 0x0e
 
 //I3C mode
 #define SDR0_SPEED 0x0  //0~fSCL max
@@ -275,12 +275,22 @@
 #define FM_EX_SPEED 0x1  //FM+
 
 //SDR SPEED
-#define SDR_DEFAULT_SPEED 8000000
+#define SDR_DEFAULT_SPEED 9600000
 //write/read
 #define I3C_MASTER_WRITE 0
 #define I3C_MASTER_READ 1
 
 /* * * * * SLAVE * * * * */
+#define SLAVE0_SET_STATICADDR 0x5A
+#define SLAVE0_SET_IDPARTNO 0x12345678
+#define SLAVE0_SET_DCR 0x9A
+#define SLAVE0_SET_BCR 0xBC
+
+#define SLAVE1_SET_STATICADDR 0x6A
+#define SLAVE1_SET_IDPARTNO 0x87654321
+#define SLAVE1_SET_DCR 0xAA
+#define SLAVE1_SET_BCR 0xCC
+
 #define RXPEND_ENABLE 0x800     //第11位-接收FIFO满中断
 #define TXSEND_ENABLE 0x1000     //第12位-发送FIFO空中断
 
@@ -304,7 +314,7 @@
 
 #define I3C_TIMEOUT I2CTimeOut
 #if I3C_DEBUG 
-#define i3c_dprint assert_print
+#define i3c_dprint dprint
 #else 
 #define i3c_dprint(fmt, args...)
 #endif
@@ -360,8 +370,9 @@ extern sDEV_CHAR_TABLE master1_dev_read_char_table[];
 extern DWORD I3C_Channel_Baseaddr(BYTE i3c_mux);
 extern void I3C_WriteREG_DWORD(DWORD value, WORD regoffset, BYTE i3c_mux);
 extern DWORD I3C_ReadREG_DWORD(WORD regoffset, BYTE i3c_mux);
-extern uint32_t I3C_Master_ErrorStatus(BYTE i3c_mux);
-extern uint32_t I3C_Master_IntStatus(BYTE i3c_mux);
+extern BYTE I3C_WAIT_SDA_PU(BYTE i3c_mux);
+extern uint32_t I3C_Master_RespData_ERRSTS(BYTE i3c_mux);
+extern uint32_t I3C_Master_IntrStatus(BYTE i3c_mux);
 extern BYTE I3C_Legacy_Master_Init(BYTE addr, uint32_t speed, BYTE i3c_mux);
 extern BYTE I3C_Legacy_Master_Write(uint8_t *data, uint16_t bytelen, BYTE i3c_mux);
 extern uint8_t I3C_Legacy_Master_Read(uint8_t *data, uint16_t bytelen, BYTE i3c_mux);
@@ -376,11 +387,11 @@ extern BYTE I3C_MASTER_PV_WRITE_WITH7E(uint8_t dynamic_addr, uint8_t *data, uint
 extern BYTE I3C_MASTER_PV_READ_WITH7E(uint8_t dynamic_addr, uint8_t *data, uint16_t bytelen, BYTE i3c_mux);
 extern BYTE I3C_MASTER_PV_WRITE_THEN_READ_WITH7E(uint8_t dynamic_addr, uint8_t *wdata, uint16_t wbytelen, uint8_t *rdata, uint16_t rbytelen, BYTE i3c_mux);
 extern void I3C_MASTER_IBI_Handler(BYTE i3c_mux);
-extern void I3C_Slave_Init(BYTE addr, BYTE i3c_mux);
+extern void I3C_Slave_Init(BYTE static_addr, uint32_t idpartno, uint8_t dcr, uint8_t bcr, uint8_t i3c_mux);
 extern BYTE I3C_SLAVE_INT_ENABLE(DWORD tpye, BYTE i3c_mux);
 extern BYTE I3C_SLAVE_INT_DISABLE(DWORD tpye, BYTE i3c_mux);
-extern BYTE I3C_SLAVE_IBI_HOTJOIN(uint8_t addr, uint8_t idpartno, uint8_t dcr, uint8_t bcr, BYTE i3c_mux);
-extern BYTE I3C_SLAVE_IBI_DATA(uint8_t addr, uint8_t ibi_data, uint8_t idpartno, uint8_t dcr, uint8_t bcr, BYTE i3c_mux);
+extern BYTE I3C_SLAVE_IBI_HOTJOIN(uint8_t addr, uint32_t idpartno, uint8_t dcr, uint8_t bcr, BYTE i3c_mux);
+extern BYTE I3C_SLAVE_IBI_DATA(uint8_t addr, uint8_t ibi_data, uint32_t idpartno, uint8_t dcr, uint8_t bcr, BYTE i3c_mux);
 // extern void I3C_LOOP_Test(void);
 
 #endif
