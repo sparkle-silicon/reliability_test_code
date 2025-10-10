@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-07-03 19:01:13
+ * @LastEditTime: 2025-10-10 16:07:44
  * @Description:
  *
  *
@@ -68,11 +68,14 @@
 /*****************************************************************************
  *Debugger Macro definition
  ****************************************************************************/
-#define DEBUGGER_OUTPUT_SWITCH 0				// 0: uart  1: i2c  2: LCP
 ////!!!!!!!!!!
+#if ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_OUTPUT_SWITCH==1)
 // attention! iic_debugger must use the smbus0
 //  the "DEBUGGER_I2C_CHANNEL" is just switch the channel mapping instead of initialization
 #define DEBUGGER_I2C_CHANNEL I2C_CHANNEL_0 // select I2C channel mapping of smbus0
+#define DEBUGGER_I2C_SPEED I2C0_SPEED // select I2C channel mapping of smbus0
+#define DEBUGGER_I2C_ADDRESS 0x6A // select I2C channel mapping of smbus0
+#endif
 ////!!!!!!!!!!
 #if ENABLE_DEBUGGER_SUPPORT
 /* Debugger Slave or Master channel */

@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-07-07 11:14:56
+ * @LastEditTime: 2025-10-10 17:26:54
  * @Description:
  *
  *
@@ -48,14 +48,12 @@ WORD I2c_Channel_Baseaddr(WORD i2c_channel)
 			return SMBUS4_BASE_ADDR;
 		case I2C_CHANNEL_5:
 			return SMBUS5_BASE_ADDR;
-		/*yujiang add*/
 		case I2C_CHANNEL_6:
 			return SMBUS6_BASE_ADDR;
 		case I2C_CHANNEL_7:
 			return SMBUS7_BASE_ADDR;
 		case I2C_CHANNEL_8:
 			return SMBUS8_BASE_ADDR;
-		/*yujiang add*/
 		default:
 			dprint("channel or baseaddr error \n");
 			return 0;

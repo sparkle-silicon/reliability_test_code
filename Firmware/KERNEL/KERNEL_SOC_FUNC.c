@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-09 12:04:35
+ * @LastEditTime: 2025-10-10 17:49:52
  * @Description: This is about the  national crypto algorithm implementation
  *
  *
@@ -20,326 +20,6 @@
 #include "KERNEL_MAILBOX.H"
 #include "KERNEL_I3C.H"
 
-void ps2_0_frequency(void)
-{
-	/*init ps2 0 freq */
-	PS2_PORT0_CPSR = (((HIGHT_CHIP_CLOCK * 5) / 1000 + 500) / 1000);		 // 5us
-	PS2_PORT0_DVR = (((HIGHT_CHIP_CLOCK / PS2_PORT0_CPSR) / 1000 + 5) / 10); // 100us
-}
-void ps2_1_frequency(void)
-{
-	/*init ps2 1 freq */
-	PS2_PORT1_CPSR = (((HIGHT_CHIP_CLOCK * 5) / 1000 + 500) / 1000);		 // 5us
-	PS2_PORT1_DVR = (((HIGHT_CHIP_CLOCK / PS2_PORT0_CPSR) / 1000 + 5) / 10); // 100us
-}
-
-void pmc1_init(void)
-{
-	PMC1_IE = 0x3f;
-#if !(LPC_WAY_OPTION_SWITCH)
-	PMC1_CTL |= IBF_INT_ENABLE;
-#endif
-}
-void pmc2_init(void)
-{
-	PMC2_IE = 0x3f;
-#if !(LPC_WAY_OPTION_SWITCH)
-	PMC2_CTL |= IBF_INT_ENABLE;
-#endif
-}
-void pmc3_init(void)
-{
-	PMC3_IE = 0x3f;
-#if !(LPC_WAY_OPTION_SWITCH)
-	PMC3_CTL |= IBF_INT_ENABLE;
-#endif
-}
-void pmc4_init(void)
-{
-	PMC4_IE = 0x3f;
-#if !(LPC_WAY_OPTION_SWITCH)
-	PMC4_CTL |= IBF_INT_ENABLE;
-#endif
-}
-void pmc5_init(void)
-{
-	PMC5_IE = 0x3f;
-#if !(LPC_WAY_OPTION_SWITCH)
-	PMC5_CTL |= IBF_INT_ENABLE;
-#endif
-}
-void kbc_init(void)
-{
-	SET_BIT(KBC_CTL, KBC_IBFIE); // set KBC_IBF enable
-}
-void i2c0_pull_up(uint32_t clk_sel, uint32_t data_sel)
-{
-	if(clk_sel == 0)
-	{
-		if((I2C0_EXTERNAL_PULL_UP == 0) && (IS_GPIOA11(LOW) || I2C0_INTERNAL_PULL_UP))
-			GPIO_Pullup_Config(GPIOA, 11);
-	}
-	else if(clk_sel == 1)
-	{
-		if((I2C0_EXTERNAL_PULL_UP == 0) && (IS_GPIOB10(LOW) || I2C0_INTERNAL_PULL_UP))
-			GPIO_Pullup_Config(GPIOB, 10);
-	}
-	if(data_sel == 0)
-	{
-		if((I2C0_EXTERNAL_PULL_UP == 0) && (IS_GPIOA12(LOW) || I2C0_INTERNAL_PULL_UP))
-			GPIO_Pullup_Config(GPIOA, 12);
-	}
-	else if(data_sel == 1)
-	{
-		if((I2C0_EXTERNAL_PULL_UP == 0) && (IS_GPIOB11(LOW) || I2C0_INTERNAL_PULL_UP))
-			GPIO_Pullup_Config(GPIOB, 11);
-	}
-}
-void i2c1_pull_up(void)
-{
-	{
-		if((I2C1_EXTERNAL_PULL_UP == 0) && (IS_GPIOA17(LOW) || I2C1_INTERNAL_PULL_UP))
-			GPIO_Pullup_Config(GPIOA, 17);
-	}
-	{
-		if((I2C1_EXTERNAL_PULL_UP == 0) && (IS_GPIOA18(LOW) || I2C1_INTERNAL_PULL_UP))
-			GPIO_Pullup_Config(GPIOA, 18);
-	}
-}
-void i2c2_pull_up(uint32_t clk_sel)
-{
-	if(clk_sel == 0)
-	{
-		if((I2C2_EXTERNAL_PULL_UP == 0) && (IS_GPIOA23(LOW) || I2C2_INTERNAL_PULL_UP))
-			GPIO_Pullup_Config(GPIOA, 23);
-	}
-	else if(clk_sel == 1)
-	{
-		if((I2C2_EXTERNAL_PULL_UP == 0) && (IS_GPIOB14(LOW) || I2C2_INTERNAL_PULL_UP))
-			GPIO_Pullup_Config(GPIOB, 14);
-	}
-	{
-		if((I2C2_EXTERNAL_PULL_UP == 0) && (IS_GPIOB15(LOW) || I2C2_INTERNAL_PULL_UP))
-			GPIO_Pullup_Config(GPIOB, 15);
-	}
-}
-void i2c3_pull_up(void)
-{
-	{
-		if((I2C3_EXTERNAL_PULL_UP == 0) && (IS_GPIOB25(LOW) || I2C3_INTERNAL_PULL_UP))
-			GPIO_Pullup_Config(GPIOB, 25);
-	}
-	{
-		if((I2C3_EXTERNAL_PULL_UP == 0) && (IS_GPIOB26(LOW) || I2C3_INTERNAL_PULL_UP))
-			GPIO_Pullup_Config(GPIOB, 26);
-	}
-}
-void i2c4_pull_up(void)
-{
-	{
-		if((I2C5_EXTERNAL_PULL_UP == 0) && (IS_GPIOB0(LOW) || I2C5_INTERNAL_PULL_UP))
-			GPIO_Pullup_Config(GPIOB, 0);
-	}
-	{
-		if((I2C5_EXTERNAL_PULL_UP == 0) && (IS_GPIOB7(LOW) || I2C5_INTERNAL_PULL_UP))
-			GPIO_Pullup_Config(GPIOB, 7);
-	}
-}
-void i2c5_pull_up(void)
-{
-	{
-		if((I2C4_EXTERNAL_PULL_UP == 0) && (IS_GPIOA4(LOW) || I2C4_INTERNAL_PULL_UP))
-			GPIO_Pullup_Config(GPIOA, 4);
-	}
-	{
-		if((I2C4_EXTERNAL_PULL_UP == 0) && (IS_GPIOA5(LOW) || I2C4_INTERNAL_PULL_UP))
-			GPIO_Pullup_Config(GPIOA, 5);
-	}
-
-}
-void i2c6_pull_up(void)
-{
-	{
-		if((I2C6_EXTERNAL_PULL_UP == 0) && (IS_GPIOA24(LOW) || I2C6_INTERNAL_PULL_UP))
-			GPIO_Pullup_Config(GPIOA, 24);  //SMCLK6
-	}
-	{
-		if((I2C6_EXTERNAL_PULL_UP == 0) && (IS_GPIOA25(LOW) || I2C6_INTERNAL_PULL_UP))
-			GPIO_Pullup_Config(GPIOA, 25);  //SMDAT6
-	}
-}
-void i2c7_pull_up(void)
-{
-	{
-		if((I2C7_EXTERNAL_PULL_UP == 0) && (IS_GPIOA10(LOW) || I2C7_INTERNAL_PULL_UP))
-			GPIO_Pullup_Config(GPIOA, 10);  //SMCLK7
-	}
-	{
-		if((I2C7_EXTERNAL_PULL_UP == 0) && (IS_GPIOB24(LOW) || I2C7_INTERNAL_PULL_UP))
-			GPIO_Pullup_Config(GPIOB, 24);  //SMDAT7
-	}
-}
-void i2c8_pull_up(void)
-{
-	{
-		if((I2C8_EXTERNAL_PULL_UP == 0) && (IS_GPIOA13(LOW) || I2C8_INTERNAL_PULL_UP))
-			GPIO_Pullup_Config(GPIOA, 13);  //SMCLK8
-	}
-	{
-		if((I2C8_EXTERNAL_PULL_UP == 0) && (IS_GPIOC14(LOW) || I2C8_INTERNAL_PULL_UP))
-			GPIO_Pullup_Config(GPIOC, 14);  //SMDAT8
-	}
-}
-
-void tach0_pull_up(uint32_t tach_sel)
-{
-	if(tach_sel == 0)
-	{
-		if((TACH0_EXTERNAL_PULL_UP == 0) && (IS_GPIOA30(LOW) || TACH0_INTERNAL_PULL_UP))
-			GPIO_Pullup_Config(GPIOA, 30);
-	}
-	else if(tach_sel == 1)
-	{
-		if((TACH0_EXTERNAL_PULL_UP == 0) && (IS_GPIOA22(LOW) || TACH0_INTERNAL_PULL_UP))
-			GPIO_Pullup_Config(GPIOA, 22);
-	}
-
-}
-void tach1_pull_up(uint32_t tach_sel)
-{
-	if(tach_sel == 0)
-	{
-		if((TACH1_EXTERNAL_PULL_UP == 0) && (IS_GPIOA31(LOW) || TACH1_INTERNAL_PULL_UP))
-			GPIO_Pullup_Config(GPIOA, 31);
-	}
-	else if(tach_sel == 1)
-	{
-		if((TACH1_EXTERNAL_PULL_UP == 0) && (IS_GPIOC9(LOW) || TACH1_INTERNAL_PULL_UP))
-			GPIO_Pullup_Config(GPIOC, 9);
-	}
-	else if(tach_sel == 2)
-	{
-		if((TACH1_EXTERNAL_PULL_UP == 0) && (IS_GPIOC14(LOW) || TACH1_INTERNAL_PULL_UP))
-			GPIO_Pullup_Config(GPIOC, 14);
-	}
-
-}
-void tach2_pull_up(void)
-{
-	{
-		if((TACH2_EXTERNAL_PULL_UP == 0) && (IS_GPIOC8(LOW) || TACH2_INTERNAL_PULL_UP))
-			GPIO_Pullup_Config(GPIOC, 8);
-	}
-}
-void tach3_pull_up(uint32_t tach_sel)
-{
-	if(tach_sel == 0)
-	{
-		if((TACH3_EXTERNAL_PULL_UP == 0) && (IS_GPIOC9(LOW) || TACH3_INTERNAL_PULL_UP))
-			GPIO_Pullup_Config(GPIOC, 9);
-	}
-	else if(tach_sel == 1)
-	{
-		if((TACH3_EXTERNAL_PULL_UP == 0) && (IS_GPIOC11(LOW) || TACH3_INTERNAL_PULL_UP))
-			GPIO_Pullup_Config(GPIOC, 11);
-	}
-}
-void ps2_0_pull_up(uint32_t clk_sel, uint32_t data_sel)
-{
-	if(clk_sel == 0)
-	{
-		if((PS2_0_EXTERNAL_PULL_UP == 0) && (IS_GPIOB8(LOW) || PS2_0_INTERNAL_PULL_UP))
-			GPIO_Pullup_Config(GPIOB, 8);
-	}
-	else if(clk_sel == 1)
-	{
-		if((PS2_0_EXTERNAL_PULL_UP == 0) && (IS_GPIOB10(LOW) || PS2_0_INTERNAL_PULL_UP))
-			GPIO_Pullup_Config(GPIOB, 10);
-	}
-	else if(clk_sel == 2)
-	{
-		if((PS2_0_EXTERNAL_PULL_UP == 0) && (IS_GPIOB27(LOW) || PS2_0_INTERNAL_PULL_UP))
-			GPIO_Pullup_Config(GPIOB, 27);
-	}
-	if(data_sel == 0)
-	{
-		if((PS2_0_EXTERNAL_PULL_UP == 0) && (IS_GPIOB9(LOW) || PS2_0_INTERNAL_PULL_UP))
-			GPIO_Pullup_Config(GPIOB, 9);
-	}
-	else if(data_sel == 1)
-	{
-		if((PS2_0_EXTERNAL_PULL_UP == 0) && (IS_GPIOB11(LOW) || PS2_0_INTERNAL_PULL_UP))
-			GPIO_Pullup_Config(GPIOB, 11);
-	}
-	else if(data_sel == 2)
-	{
-		if((PS2_0_EXTERNAL_PULL_UP == 0) && (IS_GPIOB28(LOW) || PS2_0_INTERNAL_PULL_UP))
-			GPIO_Pullup_Config(GPIOB, 28);
-	}
-}
-void ps2_1_pull_up(uint32_t clk_sel, uint32_t data_sel)
-{
-	if(clk_sel == 0)
-	{
-		if((PS2_1_EXTERNAL_PULL_UP == 0) && (IS_GPIOB12(LOW) || PS2_1_INTERNAL_PULL_UP))
-			GPIO_Pullup_Config(GPIOB, 12);
-	}
-	else if(clk_sel == 1)
-	{
-		if((PS2_1_EXTERNAL_PULL_UP == 0) && (IS_GPIOB10(LOW) || PS2_1_INTERNAL_PULL_UP))
-			GPIO_Pullup_Config(GPIOB, 10);
-	}
-	if(data_sel == 0)
-	{
-		if((PS2_1_EXTERNAL_PULL_UP == 0) && (IS_GPIOB13(LOW) || PS2_1_INTERNAL_PULL_UP))
-			GPIO_Pullup_Config(GPIOB, 13);
-	}
-	else if(data_sel == 1)
-	{
-		if((PS2_1_EXTERNAL_PULL_UP == 0) && (IS_GPIOB13(LOW) || PS2_1_INTERNAL_PULL_UP))
-			GPIO_Pullup_Config(GPIOB, 11);
-	}
-
-
-}
-void cec0_pull_up(uint8_t cec0_sel)
-{
-	if(cec0_sel == 0)
-	{
-		if((CEC0_EXTERNAL_PULL_UP == 0) && (IS_GPIOA13(LOW) || CEC0_INTERNAL_PULL_UP))
-			GPIO_Pullup_Config(GPIOA, 13);
-	}
-	else
-	{
-		if((CEC0_EXTERNAL_PULL_UP == 0) && (IS_GPIOB8(LOW) || CEC0_INTERNAL_PULL_UP))
-			GPIO_Pullup_Config(GPIOB, 8);
-	}
-}
-void cec1_pull_up(void)
-{
-	if((CEC1_EXTERNAL_PULL_UP == 0) && (IS_GPIOB31(LOW) || CEC1_INTERNAL_PULL_UP))
-		GPIO_Pullup_Config(GPIOB, 31);
-}
-void kbs_pull_up(void)
-{
-	for(register unsigned char i = 8; i <= 31; i++)
-	{
-		//考虑KBS扫描逻辑，不做低电平判断
-		if((((KBS_EXTERNAL_PULL_UP) & (1 << (i - 8))) == 0) && ((((KBS_INTERNAL_PULL_UP) & (1 << (i - 8))) == (1 << (i - 8)))))
-			GPIO_Pullup_Config(GPIOE, i); // gpe all pull up
-	}
-#if (KBD_8_n_SWITCH == 17 || KBD_8_n_SWITCH == 18)
-	//考虑KBS扫描逻辑，不做低电平判断
-	if((((KBS_EXTERNAL_PULL_UP) & (1 << (24))) == 0) && ((((KBS_INTERNAL_PULL_UP) & (1 << (24))) == (1 << (24)))))
-		GPIO_Pullup_Config(GPIOA, 19); // C3 kso 16
-#endif
-#if (KBD_8_n_SWITCH == 18)
-	//考虑KBS扫描逻辑，不做低电平判断
-	if((((KBS_EXTERNAL_PULL_UP) & (1 << (25))) == 0) && ((((KBS_INTERNAL_PULL_UP) & (1 << (25))) == (1 << (25)))))
-		GPIO_Pullup_Config(GPIOA, 21); // C3 kso 17
-#endif
-	SYSCTL_PIO3_UDCFG |= 0x00ff0000;//kbs in maintain pull up 
-}
 void gpio_init(void)
 {
 #if GPIO_MODULE_EN
@@ -393,128 +73,121 @@ void uart_init(void)
 void smbus_init(void)
 {
 #if I2C_MODULE_EN
-#if I2C0_EN_Init
+#if I2C0_EN_Init||((DEBUGGER_OUTPUT_SWITCH == 1)&&(DEBUGGER_I2C_CHANNEL==I2C_CHANNEL_0))
 	smbus0_MoudleClock_EN;
 	sysctl_iomux_i2c0(I2C0_CLK_SEL, I2C0_DAT_SEL);
 	i2c0_pull_up(I2C0_CLK_SEL, I2C0_DAT_SEL);
-#if (DEBUGGER_OUTPUT_SWITCH == 1)
-#if (DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0)
-	I2c_Channel_Init(I2C_CHANNEL_0, I2C0_SPEED, I2C_SLAVE_ROLE, 0x6A, 1);
-	I2C0_INTR_MASK |= I2C_INTR_RX_FULL;
+	I2c_Channel_Init(I2C_CHANNEL_0, I2C0_SPEED, I2C0_DEFAULT_ROLE, I2C0_DEFAULT_ADDR, 1);
 #endif
-#else
-	I2c_Channel_Init(I2C_CHANNEL_0, I2C0_SPEED, I2C_MASTER_ROLE, 0x4c, 1);
-
-#endif
-#endif
-#if I2C1_EN_Init
+#if I2C1_EN_Init||((DEBUGGER_OUTPUT_SWITCH == 1)&&(DEBUGGER_I2C_CHANNEL==I2C_CHANNEL_1))
 	smbus1_MoudleClock_EN;
 	sysctl_iomux_i2c1();
 	i2c1_pull_up();
-#if (DEBUGGER_OUTPUT_SWITCH == 1)
-#if (DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_1)
-	I2c_Channel_Init(I2C_CHANNEL_1, I2C1_SPEED, I2C_SLAVE_ROLE, 0x4c, 1);
-	I2C1_INTR_MASK |= I2C_INTR_RX_FULL;
+	I2c_Channel_Init(I2C_CHANNEL_1, I2C1_SPEED, I2C1_DEFAULT_ROLE, I2C1_DEFAULT_ADDR, 1);
 #endif
-#else
-	I2c_Channel_Init(I2C_CHANNEL_1, I2C1_SPEED, I2C_MASTER_ROLE, 0x4C, 1);
-#endif
-#endif
-#if I2C2_EN_Init
+#if I2C2_EN_Init||((DEBUGGER_OUTPUT_SWITCH == 1)&&(DEBUGGER_I2C_CHANNEL==I2C_CHANNEL_2))
 	smbus2_MoudleClock_EN;
 	sysctl_iomux_i2c2(I2C2_CLK_SEL);
 	i2c2_pull_up(I2C2_CLK_SEL);
-#if (DEBUGGER_OUTPUT_SWITCH == 1)
-#if (DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_2)
-	I2c_Channel_Init(I2C_CHANNEL_2, I2C2_SPEED, I2C_SLAVE_ROLE, 0x00, 1);
-	I2C2_INTR_MASK |= I2C_INTR_RX_FULL;
+	I2c_Channel_Init(I2C_CHANNEL_2, I2C2_SPEED, I2C2_DEFAULT_ROLE, I2C2_DEFAULT_ADDR, 1);
 #endif
-#else
-	I2c_Channel_Init(I2C_CHANNEL_2, I2C2_SPEED, I2C_NO_ROLE, 0x00, 1);
-#endif
-#endif
-#if I2C3_EN_Init
+#if I2C3_EN_Init||((DEBUGGER_OUTPUT_SWITCH == 1)&&(DEBUGGER_I2C_CHANNEL==I2C_CHANNEL_3))
 	smbus3_MoudleClock_EN;
 	sysctl_iomux_i2c3();
 	i2c3_pull_up();
-#if (DEBUGGER_OUTPUT_SWITCH == 1)
-#if (DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_3)
-	I2c_Channel_Init(I2C_CHANNEL_3, I2C3_SPEED, I2C_SLAVE_ROLE, 0x00, 1);
-	I2C3_INTR_MASK |= I2C_INTR_RX_FULL;
+	I2c_Channel_Init(I2C_CHANNEL_3, I2C3_SPEED, I2C3_DEFAULT_ROLE, I2C3_DEFAULT_ADDR, 1);
 #endif
-#else
-	I2c_Channel_Init(I2C_CHANNEL_3, I2C3_SPEED, I2C_NO_ROLE, 0x00, 1);
-#endif
-#endif
-#if I2C4_EN_Init
+#if I2C4_EN_Init||((DEBUGGER_OUTPUT_SWITCH == 1)&&(DEBUGGER_I2C_CHANNEL==I2C_CHANNEL_4))
 	smbus4_MoudleClock_EN;
 	sysctl_iomux_i2c4();
 	i2c4_pull_up();
-#if (DEBUGGER_OUTPUT_SWITCH == 1)
-#if (DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_4)
-	I2c_Channel_Init(I2C_CHANNEL_4, I2C4_SPEED, I2C_SLAVE_ROLE, 0x00, 1);
-	I2C4_INTR_MASK |= I2C_INTR_RX_FULL;
+	I2c_Channel_Init(I2C_CHANNEL_4, I2C4_SPEED, I2C4_DEFAULT_ROLE, I2C4_DEFAULT_ADDR, 1);
 #endif
-#else
-	I2c_Channel_Init(I2C_CHANNEL_4, I2C4_SPEED, I2C_NO_ROLE, 0x00, 1);
-#endif
-#endif
-#if I2C5_EN_Init
+#if I2C5_EN_Init||((DEBUGGER_OUTPUT_SWITCH == 1)&&(DEBUGGER_I2C_CHANNEL==I2C_CHANNEL_5))
 	smbus5_MoudleClock_EN;
 	sysctl_iomux_i2c5();
 	i2c5_pull_up();
-#if (DEBUGGER_OUTPUT_SWITCH == 1)
-#if (DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_5)
-	I2c_Channel_Init(I2C_CHANNEL_5, I2C5_SPEED, I2C_SLAVE_ROLE, 0x00, 1);
-	I2C5_INTR_MASK |= I2C_INTR_RX_FULL;
+	I2c_Channel_Init(I2C_CHANNEL_5, I2C5_SPEED, I2C5_DEFAULT_ROLE, I2C5_DEFAULT_ADDR, 1);
 #endif
-#else
-	I2c_Channel_Init(I2C_CHANNEL_5, I2C5_SPEED, I2C_NO_ROLE, 0x00, 1);
-#endif
-#endif
-#if I2C6_EN_Init
+#if I2C6_EN_Init||((DEBUGGER_OUTPUT_SWITCH == 1)&&(DEBUGGER_I2C_CHANNEL==I2C_CHANNEL_6))
 	smbus6_MoudleClock_EN;
 	sysctl_iomux_i2c6();
 	i2c6_pull_up();
-#if (DEBUGGER_OUTPUT_SWITCH == 1)
-#if (DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_6)
-	I2c_Channel_Init(I2C_CHANNEL_6, I2C6_SPEED, I2C_SLAVE_ROLE, 0x00, 1);
-	I2C6_INTR_MASK |= I2C_INTR_RX_FULL;
+	I2c_Channel_Init(I2C_CHANNEL_6, I2C6_SPEED, I2C6_DEFAULT_ROLE, I2C6_DEFAULT_ADDR, 1);
 #endif
-#else
-	I2c_Channel_Init(I2C_CHANNEL_6, I2C6_SPEED, I2C_SLAVE_ROLE, 0x6A, 1);
-	// I2c_Channel_Init(I2C_CHANNEL_6, I2C6_SPEED, I2C_MASTER_ROLE, 0x6a, 1);
-#endif
-#endif
-#if I2C7_EN_Init
+#if I2C7_EN_Init||((DEBUGGER_OUTPUT_SWITCH == 1)&&(DEBUGGER_I2C_CHANNEL==I2C_CHANNEL_7))
 	smbus7_MoudleClock_EN;
 	sysctl_iomux_i2c7();
 	i2c7_pull_up();
-#if (DEBUGGER_OUTPUT_SWITCH == 1)
-#if (DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_7)
-	I2c_Channel_Init(I2C_CHANNEL_7, I2C7_SPEED, I2C_SLAVE_ROLE, 0x00, 1);
-	I2C7_INTR_MASK |= I2C_INTR_RX_FULL;
+	I2c_Channel_Init(I2C_CHANNEL_7, I2C7_SPEED, I2C7_DEFAULT_ROLE, I2C7_DEFAULT_ADDR, 1);
 #endif
-#else
-	// I2c_Channel_Init(I2C_CHANNEL_7, I2C7_SPEED, I2C_SLAVE_ROLE, 0x6A, 1);
-	I2c_Channel_Init(I2C_CHANNEL_7, I2C7_SPEED, I2C_MASTER_ROLE, 0x6a, 1);
-#endif
-#endif
-#if I2C8_EN_Init
+#if I2C8_EN_Init||((DEBUGGER_OUTPUT_SWITCH == 1)&&(DEBUGGER_I2C_CHANNEL==I2C_CHANNEL_8))
 	smbus8_MoudleClock_EN;
 	sysctl_iomux_i2c8();
 	i2c8_pull_up();
-#if (DEBUGGER_OUTPUT_SWITCH == 1)
-#if (DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_8)
-	I2c_Channel_Init(I2C_CHANNEL_8, I2C8_SPEED, I2C_SLAVE_ROLE, 0x00, 1);
-	I2C8_INTR_MASK |= I2C_INTR_RX_FULL;
+	I2c_Channel_Init(I2C_CHANNEL_8, I2C8_SPEED, I2C8_DEFAULT_ROLE, I2C8_DEFAULT_ADDR, 1);
 #endif
-#else
-	I2c_Channel_Init(I2C_CHANNEL_8, I2C8_SPEED, I2C_MASTER_ROLE, 0x6a, 1);
-#endif
+#if (DEBUGGER_OUTPUT_SWITCH == 1)//初始化调试器//因为是调试手段,所以尽早初始化(UART因为不需要考虑地址,只需要波特率因此相对简单)
+	I2c_Channel_Init(DEBUGGER_I2C_CHANNEL, DEBUGGER_I2C_SPEED, I2C_SLAVE_ROLE, DEBUGGER_I2C_ADDRESS, 1);
+	SMBUSn_INTR_MASK0(DEBUGGER_I2C_CHANNEL) |= I2C_INTR_RX_FULL;
 #endif
 	dprint("I2c_channel_init done.\n");
 #endif
+}
+void I3C_Channel_Init(uint8_t channel, uint32_t speed, uint8_t master_role, uint8_t addr)
+{
+	switch(channel)
+	{
+		case I3C_MASTER0:case I3C_MASTER1:
+			if(master_role == I3C_MASTER_I3C_MODE)
+			{
+				I3C_Master_Init(speed, channel);
+				sDEV_CHAR_TABLE *dct = ((channel == I3C_MASTER0) ? master0_dev_read_char_table : ((channel == I3C_MASTER1) ? master1_dev_read_char_table : NULL));
+				BYTE *dynamic_addr = ((channel == I3C_MASTER0) ? MASTER0_DEV_DYNAMIC_ADDR_TABLE : ((channel == I3C_MASTER1) ? MASTER1_DEV_DYNAMIC_ADDR_TABLE : NULL));
+				I3C_MASTER_ENTDAA(dct, dynamic_addr, channel); //specify a dynamic addr
+			}
+			else if(master_role == I3C_MASTER_I2C_MODE)
+			{
+				I3C_Legacy_Master_Init(addr, speed, channel);
+			}
+			break;
+		case I3C_SLAVE0:case I3C_SLAVE1:
+			I3C_Slave_Init(addr, channel);
+			break;
+		default:
+			break;
+	}
+}
+void i3c_init(void)
+{
+	/****************** master init ******************/
+#if I3C_MODULE_EN
+#if I3C0_EN_Init
+	i3c0_MoudleClock_EN;
+	sysctl_iomux_master0();
+	I3C_Channel_Init(I3C_MASTER0, I3C_MASTER0_SPEED, I3C_MASTER0_DEFAULT_ROLE, I3C_MASTER0_DEFAULT_ADDR);
+#endif
+#if I3C1_EN_Init
+	i3c1_MoudleClock_EN;
+	sysctl_iomux_master1();
+	I3C_Channel_Init(I3C_MASTER1, I3C_MASTER1_SPEED, I3C_MASTER1_DEFAULT_ROLE, I3C_MASTER1_DEFAULT_ADDR);
+#endif
+	dprint("i3c master init done.\n");
+
+	/****************** slave init ******************/
+#if I3C2_EN_Init
+	i3c2_MoudleClock_EN;
+	sysctl_iomux_slave0();
+	I3C_Channel_Init(I3C_SLAVE0, I3C_SLAVE0_SPEED, I3C_SLAVE0_DEFAULT_ROLE, I3C_SLAVE0_DEFAULT_ADDR);
+#endif
+#if I2C3_EN_Init
+	i3c3_MoudleClock_EN;
+	sysctl_iomux_slave1();
+	I3C_Channel_Init(I3C_SLAVE1, I3C_SLAVE1_SPEED, I3C_SLAVE1_DEFAULT_ROLE, I3C_SLAVE1_DEFAULT_ADDR);
+#endif
+#endif
+	dprint("i3c slave init done.\n");
+
 }
 void spim_init(void)
 {
@@ -605,6 +278,45 @@ void pwm_tach_init(void)
 	dprint("TACH init done\n");
 #endif
 }
+void pmc1_init(void)
+{
+	PMC1_IE = 0x3f;
+#if !(LPC_WAY_OPTION_SWITCH)
+	PMC1_CTL |= IBF_INT_ENABLE;
+#endif
+}
+void pmc2_init(void)
+{
+	PMC2_IE = 0x3f;
+#if !(LPC_WAY_OPTION_SWITCH)
+	PMC2_CTL |= IBF_INT_ENABLE;
+#endif
+}
+void pmc3_init(void)
+{
+	PMC3_IE = 0x3f;
+#if !(LPC_WAY_OPTION_SWITCH)
+	PMC3_CTL |= IBF_INT_ENABLE;
+#endif
+}
+void pmc4_init(void)
+{
+	PMC4_IE = 0x3f;
+#if !(LPC_WAY_OPTION_SWITCH)
+	PMC4_CTL |= IBF_INT_ENABLE;
+#endif
+}
+void pmc5_init(void)
+{
+	PMC5_IE = 0x3f;
+#if !(LPC_WAY_OPTION_SWITCH)
+	PMC5_CTL |= IBF_INT_ENABLE;
+#endif
+}
+void kbc_init(void)
+{
+	SET_BIT(KBC_CTL, KBC_IBFIE); // set KBC_IBF enable
+}
 void kbc_pmc_init(void)
 {
 #if (KBC_MODULE_EN)
@@ -638,6 +350,18 @@ void kbs_init(void)
 	dprint("Kbd init done.\n");
 #endif
 }
+void ps2_0_frequency(void)
+{
+	/*init ps2 0 freq */
+	PS2_PORT0_CPSR = (((HIGHT_CHIP_CLOCK * 5) / 1000 + 500) / 1000);		 // 5us
+	PS2_PORT0_DVR = (((HIGHT_CHIP_CLOCK / PS2_PORT0_CPSR) / 1000 + 5) / 10); // 100us
+}
+void ps2_1_frequency(void)
+{
+	/*init ps2 1 freq */
+	PS2_PORT1_CPSR = (((HIGHT_CHIP_CLOCK * 5) / 1000 + 500) / 1000);		 // 5us
+	PS2_PORT1_DVR = (((HIGHT_CHIP_CLOCK / PS2_PORT0_CPSR) / 1000 + 5) / 10); // 100us
+}
 void ps2_init(void)
 {
 #if (PS2_MODULE_EN)
@@ -656,41 +380,7 @@ void ps2_init(void)
 	dprint("Ps2 init done.\n");
 #endif
 }
-void pport_init(void)
-{
-#if (PPORT_MODULE_EN)
-	pport_MoudleClock_EN;
-	sysctl_iomux_pport();
-	// pport reg init function
-	dprint("Pport init done.\n");
-#endif
-}
-void can_init(void)
-{
-#if (CAN_MODULE_EN)
-#if CAN0_EN_Init
-	can0_MoudleClock_EN;
-	sysctl_iomux_can0();
-	// can0 reg init function
-#endif
-#if CAN1_EN_Init
-	can1_MoudleClock_EN;
-	sysctl_iomux_can1();
-	// can0 reg init function
-#endif
-#if CAN2_EN_Init
-	can2_MoudleClock_EN;
-	sysctl_iomux_can2();
-	// can0 reg init function
-#endif
-#if CAN3_EN_Init
-	can3_MoudleClock_EN;
-	sysctl_iomux_can3();
-	// can0 reg init function
-#endif
-	dprint("CAN init done.\n");
-#endif
-}
+
 void cec_init(void)
 {
 #if (CEC_MODULE_EN)
@@ -834,48 +524,6 @@ void time_init(void)
 #endif
 }
 
-void i3c_init(void)
-{
-	/****************** master init ******************/
-#if I3C_MODULE_EN
-#if I3C0_EN_Init
-	i3c0_MoudleClock_EN;
-	sysctl_iomux_master0();
-#if (I3C_MASTER0_INTFMODE == MASTER_I3C_MODE)
-	I3C_Master_Init(SDR_DEFAULT_SPEED, I3C_MASTER0);
-	I3C_MASTER_ENTDAA(master0_dev_read_char_table, MASTER0_DEV_DYNAMIC_ADDR_TABLE, I3C_MASTER0); //specify a dynamic addr
-#elif (I3C_MASTER0_INTFMODE == MASTER_I2C_MODE)
-	I3C_Legacy_Master_Init(SDR_DEFAULT_SPEED, I3C_MASTER0);
-#endif
-#endif
-
-#if I3C1_EN_Init
-	i3c1_MoudleClock_EN;
-	sysctl_iomux_master1();
-#if (I3C_MASTER1_INTFMODE == MASTER_I3C_MODE)
-	I3C_Master_Init(SDR_DEFAULT_SPEED, I3C_MASTER1);
-	I3C_MASTER_ENTDAA(master1_dev_read_char_table, MASTER1_DEV_DYNAMIC_ADDR_TABLE, I3C_MASTER1); //specify a dynamic addr
-#elif (I3C_MASTER1_INTFMODE == MASTER_I2C_MODE)
-	I3C_Legacy_Master_Init(SDR_DEFAULT_SPEED, I3C_MASTER1);
-#endif
-	dprint("i3c_master_init done.\n");
-#endif
-
-	/****************** slave init ******************/
-#if I3C2_EN_Init
-	i3c2_MoudleClock_EN;
-	sysctl_iomux_slave0();
-	I3C_Slave_Init(0x5A, I3C_SLAVE0);
-#endif
-
-#if I2C3_EN_Init
-	i3c3_MoudleClock_EN;
-	sysctl_iomux_slave1();
-	I3C_Slave_Init(0x6A, I3C_SLAVE1);
-#endif
-	dprint("i3c_slave_init done.\n");
-#endif
-}
 
 void __weak SECTION(".init.module") Module_init(void)
 {
@@ -897,6 +545,7 @@ void __weak SECTION(".init.module") Module_init(void)
 	kbc_pmc_init();
 	// 10.Initialize  The KBS
 	kbs_init();
+	ps2_init();
 #if ( 0)
 	// 11.Initialize The CEC
 	cec_init();

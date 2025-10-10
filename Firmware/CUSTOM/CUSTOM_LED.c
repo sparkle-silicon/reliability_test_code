@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-05-06 18:01:41
+ * @LastEditTime: 2025-10-10 17:27:10
  * @Description: This file is used for LED custom
  *
  *
@@ -87,7 +87,7 @@ int CARD_LED_ON()
     return 0;
 }
 int CARD_LED_OFF()
-{ /*zb add*/
+{
     return 0;
 }
 int STATE_CARD()

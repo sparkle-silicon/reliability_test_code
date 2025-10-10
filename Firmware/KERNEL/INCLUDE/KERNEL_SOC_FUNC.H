@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-06-17 15:38:32
+ * @LastEditTime: 2025-10-09 17:18:57
  * @Description:
  *
  *
@@ -46,14 +46,5 @@ extern void adc_init(void);
 extern void gpio_init(void);
 extern void time_init(void);
 
-extern void i2c0_pull_up(uint32_t clk_sel, uint32_t data_sel);
-extern void i2c1_pull_up(void);
-extern void i2c2_pull_up(uint32_t clk_sel);
-extern void i2c3_pull_up(void);
-extern void i2c4_pull_up(void);
-extern void i2c5_pull_up(void);
-extern void i2c6_pull_up(void);
-extern void i2c7_pull_up(void);
-extern void i2c8_pull_up(void);
 __END_DECLS
 #endif

@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-08 23:52:55
+ * @LastEditTime: 2025-10-09 17:21:07
  * @Description:
  *
  *
@@ -261,7 +261,6 @@ extern void sysctl_iomux_uart0(void);
 extern void sysctl_iomux_uart1(uint32_t tx_sel, uint32_t rx_sel);
 extern void sysctl_iomux_uarta(uint32_t tx_sel, uint32_t rx_sel);
 extern void sysctl_iomux_uartb(void);
-
 extern void sysctl_iomux_disable_uart0(void);
 extern void sysctl_iomux_disable_uart1(uint32_t tx_sel, uint32_t rx_sel);
 extern void sysctl_iomux_disable_uarta(uint32_t tx_sel, uint32_t rx_sel);
@@ -269,8 +268,10 @@ extern void sysctl_iomux_disable_uartb(void);
 
 extern void sysctl_iomux_ps2_0(uint32_t clk_sel, uint32_t data_sel);
 extern void sysctl_iomux_ps2_1(uint32_t clk_sel, uint32_t data_sel);
+
 extern void sysctl_iomux_spim(void);
 extern void sysctl_iomux_spim_cs(void);
+
 extern void sysctl_iomux_pwm0(void);
 extern void sysctl_iomux_pwm1(void);
 extern void sysctl_iomux_pwm2(void);
@@ -283,6 +284,7 @@ extern void sysctl_iomux_tach0(uint32_t tach_sel);
 extern void sysctl_iomux_tach1(uint32_t tach_sel);
 extern void sysctl_iomux_tach2(void);
 extern void sysctl_iomux_tach3(uint32_t tach_sel);
+
 extern void sysctl_iomux_i2c0(uint32_t clk_sel, uint32_t data_sel);
 extern void sysctl_iomux_i2c1(void);
 extern void sysctl_iomux_i2c2(uint32_t clk_sel);
@@ -292,12 +294,15 @@ extern void sysctl_iomux_i2c5(void);
 extern void sysctl_iomux_i2c6(void);
 extern void sysctl_iomux_i2c7(void);
 extern void sysctl_iomux_i2c8(void);
+
 extern void sysctl_iomux_master0(void);
 extern void sysctl_iomux_master1(void);
 extern void sysctl_iomux_slave0(void);
 extern void sysctl_iomux_slave1(void);
+
 extern void sysctl_iomux_sci(void);
 extern void sysctl_iomux_smi(void);
+
 extern void sysctl_iomux_adc0(void);
 extern void sysctl_iomux_adc1(void);
 extern void sysctl_iomux_adc2(void);
@@ -306,20 +311,34 @@ extern void sysctl_iomux_adc4(void);
 extern void sysctl_iomux_adc5(void);
 extern void sysctl_iomux_adc6(void);
 extern void sysctl_iomux_adc7(void);
+
 extern void sysctl_iomux_cec0(uint8_t cec0_sel);
 extern void sysctl_iomux_cec1(void);
+
 extern void sysctl_iomux_owi(void);
-extern void sysctl_iomux_can0(void);
-extern void sysctl_iomux_can1(void);
-extern void sysctl_iomux_can2(void);
-extern void sysctl_iomux_can3(void);
+
 extern void sysctl_iomux_gpioe(void);
 extern void sysctl_iomux_kbs(void);
-extern void sysctl_iomux_pport(void);
+extern void sysctl_iomux_crypto_jtag(void);
+extern void sysctl_iomux_jtag(void);
 extern void sysctl_iomux_lpc(void);
 extern void sysctl_iomux_peci(void);
 
-extern BYTE  GPIO_Pullup_Config(BYTE  GPIO, BYTE  Num);
+extern void i2c0_pull_up(uint32_t clk_sel, uint32_t data_sel);
+extern void i2c1_pull_up(void);
+extern void i2c2_pull_up(uint32_t clk_sel);
+extern void i2c3_pull_up(void);
+extern void i2c4_pull_up(void);
+extern void i2c5_pull_up(void);
+extern void i2c6_pull_up(void);
+extern void i2c7_pull_up(void);
+extern void i2c8_pull_up(void);
+extern void tach0_pull_up(uint32_t tach_sel);
+extern void tach1_pull_up(uint32_t tach_sel);
+extern void tach2_pull_up(void);
+extern void tach3_pull_up(uint32_t tach_sel);
+
+extern BYTE  PIO_Pullup_Config(BYTE  GPIO, BYTE  Num);
 extern char IsGpioOut(DWORD port, DWORD io);
 extern int GPIO_Config(int GPIO, int gpio_no, int mode, int op_val, int int_lv, int pol);
 extern void sysctl_iomux_config(DWORD port, DWORD io, unsigned port_type);
