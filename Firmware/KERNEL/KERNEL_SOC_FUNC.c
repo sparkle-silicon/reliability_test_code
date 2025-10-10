@@ -23,11 +23,6 @@
 void trim_set(void)
 {
 #if SOFTWARE_TRIM_CONTROL
-	sysctl_iomux_config(GPIOB, 31, 0x0);//将GPH7设置为GPIO，即设置为默认不输出
-	GPIO_Input_EN(GPIOB, 31, DISABLE);  //GPH[7]的IE配为0
-	REG32(0x30518) |= ((1 << 0) | (1 << 9)); //寄存器0x3_0518的bit0和bit9均置1 
-
-	sysctl_iomux_config(GPIOA, 15, 0x3);//将GPB7设置为BYPASS OSC32K
 
 #if 0	//1号片
 #define LOW_32K_TRIM_DVAL 105
@@ -39,6 +34,11 @@ void trim_set(void)
 #define HIGH_24M_CTRIM_DVAL 0x9
 #define HIGH_24M_FTRIM_DVAL 0x1d
 #endif
+
+	sysctl_iomux_config(GPIOB, 31, 0x0);//将GPH7设置为GPIO，即设置为默认不输出
+	GPIO_Input_EN(GPIOB, 31, DISABLE);  //GPH[7]的IE配为0
+	REG32(0x30518) |= ((1 << 0) | (1 << 9)); //寄存器0x3_0518的bit0和bit9均置1 
+	sysctl_iomux_config(GPIOA, 15, 0x3);//将GPB7设置为BYPASS OSC32K
 
 	const u32 mask_32k = 0xff;
 	u8 offset = 0;
