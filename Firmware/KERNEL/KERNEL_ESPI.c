@@ -19,7 +19,7 @@
 #include "CUSTOM_POWER.H"
 #include "AE_CONFIG.H"
 #include "KERNEL_MEMORY.H"
-#include "CUSTOM_PECI.H"
+#include "KERNEL_PECI.H"
 #include "KERNEL_MAILBOX.H"
 extern BYTE eRPMC_Busy_Status;
 /*-----------------------------------------------------------------------------
@@ -1520,11 +1520,11 @@ BYTE OOB_PECI_RdPkgConfig(BYTE addr, BYTE* ReadData,
 
     if (Domain < 2)
     {
-        *(UPSTREAM_DATA + 7) = _PECI_CMD_RdPkgConfig + Domain;
+        *(UPSTREAM_DATA + 7) = PECI_CMD_RdPkgConfig + Domain;
     }
     else
     {
-        *(UPSTREAM_DATA + 7) = _PECI_CMD_RdPkgConfig;
+        *(UPSTREAM_DATA + 7) = PECI_CMD_RdPkgConfig;
     }
     if (Retry < 2)
     {
@@ -1617,11 +1617,11 @@ BYTE OOB_PECI_WrPkgConfig(BYTE addr, BYTE* WriteData,
 
     if (Domain < 2)
     {
-        *(UPSTREAM_DATA + 7) = _PECI_CMD_WrPkgConfig + Domain;
+        *(UPSTREAM_DATA + 7) = PECI_CMD_WrPkgConfig + Domain;
     }
     else
     {
-        *(UPSTREAM_DATA + 7) = _PECI_CMD_WrPkgConfig;
+        *(UPSTREAM_DATA + 7) = PECI_CMD_WrPkgConfig;
     }
     if (Retry < 2)
     {

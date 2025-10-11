@@ -62,6 +62,9 @@
 #define SUPPORT_HOOK_WARMBOOT TRUE
 #define ENABLE_eSPI_INT_QUICK_CTRL
 
+//PECI Fucntion Support
+#define SUPPORT_PECI TRUE
+
 // Enabled KB Interrupt when system Sx
 #define ENABLE_S5_KEYBOARD_INTR 0 // Enabled KB Interrupt when system S5
 #define ENABLE_S3_KEYBOARD_INTR 0 // Enabled KB Interrupt when system S3

@@ -26,6 +26,7 @@
 #include "KERNEL_SLEEP_RESET.H"
 #include "KERNEL_INCLUDE.H"
 #include "KERNEL_I3C.H"
+#include "CUSTOM_PECI.H"
  /*-----------------------------------------------------------------------------
   * Local Parameter Definition
   *---------------------------------------------------------------------------*/
@@ -126,6 +127,25 @@ void __weak Hook_100msEventB(void)
 void __weak Hook_100msEventC(void)
 {
     Service_LED_Indicator();
+
+#if SUPPORT_PECI
+    if (System_PowerState == SYSTEM_S0)
+    {
+        Service_PECI();
+#if 0
+        Service_PECI_Command();
+        while (PECI_FLAG & F_PECI_BUSY)
+        {
+            Service_PECI_Data();
+        }
+#endif
+    }
+    else
+    {
+        PECI_FLAG = 0;
+    }
+#endif  //SUPPORT_PECI
+
 }
 //-----------------------------------------------------------------------------
 // Oem 500ms Events/Hook Here
@@ -217,7 +237,7 @@ void __weak Hook_1secEventB(void) // get fan rpm
     {
         TACH0_Speed = (DWORD)TACH_RPM(Polling0);
         dprint("FAN2 RPM is %u\n", TACH0_Speed);
-}
+    }
 #endif
     // GPIO1_DDR0 |=0x1; 
     // GPIO1_DR0 |=0x1;
@@ -274,7 +294,7 @@ void __weak Hook_1minEvent(void)
             dprint("Cnt:%d,Data:%x\n", i, Debug_8042[Debug_Num]);
             Debug_8042[Debug_Num] = 0;
         }
-}
+    }
 #endif
 }
 //-----------------------------------------------------------------------------
