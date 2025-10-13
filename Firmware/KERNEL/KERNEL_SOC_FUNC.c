@@ -527,7 +527,6 @@ void time_init(void)
 #endif
 }
 
-
 void __weak SECTION(".init.module") Module_init(void)
 {
 	// 1.Initialize The GPIO

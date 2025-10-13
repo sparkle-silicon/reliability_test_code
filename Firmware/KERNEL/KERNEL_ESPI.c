@@ -120,20 +120,10 @@ BYTE Peripheral_Memory_Read64[11] =
 // Byte#3-6: 64bits address
 /* RPMC<-->OOB Message ARRAY */
 BYTE RPMC_OOB_TempArr[80];
-/*-----------------------------------------------------------------------------
- * Depends on parameter definition
- *---------------------------------------------------------------------------*/
-#if DEBUG_OOB_MESSAGE
-#define OOB_RamDebug(x) RamDebug(x)
-#else
-#define OOB_RamDebug(x) \
-    {                   \
-    }
-#endif
 
- /*-----------------------------------------------------------------------------
-  * eSPI array definition
-  *---------------------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------
+ * eSPI array definition
+ *---------------------------------------------------------------------------*/
 BYTE* OOB_Table_Pntr = NULL;
 BYTE* Peri_Table_Pntr = NULL;
 BYTE eSPI_PCH_TMPR[16];
@@ -142,12 +132,6 @@ BYTE OOB_PECI_Temper[2];
 BYTE eSPI_FLASH_DATA[80] = { 0xF0, 0xF1, 0xF2, 0xF3 };
 BYTE eSPI_Peri_MemRd32[4];
 BYTE eSPI_Peri_MemRd64[4];
-
-// BYTE    PECI_Get_DIB[8];
-// BYTE    PECI_Get_Temp[2];
-// BYTE    PECI_RdPkgCfg_Idx16[5];
-// BYTE    PECI_ReadBuffer[16];
-// BYTE    PECI_WriteBuffer[16];
 
 /*-----------------------------------------------------------------------------
  * Data Structure Prototype
@@ -172,41 +156,24 @@ enum intel_crashlog_step
 void ESPI_Init(void)
 {
 #if SUPPORT_INTERFACE_eSPI
-    REG32(0x30498) &= 0xffffbfff; // bypass 1.8V
-    REG32(0x30498) |= 0x200000;   // set ec recognized 1.8V
-    REG32(0x3047C) |= BIT2;       // select espi/lpc   bit2 -> 0:lpc 1:espi
+    SYSCTL_PMUCSR &= 0xffffbfff;    // bypass 1.8V
+    SYSCTL_PMU_CFG &= 0xffffff81;
+    SYSCTL_PMU_CFG |= BIT7;         // set ec recognized 1.8V
+    SYSCTL_PIO_CFG |= BIT2;         // select espi/lpc   bit2 -> 0:lpc 1:espi 
 #if SPK_eSPI_LOW_FREQUENCY
-    // REG_3105 = _eSPI_MAX_FREQ_20MHZ;
-    REG32(0x33004) &= 0xfffff8ff;
-    // Low Frequency PLL change is not required
+    REG_3105 = _eSPI_MAX_FREQ_20MHZ;    // Low Frequency PLL change is not required
 #else
     REG_3105 = _eSPI_MAX_FREQ_66MHZ;
 #endif
-
-    // REG32(0x33020) &= 0xffff00ff;
-    // REG32(0x33020) |= 0x00000100; // 设置ack timeout number为1
-
-    ES_ACK_TIMEOUT_NUMBER &= 0x00;
-    ES_ACK_TIMEOUT_NUMBER |= 0x01; // 设置ack timeout number为1
-
-    // dprint("33004:%x\n", REG32(0x33004));
+    ES_ACK_TIMEOUT_NUMBER = 0x01;   // 设置ack timeout number为1
 #if ITE_eSPI_SAFS_MODE
     REG_3115 = _SUPPORT_SAFS;
-    // REG_10A2 = 0x80;
 #else
     REG_3115 = _SUPPORT_MAFS;
-    // REG32(0x33014) &= 0xfffffcff;
 #endif
-    // dprint("33014:%x\n", REG32(0x33014));
-    ESGCTRL1 = 0x80;    /* REG@31A1.7: eSPI Interrupt Enable */
-    // REG32(0x330A0) |= 0x8000;
-    ESGCTRL2 = 0x10;    /* REG@31A1.4: eSPI To WUC Enable */
-    // REG32(0x330A0) |= 0x100000;
-
-    ESUCTRL0 |= Upstream_INT_EN;// 使能upsteam中断使能
-    // REG32(0x330B0) |= Upstream_INT_EN; // 使能upsteam中断使能
-    // REG32(0x33190) |= 0x80; // 使能VW WIRE中断
-    // dprint("330A0:%x\n", REG32(0x330A0));
+    ESGCTRL1 = 0x80;                /* REG@31A1.7: eSPI Interrupt Enable */
+    ESGCTRL2 = 0x10;                /* REG@31A1.4: eSPI To WUC Enable */
+    ESUCTRL0 |= Upstream_INT_EN;    // 使能upsteam中断使能
 #endif
 }
 /*-----------------------------------------------------------------------------
@@ -229,29 +196,22 @@ void ESPI_Init(void)
 void EC_ACK_eSPI_Reset(void)
 {
     if ((IS_MASK_SET(VWIDX7, F_IDX7_HOST_RST_WARN)) && (IS_MASK_SET(VWIDX7, F_IDX7_HOST_RST_WARN_VALID)))
-        // if ((REG32(0x33104) & 0x1000000) && (REG32(0x33104) & 0x10000000))
     {
-        // dprint("H_R_W\n");
         VWIDX6 = (F_IDX6_HOST_RST_ACK_VALID +
             F_IDX6_HOST_RST_ACK +
             F_IDX6_RCIN +
             F_IDX6_SMI +
             F_IDX6_SCI);
-        // REG32(0x33104) &= 0xff00ffff;
-        // REG32(0x33104) |= 0x8f0000;
 
         if (IS_MASK_SET(REG_3104, F_ALERT_MODE))
-            // if (REG32(0x33004) & 0x10)
         {
             sysctl_iomux_config(GPIOD, 6, 1); // alert
         }
 
         VWCTRL3 |= F_VW_INDEX_6_RESEND;     //send VW INDEX6
-        // REG32(0x33190) |= 0x4000000;
 
         _C1 = 60000;
         while (IS_MASK_SET(VWIDX7, F_IDX7_HOST_RST_WARN))
-            // while (REG32(0x33104) & 0x1000000)
         {
             _C1--;
 #if 1 /* Timeout if need */
@@ -266,41 +226,30 @@ void EC_ACK_eSPI_Reset(void)
             F_IDX6_RCIN +
             F_IDX6_SMI +
             F_IDX6_SCI);
-        // REG32(0x33104) &= 0xff00ffff;
-        // REG32(0x33104) |= 0x870000;
-        // REG32(0x33104) &= 0xf7ffff;
 
         if (IS_MASK_SET(REG_3104, F_ALERT_MODE))
-            // if (REG32(0x33004) & 0x10)
         {
             sysctl_iomux_config(GPIOD, 6, 1); // alert
         }
 
         VWCTRL3 |= F_VW_INDEX_6_RESEND;     //send VW INDEX6
-        // REG32(0x33190) |= 0x4000000;
-
         Hook_EC_ACK_eSPI_Reset();
     }
 
     if ((IS_MASK_SET(VWIDX3, F_IDX3_OOB_RST_WARN)) && (IS_MASK_SET(VWIDX3, F_IDX3_OOB_RST_WARN_VALID)))
-        // if ((REG32(0x33100) & 0x40000000) && (REG32(0x33100) & 0x4000000))
     {
         VWIDX4 |= (F_IDX4_OOB_RST_ACK_VALID +
             F_IDX4_OOB_RST_ACK);
-        // REG32(0x33104) |= 0x11;
 
         if (IS_MASK_SET(REG_3104, F_ALERT_MODE))
-            // if (REG32(0x33004) & 0x10)
         {
             sysctl_iomux_config(GPIOD, 6, 1); // alert
         }
 
         VWCTRL3 |= F_VW_INDEX_4_RESEND;     //send VW INDEX4
-        // REG32(0x33190) |= 0x1000000;
 
         _C1 = 60000;
         while (IS_MASK_SET(VWIDX3, F_IDX3_OOB_RST_WARN))
-            // while (REG32(0x33100) & 0x4000000)
         {
             _C1--;
 #if 1 /* Timeout if need */
@@ -314,17 +263,13 @@ void EC_ACK_eSPI_Reset(void)
         _R5 = (VWIDX4 | F_IDX4_OOB_RST_ACK_VALID);
         _R5 &= (~F_IDX4_OOB_RST_ACK_VALID);
         VWIDX4 = _R5;  //(F_IDX4_OOB_RST_ACK_VALID);
-        // REG32(0x33104) |= 0x10;
-        // REG32(0x33104) &= 0xfffffffe;
 
         if (IS_MASK_SET(REG_3104, F_ALERT_MODE))
-            // if (REG32(0x33004) & 0x10)
         {
             sysctl_iomux_config(GPIOD, 6, 1); // alert
         }
 
         VWCTRL3 |= F_VW_INDEX_4_RESEND;     //send VW INDEX4
-        // REG32(0x33190) |= 0x1000000;
     }
 }
 /*-----------------------------------------------------------------------------
@@ -358,47 +303,19 @@ void EC_ACK_eSPI_SUS_WARN(void)
     /* Use formal registers */
     if (IS_MASK_SET(VWIDX41, F_IDX41_SUS_WARN) &&
         IS_MASK_SET(VWIDX41, F_IDX41_VALID))
-        // if ((REG32(0x33140) & 0x100) && (REG32(0x33140) & 0x1000))
     {
         if (IS_MASK_SET(VWIDX41, F_IDX40_VALID))
-            // if (REG32(0x33140) & 0x10)
             return;
-        // if ((PM_SLP_S4_N_H()) && (PM_SLP_S3_N_H()))
-        //     return;
 
         VWIDX40 |= (F_IDX40_SUSACK + F_IDX40_VALID);
-        // REG32(0x33140) &= 0xffffff00;
-        // REG32(0x33140) |= 0x11;
 
         if (IS_MASK_SET(REG_3104, F_ALERT_MODE))
-            // if (REG32(0x33004) & 0x10)
         {
             sysctl_iomux_config(GPIOD, 6, 1); // alert
         }
 
         VWCTRL3 |= F_VW_INDEX_40_RESEND;     //send VW INDEX40
-        // REG32(0x33190) |= 0x8000000;
     }
-
-    // // if(IS_MASK_CLEAR(VWIDX41, F_IDX41_SUS_WARN) &&
-    // //     IS_MASK_SET(VWIDX41, F_IDX41_VALID))
-    // if (((REG32(0x33140) & 0x100) == 0) && ((REG32(0x33140) & 0x1000) == 0x1000))
-    // {
-    //     dprint("L\n");
-    //     // VWIDX40 &= ~(F_IDX40_SUSACK);
-    //     REG32(0x33140) &= 0xfffffffe;
-    //     // VWIDX40 |= F_IDX40_VALID;
-    //     REG32(0x33140) |= 0x10;
-
-    //     // if(IS_MASK_SET(REG_3104, F_ALERT_MODE))
-    //     if (REG32(0x33004) & 0x10)
-    //     {
-    //         sysctl_iomux_config(GPIOD, 6, 1); // alert
-    //     }
-
-    //     // VWCTRL3 |= F_VW_INDEX_40_RESEND;     //send VW INDEX40
-    //     REG32(0x33190) |= 0x8000000;
-    // }
 #endif
 }
 /*-----------------------------------------------------------------------------
@@ -417,35 +334,28 @@ BYTE EC_ACK_eSPI_Boot_Ready(void)
 {
 #if SUPPORT_EN_VW_ACK_BOOT_LOAD
     if (IS_MASK_SET(REG_310F, F_VW_CHN_ENABLE))
-        // if (REG32(0x3300C) & 0x1000000)
     {
         if (IS_MASK_SET(REG_310F, F_VW_CHN_READY))
-            // if (REG32(0x3300C) & 0x2000000)
         {
             VWIDX5 = (F_IDX5_SLAVE_BOOT_LOAD_STATUS_VALID +
                 F_IDX5_SLAVE_BOOT_LOAD_DONE_VALID +
                 F_IDX5_SLAVE_BOOT_LOAD_STATUS +
                 F_IDX5_SLAVE_BOOT_LOAD_DONE);
             VWIDX5 |= F_IDX5_ERROR_FATAL;
-            // REG32(0x33104) |= 0x9900;
-            // REG32(0x33104) &= 0xfffffdff; // clear ERROR_FATAL
+
             /* Detect eSPI Configuration - Alert Mode
                0b: EIO1 (I/O[1] ) pin is used to signal the Alert event.
                1b: A dedicated ALERT# pin is used to signal the Alert event.
             */
             if (IS_MASK_SET(REG_3104, F_ALERT_MODE))
-                // if (REG32(0x33004) & 0x10)
             {
                 sysctl_iomux_config(GPIOD, 6, 1); // alert
             }
 
             VWCTRL3 |= F_VW_INDEX_5_RESEND;     //send VW INDEX5
-            // REG32(0x33190) |= 0x2000000;
-            // dprint("3\n");
             return 1;
         }
     }
-    // dprint("vwf\n");
 #endif
     return 0;
 }
@@ -462,25 +372,16 @@ BYTE EC_ACK_eSPI_Boot_Ready(void)
 void EC_SET_eSPI_CHN_Ready(void)
 {
     if (IS_MASK_SET(REG_310F, F_VW_CHN_ENABLE))
-        // if (REG32(0x3300C) & 0x1000000)
     {
         SET_MASK(ES_CHANNEL_READY, SET_VW_CHANNEL_READY);
-        // REG32(0x33020) |= 0x2;
-        // dprint("1:%x\n", REG32(0x33020));
     }
     if (IS_MASK_SET(REG_3113, F_OOB_CHN_ENABLE))
-        // if (REG32(0x33010) & 0x1000000)
     {
         SET_MASK(ES_CHANNEL_READY, SET_OOB_CHANNEL_READY);
-        // REG32(0x33020) |= 0x4;
-        // dprint("2:%x\n", REG32(0x33020));
     }
     if (IS_MASK_SET(REG_3117, F_FLASH_CHN_ENABLE))
-        // if (REG32(0x33014) & 0x1000000)
     {
         SET_MASK(ES_CHANNEL_READY, SET_FAS_CHANNEL_READY);
-        // REG32(0x33020) |= 0x8;
-        // dprint("3:%x\n", REG32(0x33020));
     }
 }
 
@@ -586,11 +487,9 @@ void Get_OOB_PCH_Temperature(void)
     OOB_Table_Pntr = TO_PCH_TEMPERATURE;
     Tmp_XPntr = &eSPI_PCH_TMPR[0];
     xOOB_PacketMaxLength = 16;
-    // dprint("1\n");
     if (Process_eSPI_OOB_Message())
     {
         xOOB_PCH_Temperature = eSPI_PCH_TMPR[4];
-        dprint("t:%x\n", xOOB_PCH_Temperature);
     }
 }
 
@@ -659,16 +558,13 @@ void OOB_PECI_GetTemp(void)
  */
 BYTE OOB_Check_Upstream_Authority_EN(void)
 {
-    // REG32(0x330B0) |= (Upstream_Req_Authority << 0); // Request upstream anthority
     ESUCTRL0 |= (Upstream_Req_Authority << 0); // Request upstream anthority
-
     /* Check upstream anthority en */
     xOOB_Failed = 0;
     xOOB_Timeout = 255; // 255;
     while (1)
     {
         if (ESUCTRL0 & Upstream_Read_Authority_EN)
-            // if (REG32(0x330B0) & (Upstream_Read_Authority_EN << 0))
         {
             break;
         }
@@ -688,16 +584,10 @@ BYTE OOB_Check_Upstream_Authority_EN(void)
     if (xOOB_Failed > 0)
     {
         xOOB_FailedCounter++;
-        // ESUCTRL0 |= Upstream_Req_Authority;
-        // REG32(0x330B0) &= 0xffffffef;
         ESUCTRL0 &= (~Upstream_Req_Authority);
-        dprint("44\n");
         return FALSE;
     }
-    // ESUCTRL0 |= Upstream_Req_Authority;
-    // REG32(0x330B0) &= 0xffffffef; /* Wrtie-0 to clear Upstream Authority Request */
-    ESUCTRL0 &= (~Upstream_Req_Authority);
-    dprint("4\n");
+    ESUCTRL0 &= (~Upstream_Req_Authority);/* Wrtie-0 to clear Upstream Authority Request */
     return TRUE;
 }
 
@@ -716,9 +606,7 @@ BYTE OOB_Check_Upstream_Authority_Disable(void)
     xOOB_Timeout = 255; // 255;
     while (1)
     {
-        // dprint("A:%x\n", REG32(0x330B0));
-        // if (ESUCTRL0 & Upstream_Read_Authority_EN)
-        if ((REG32(0x330B0) & Upstream_Read_Authority_EN) == 0x0)
+        if (ESUCTRL0 & Upstream_Read_Authority_EN)
         {
             break;
         }
@@ -738,14 +626,10 @@ BYTE OOB_Check_Upstream_Authority_Disable(void)
     if (xOOB_Failed > 0)
     {
         xOOB_FailedCounter++;
-        // ESUCTRL0 |= Upstream_GO;
-        REG32(0x330B0) &= 0xffffffbf; /* Wrtie-0 to clear Upstream Go */
-        dprint("B:%x\n", REG32(0x330B0));
+        ESUCTRL0 &= (~Upstream_GO);/* Wrtie-0 to clear Upstream Go */
         return FALSE;
     }
-    // ESUCTRL0 |= Upstream_GO;
-    REG32(0x330B0) &= 0xffffffbf; /* Wrtie-0 to clear Upstream Go */
-    dprint("C:%x\n", REG32(0x330B0));
+    ESUCTRL0 &= (~Upstream_GO);/* Wrtie-0 to clear Upstream Go */
     return TRUE;
 }
 
@@ -764,8 +648,7 @@ BYTE OOB_Check_Upstream_Done(void)
     xOOB_Timeout = 255; // 255;
     while (1)
     {
-        // if(ESUCTRL0 & Upstream_Done)
-        if (REG32(0x330B0) & 0x02)
+        if (ESUCTRL0 & Upstream_Done)
         {
             break;
         }
@@ -785,17 +668,12 @@ BYTE OOB_Check_Upstream_Done(void)
     if (xOOB_Failed > 0)
     {
         xOOB_FailedCounter++;
-        // ESUCTRL0 |= Upstream_Done;  /* Wrtie-1 to clear Upstream Done */
+        ESUCTRL0 |= Upstream_Done;  /* Wrtie-1 to clear Upstream Done */
         REG32(0x330B0) |= (Upstream_Done << 0);
-        // ESOCTRL0 = PUT_OOB_STATUS;  /* Write clear for next OOB receive */
-        // REG32(0x330C0) &= 0xffffff00;
-        // REG32(0x330C0) |= (PUT_OOB_STATUS << 0);
-        dprint("22\n");
         return FALSE;
     }
-    dprint("2\n");
-    // ESUCTRL0 |= Upstream_Done;
-    REG32(0x330B0) |= (Upstream_Done << 0);
+
+    ESUCTRL0 |= Upstream_Done;
     return TRUE;
 }
 /*-----------------------------------------------------------------------------
@@ -813,9 +691,7 @@ BYTE OOB_Check_OOB_Status(void)
     xOOB_Timeout = 255; // 255;
     while (1)
     {
-        // if(ESOCTRL0 & PUT_OOB_STATUS)
-        // dprint("D:%x\n", REG32(0x330C0));
-        if (REG32(0x330C0) & PUT_OOB_STATUS)
+        if (ESOCTRL0 & PUT_OOB_STATUS)
         {
             break;
         }
@@ -834,15 +710,11 @@ BYTE OOB_Check_OOB_Status(void)
     if (xOOB_Failed > 0)
     {
         xOOB_FailedCounter++;
-        // ESOCTRL0 = PUT_OOB_STATUS;  /* Write clear for next OOB receive */
-        REG32(0x330C0) |= (PUT_OOB_STATUS << 0);
-        dprint("E:%x\n", REG32(0x330C0));
+        ESOCTRL0 = PUT_OOB_STATUS;  /* Write clear for next OOB receive */
         return FALSE;
     }
 
-    // ESOCTRL0 = PUT_OOB_STATUS;  /* Write clear for next OOB receive */
-    REG32(0x330C0) |= (PUT_OOB_STATUS << 0);
-    dprint("F:%x\n", REG32(0x330C0));
+    ESOCTRL0 = PUT_OOB_STATUS;  /* Write clear for next OOB receive */
     return TRUE;
 }
 
@@ -869,50 +741,34 @@ BYTE Process_eSPI_OOB_Message(void)
     {
         _R6 = OOB_Message;
     }
-    // OOB_RamDebug(_R6);
-    // ESUCTRL1 = _R6;            //cycle type
-    REG32(0x330B0) &= 0xffff00ff;
-    REG32(0x330B0) |= (_R6 << 8);
+
+    ESUCTRL1 = _R6;            //cycle type
     _R7 = *OOB_Table_Pntr;
     OOB_Table_Pntr++;
-    // ESUCTRL2 = _R7;     //tag + length[11:8],
-    REG32(0x330B0) &= 0xff00ffff;
-    REG32(0x330B0) |= (_R7 << 16);
-    // OOB_RamDebug(_R7);
+    ESUCTRL2 = _R7;     //tag + length[11:8],
 
     _R7 = *OOB_Table_Pntr;
     OOB_Table_Pntr++;
     xOOB_PacketLength = _R7;
-    // ESUCTRL3 = xOOB_PacketLength;   //length[7:0],
-    REG32(0x330B0) &= 0x00ffffff;
-    REG32(0x330B0) |= (_R7 << 24);
-    // OOB_RamDebug(xOOB_PacketLength);
-
+    ESUCTRL3 = xOOB_PacketLength;   //length[7:0],
     _R6 = xOOB_PacketLength;
     for (_R5 = 0; _R5 < _R6; _R5++)
     {
         _R7 = *OOB_Table_Pntr;
         OOB_Table_Pntr++;
-        // UPSTREAM_DATA[_R5] = _R7;
-        // *(UPSTREAM_DATA + _R5) = _R7;
-        REG32(0x33300 + ((_R5 / 4) * 4)) |= (_R7 << ((_R5 % 4) * 8));
-        // OOB_RamDebug(_R7);
+        *(UPSTREAM_DATA + _R5) = _R7;
+        // REG32(0x33300 + ((_R5 / 4) * 4)) |= (_R7 << ((_R5 % 4) * 8));
     }
 #if 1
     /* Patch this can let data stable ? */
-    // ESOCTRL0 = PUT_OOB_STATUS;  /* Write clear for next OOB receive */
-    REG32(0x330C0) &= 0xffffff00;
-    REG32(0x330C0) |= (PUT_OOB_STATUS << 0);
+    ESOCTRL0 = PUT_OOB_STATUS;  /* Write clear for next OOB receive */
 #endif
-    // ESUCTRL0 |= Upstream_EN;    //Set upstream enable
-    REG32(0x330B0) |= (Upstream_EN << 0);
-    // ESUCTRL0 |= Upstream_GO;    //Set upstream go
-    REG32(0x330B0) |= (Upstream_GO << 0);
+    ESUCTRL0 |= Upstream_EN;    //Set upstream enable
+    ESUCTRL0 |= Upstream_GO;    //Set upstream go
 
     /* Check upstream done */
     // if (!OOB_Check_Upstream_Done())
     // {
-    //     dprint("2\n");
     //     return FALSE;
     // }
 
@@ -932,8 +788,7 @@ BYTE Process_eSPI_OOB_Message(void)
     // vDelayXus(16);
 
     /* Store Put_OOB Length to xOOB_PacketLength */
-    // _R5 = ESOCTRL4;
-    _R5 = (VBYTE)(REG32(0x330C4));
+    _R5 = ESOCTRL4;
     xOOB_PacketLength = _R5;
     if (_R5 > xOOB_PacketMaxLength)
     {
@@ -943,17 +798,14 @@ BYTE Process_eSPI_OOB_Message(void)
     while (_R5 > 0)
     {
         /* Read OOB return data */
-        // *Tmp_XPntr = PUT_OOB_DATA[_R6];
-        // *Tmp_XPntr = *(PUT_OOB_DATA + _R6);
-        *Tmp_XPntr = (VBYTE)((REG32(0x33280 + ((_R6 / 4) * 4))) >> ((_R6 % 4) * 8));
+        *Tmp_XPntr = *(PUT_OOB_DATA + _R6);
+        // *Tmp_XPntr = (VBYTE)((REG32(0x33280 + ((_R6 / 4) * 4))) >> ((_R6 % 4) * 8));
         _R6++;
         Tmp_XPntr++;
         _R5--;
     }
-    // ESOCTRL0 = PUT_OOB_STATUS;  /* Write clear for next OOB receive */
-    // REG32(0x330C0) &= 0xffffff00;
-    // REG32(0x330C0) |= (PUT_OOB_STATUS << 0);
 
+    // ESOCTRL0 = PUT_OOB_STATUS;  /* Write clear for next OOB receive */
     xOOB_DataCounter++;
     return TRUE;
 }
@@ -967,8 +819,7 @@ BYTE eSPI_OOBReceive(BYTE* OOB_Meg_Table)
     }
     Tmp_XPntr = OOB_Meg_Table;
     /* Store Put_OOB Length to xOOB_PacketLength */
-    // _R5 = ESOCTRL4;
-    _R5 = (VBYTE)(REG32(0x330C4));
+    _R5 = ESOCTRL4;
     xOOB_PacketLength = _R5;
     if (xOOB_PacketLength == 0)
         return FALSE;
@@ -976,29 +827,23 @@ BYTE eSPI_OOBReceive(BYTE* OOB_Meg_Table)
     while (_R5 > 0)
     {
         /* Read OOB return data */
-        // *Tmp_XPntr = PUT_OOB_DATA[_R6];
-        // *Tmp_XPntr = *(PUT_OOB_DATA + _R6);
-        *Tmp_XPntr = (VBYTE)((REG32(0x33280 + ((_R6 / 4) * 4))) >> ((_R6 % 4) * 8));
+        *Tmp_XPntr = *(PUT_OOB_DATA + _R6);
+        // *Tmp_XPntr = (VBYTE)((REG32(0x33280 + ((_R6 / 4) * 4))) >> ((_R6 % 4) * 8));
         _R6++;
         Tmp_XPntr++;
         _R5--;
     }
+
     // ESOCTRL0 = PUT_OOB_STATUS;  /* Write clear for next OOB receive */
-    // REG32(0x330C0) &= 0xffffff00;
-    // REG32(0x330C0) |= (PUT_OOB_STATUS << 0);
     return TRUE;
 }
 
 BYTE eSPI_OOBSend(BYTE* OOB_Meg_Table)
 {
-    /*check if upstream is busy*/
-    if (REG32(0x330B0) && Upstream_Busy)
+    /*check if upstream is busy*//* Check upstream authority enable */
+    if ((ESUCTRL0 & Upstream_Busy) || (!OOB_Check_Upstream_Authority_EN()))
         return FALSE;
-    /* Check upstream authority enable */
-    if (!OOB_Check_Upstream_Authority_EN())
-    {
-        return FALSE;
-    }
+
     OOB_Table_Pntr = OOB_Meg_Table;
     _R5 = *OOB_Table_Pntr;
     OOB_Table_Pntr++;
@@ -1007,45 +852,30 @@ BYTE eSPI_OOBSend(BYTE* OOB_Meg_Table)
     {
         _R6 = OOB_Message;
     }
-    // OOB_RamDebug(_R6);
-    // ESUCTRL1 = _R6;            //cycle type
-    REG32(0x330B0) &= 0xffff00ff;
-    REG32(0x330B0) |= (_R6 << 8);
+    ESUCTRL1 = _R6;            //cycle type
     _R7 = *OOB_Table_Pntr;
     OOB_Table_Pntr++;
-    // ESUCTRL2 = _R7;     //tag + length[11:8],
-    REG32(0x330B0) &= 0xff00ffff;
-    REG32(0x330B0) |= (_R7 << 16);
-    // OOB_RamDebug(_R7);
+    ESUCTRL2 = _R7;     //tag + length[11:8],
 
     _R7 = *OOB_Table_Pntr;
     OOB_Table_Pntr++;
     xOOB_PacketLength = _R7;
-    // ESUCTRL3 = xOOB_PacketLength;   //length[7:0],
-    REG32(0x330B0) &= 0x00ffffff;
-    REG32(0x330B0) |= (_R7 << 24);
-    // OOB_RamDebug(xOOB_PacketLength);
+    ESUCTRL3 = xOOB_PacketLength;   //length[7:0],
 
     _R6 = xOOB_PacketLength;
     for (_R5 = 0; _R5 < _R6; _R5++)
     {
         _R7 = *OOB_Table_Pntr;
         OOB_Table_Pntr++;
-        // UPSTREAM_DATA[_R5] = _R7;
-        // *(UPSTREAM_DATA + _R5) = _R7;
-        REG32(0x33300 + ((_R5 / 4) * 4)) |= (_R7 << ((_R5 % 4) * 8));
-        // OOB_RamDebug(_R7);
+        *(UPSTREAM_DATA + _R5) = _R7;
+        // REG32(0x33300 + ((_R5 / 4) * 4)) |= (_R7 << ((_R5 % 4) * 8));
     }
 #if 0
     /* Patch this can let data stable ? */
     // ESOCTRL0 = PUT_OOB_STATUS;  /* Write clear for next OOB receive */
-    REG32(0x330C0) &= 0xffffff00;
-    REG32(0x330C0) |= (PUT_OOB_STATUS << 0);
 #endif
-    // ESUCTRL0 |= Upstream_EN;    //Set upstream enable
-    REG32(0x330B0) |= (Upstream_EN << 0);
-    // ESUCTRL0 |= Upstream_GO;    //Set upstream go
-    REG32(0x330B0) |= (Upstream_GO << 0);
+    ESUCTRL0 |= Upstream_EN;    //Set upstream enable
+    ESUCTRL0 |= Upstream_GO;    //Set upstream go
 
     /* Check upstream authority auto disable */
     if (!OOB_Check_Upstream_Authority_Disable())
@@ -1079,7 +909,6 @@ void Process_eSPI_OOB_CrashLog(void)
     _R6 = xOOB_PacketLength;
     for (_R5 = 0; _R5 < _R6; _R5++)
     {
-        // UPSTREAM_DATA[_R5] = *OOB_Table_Pntr;
         *(UPSTREAM_DATA + _R5) = *OOB_Table_Pntr;
         OOB_Table_Pntr++;
     }
@@ -1134,7 +963,6 @@ void Process_eSPI_OOB_CrashLog(void)
     while (_R5 > 0)
     {
         /* Read OOB return data */
-        // *Tmp_XPntr = PUT_OOB_DATA[_R6];
         *Tmp_XPntr = *(PUT_OOB_DATA + _R6);
         _R6++;
         Tmp_XPntr++;
@@ -1156,9 +984,8 @@ void Process_eSPI_OOB_CrashLog(void)
 BYTE eSPI_Flash_Read(BYTE addr3, BYTE addr2, BYTE addr1, BYTE addr0,
     BYTE length, VBYTE* bufferindex)
 {
-    // if ((IS_MASK_CLEAR(REG_3117, F_FLASH_CHN_READY)) ||
-    //     (IS_MASK_CLEAR(REG_3117, F_FLASH_CHN_ENABLE)))
-    if (((REG32(0x33014) & 0x2000000) == 0x0) || ((REG32(0x33014) & 0x1000000) == 0x0))
+    if ((IS_MASK_CLEAR(REG_3117, F_FLASH_CHN_READY)) ||
+        (IS_MASK_CLEAR(REG_3117, F_FLASH_CHN_ENABLE)))
     {
         return FALSE;
     }
@@ -1166,32 +993,19 @@ BYTE eSPI_Flash_Read(BYTE addr3, BYTE addr2, BYTE addr1, BYTE addr0,
     {
         return FALSE;
     }
-    // ESUCTRL1 = OOB_Flash_Read; // cycle type
-    REG32(0x330B0) &= 0xffff00ff;
-    REG32(0x330B0) |= (OOB_Flash_Read << 8);
 
-    // ESUCTRL2 = 0x20; // tag + length[11:8]
-    REG32(0x330B0) &= 0xff00ffff;
-    REG32(0x330B0) |= (0x20 << 16);
+    ESUCTRL1 = OOB_Flash_Read; // cycle type
+    ESUCTRL2 = 0x20; // tag + length[11:8]
+    ESUCTRL3 = length; // length[7:0]   ,max support  64 bytes
 
-    // ESUCTRL3 = length; // length[7:0]   ,max support  64 bytes
-    REG32(0x330B0) &= 0x00ffffff;
-    REG32(0x330B0) |= (length << 24);
+    *(UPSTREAM_DATA + 0) = addr3; // address 31-24
+    *(UPSTREAM_DATA + 1) = addr2; // address 23-16
+    *(UPSTREAM_DATA + 2) = addr1; // address 15-8
+    *(UPSTREAM_DATA + 3) = addr0; // address 7-0
+    // REG32(0x33300) = (DWORD)(addr0 | (addr1 << 8) | (addr2 << 16) | (addr3 << 24));
 
-    // UPSTREAM_DATA[0] = addr3;   //address 31-24
-    // UPSTREAM_DATA[1] = addr2;   //address 23-16
-    // UPSTREAM_DATA[2] = addr1;   //address 15-8
-    // UPSTREAM_DATA[3] = addr0;   //address 7-0
-    // *(UPSTREAM_DATA + 0) = addr3; // address 31-24
-    // *(UPSTREAM_DATA + 1) = addr2; // address 23-16
-    // *(UPSTREAM_DATA + 2) = addr1; // address 15-8
-    // *(UPSTREAM_DATA + 3) = addr0; // address 7-0
-    REG32(0x33300) = (DWORD)(addr0 | (addr1 << 8) | (addr2 << 16) | (addr3 << 24));
-
-    // ESUCTRL0 |= Upstream_EN;    //Set upstream enable
-    REG32(0x330B0) |= (Upstream_EN << 0);
-    // ESUCTRL0 |= Upstream_GO;    //Set upstream go
-    REG32(0x330B0) |= (Upstream_GO << 0);
+    ESUCTRL0 |= Upstream_EN;    //Set upstream enable
+    ESUCTRL0 |= Upstream_GO;    //Set upstream go
 
     /* Check upstream done */
     if (!OOB_Check_Upstream_Done())
@@ -1205,9 +1019,8 @@ BYTE eSPI_Flash_Read(BYTE addr3, BYTE addr2, BYTE addr1, BYTE addr0,
     while (1)
     {
         /* Check PUT_FLASH_C cycle Type */
-        // if ((ESUCTRL6 & 0x0F) ==
-        //     Successful_Completion_With_Data_the_only_Completion)
-        if ((REG32(0x330B4) & 0xf0000) == (Successful_Completion_With_Data_the_only_Completion << 16))
+        if ((ESUCTRL6 & 0x0F) ==
+            Successful_Completion_With_Data_the_only_Completion)
         {
             break;
         }
@@ -1226,14 +1039,8 @@ BYTE eSPI_Flash_Read(BYTE addr3, BYTE addr2, BYTE addr1, BYTE addr0,
     if (xOOB_Failed > 0)
     {
         xOOB_FailedCounter++;
-
-        // ESUCTRL0 |= Upstream_Done;  /* Wrtie-1 to clear Upstream Done */
-        REG32(0x330B0) |= (Upstream_Done << 0);
-        // ESOCTRL0 = PUT_OOB_STATUS;  /* Write clear for next OOB receive */
-        REG32(0x330C0) &= 0xffffff00;
-        REG32(0x330C0) |= (PUT_OOB_STATUS << 0);
-        dprint("5\n");
-
+        ESUCTRL0 |= Upstream_Done;  /* Wrtie-1 to clear Upstream Done */
+        ESOCTRL0 = PUT_OOB_STATUS;  /* Write clear for next OOB receive */
         return FALSE;
     }
     /* Store Put_OOB Length to xOOB_PacketLength */
@@ -1242,23 +1049,15 @@ BYTE eSPI_Flash_Read(BYTE addr3, BYTE addr2, BYTE addr1, BYTE addr0,
     while (_R5 > 0)
     {
         /* Read OOB return data */
-        // *bufferindex = UPSTREAM_DATA[_R6];
-        // *bufferindex = *(UPSTREAM_DATA + _R6);
-        dprint("u:%x\n", REG32(0x33300 + ((_R6 / 4) * 4)));
-        *bufferindex = (VBYTE)((REG32(0x33300 + ((_R6 / 4) * 4))) >> ((_R6 % 4) * 8));
-
+        *bufferindex = *(UPSTREAM_DATA + _R6);
+        // *bufferindex = (VBYTE)((REG32(0x33300 + ((_R6 / 4) * 4))) >> ((_R6 % 4) * 8));
         _R6++;
         bufferindex++;
         _R5--;
     }
 
-    dprint("6\n");
-    // ESUCTRL0 |= Upstream_Done;  /* Wrtie-1 to clear Upstream Done */
-    REG32(0x330B0) |= (Upstream_Done << 0);
+    ESUCTRL0 |= Upstream_Done;  /* Wrtie-1 to clear Upstream Done */
     // ESOCTRL0 = PUT_OOB_STATUS;  /* Write clear for next OOB receive */
-    // REG32(0x330C0) &= 0xffffff00;
-    // REG32(0x330C0) |= (PUT_OOB_STATUS << 0);
-
     return TRUE;
 }
 
@@ -1270,44 +1069,29 @@ BYTE eSPI_Flash_Read(BYTE addr3, BYTE addr2, BYTE addr1, BYTE addr0,
  * @return   - None
  * @note     - None
  */
-BYTE eSPI_Flash_Erase(BYTE addr3, BYTE addr2, BYTE addr1, BYTE addr0,
-    BYTE mode)
+BYTE eSPI_Flash_Erase(BYTE addr3, BYTE addr2, BYTE addr1, BYTE addr0, BYTE mode)
 {
-    // if ((IS_MASK_CLEAR(REG_3117, F_FLASH_CHN_READY)) ||
-    //     (IS_MASK_CLEAR(REG_3117, F_FLASH_CHN_ENABLE)))
-    if (((REG32(0x33014) & 0x2000000) == 0x0) || ((REG32(0x33014) & 0x1000000) == 0x0))
+    if ((IS_MASK_CLEAR(REG_3117, F_FLASH_CHN_READY)) ||
+        (IS_MASK_CLEAR(REG_3117, F_FLASH_CHN_ENABLE)))
     {
         return FALSE;
     }
-    // ESUCTRL1 = OOB_Flash_Erase; // cycle type
-    REG32(0x330B0) &= 0xffff00ff;
-    REG32(0x330B0) |= (OOB_Flash_Erase << 8);
-
-    // ESUCTRL2 = 0x20; // tag + length[11:8],
-    REG32(0x330B0) &= 0xff00ffff;
-    REG32(0x330B0) |= (0x20 << 16);
+    ESUCTRL1 = OOB_Flash_Erase; // cycle type
+    ESUCTRL2 = 0x20; // tag + length[11:8],
 
     /* ESUCTRL3 001:Support 4K Byte erase
-            010:Support 64K Byte erase
-            011:Support 4K && 64K Byte erase
-*/
-// ESUCTRL3 = mode;
-    REG32(0x330B0) |= (mode << 24);
+                010:Support 64K Byte erase
+                011:Support 4K && 64K Byte erase
+    */
+    ESUCTRL3 = mode;
+    *(UPSTREAM_DATA + 0) = addr3; // address 31-24
+    *(UPSTREAM_DATA + 1) = addr2; // address 23-16
+    *(UPSTREAM_DATA + 2) = addr1; // address 15-8
+    *(UPSTREAM_DATA + 3) = addr0; // address 7-0
+    // REG32(0x33300) = (DWORD)(addr0 | (addr1 << 8) | (addr2 << 16) | (addr3 << 24));
 
-    // UPSTREAM_DATA[0] = addr3;   //address 31-24
-    // UPSTREAM_DATA[1] = addr2;   //address 23-16
-    // UPSTREAM_DATA[2] = addr1;   //address 15-8
-    // UPSTREAM_DATA[3] = addr0;   //address 7-0
-    // *(UPSTREAM_DATA + 0) = addr3; // address 31-24
-    // *(UPSTREAM_DATA + 1) = addr2; // address 23-16
-    // *(UPSTREAM_DATA + 2) = addr1; // address 15-8
-    // *(UPSTREAM_DATA + 3) = addr0; // address 7-0
-    REG32(0x33300) = (DWORD)(addr0 | (addr1 << 8) | (addr2 << 16) | (addr3 << 24));
-
-    // ESUCTRL0 |= Upstream_EN;    //Set upstream enable
-    REG32(0x330B0) |= (Upstream_EN << 0);
-    // ESUCTRL0 |= Upstream_GO;    //Set upstream go
-    REG32(0x330B0) |= (Upstream_GO << 0);
+    ESUCTRL0 |= Upstream_EN;    //Set upstream enable
+    ESUCTRL0 |= Upstream_GO;    //Set upstream go
 
     /* Check upstream done */
     if (!OOB_Check_Upstream_Done())
@@ -1315,24 +1099,15 @@ BYTE eSPI_Flash_Erase(BYTE addr3, BYTE addr2, BYTE addr1, BYTE addr0,
         return FALSE;
     }
     /* Check PUT_FLASH_C cycle Type */
-    // if ((ESUCTRL6 & 0x0F) == Successful_Completion_Without_Data)
-    if ((REG32(0x330B4) & 0xf0000) == (Successful_Completion_Without_Data << 16))
+    if ((ESUCTRL6 & 0x0F) == Successful_Completion_Without_Data)
     {
-        dprint("7\n");
-        // ESUCTRL0 |= Upstream_Done;  /* Wrtie-1 to clear Upstream Done */
-        REG32(0x330B0) |= (Upstream_Done << 0);
+        ESUCTRL0 |= Upstream_Done;  /* Wrtie-1 to clear Upstream Done */
         // ESOCTRL0 = PUT_OOB_STATUS;  /* Write clear for next OOB receive */
-        // REG32(0x330C0) &= 0xffffff00;
-        // REG32(0x330C0) |= (PUT_OOB_STATUS << 0);
         return TRUE;
     }
 
-    // ESUCTRL0 |= Upstream_Done;  /* Wrtie-1 to clear Upstream Done */
-    REG32(0x330B0) |= (Upstream_Done << 0);
+    ESUCTRL0 |= Upstream_Done;  /* Wrtie-1 to clear Upstream Done */
     // ESOCTRL0 = PUT_OOB_STATUS;  /* Write clear for next OOB receive */
-    // REG32(0x330C0) &= 0xffffff00;
-    // REG32(0x330C0) |= (PUT_OOB_STATUS << 0);
-
     return FALSE;
 }
 
@@ -1347,51 +1122,30 @@ BYTE eSPI_Flash_Erase(BYTE addr3, BYTE addr2, BYTE addr1, BYTE addr0,
 BYTE eSPI_Flash_Write(BYTE addr3, BYTE addr2, BYTE addr1, BYTE addr0,
     BYTE length, VBYTE* bufferindex)
 {
-    // if ((IS_MASK_CLEAR(REG_3117, F_FLASH_CHN_READY)) ||
-    //     (IS_MASK_CLEAR(REG_3117, F_FLASH_CHN_ENABLE)))
-    // {
-    //     return FALSE;
-    // }
-    if (((REG32(0x33014) & 0x2000000) == 0x0) || ((REG32(0x33014) & 0x1000000) == 0x0))
+    if ((IS_MASK_CLEAR(REG_3117, F_FLASH_CHN_READY)) ||
+        (IS_MASK_CLEAR(REG_3117, F_FLASH_CHN_ENABLE)))
     {
         return FALSE;
     }
 
     // ESOCTRL0 = PUT_OOB_STATUS; /* Write clear for next OOB receive */
-    // REG32(0x330C0) &= 0xffffff00;
-    // REG32(0x330C0) |= (PUT_OOB_STATUS << 0);
-
-    // ESUCTRL1 = OOB_Flash_Write; // cycle type
-    REG32(0x330B0) &= 0xffff00ff;
-    REG32(0x330B0) |= (OOB_Flash_Write << 8);
-
-    // ESUCTRL2 = 0x20; // tag + length[11:8]
-    REG32(0x330B0) &= 0xff00ffff;
-    REG32(0x330B0) |= (0x20 << 16);
-
-    // ESUCTRL3 = length; // length[7:0]   ,max support  64 bytes
-    REG32(0x330B0) &= 0x00ffffff;
-    REG32(0x330B0) |= (length << 24);
-
-    // UPSTREAM_DATA[0] = addr3;   //address 31-24
-    // UPSTREAM_DATA[1] = addr2;   //address 23-16
-    // UPSTREAM_DATA[2] = addr1;   //address 15-8
-    // UPSTREAM_DATA[3] = addr0;   //address 7-0
-    // *(UPSTREAM_DATA + 0) = addr3; // address 31-24
-    // *(UPSTREAM_DATA + 1) = addr2; // address 23-16
-    // *(UPSTREAM_DATA + 2) = addr1; // address 15-8
-    // *(UPSTREAM_DATA + 3) = addr0; // address 7-0
-    REG32(0x33300) = (DWORD)(addr0 | (addr1 << 8) | (addr2 << 16) | (addr3 << 24));
+    ESUCTRL1 = OOB_Flash_Write; // cycle type
+    ESUCTRL2 = 0x20; // tag + length[11:8]
+    ESUCTRL3 = length; // length[7:0]   ,max support  64 bytes
+    *(UPSTREAM_DATA + 0) = addr3; // address 31-24
+    *(UPSTREAM_DATA + 1) = addr2; // address 23-16
+    *(UPSTREAM_DATA + 2) = addr1; // address 15-8
+    *(UPSTREAM_DATA + 3) = addr0; // address 7-0
+    // REG32(0x33300) = (DWORD)(addr0 | (addr1 << 8) | (addr2 << 16) | (addr3 << 24));
 
     _R5 = 0;
     _R6 = 4;
     while (1)
     {
-        // UPSTREAM_DATA[_R6] = *bufferindex;
-        // *(UPSTREAM_DATA + _R6) = *bufferindex;
-        (REG32(0x33300 + _R6)) = (*(bufferindex + 3) << 24) + (*(bufferindex + 2) << 16) + (*(bufferindex + 1) << 8) + *bufferindex;
+        *(UPSTREAM_DATA + _R6) = *bufferindex;
+        // (REG32(0x33300 + _R6)) = (*(bufferindex + 3) << 24) + (*(bufferindex + 2) << 16) + (*(bufferindex + 1) << 8) + *bufferindex;
         _R6 = _R6 + 4;
-        bufferindex = bufferindex + 4;
+        bufferindex++;
         _R5 = _R5 + 4;
         if (_R5 >= length)
         {
@@ -1399,37 +1153,26 @@ BYTE eSPI_Flash_Write(BYTE addr3, BYTE addr2, BYTE addr1, BYTE addr0,
         }
     }
 
-    // ESUCTRL0 |= Upstream_EN;    //Set upstream enable
-    REG32(0x330B0) |= (Upstream_EN << 0);
-    // ESUCTRL0 |= Upstream_GO;    //Set upstream go
-    REG32(0x330B0) |= (Upstream_GO << 0);
+    ESUCTRL0 |= Upstream_EN;    //Set upstream enable
+    ESUCTRL0 |= Upstream_GO;    //Set upstream go
 
     /* Check upstream done */
     if (!OOB_Check_Upstream_Done())
     {
         return FALSE;
     }
-    // ESUCTRL0 |= Upstream_Done; // upstream done write 1 clear
-    REG32(0x330B0) |= (Upstream_Done << 0);
+    ESUCTRL0 |= Upstream_Done; // upstream done write 1 clear
 
     /* Check PUT_FLASH_C cycle Type */
-    // if ((ESUCTRL6 & 0x0F) == Successful_Completion_Without_Data)
-    if ((REG32(0x330B4) & 0xf0000) == (Successful_Completion_Without_Data << 16))
+    if ((ESUCTRL6 & 0x0F) == Successful_Completion_Without_Data)
     {
-        // ESUCTRL0 |= Upstream_Done;  /* Wrtie-1 to clear Upstream Done */
-        REG32(0x330B0) |= (Upstream_Done << 0);
-        // ESOCTRL0 = PUT_OOB_STATUS;  /* Write clear for next OOB receive */
-        REG32(0x330C0) &= 0xffffff00;
-        REG32(0x330C0) |= (PUT_OOB_STATUS << 0);
-
+        ESUCTRL0 |= Upstream_Done;  /* Wrtie-1 to clear Upstream Done */
+        ESOCTRL0 = PUT_OOB_STATUS;  /* Write clear for next OOB receive */
         return TRUE;
     }
 
-    // ESUCTRL0 |= Upstream_Done;  /* Wrtie-1 to clear Upstream Done */
-    REG32(0x330B0) |= (Upstream_Done << 0);
-    // ESOCTRL0 = PUT_OOB_STATUS;  /* Write clear for next OOB receive */
-    REG32(0x330C0) &= 0xffffff00;
-    REG32(0x330C0) |= (PUT_OOB_STATUS << 0);
+    ESUCTRL0 |= Upstream_Done;  /* Wrtie-1 to clear Upstream Done */
+    ESOCTRL0 = PUT_OOB_STATUS;  /* Write clear for next OOB receive */
 
     return FALSE;
 }
@@ -1501,14 +1244,6 @@ BYTE OOB_PECI_RdPkgConfig(BYTE addr, BYTE* ReadData,
     ESUCTRL1 = OOB_Message; // eSPI Cycle Type
     ESUCTRL2 = 0x20;        // Tag[3:0]+Length[11:8],
     ESUCTRL3 = 12;          // Length[7:0]=N+3
-
-    // UPSTREAM_DATA[0] = 0x20;    //PCH
-    // UPSTREAM_DATA[1] = 0x01;    //PECI Command
-    // UPSTREAM_DATA[2] = 9;       //Byte Count N
-    // UPSTREAM_DATA[3] = 0x0F;    //eSPI Slave 0/EC
-    // UPSTREAM_DATA[4] = addr;    //PECI Target Address
-    // UPSTREAM_DATA[5] = WriteLen;
-    // UPSTREAM_DATA[6] = ReadLen;
 
     *(UPSTREAM_DATA + 0) = 0x20; // PCH
     *(UPSTREAM_DATA + 1) = 0x01; // PECI Command
@@ -1598,14 +1333,6 @@ BYTE OOB_PECI_WrPkgConfig(BYTE addr, BYTE* WriteData,
     ESUCTRL1 = OOB_Message;  // eSPI Cycle Type
     ESUCTRL2 = 0x20;         // Tag[3:0]+Length[11:8],
     ESUCTRL3 = 5 + WriteLen; // Length[7:0]=N+3
-
-    // UPSTREAM_DATA[0] = 0x20;    //PCH
-    // UPSTREAM_DATA[1] = 0x01;    //PECI Command
-    // UPSTREAM_DATA[2] = 2 + WriteLen; //Byte Count N
-    // UPSTREAM_DATA[3] = 0x0F;    //eSPI Slave 0/EC
-    // UPSTREAM_DATA[4] = addr;    //PECI Target Address
-    // UPSTREAM_DATA[5] = WriteLen;
-    // UPSTREAM_DATA[6] = ReadLen;
 
     *(UPSTREAM_DATA + 0) = 0x20;         // PCH
     *(UPSTREAM_DATA + 1) = 0x01;         // PECI Command
@@ -1913,13 +1640,9 @@ void OOB_PECI_WritePowerLimit4(BYTE SettingWatts)
  */
 void Service_OOB_Message(void)
 {
-    // if((IS_MASK_CLEAR(REG_3113, F_OOB_CHN_READY)) ||
-    //         (IS_MASK_CLEAR(REG_3113, F_OOB_CHN_ENABLE)))
-    if (((REG32(0x33010) & 0x2000000) == 0x0) || ((REG32(0x33010) & 0x1000000) == 0x0))
-    {
-        // dprint("or\n");
+    if ((IS_MASK_CLEAR(REG_3113, F_OOB_CHN_READY)) ||
+        (IS_MASK_CLEAR(REG_3113, F_OOB_CHN_ENABLE)))
         return;
-    }
 
 #if SUPPORT_OOB_INTEL_CRASHLOG
     if (xOOB_GET_CRASHLOG > 0)
@@ -1942,7 +1665,7 @@ void Service_OOB_Message(void)
         // }
         /***********************OOB channel test**************************/
 
-        /***********************FLASH channel test**************************/
+        /***********************FLASH channel test************************/
         // xOOB_GET_FLASH_ADR0 = 0x0;
         // xOOB_GET_FLASH_ADR1 = 0x0;
         // xOOB_GET_FLASH_ADR2 = 0x0;
@@ -1972,14 +1695,14 @@ void Service_OOB_Message(void)
         //                  4,
         //                  &eSPI_FLASH_DATA[0]);
         // }
-        /***********************FLASH channel test**************************/
+        /************************ FLASH channel test ***********************/
 
-        /***********************PERIPHERAL channel test**************************/
+        /***********************PERIPHERAL channel test*********************/
 
-        /***********************PERIPHERAL channel test**************************/
+        /***********************PERIPHERAL channel test*********************/
     }
 
-#if 0
+#if 1
     xOOB_Scan++;
     switch (xOOB_Scan)
     {
@@ -2408,9 +2131,8 @@ void Service_OOB_Message(void)
   */
 void Service_Peripheral_Message(void)
 {
-    // if((IS_MASK_CLEAR(REG_310B, F_Peripheral_Channel_Ready)) ||
-    //         (IS_MASK_CLEAR(REG_310B, F_PeripheralChannelEnable)))
-    if (((REG32(0x33008) & 0x2000000) == 0x0) || ((REG32(0x33008) & 0x1000000) == 0x0))
+    if ((IS_MASK_CLEAR(REG_310B, F_Peripheral_Channel_Ready)) ||
+        (IS_MASK_CLEAR(REG_310B, F_PeripheralChannelEnable)))
         return;
 
     if (System_PowerState == SYSTEM_S0)
@@ -2440,43 +2162,31 @@ BYTE Process_Peripheral_Message_Send(void)
 
     _R5 = *Peri_Table_Pntr;
     Peri_Table_Pntr++;
-    // ESUCTRL1 = _R6;            //cycle type
-    REG32(0x330B0) &= 0xffff00ff;
-    REG32(0x330B0) |= (_R5 << 8);
+    ESUCTRL1 = _R6;            //cycle type
 
     _R6 = *Peri_Table_Pntr;
     Peri_Table_Pntr++;
-    // ESUCTRL2 = _R7;     //tag + length[11:8],
-    REG32(0x330B0) &= 0xff00ffff;
-    REG32(0x330B0) |= (_R6 << 16);
+    ESUCTRL2 = _R7;     //tag + length[11:8],
 
     _R7 = *Peri_Table_Pntr;
     Peri_Table_Pntr++;
     xOOB_PacketLength = _R7;
-    // ESUCTRL3 = xOOB_PacketLength;   //length[7:0],
-    REG32(0x330B0) &= 0x00ffffff;
-    REG32(0x330B0) |= (_R7 << 24);
-    // OOB_RamDebug(xOOB_PacketLength);
+    ESUCTRL3 = xOOB_PacketLength;   //length[7:0],
 
     _R6 = xOOB_PacketLength;
     for (_R5 = 0; _R5 < _R6; _R5++)
     {
         _R7 = *Peri_Table_Pntr;
         Peri_Table_Pntr++;
-        // UPSTREAM_DATA[_R5] = _R7;
-        // *(UPSTREAM_DATA + _R5) = _R7;
-        REG32(0x33300 + ((_R5 / 4) * 4)) |= (_R7 << ((_R5 % 4) * 8));
+        *(UPSTREAM_DATA + _R5) = _R7;
+        // REG32(0x33300 + ((_R5 / 4) * 4)) |= (_R7 << ((_R5 % 4) * 8));
     }
 #if 1
     /* Patch this can let data stable ? */
-    // ESOCTRL0 = PUT_OOB_STATUS;  /* Write clear for next OOB receive */
-    REG32(0x330C0) &= 0xffffff00;
-    REG32(0x330C0) |= (PUT_OOB_STATUS << 0);
+    ESOCTRL0 = PUT_OOB_STATUS;  /* Write clear for next OOB receive */
 #endif
-    // ESUCTRL0 |= Upstream_EN;    //Set upstream enable
-    REG32(0x330B0) |= (Upstream_EN << 0);
-    // ESUCTRL0 |= Upstream_GO;    //Set upstream go
-    REG32(0x330B0) |= (Upstream_GO << 0);
+    ESUCTRL0 |= Upstream_EN;    //Set upstream enable
+    ESUCTRL0 |= Upstream_GO;    //Set upstream go
 
     /* Check upstream done */
     if (!OOB_Check_Upstream_Done())
@@ -2509,43 +2219,31 @@ BYTE Process_Peripheral_Memory_Read32(void)
 
     _R5 = *Peri_Table_Pntr;
     Peri_Table_Pntr++;
-    // ESUCTRL1 = _R6;            //cycle type
-    REG32(0x330B0) &= 0xffff00ff;
-    REG32(0x330B0) |= (_R5 << 8);
+    ESUCTRL1 = _R6;            //cycle type
 
     _R6 = *Peri_Table_Pntr;
     Peri_Table_Pntr++;
-    // ESUCTRL2 = _R7;     //tag + length[11:8],
-    REG32(0x330B0) &= 0xff00ffff;
-    REG32(0x330B0) |= (_R6 << 16);
+    ESUCTRL2 = _R7;     //tag + length[11:8],
 
     _R7 = *Peri_Table_Pntr;
     Peri_Table_Pntr++;
     xOOB_PacketLength = _R7;
-    // ESUCTRL3 = xOOB_PacketLength;   //length[7:0],
-    REG32(0x330B0) &= 0x00ffffff;
-    REG32(0x330B0) |= (_R7 << 24);
-    // OOB_RamDebug(xOOB_PacketLength);
+    ESUCTRL3 = xOOB_PacketLength;   //length[7:0],
 
     _R6 = xOOB_PacketLength;
     for (_R5 = 0; _R5 < _R6; _R5++)
     {
         _R7 = *Peri_Table_Pntr;
         Peri_Table_Pntr++;
-        // UPSTREAM_DATA[_R5] = _R7;
-        // *(UPSTREAM_DATA + _R5) = _R7;
-        REG32(0x33300 + ((_R5 / 4) * 4)) |= (_R7 << ((_R5 % 4) * 8));
+        *(UPSTREAM_DATA + _R5) = _R7;
+        // REG32(0x33300 + ((_R5 / 4) * 4)) |= (_R7 << ((_R5 % 4) * 8));
     }
 #if 1
     /* Patch this can let data stable ? */
-    // ESOCTRL0 = PUT_OOB_STATUS;  /* Write clear for next OOB receive */
-    REG32(0x330C0) &= 0xffffff00;
-    REG32(0x330C0) |= (PUT_OOB_STATUS << 0);
+    ESOCTRL0 = PUT_OOB_STATUS;  /* Write clear for next OOB receive */
 #endif
-    // ESUCTRL0 |= Upstream_EN;    //Set upstream enable
-    REG32(0x330B0) |= (Upstream_EN << 0);
-    // ESUCTRL0 |= Upstream_GO;    //Set upstream go
-    REG32(0x330B0) |= (Upstream_GO << 0);
+    ESUCTRL0 |= Upstream_EN;    //Set upstream enable
+    ESUCTRL0 |= Upstream_GO;    //Set upstream go
 
     /* Check upstream done */
     if (!OOB_Check_Upstream_Done())
@@ -2559,9 +2257,8 @@ BYTE Process_Peripheral_Memory_Read32(void)
     while (1)
     {
         /* Check PUT_FLASH_C cycle Type */
-        // if ((ESUCTRL6 & 0x0F) ==
-        //     Successful_Completion_With_Data_the_only_Completion)
-        if ((REG32(0x330B4) & 0xf0000) == (Successful_Completion_With_Data_the_only_Completion << 16))
+        if ((ESUCTRL6 & 0x0F) ==
+            Successful_Completion_With_Data_the_only_Completion)
         {
             break;
         }
@@ -2580,14 +2277,8 @@ BYTE Process_Peripheral_Memory_Read32(void)
     if (xOOB_Failed > 0)
     {
         xOOB_FailedCounter++;
-
-        // ESUCTRL0 |= Upstream_Done;  /* Wrtie-1 to clear Upstream Done */
-        REG32(0x330B0) |= (Upstream_Done << 0);
-        // ESOCTRL0 = PUT_OOB_STATUS;  /* Write clear for next OOB receive */
-        REG32(0x330C0) &= 0xffffff00;
-        REG32(0x330C0) |= (PUT_OOB_STATUS << 0);
-        dprint("5\n");
-
+        ESUCTRL0 |= Upstream_Done;  /* Wrtie-1 to clear Upstream Done */
+        ESOCTRL0 = PUT_OOB_STATUS;  /* Write clear for next OOB receive */
         return FALSE;
     }
 
@@ -2597,14 +2288,12 @@ BYTE Process_Peripheral_Memory_Read32(void)
     while (_R5 > 0)
     {
         /* Read data return data */
-        // *Tmp_XPntr = PUT_PC_DATA[_R6];
-        // *Tmp_XPntr = *(PUT_PC_DATA + _R6);
-        *Tmp_XPntr = (VBYTE)((REG32(0x33200 + ((_R6 / 4) * 4))) >> ((_R6 % 4) * 8));
+        *Tmp_XPntr = *(PUT_PC_DATA + _R6);
+        // *Tmp_XPntr = (VBYTE)((REG32(0x33200 + ((_R6 / 4) * 4))) >> ((_R6 % 4) * 8));
         _R6++;
         Tmp_XPntr++;
         _R5--;
     }
-    dprint("mr:%x\n", eSPI_Peri_MemRd32[0]);
     return TRUE;
 }
 #ifndef SPK_CHECK_RSMRST_HI
@@ -2613,7 +2302,9 @@ BYTE Process_Peripheral_Memory_Read32(void)
 #ifndef SystemWarmBoot
 #define SystemWarmBoot(x)
 #endif
+
 /*****************************************eRPMC OOB************************************************/
+#if 1
 void eRPMC_WriteRootKey_Response(void)
 {
     //DWORD Temp_Info1 = C2EINFO1;
@@ -2795,47 +2486,6 @@ void eRPMC_ReadParameter_Response(void)
     //if (eSPI_OOBSend((BYTE *)&eRPMC_ReadParameters_data))
     // 填入OOB回复HOST的OOB MTCP Packet
 }
-/*****************************************eRPMC OOB************************************************/
-
-/* ----------------------------------------------------------------------------
- * FUNCTION: Service_eSPI
- * Polling RSMRST high & vw channel enable then set vw channel ready
- * ------------------------------------------------------------------------- */
-void __weak Service_eSPI(void)
-{
-    //-----------------------------------
-    // eSPI Interface Control
-    //-----------------------------------
-    if (SPK_CHECK_RSMRST_HI())
-    {
-        // dprint("rh\n");
-        EC_SET_eSPI_CHN_Ready();
-
-        // if(VWIDX5 == (F_IDX5_SLAVE_BOOT_LOAD_STATUS_VALID +
-        //     F_IDX5_SLAVE_BOOT_LOAD_DONE_VALID +
-        //     F_IDX5_SLAVE_BOOT_LOAD_STATUS +
-        //     F_IDX5_SLAVE_BOOT_LOAD_DONE))
-        if ((REG32(0x33104) & 0x8000) && (REG32(0x33104) & 0x1000) && (REG32(0x33104) & 0x800) && (REG32(0x33104) & 0x100))
-        {
-            // EC_ACK_eSPI_SUS_WARN(); // if SUS_WARN vw wire support
-            EC_ACK_eSPI_Reset(); // if PLTRST vw wire support
-            // EC_BL_CHECK();
-#if SUPPORT_HOOK_WARMBOOT
-            if (eSPI_PLTRST_TAG == F_PLTRST_DETECTED)
-            {
-                eSPI_PLTRST_TAG = F_PLTRST_HI_LEVEL;
-                SystemWarmBoot();
-            }
-#endif
-        }
-        else
-        {
-            // EC_ACK_eSPI_Boot_Ready();
-        }
-    }
-    eSPI_OOBRPMC_Handler();
-}
-#if 1
 
 BYTE eSPI_OOBRPMC_Handler(void)
 {
@@ -2932,8 +2582,47 @@ BYTE eSPI_OOBRPMC_Handler(void)
     return TRUE;
 }
 #endif
-/****************************** OOB eRPMC Code *******************************/
+/*****************************************eRPMC OOB************************************************/
+
+/* ----------------------------------------------------------------------------
+ * FUNCTION: Service_eSPI
+ * Polling RSMRST high & vw channel enable then set vw channel ready
+ * ------------------------------------------------------------------------- */
+void __weak Service_eSPI(void)
+{
+    //-----------------------------------
+    // eSPI Interface Control
+    //-----------------------------------
+    if (SPK_CHECK_RSMRST_HI())
+    {
+        EC_SET_eSPI_CHN_Ready();
+
+        if (VWIDX5 == (F_IDX5_SLAVE_BOOT_LOAD_STATUS_VALID +
+            F_IDX5_SLAVE_BOOT_LOAD_DONE_VALID +
+            F_IDX5_SLAVE_BOOT_LOAD_STATUS +
+            F_IDX5_SLAVE_BOOT_LOAD_DONE))
+        {
+            // EC_ACK_eSPI_SUS_WARN();  // if SUS_WARN vw wire support
+            EC_ACK_eSPI_Reset();        // if PLTRST vw wire support
+            // EC_BL_CHECK();
+#if SUPPORT_HOOK_WARMBOOT
+            if (eSPI_PLTRST_TAG == F_PLTRST_DETECTED)
+            {
+                eSPI_PLTRST_TAG = F_PLTRST_HI_LEVEL;
+                SystemWarmBoot();
+            }
+#endif
+        }
+        else
+        {
+            // EC_ACK_eSPI_Boot_Ready();
+        }
+    }
+#if 0
+    eSPI_OOBRPMC_Handler();
+#endif
+}
 
 //-----------------------------------------------------------------------------
 #endif // SUPPORT_OOB_SERVICE_MODULE
-       /*---------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*/
