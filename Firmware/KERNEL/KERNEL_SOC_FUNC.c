@@ -134,63 +134,55 @@ void smbus_init(void)
 	dprint("I2c_channel_init done.\n");
 #endif
 }
-void I3C_Channel_Init(uint8_t channel, uint32_t speed, uint32_t MasterRole_SlaveId, uint32_t MasterDct_SlaveDcr, uint32_t MasterDynamicAddr_SlaveBcr, uint8_t addr)
-{
-	switch (channel)
-	{
-	case I3C_MASTER0:case I3C_MASTER1:
-		I3C_WAIT_SDA_PU(channel);//需要等SCL/SDA都拉高后才能进行初始化，否则会误触发IBI中断
-		if (MasterRole_SlaveId == I3C_MASTER_I3C_MODE)
-		{
-			I3C_Master_Init(speed, channel);
-			sDEV_CHAR_TABLE* dct = (sDEV_CHAR_TABLE*)MasterDct_SlaveDcr;
-			BYTE* dynamic_addr = (BYTE*)MasterDynamicAddr_SlaveBcr;
-			I3C_MASTER_ENTDAA(dct, dynamic_addr, channel); //specify a dynamic addr
-		}
-		else if (MasterRole_SlaveId == I3C_MASTER_I2C_MODE)
-		{
-			I3C_Legacy_Master_Init(addr, speed, channel);
-		}
-		break;
-	case I3C_SLAVE0:case I3C_SLAVE1:
-		I3C_Slave_Init(addr, MasterRole_SlaveId, MasterDct_SlaveDcr, MasterDynamicAddr_SlaveBcr, channel);
-		break;
-	default:
-		break;
-	}
-}
 void i3c_init(void)
 {
-	/****************** master init ******************/
 #if I3C_MODULE_EN
-#if I3C0_EN_Init
-	i3c0_MoudleClock_EN;
-	sysctl_iomux_master0();
-	i3c0_pull_up();
-	I3C_Channel_Init(I3C_MASTER0, I3C_MASTER0_SPEED, I3C_MASTER0_DEFAULT_ROLE, I3C_MASTER0_DEFAULT_DCT, I3C_MASTER0_DEFAULT_DYNAMICADDR, I3C_MASTER0_DEFAULT_ADDR);
-#endif
-#if I3C1_EN_Init
-	i3c1_MoudleClock_EN;
-	sysctl_iomux_master1();
-	i3c1_pull_up();
-	I3C_Channel_Init(I3C_MASTER1, I3C_MASTER1_SPEED, I3C_MASTER1_DEFAULT_ROLE, I3C_MASTER1_DEFAULT_DCT, I3C_MASTER1_DEFAULT_DYNAMICADDR, I3C_MASTER1_DEFAULT_ADDR);
-#endif
-	dprint("i3c master init done.\n");
 
 	/****************** slave init ******************/
 #if I3C2_EN_Init
 	i3c2_MoudleClock_EN;
 	sysctl_iomux_slave0();
-	I3C_Channel_Init(I3C_SLAVE0, I3C_SLAVE0_SPEED, I3C_SLAVE0_DEFAULT_IDPARTNO, I3C_SLAVE0_DEFAULT_DCR, I3C_SLAVE0_DEFAULT_BCR, I3C_SLAVE0_DEFAULT_ADDR);
+	I3C_Slave_Init(SLAVE0_SET_STATICADDR, SLAVE0_SET_IDPARTNO, SLAVE0_SET_DCR, SLAVE0_SET_BCR, I3C_SLAVE0);
+	dprint("i3c_slave0_init done.\n");
 #endif
+
 #if I2C3_EN_Init
 	i3c3_MoudleClock_EN;
 	sysctl_iomux_slave1();
-	I3C_Channel_Init(I3C_SLAVE1, I3C_SLAVE1_SPEED, I3C_SLAVE1_DEFAULT_IDPARTNO, I3C_SLAVE1_DEFAULT_DCR, I3C_SLAVE1_DEFAULT_BCR, I3C_SLAVE1_DEFAULT_ADDR);
+	I3C_Slave_Init(SLAVE1_SET_STATICADDR, SLAVE1_SET_IDPARTNO, SLAVE1_SET_DCR, SLAVE1_SET_BCR, I3C_SLAVE1);
+	dprint("i3c_slave1_init done.\n");
 #endif
-#endif
-	dprint("i3c slave init done.\n");
 
+	/****************** master init ******************/
+#if I3C0_EN_Init
+	i3c0_MoudleClock_EN;
+	sysctl_iomux_master0();
+	i3c0_pull_up();
+	I3C_WAIT_SDA_PU(I3C_MASTER0);//需要等SCL/SDA都拉高后才能进行初始化，否则会误触发IBI中断
+#if (I3C_MASTER0_INTFMODE == I3C_MASTER_I3C_MODE)
+	I3C_Master_Init(SDR_DEFAULT_SPEED, I3C_MASTER0);
+	I3C_MASTER_ENTDAA(master0_dev_read_char_table, MASTER0_DEV_DYNAMIC_ADDR_TABLE, I3C_MASTER0); //specify a dynamic addr
+#elif (I3C_MASTER0_INTFMODE == I3C_MASTER_I2C_MODE)
+	I3C_Legacy_Master_Init(SDR_DEFAULT_SPEED, I3C_MASTER0);
+#endif
+	dprint("i3c_master0_init done.\n");
+#endif
+
+#if I3C1_EN_Init
+	i3c1_MoudleClock_EN;
+	sysctl_iomux_master1();
+	i3c1_pull_up();
+	I3C_WAIT_SDA_PU(I3C_MASTER1);//需要等SCL/SDA都拉高后才能进行初始化，否则会误触发IBI中断
+#if (I3C_MASTER1_INTFMODE == I3C_MASTER_I3C_MODE)
+	I3C_Master_Init(SDR_DEFAULT_SPEED, I3C_MASTER1);
+	I3C_MASTER_ENTDAA(master1_dev_read_char_table, MASTER1_DEV_DYNAMIC_ADDR_TABLE, I3C_MASTER1); //specify a dynamic addr
+#elif (I3C_MASTER1_INTFMODE == I3C_MASTER_I2C_MODE)
+	I3C_Legacy_Master_Init(SDR_DEFAULT_SPEED, I3C_MASTER1);
+#endif
+	dprint("i3c_master1_init done.\n");
+#endif
+
+#endif
 }
 void spim_init(void)
 {
