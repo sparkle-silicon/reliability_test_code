@@ -2,14 +2,14 @@
  * @Author: Iversu
  * @LastEditors: Iversu
  * @LastEditTime: 2023-04-02 21:28:55
- * @Description: 
- * 
- * 
+ * @Description:
+ *
+ *
  * The following is the Chinese and English copyright notice, encoded as UTF-8.
  * 以下是中文及英文版权同步声明，编码为UTF-8。
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
- * 
+ *
  * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
@@ -42,15 +42,9 @@ void SWUC_Int_Enable(BYTE  type);
 void SWUC_Int_Disable(BYTE  type);
 BYTE  SWUC_Int_Enable_Read(BYTE  type);
 void SWUC_PNP_Config(void);
-void SWUC_EventIRQ_Config(BYTE  irq_type,BYTE  sw);
-void SWUC_RI_Config(void);
-void SWUC_RING_Config(void);
+void SWUC_EventIRQ_Config(BYTE  irq_type, BYTE  sw);
 void SWUC_SW_WakeUp_Config(uint8_t hsecm_ec);
-void SWUC_ACPIIRQ_Config(BYTE  irq_type,BYTE  sw);
-void SWUC_PWUREQ_Config(void);
-void SWUC_SMI_Config(void);
-void SWUC_KBRST_Config(void);
-void SWUC_G20_Config(void);
+void SWUC_ACPIIRQ_Config(BYTE  irq_type, BYTE  sw);
 /*****测试代码*****/
 void SWUC_UART_Test(void);
 void SWUC_RI1_RI2_Test(void);
@@ -62,4 +56,5 @@ void SWUC_PWUREQ_Init(void);
 void SWUC_SMI_Init(void);
 void SWUC_KBRST_Init(uint8_t mode);
 void SWUC_GA20_Init(uint8_t mode);
+extern void SWUC_Init(uint8_t ga20, uint8_t ga20mode, uint8_t kbrst, uint8_t smi, uint8_t pwreq, uint8_t acpi);
 #endif

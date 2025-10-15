@@ -38,7 +38,7 @@ extern void uart_init(void);
 extern void smbus_init(void);
 extern void spi_init(void);
 extern void pwm_tach_init(void);
-extern void kbc_pmc_init(void);
+extern void host_init(void);
 extern void ps2_init(void);
 extern void kbs_init(void);
 extern void cec_init(void);

@@ -686,25 +686,7 @@ void sysctl_iomux_slave1()
 	sysctl_iomux_config(GPIOB, 8, 3);//i3c3_scl
 	sysctl_iomux_config(GPIOB, 9, 3);//i3c3_sda
 }
-//*****************************************************************************
-//
-//  To setup pmc iomux
-//
-//  parameter :
-//      none
-//
-//  return :
-//      none
-//
-//*****************************************************************************
-void sysctl_iomux_sci()
-{
-	sysctl_iomux_config(GPIOA, 27, 1);//sci
-}
-void sysctl_iomux_smi()
-{
-	sysctl_iomux_config(GPIOA, 27, 1);//sci
-}
+
 //*****************************************************************************
 //
 //  To setup adc iomux
@@ -870,7 +852,7 @@ void sysctl_iomux_jtag(void)
 }
 //*****************************************************************************
 //
-//  To setup lpc iomux
+//  To setup swuc iomux
 //
 //  parameter :
 //      none
@@ -879,19 +861,21 @@ void sysctl_iomux_jtag(void)
 //      none
 //
 //*****************************************************************************
-void sysctl_iomux_lpc(void)
+
+// 配置RI引脚复用功能
+void sysctl_iomux_ri(void)
 {
-	sysctl_iomux_config(GPIOD, 0, 1);//lad[0]
-	sysctl_iomux_config(GPIOD, 1, 1);//lad[1]
-	sysctl_iomux_config(GPIOD, 2, 1);//lad[2]
-	sysctl_iomux_config(GPIOD, 3, 1);//lad[3]
-	sysctl_iomux_config(GPIOD, 4, 1);//lpcclk
-	sysctl_iomux_config(GPIOD, 5, 1);//lframe
-	sysctl_iomux_config(GPIOD, 6, 1);//serirq
+	sysctl_iomux_config(GPIOA, 24, 1);
+	sysctl_iomux_config(GPIOA, 25, 1);
+}
+// 配置RING引脚
+void sysctl_iomux_ring(void)
+{
+	sysctl_iomux_config(GPIOA, 15, 1);
 }
 //*****************************************************************************
 //
-//  To setup lpc iomux
+//  To setup host iomux
 //
 //  parameter :
 //      none
@@ -900,17 +884,92 @@ void sysctl_iomux_lpc(void)
 //      none
 //
 //*****************************************************************************
-void sysctl_iomux_espi(void)
+//ESPI/LPC
+void sysctl_iomux_host(uint8_t espi_sel, uint8_t irq_sel, uint8_t rst_sel, uint8_t clkrun_sel, uint8_t lpcpd_sel)
 {
-#if AE5571
-	sysctl_iomux_config(GPIOD, 0, 1);//eio[0]
-	sysctl_iomux_config(GPIOD, 1, 1);//eio[1]
-	sysctl_iomux_config(GPIOD, 2, 1);//eio[2]
-	sysctl_iomux_config(GPIOD, 3, 1);//eio[3]
-	sysctl_iomux_config(GPIOD, 4, 1);//esck
-	sysctl_iomux_config(GPIOD, 5, 1);//ecs
-	sysctl_iomux_config(GPIOD, 6, 1);//alert
-#endif
+	//通用引腳
+	sysctl_iomux_config(GPIOD, 0, 1);//EIO[0]/LAD[0]
+	sysctl_iomux_config(GPIOD, 1, 1);//EIO[1]/LAD[1]
+	sysctl_iomux_config(GPIOD, 2, 1);//EIO[2]/LAD[2]
+	sysctl_iomux_config(GPIOD, 3, 1);//EIO[3]/LAD[3]
+	sysctl_iomux_config(GPIOD, 4, 1);//ECLK/LCLK
+	sysctl_iomux_config(GPIOD, 5, 1);//ECS#/LFRAME#
+	//中斷引腳
+	if(irq_sel == 1)
+		sysctl_iomux_config(GPIOC, 15, 2);//ALERT#/SERIRQ
+	else
+		sysctl_iomux_config(GPIOD, 6, 1);//ALERT#/SERIRQ
+	//復位引腳
+	if(rst_sel == 1)
+		sysctl_iomux_config(GPIOA, 15, 2);//ERESET/LRESET#
+	else
+		sysctl_iomux_config(GPIOA, 26, 1);//ERESET#/LRESET#
+	if(espi_sel == 1)//ESPI專屬引腳
+	{
+	}
+	else//LPC專屬
+	{
+		if(clkrun_sel == 1)
+			sysctl_iomux_config(GPIOB, 24, 1);//CLKUN#
+		if(lpcpd_sel == 1)
+			sysctl_iomux_config(GPIOB, 6, 1);//:LPCPD#
+	}
+}
+//PMC
+void sysctl_iomux_sci(uint8_t sci_sel)
+{
+	if(sci_sel == 1)
+		sysctl_iomux_config(GPIOA, 27, 1);//:ECSCI#
+	else
+		sysctl_iomux_config(GPIOA, 27, 0);//:ECSCI# //因為一般是GPIO控制適配不同時長
+}
+
+void sysctl_iomux_pwureq(void)
+{
+	SYSCTL_PIO_CFG &= (~0b11000);
+	sysctl_iomux_config(GPIOA, 23, 1);
+}
+void sysctl_iomux_smi_pltrst(uint8_t smi_pltrst_sel)
+{
+	if(smi_pltrst_sel == 1)
+		sysctl_iomux_config(GPIOA, 28, 1);//:ECSMI#
+	else if(smi_pltrst_sel == 2)
+		sysctl_iomux_config(GPIOA, 28, 2);//:PLTRST#
+	else
+		sysctl_iomux_config(GPIOA, 28, 0);//:ECSMI# //因為一般是GPIO控制適配不同時長
+}
+void sysctl_iomux_kbrst(void)
+{
+	sysctl_iomux_config(GPIOA, 14, 2);
+}
+void sysctl_iomux_g20(void)
+{
+	sysctl_iomux_config(GPIOA, 13, 2);
+}
+void sysctl_iomux_swuc(uint8_t ga20_en, uint8_t krst_en, uint8_t pwureq_en, uint8_t smi_pltrst_sel)
+{
+	if(pwureq_en || smi_pltrst_sel == 1)
+		sysctl_iomux_ring();
+	if(ga20_en)
+		sysctl_iomux_config(GPIOA, 13, 2);
+	if(krst_en)
+		sysctl_iomux_config(GPIOA, 14, 2);
+	if(pwureq_en)
+	{
+		SYSCTL_PIO_CFG &= (~0b11000);
+		sysctl_iomux_config(GPIOA, 23, 1);
+	}
+	if(smi_pltrst_sel == 1)
+		sysctl_iomux_config(GPIOA, 28, 1);//:ECSMI#
+	else if(smi_pltrst_sel == 2)
+		sysctl_iomux_config(GPIOA, 28, 2);//:PLTRST#
+	else
+		sysctl_iomux_config(GPIOA, 28, 0);//:ECSMI# //因為一般是GPIO控制適配不同時長
+}
+void sysctl_iomux_l80(void)
+{
+	sysctl_iomux_config(GPIOB, 0, 1);//:L80HLAT#
+	sysctl_iomux_config(GPIOB, 7, 1);//:L80LLAT#
 }
 /**
  * @brief Pin IO上拉设置

@@ -301,9 +301,6 @@ extern void sysctl_iomux_master1(void);
 extern void sysctl_iomux_slave0(void);
 extern void sysctl_iomux_slave1(void);
 
-extern void sysctl_iomux_sci(void);
-extern void sysctl_iomux_smi(void);
-
 extern void sysctl_iomux_adc0(void);
 extern void sysctl_iomux_adc1(void);
 extern void sysctl_iomux_adc2(void);
@@ -322,7 +319,18 @@ extern void sysctl_iomux_gpioe(void);
 extern void sysctl_iomux_kbs(void);
 extern void sysctl_iomux_crypto_jtag(void);
 extern void sysctl_iomux_jtag(void);
-extern void sysctl_iomux_lpc(void);
+
+extern void sysctl_iomux_ri(void);
+extern void sysctl_iomux_ring(void);
+extern void sysctl_iomux_host(uint8_t espi_sel, uint8_t irq_sel, uint8_t rst_sel, uint8_t clkrun_sel, uint8_t lpcpd_sel);
+extern void sysctl_iomux_sci(uint8_t sci_sel);
+extern void sysctl_iomux_pwureq(void);
+extern void sysctl_iomux_smi_pltrst(uint8_t smi_pltrst_sel);
+extern void sysctl_iomux_kbrst(void);
+extern void sysctl_iomux_g20(void);
+extern void sysctl_iomux_swuc(uint8_t ga20_en, uint8_t krst_en, uint8_t pwureq_en, uint8_t smi_pltrst_sel);
+extern void sysctl_iomux_l80(void);
+
 extern void sysctl_iomux_peci(void);
 
 extern void i2c0_pull_up(uint32_t clk_sel, uint32_t data_sel);

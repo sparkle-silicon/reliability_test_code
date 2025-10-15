@@ -1395,3 +1395,73 @@ int main()
 //     printf("read is 0x%x\n", d_data[i]);
 //   }
 // }
+// /*测试代码仅供参考*/
+// // 模块中断唤醒测试
+// void SWUC_UART_Test(void)
+// {
+// 	// LogicaLDevice Enable
+// 	SYSCTL_HDEVEN |= (HOST_UARTA_EN | HOST_WUC_EN);
+// 	Config_PNP_Access_Request();
+// 	// PNP Default Config
+// 	Config_PNP_Write(0x23, 0x01, 0x01);
+// 	vDelayXms(5);
+// 	// UART0_BAUD
+// 	Config_PNP_Write(0x07, 0x1b, 0x1b);
+// 	vDelayXms(5);
+// 	Config_PNP_Write(0x60, 0x1b, 0x03);
+// 	vDelayXms(5);
+// 	Config_PNP_Write(0x61, 0x1b, 0xf8);
+// 	vDelayXms(5);
+// 	Config_PNP_Write(0x70, 0x1b, 0x14);
+// 	vDelayXms(5);
+// 	Config_PNP_Write(0x71, 0x1b, 0x01);
+// 	vDelayXms(5);
+// 	Config_PNP_Write(0x30, 0x1b, 0x01);
+// 	vDelayXms(5);
+// 	dprint("UART0_BAUD PNP Config finish!\n");
+// 	// SWUC
+// 	Config_PNP_Write(0x07, 0x04, 0x04);
+// 	vDelayXms(5);
+// 	Config_PNP_Write(0x60, 0x04, 0x00);
+// 	vDelayXms(5);
+// 	Config_PNP_Write(0x61, 0x04, 0x00);
+// 	vDelayXms(5);
+// 	Config_PNP_Write(0x70, 0x04, 0x0f);
+// 	vDelayXms(5);
+// 	Config_PNP_Write(0x71, 0x04, 0x01);
+// 	vDelayXms(5);
+// 	Config_PNP_Write(0x30, 0x04, 0x01);
+// 	vDelayXms(5);
+// 	dprint("SWUC PNP Config finish!\n");
+// 	// Enable SWCHIER all interrupt
+// 	SWUC_EventIRQ_Config(RI1_EC_IRQ | RI2_EC_IRQ | RING_EC_IRQ | SIRQ_EC_IRQ | MIRQ_EC_IRQ, ENABLE);
+// 	// Logic Device Module Config
+// 	PRINTF_IER |= 0x1; // Enable uart0 interrup
+// }
+// // RI1和RI2信号唤醒测试
+// void SWUC_RI1_RI2_Test(void)
+// {
+// 	SWUC_PNP_Config();
+// 	SWUC_EventIRQ_Config(RI1_EC_IRQ | RI2_EC_IRQ | RING_EC_IRQ | SIRQ_EC_IRQ | MIRQ_EC_IRQ, ENABLE);
+// 	SWUC_RI_Config();
+// }
+// // RING信号唤醒测试
+// void SWUC_Ring_Test(void)
+// {
+// 	SWUC_PNP_Config();
+// 	SWUC_EventIRQ_Config(RI1_EC_IRQ | RI2_EC_IRQ | RING_EC_IRQ | SIRQ_EC_IRQ | MIRQ_EC_IRQ, ENABLE);
+// 	SWUC_RING_Config();
+// }
+// // 软件唤醒
+// void SWUC_Soft_Test(void)
+// {
+// 	SWUC_PNP_Config();
+// 	SWUC_EventIRQ_Config(RI1_EC_IRQ | RI2_EC_IRQ | RING_EC_IRQ | SIRQ_EC_IRQ | MIRQ_EC_IRQ, ENABLE);
+// 	SWUC_SW_WakeUp_Config(0);
+// }
+// // 传统模式唤醒
+// void SWUC_LegacyMode_Test(void)
+// {
+// 	SWUC_PNP_Config();
+// 	SWUC_ACPIIRQ_Config(PWRSLY | PWRBT, ENABLE);
+// }

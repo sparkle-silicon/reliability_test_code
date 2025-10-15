@@ -167,8 +167,6 @@ void i3c_init(void)
 	I3C_Slave_Init(I3C_SLAVE1_DEFAULT_ADDR, I3C_SLAVE1_DEFAULT_IDPARTNO, I3C_SLAVE1_DEFAULT_DCR, I3C_SLAVE1_DEFAULT_BCR, I3C_SLAVE1);
 #endif
 	dprint("i3c slave init done.\n");
-
-
 #endif
 }
 void spi_init(void)
@@ -192,15 +190,16 @@ void spi_init(void)
 	if(SYSCTL_PIO_CFG & BIT1)//使用外部FLASH
 	{
 		SPIFI_Init();//内部SPIF无法控制,因此主要是内部引脚开关,内部FLASH运行状态之类的控制
-		dprint("INTERNAL SPIF init done.\n");
+		dprint("INTERNAL FLASH init done.\n");
 	}
 	else//使用内部FLASH才能初始化
 	{
 		sysctl_iomux_spif(SPIF_CSN_SEL, SPIF_QE_SEL, SPIF_WP_SEL);
 	}
 	SPIFE_Init();//初始化外部FLASH的一些细节,注意,如果使用外部FLASH可能会和cache冲突
-	dprint("EXTERNAL SPIF init done.\n");
+	dprint("EXTERNAL FLASH init done.\n");
 #endif
+	dprint("SPIF init done.\n");
 #endif
 
 }
@@ -277,47 +276,36 @@ void pwm_tach_init(void)
 	dprint("TACH init done\n");
 #endif
 }
-void pmc1_init(void)
+
+void host_init(void)
 {
-	PMC1_IE = 0x3f;
-#if !(LPC_WAY_OPTION_SWITCH)
-	PMC1_CTL |= IBF_INT_ENABLE;
+#if HOST_MODULE_EN
+#if ESPI_EN_Init
+	espi_MoudleClock_EN;
+	//Switch espi
+	sysctl_iomux_host(1, HOST_IRQ_PIN_SEL, HOST_RST_PIN_SEL, 0, 0);
+	ESPI_Init();
+	dprint("espi init done.\n");
+#elif LPC_EN_Init
+	// LPC_MoudleClock_EN;
+		//Switch lpc
+	sysctl_iomux_host(0, HOST_IRQ_PIN_SEL, HOST_RST_PIN_SEL, LPC_CLKRUN_PIN_SEL, LPC_PD_PIN_SEL);
+	//lpc init
+	dprint("lpc init done.\n");
+#else//按照默認選擇初始化
+	sysctl_iomux_host(1, 0, 0, 0, 0);
+	dprint("default host iomux init done.\n");
 #endif
-}
-void pmc2_init(void)
-{
-	PMC2_IE = 0x3f;
-#if !(LPC_WAY_OPTION_SWITCH)
-	PMC2_CTL |= IBF_INT_ENABLE;
+#if SWUC_EN_Init
+	swuc_MoudleClock_EN;
+	sysctl_iomux_swuc(SWUC_GA20_ENABLE, SWUC_KRST_ENABLE, SWUC_PWUREQ_ENABLE, HOST_SMI_PLTRST_SWITCH);
+	SWUC_Init(SWUC_GA20_ENABLE, SWUC_GA20_MODE, SWUC_KRST_ENABLE, HOST_SMI_PLTRST_SWITCH, SWUC_PWUREQ_ENABLE, SWUC_ACPI_ENABLE);
+	dprint("swuc init done.\n");
 #endif
-}
-void pmc3_init(void)
-{
-	PMC3_IE = 0x3f;
-#if !(LPC_WAY_OPTION_SWITCH)
-	PMC3_CTL |= IBF_INT_ENABLE;
+#if HOST_P80_En_Init
+	sysctl_iomux_l80();
+	L80_Init();
 #endif
-}
-void pmc4_init(void)
-{
-	PMC4_IE = 0x3f;
-#if !(LPC_WAY_OPTION_SWITCH)
-	PMC4_CTL |= IBF_INT_ENABLE;
-#endif
-}
-void pmc5_init(void)
-{
-	PMC5_IE = 0x3f;
-#if !(LPC_WAY_OPTION_SWITCH)
-	PMC5_CTL |= IBF_INT_ENABLE;
-#endif
-}
-void kbc_init(void)
-{
-	SET_BIT(KBC_CTL, KBC_IBFIE); // set KBC_IBF enable
-}
-void kbc_pmc_init(void)
-{
 #if (KBC_MODULE_EN)
 	pmckbc_MoudleClock_EN;
 	kbc_init();
@@ -327,16 +315,16 @@ void kbc_pmc_init(void)
 	/* If you want to use GPIO to control the chip select signal,
 	 you can comment out the following two lines
 	 (CUSTOM_GPIO.H is configured for GPIO by default).*/
-#if 0 // 用GPIO模拟SCI
-	sysctl_iomux_sci();
-	sysctl_iomux_smi();
-#endif
-	pmc1_init();
-	pmc2_init();
-	pmc3_init();
-	pmc4_init();
-	pmc5_init();
+	sysctl_iomux_sci(HOST_SCI_PIN_SEL);
+	pmc_init();
 	dprint("PMC init done.\n");
+#endif
+#if (PECI_MODULE_EN)
+	peci_MoudleClock_EN;
+	sysctl_iomux_peci();
+	PECI_Init();
+	dprint("peci init done.\n");
+#endif
 #endif
 }
 void kbs_init(void)
@@ -426,25 +414,6 @@ void rtc_init(void)
 	dprint("rtc init done.\n");
 #endif
 }
-void peci_init(void)
-{
-#if (PECI_MODULE_EN)
-	SYSCTL_CLKDIV_PECI = 1;
-	peci_MoudleClock_EN;
-	sysctl_iomux_peci();
-	Init_PECI();
-	dprint("peci init done.\n");
-#endif
-}
-void espi_init(void)
-{
-#if (ESPI_MODULE_EN)
-	espi_MoudleClock_EN;
-	sysctl_iomux_espi();
-	ESPI_Init();
-	dprint("espi init done.\n");
-#endif
-}
 void adc_init(void)
 {
 #if ADC_MODULE_EN
@@ -527,43 +496,36 @@ void __weak SECTION(".init.module") Module_init(void)
 {
 	// 1.Initialize The GPIO
 	gpio_init();
-	// 2.Switch Default SMBUS3 or UARTB 
+	// 2.Initialize The Mailbox
+	mailbox_init();
+	// 3.Switch Default SMBUS3 or UARTB 
 	DEFAULT_SMBUS3_UARTB_SEL;
-	// 3.Initialize The Serial Port
+	// 4.Initialize The Serial Port
 	uart_init();
-	// 4.Initialize The SMBUS
+	// 5.Initialize The SMBUS
 	smbus_init();
-	// 5.Initialize The I3C
+	// 6.Initialize The I3C
 	i3c_init();
-	// 6.Initialize The SPI
+	// 7.Initialize The SPI
 	spi_init();
-	// 7.Initialize The PWM and The TACH
+	// 8.Initialize The PWM and The TACH
 	pwm_tach_init();
-	// 8.Initialize The KBC and The PMC
-	kbc_pmc_init();
-	// 10.Initialize  The KBS
+	// 9.Initialize The KBC and The PMC
+	host_init();
+	// 10.Initialize  The KBS and The PS2
 	kbs_init();
 	ps2_init();
-#if ( 0)
 	// 11.Initialize The CEC
 	cec_init();
 	// 12.Initialize The OWI
 	owi_init();
 	// 13.Initialize The OWI
 	rtc_init();
-	// 14.Initialize The PECI
-	peci_init();
-	// 15.Initialize The eSPI
-	espi_init();
-#endif
+
 	// 16.Initialize The ADC
 	adc_init();
 	// 17. Initialize The timer and The watch dog
 	time_init();
-	// 17.Initialize The Mailbox
-	mailbox_init();
-	// 19.Initialize The LPC
-	sysctl_iomux_lpc();
 
 	dprint("End init \n");
 	return;

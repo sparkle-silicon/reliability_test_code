@@ -47,6 +47,8 @@ extern void KBC_Data_Suspend(BYTE nPending);
 extern BYTE Release_KBC_Data_Suspend(void);
 extern void Transmit_Data_To_Host(BYTE data_byte);
 extern void Mouse_Data_To_Host(BYTE data_byte);
+extern void kbc_init(void);
+extern void pmc_init(void);
 /*-----------------------------------------------------------------------------
  * Internal Process Definition
  *---------------------------------------------------------------------------*/

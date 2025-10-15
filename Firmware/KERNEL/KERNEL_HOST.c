@@ -257,7 +257,7 @@ void Service_Send(void)
 void Transmit_Data_To_Host(BYTE data_byte)
 {
     irqc_disable_interrupt(IRQC_INT_DEVICE_PS2_0);
-    ICTL1_INTMASK5|=0x40;//disable ps2 irq
+    ICTL1_INTMASK5 |= 0x40;//disable ps2 irq
     //KBC_STA &= 0x0f;
     SET_BIT(KBC_STA, KBC_KL);
     CLEAR_BIT(KBC_STA, KBC_SAOBF);
@@ -283,7 +283,7 @@ void Transmit_Data_To_Host(BYTE data_byte)
     Debugger_KBD_Record(data_byte);
 #endif
     irqc_enable_interrupt(IRQC_INT_DEVICE_PS2_0);
-    ICTL1_INTMASK5&=~0x40;//enable ps2 irq
+    ICTL1_INTMASK5 &= ~0x40;//enable ps2 irq
 }
 void KBC_Data_Suspend(BYTE nPending)
 {
@@ -341,4 +341,52 @@ void Mouse_Data_To_Host(BYTE data_byte)
 #if ENABLE_DEBUGGER_SUPPORT
     Debugger_KBC_PMC_Record(1, 0, data_byte);
 #endif
+}
+
+void kbc_init(void)
+{
+    SET_BIT(KBC_CTL, KBC_IBFIE); // set KBC_IBF enable
+}
+void pmc1_init(void)
+{
+    PMC1_IE = 0x3f;
+#if !(LPC_WAY_OPTION_SWITCH)
+    PMC1_CTL |= IBF_INT_ENABLE;
+#endif
+}
+void pmc2_init(void)
+{
+    PMC2_IE = 0x3f;
+#if !(LPC_WAY_OPTION_SWITCH)
+    PMC2_CTL |= IBF_INT_ENABLE;
+#endif
+}
+void pmc3_init(void)
+{
+    PMC3_IE = 0x3f;
+#if !(LPC_WAY_OPTION_SWITCH)
+    PMC3_CTL |= IBF_INT_ENABLE;
+#endif
+}
+void pmc4_init(void)
+{
+    PMC4_IE = 0x3f;
+#if !(LPC_WAY_OPTION_SWITCH)
+    PMC4_CTL |= IBF_INT_ENABLE;
+#endif
+}
+void pmc5_init(void)
+{
+    PMC5_IE = 0x3f;
+#if !(LPC_WAY_OPTION_SWITCH)
+    PMC5_CTL |= IBF_INT_ENABLE;
+#endif
+}
+void pmc_init(void)
+{
+    pmc1_init();
+    pmc2_init();
+    pmc3_init();
+    pmc4_init();
+    pmc5_init();
 }
