@@ -36,7 +36,7 @@ __BEGIN_DECLS
 extern void Module_init();
 extern void uart_init(void);
 extern void smbus_init(void);
-extern void spim_init(void);
+extern void spi_init(void);
 extern void pwm_tach_init(void);
 extern void kbc_pmc_init(void);
 extern void ps2_init(void);

@@ -387,7 +387,7 @@ extern BYTE I3C_MASTER_PV_WRITE_WITH7E(uint8_t dynamic_addr, uint8_t *data, uint
 extern BYTE I3C_MASTER_PV_READ_WITH7E(uint8_t dynamic_addr, uint8_t *data, uint16_t bytelen, BYTE i3c_mux);
 extern BYTE I3C_MASTER_PV_WRITE_THEN_READ_WITH7E(uint8_t dynamic_addr, uint8_t *wdata, uint16_t wbytelen, uint8_t *rdata, uint16_t rbytelen, BYTE i3c_mux);
 extern void I3C_MASTER_IBI_Handler(BYTE i3c_mux);
-extern void I3C_Master_Init(uint32_t intfmode, uint32_t speed, BYTE addr, sDEV_CHAR_TABLE *dct, BYTE *dynamic_addr, uint8_t i3c_mux);
+extern void I3C_Master_Init(uint32_t initmode, uint32_t speed, BYTE addr, sDEV_CHAR_TABLE *dct, BYTE *dynamic_addr, uint8_t i3c_mux);
 extern void I3C_Slave_Init(BYTE static_addr, uint32_t idpartno, uint8_t dcr, uint8_t bcr, uint8_t i3c_mux);
 extern BYTE I3C_SLAVE_INT_ENABLE(DWORD tpye, BYTE i3c_mux);
 extern BYTE I3C_SLAVE_INT_DISABLE(DWORD tpye, BYTE i3c_mux);

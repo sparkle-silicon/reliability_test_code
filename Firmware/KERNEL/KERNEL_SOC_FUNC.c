@@ -137,7 +137,7 @@ void smbus_init(void)
 void i3c_init(void)
 {
 #if I3C_MODULE_EN
-	/****************** master init ******************/
+	/****************** master init(only I3C0 and I3C1) ******************/
 #if I3C0_EN_Init
 	i3c0_MoudleClock_EN;
 	sysctl_iomux_master0();
@@ -153,7 +153,7 @@ void i3c_init(void)
 #endif
 	dprint("i3c master init done.\n");
 
-	/****************** slave init ******************/
+	/****************** slave init(only I3C2 and I3C3) ******************/
 #if I3C2_EN_Init
 	i3c2_MoudleClock_EN;
 	sysctl_iomux_slave0();
@@ -171,21 +171,38 @@ void i3c_init(void)
 
 #endif
 }
-void spim_init(void)
+void spi_init(void)
 {
 #if SPI_MODULE_EN
+#if SPIM_EN_Init
 	spim_MoudleClock_EN;
-	sysctl_iomux_spim();
+	sysctl_iomux_spim(SPIM_MOSI_SEL, SPIM_MISO_SEL, SPIM_QE_SEL);
 #if SPIM_CS_EN
 	/*By default, a slave device does not multiplexing the chip select signal and utilizes hardware
 	circuitry to manage the chip select signal. For two or more devices, the default
 	configuration involves the use of two chip select signals for control. If there are specific
 	requirements, it is possible to disable the reuse of unnecessary chip select signals.*/
-	sysctl_iomux_spim_cs();
+	sysctl_iomux_spim_cs(SPIM_CS0_SEL, SPIM_CS1_SEL);
 #endif
-	SPI_Init(0, SPIM_CPOL_LOW, SPIM_CPHA_FE, SPIM_MSB, 0x7, 1);
-	dprint("SPI init done.\n");
+	SPI_Init(SPIM_DEFAULT_DLY, SPIM_DEFAULT_CPOL, SPIM_DEFAULT_CPHA, SPIM_DEFAULT_LSB, SPIM_DEFAULT_DSSP, SPIM_DEFAULT_CPSRR);
 #endif
+	dprint("SPI Master init done.\n");
+#if SPIF_EN_Init
+	spif_MoudleClock_EN;
+	if(SYSCTL_PIO_CFG & BIT1)//使用外部FLASH
+	{
+		SPIFI_Init();//内部SPIF无法控制,因此主要是内部引脚开关,内部FLASH运行状态之类的控制
+		dprint("INTERNAL SPIF init done.\n");
+	}
+	else//使用内部FLASH才能初始化
+	{
+		sysctl_iomux_spif(SPIF_CSN_SEL, SPIF_QE_SEL, SPIF_WP_SEL);
+	}
+	SPIFE_Init();//初始化外部FLASH的一些细节,注意,如果使用外部FLASH可能会和cache冲突
+	dprint("EXTERNAL SPIF init done.\n");
+#endif
+#endif
+
 }
 void pwm_tach_init(void)
 {
@@ -516,13 +533,13 @@ void __weak SECTION(".init.module") Module_init(void)
 	uart_init();
 	// 4.Initialize The SMBUS
 	smbus_init();
-	// 6.Initialize The I3C
+	// 5.Initialize The I3C
 	i3c_init();
-	// 7.Initialize The SPI
-	spim_init();
-	// 8.Initialize The PWM and The TACH
+	// 6.Initialize The SPI
+	spi_init();
+	// 7.Initialize The PWM and The TACH
 	pwm_tach_init();
-	// 9.Initialize The KBC and The PMC
+	// 8.Initialize The KBC and The PMC
 	kbc_pmc_init();
 	// 10.Initialize  The KBS
 	kbs_init();
@@ -545,8 +562,6 @@ void __weak SECTION(".init.module") Module_init(void)
 	time_init();
 	// 17.Initialize The Mailbox
 	mailbox_init();
-	// 18.Initialize The SPIF
-	SPIF_Init();
 	// 19.Initialize The LPC
 	sysctl_iomux_lpc();
 

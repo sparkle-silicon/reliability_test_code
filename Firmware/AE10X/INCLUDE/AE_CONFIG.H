@@ -119,7 +119,9 @@
 #define I2C_MODULE_EN 1
 #define PS2_MODULE_EN 0
 #define KBS_MODULE_EN 0
-#define SPI_MODULE_EN 0
+#define SPIF_MODULE_EN 1
+#define SPIM_MODULE_EN 0
+#define SPI_MODULE_EN (SPIM_MODULE_EN||SPIF_MODULE_EN)
 #define WDT_MODULE_EN 0
 #define PWM_MODULE_EN 0
 #define TACH_MODULE_EN 0
@@ -254,7 +256,7 @@
 #define I2C2_EXTERNAL_PULL_UP 1
 #define I2C2_INTERNAL_PULL_UP 0
 
-#define I2C3_EN_Init 1 & SMBUS3_CLOCK_EN
+#define I2C3_EN_Init 0 & SMBUS3_CLOCK_EN
 #define I2C3_SPEED 100000
 #define I2C3_DEFAULT_ROLE I2C_NO_ROLE
 #define I2C3_DEFAULT_ADDR 0x00
@@ -337,9 +339,25 @@
 #define I3C3_INTERNAL_PULL_UP 0
 
 //SPI初始化
-#if SPI_MODULE_EN
-#define SPIM_CS_EN 1
-#endif
+#define SPIM_EN_Init 1&SPIM_CLOCK_EN
+#define SPIM_CS_EN 1&SPIM_CLOCK_EN
+#define SPIM_DEFAULT_DLY 0
+#define SPIM_DEFAULT_CPOL SPIM_CPOL_LOW
+#define SPIM_DEFAULT_CPHA SPIM_CPHA_FE
+#define SPIM_DEFAULT_LSB SPIM_MSB
+#define SPIM_DEFAULT_DSSP 0x7
+#define SPIM_DEFAULT_CPSRR 1
+#define SPIM_CS0_SEL 0
+#define SPIM_CS1_SEL 0
+#define SPIM_MOSI_SEL 0
+#define SPIM_MISO_SEL 0
+#define SPIM_QE_SEL 0
+
+#define SPIF_EN_Init 1&SPIF_CLOCK_EN
+#define SPIF_CSN_SEL 0
+#define SPIF_QE_SEL 0
+#define SPIF_WP_SEL 0
+
 // PWM TACH 初始化
 #define PWM0_EN_Init 1 & PWM_CLOCK_EN
 #define PWM1_EN_Init 0 & PWM_CLOCK_EN
@@ -381,11 +399,6 @@
 #define PS2_1_CLK_SEL 0
 #define PS2_0_DAT_SEL 0
 #define PS2_1_DAT_SEL 0
-//SPIM初始化
-#define SPIM_CS_SEL 0
-#define SPIM_MOSI_SEL 0
-#define SPIM_MISO_SEL 0
-#define SPIM_QE_SEL 0
 // ADC初始化
 #define ADC0_EN_Init 0 & ADC_CLOCK_EN
 #define ADC1_EN_Init 0 & ADC_CLOCK_EN

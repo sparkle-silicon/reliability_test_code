@@ -269,8 +269,9 @@ extern void sysctl_iomux_disable_uartb(void);
 extern void sysctl_iomux_ps2_0(uint32_t clk_sel, uint32_t data_sel);
 extern void sysctl_iomux_ps2_1(uint32_t clk_sel, uint32_t data_sel);
 
-extern void sysctl_iomux_spim(void);
-extern void sysctl_iomux_spim_cs(void);
+extern void sysctl_iomux_spim(uint8_t mosi_sel, uint8_t miso_sel, uint8_t qe_sel);
+extern void sysctl_iomux_spim_cs(uint8_t cs0_sel, uint8_t cs1_sel);
+extern void sysctl_iomux_spif(uint8_t csn_sel, uint8_t qe_sel, uint8_t wp_sel);
 
 extern void sysctl_iomux_pwm0(void);
 extern void sysctl_iomux_pwm1(void);

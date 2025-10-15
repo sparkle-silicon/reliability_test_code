@@ -25,13 +25,30 @@ BYTE Write_buff[256] = { 0, 1, 2, 3, 4, 5, 6 };
 // char Write_buff[256]="flash string test!\n";
 BYTE Read_buff[256] = { 0 };
 // char Read_buff[]="";
-void SPIF_Init(void)
+void SPIFI_Init(void)
+{
+      //可选屏蔽内部SPIF引脚,降低功耗用
+      //
+   return;
+}
+void SPIFE_Init(void)
 {
 #if (!SPIF_CLOCK_EN)
    return;
 #endif
-   // SPIF_READ_ID();
    SPIF_CTRL0 |= 0x1; // 擦写时允许挂起
+   if(SYSCTL_PIO_CFG & BIT1)//使用外部FLASH
+   {
+   }
+   else
+   {
+      SPIF_READ_ID();
+      if(SPIF_QE_SEL)
+      {
+         //初始化4线
+      }
+   }
+
 }
 // 读取id
 void SPIF_READ_ID(void)

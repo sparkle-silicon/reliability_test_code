@@ -447,7 +447,7 @@ void sysctl_iomux_ps2_1(uint32_t clk_sel, uint32_t data_sel)
 }
 //*****************************************************************************
 //
-//  To setup spim iomux
+//  To setup spi iomux
 //
 //  parameter :
 //      none
@@ -456,23 +456,53 @@ void sysctl_iomux_ps2_1(uint32_t clk_sel, uint32_t data_sel)
 //      none
 //
 //*****************************************************************************
-void sysctl_iomux_spim()
+void sysctl_iomux_spim(uint8_t mosi_sel, uint8_t miso_sel, uint8_t qe_sel)
 {
 	sysctl_iomux_config(GPIOA, 6, 2);  // spim_sck
-	sysctl_iomux_config(GPIOA, 19, 2); // spim_mosi
-	sysctl_iomux_config(GPIOA, 21, 2); // spim_miso
-	if(SPIM_QE_SEL)
+	if(mosi_sel == 0)
+		sysctl_iomux_config(GPIOA, 19, 2); // spim_mosi
+	else
+		sysctl_iomux_config(GPIOA, 22, 2); // spim_mosi
+	if(miso_sel == 0)
+		sysctl_iomux_config(GPIOA, 21, 2); // spim_miso
+	else
+		sysctl_iomux_config(GPIOA, 20, 3); // spim_miso
+	if(qe_sel)
 	{
-		sysctl_iomux_config(GPIOC, 15, 2); // spim_io2
+		sysctl_iomux_config(GPIOB, 4, 2); // spim_io2
 		sysctl_iomux_config(GPIOC, 14, 2); // spim_io3
 	}
 }
-void sysctl_iomux_spim_cs()
+void sysctl_iomux_spim_cs(uint8_t cs0_sel, uint8_t cs1_sel)
 {
-	if(SPIM_CS_SEL == 0)
+	if(cs0_sel == 1)
 		sysctl_iomux_config(GPIOB, 18, 2); // csn0
-	else
-		sysctl_iomux_config(GPIOB, 4, 2); // csn1
+	else if(cs0_sel == 2)
+		sysctl_iomux_config(GPIOC, 15, 1); // csn0
+	if(cs1_sel == 1)
+		sysctl_iomux_config(GPIOB, 31, 1); // csn1
+}
+
+void sysctl_iomux_spif(uint8_t csn_sel, uint8_t qe_sel, uint8_t wp_sel)
+{
+	if(csn_sel == 0)
+		sysctl_iomux_config(GPIOB, 22, 1); // csn0
+	else if(csn_sel == 1)
+		sysctl_iomux_config(GPIOA, 16, 2); // csn1
+	sysctl_iomux_config(GPIOB, 23, 1); // sck
+	sysctl_iomux_config(GPIOB, 20, 1); // mosi
+	sysctl_iomux_config(GPIOB, 21, 1); // miso
+	if(qe_sel)
+	{
+		if(wp_sel == 1)
+			sysctl_iomux_config(GPIOB, 29, 1); // wp
+		else if(wp_sel == 2)
+			sysctl_iomux_config(GPIOD, 8, 1); // wp
+		else
+			sysctl_iomux_config(GPIOB, 17, 1); // wp
+		sysctl_iomux_config(GPIOB, 30, 1); // hold
+	}
+
 }
 
 //*****************************************************************************

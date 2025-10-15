@@ -1242,7 +1242,7 @@ repeat_ibi:
 /**
 * @brief MASTER初始化函数
 *
-* @param intfmode 选择I3C初始化类型
+* @param initmode 选择I3C初始化类型
 * @param speed 总线速度,最大8M
 * @param addr 寄存器地址偏移
 * @param dct DCT动态地址表指针,用于动态地址分配后存放DCT
@@ -1252,21 +1252,26 @@ repeat_ibi:
 *
 * @note 无
 */
-void I3C_Master_Init(uint32_t intfmode, uint32_t speed, BYTE addr, sDEV_CHAR_TABLE *dct, BYTE *dynamic_addr, uint8_t i3c_mux)
+void I3C_Master_Init(uint32_t initmode, uint32_t speed, BYTE addr, sDEV_CHAR_TABLE *dct, BYTE *dynamic_addr, uint8_t i3c_mux)
 {
+    if((i3c_mux != I3C_MASTER0) && (i3c_mux != I3C_MASTER1))
+    {
+        i3c_dprint("I3C Master Init Unknow Mux\n");
+        return;
+    }
     I3C_WAIT_SDA_PU(i3c_mux);//需要等SCL/SDA都拉高后才能进行初始化，否则会误触发IBI中断
-    if(intfmode == I3C_MASTER_I3C_MODE)
+    if(initmode == I3C_MASTER_I3C_MODE)
     {
         I3C_Current_Master_Init(speed, i3c_mux);
         I3C_MASTER_ENTDAA(dct, dynamic_addr, i3c_mux);//specify a dynamic addr
     }
-    else if(intfmode == I3C_MASTER_I2C_MODE)
+    else if(initmode == I3C_MASTER_I2C_MODE)
     {
         I3C_Legacy_Master_Init(addr, speed, i3c_mux);
     }
     else
     {
-        assert_print("unknow intfmode");
+        i3c_dprint("I3C Master Init Unknow Intfmode\n");
     }
 }
 /**
