@@ -960,9 +960,9 @@ BYTE Moudle_test(void)
 				{
 					SYSCTL_MODEN0 &= (~SPIM_EN);
 				}
-				sysctl_iomux_spim();
-				sysctl_iomux_spim_cs();
-				SPI_Init(0, SPIM_CPOL_LOW, SPIM_CPHA_FE, SPIM_LSB, 0x7, 1);
+				sysctl_iomux_spim(0, 0, 0);
+				sysctl_iomux_spim_cs(1, 0);
+				SPIM_Init(0, SPIM_CPOL_LOW, SPIM_CPHA_FE, SPIM_LSB, 0x7, 1);
 				dprint("perpare SPIM\n");
 				dprint("completing the jumper, then send any key to start test\n");//spim_sck接SSCK，spim_mosi接SMOSI，spim_miso接SMISO
 				Uart_Int_Disable(PRINTF_UART_SWITCH, 0);              //102：PIOB18接SCSN0,PIOB16接SCSN1 103：PIOB18接SCSN0,PIOB4接SCSN1

@@ -344,7 +344,7 @@ int main()
 	SWUC_Test();
 #endif
 #if SPI_DEBUG
-	// SPI_Init();
+	// SPIM_Init();
 	sysctl_iomux_config(GPIOA, 6, 2);  // spim_sck
 	sysctl_iomux_config(GPIOA, 19, 2); // spim_mosi
 	sysctl_iomux_config(GPIOA, 21, 2); // spim_miso
@@ -1281,4 +1281,117 @@ int main()
 // void SECTION(".PATCH7_TRANSIT") USED PATCH7_TRANSIT(void)
 // {
 // 	return;
+// }
+// //3Wire模式下测试读写函数，再测试读写之前，请提前擦除FLASH
+// void SPI_3Wire_Test(void)
+// {
+//   SPIM_CTRL = 0x6704;     // 高位优先传输，8位传输
+//   SPIM_CPSR = 0x1;       //4分频
+//   SPIM_IMSR = 0xff;      //屏蔽所有中断
+
+//   uint32_t no = 64;
+//   uint32_t csn = 0;
+//   uint32_t ADDRess = 0x5600;
+//   uint16_t s_data[256];
+//   uint16_t r_data[256];
+//   uint16_t rdata, rdata2;
+//   for(int i = 0; i < no; i++)
+//   {
+//     s_data[i] = 0xaa + i;
+//   }
+//   //写
+//   SPI_3Wire_Page_Program(ADDRess, s_data, no, csn);
+
+//   //读
+//   SPI_3Wire_Read(ADDRess, r_data, no, csn);
+
+//   //check
+//   for(int i = 0; i < no; i++)
+//   {
+//     rdata = s_data[i];
+//     rdata2 = r_data[i];
+//     if(rdata != rdata2)
+//       printf("3wire ERROR!!\n");
+//     else
+//       printf("3wire PASS\n");
+//     printf("send is 0x%x\n", s_data[i]);
+//     printf("read is 0x%x\n", r_data[i]);
+//   }
+// }
+
+// void SPI_Quad_Test(void)
+// {
+//   //SPIM初始化
+//   SPIM_CTRL = 0x6704;     //12:高位优先传； 8-11：0x7,表示8位传输； 0-1：0x0，表示第一个上升沿采集
+//   SPIM_CPSR = 0x1;        //时钟分频，4分频
+//   SPIM_IMSR = 0xff;       //中断全部屏蔽
+//   SPIM_MODE = 0x0;        //标准spi模式
+//   uint32_t no = 16;
+//   uint32_t csn = 0;
+//   uint32_t ADDRess = 0x0;
+
+//   uint16_t s_data[256];
+//   uint16_t d_data[256];
+//   uint16_t rdata, rdata2;
+//   int i;
+//   for(i = 0; i < no; i++)
+//     s_data[i] = (((i + 0x01) << 8) | (i + 0x10));
+//   printf("SPIM_MODE:%x\n", SPIM_MODE);
+//   SPI_Quad_enable(csn);//设置quad模式,quad enable
+//   SPI_Block_Erase(ADDRess, csn);
+//   SPI_Quad_Program(ADDRess, s_data, no, csn);
+//   SPI_Quad_Read(ADDRess, d_data, no, csn);
+//   printf("SPIM_MODE:%x\n", SPIM_MODE);
+//   //check
+//   for(i = 0; i < no; i++)
+//   {
+//     rdata = s_data[i];
+//     rdata2 = d_data[i];
+//     if(rdata != rdata2)
+//       printf("quad ERROR!!\n");
+//     else
+//       printf("quad PASS\n");
+//     printf("send is 0x%x\n", s_data[i]);
+//     printf("read is 0x%x\n", d_data[i]);
+//   }
+
+// }
+
+// void SPI_Dual_Test(void)
+// {
+//   //SPIM初始化
+//   SPIM_CTRL = 0x6704;     //12:高位优先传； 8-11：0x7,表示8位传输； 0-1：0x0，表示第一个上升沿采集
+//   SPIM_CPSR = 0x1;        //时钟分频，4分频
+//   SPIM_IMSR = 0xff;       //中断全部屏蔽
+//   SPIM_MODE = 0x0;        //标准spi模式
+//   uint32_t no = 16;
+//   uint32_t csn = 0;
+//   uint32_t ADDRess = 0x0;
+
+//   uint16_t s_data[256];
+//   uint16_t d_data[256];
+//   uint16_t rdata, rdata2;
+//   int i;
+//   for(i = 0; i < no; i++)
+//     s_data[i] = (((i + 0x01) << 8) | (i + 0x80));
+//   printf("SPIM_MODE:%x\n", SPIM_MODE);
+
+//   //擦除还是标准四线模式
+//   SPI_Block_Erase(ADDRess, csn);
+//   SPI_Quad_Program(ADDRess, s_data, no, csn);
+//   SPI_Dual_Read(ADDRess, d_data, no, csn);
+
+//   printf("SPIM_MODE:%x\n", SPIM_MODE);
+//   //check
+//   for(i = 0; i < no; i++)
+//   {
+//     rdata = s_data[i];
+//     rdata2 = d_data[i];
+//     if(rdata != rdata2)
+//       printf("Dual ERROR!!\n");
+//     else
+//       printf("Dual PASS\n");
+//     printf("send is 0x%x\n", s_data[i]);
+//     printf("read is 0x%x\n", d_data[i]);
+//   }
 // }

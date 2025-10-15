@@ -73,7 +73,7 @@
 #define SPI_3Wire    HEX03
 
 extern BYTE SPI_Write_Buff[256];
-extern void SPI_Init(BYTE dly, BYTE cpol, BYTE cpha, BYTE lsb, BYTE dssp, BYTE cpsr);
+extern void SPIM_Init(BYTE dly, BYTE cpol, BYTE cpha, BYTE lsb, BYTE dssp, BYTE cpsr);
 extern void SPIS_Init(BYTE cpol, BYTE cpha, BYTE dssp);
 extern void SPI_IRQ_Config(uint8_t irq_mask, uint8_t sw);
 extern void SPI_Read_ID0(void);
@@ -89,8 +89,8 @@ extern uint8_t SPI_Suspend(uint8_t cs_select);
 extern void SPI_Write_Enable(uint8_t cs_select);
 extern void SPI_Block_Erase(uint32_t address, uint8_t cs_select);
 extern void SPI_Chip_Erase(uint8_t cs_select);
-extern void SPI_Send_Cmd_Addr(uint8_t* pbuffer, uint32_t read_addr, uint16_t num_byte_to_read, uint8_t cs_select);
-extern void SPI_Page_Program(uint32_t write_addr, uint32_t byte_num, uint8_t* byte_data, uint8_t cs_select);
+extern void SPI_Send_Cmd_Addr(uint8_t *pbuffer, uint32_t read_addr, uint16_t num_byte_to_read, uint8_t cs_select);
+extern void SPI_Page_Program(uint32_t write_addr, uint32_t byte_num, uint8_t *byte_data, uint8_t cs_select);
 extern void SPI_Flash_Reset(uint8_t cs_select);
 extern void SPI_Flash_Test(void);
 extern void SPI_Send_RWcmd(uint8_t cmd, uint32_t read_addr, uint8_t cs_select);
@@ -103,12 +103,12 @@ extern void SPI_Send_RWcmd(uint8_t cmd, uint32_t read_addr, uint8_t cs_select);
 extern void SPI_LOOP_TEST(void);
 extern void spibusy(void);
 extern void SPI_Send_2byte(uint16_t send_data);
-extern void SPI_3Wire_Page_Program(int addr, uint16_t* data, int num, int csn);
-extern void SPI_3Wire_Read(int addr, uint16_t* data, int num, int csn);
+extern void SPI_3Wire_Page_Program(int addr, uint16_t *data, int num, int csn);
+extern void SPI_3Wire_Read(int addr, uint16_t *data, int num, int csn);
 extern void SPI_Quad_enable(int csn);
-extern void SPI_Dual_Read(int addr, uint16_t* data, int num, int csn);
-extern void SPI_Quad_Program(int addr, uint16_t* data, int num, int csn);
-extern void SPI_Quad_Read(int addr, uint16_t* data, int num, int csn);
+extern void SPI_Dual_Read(int addr, uint16_t *data, int num, int csn);
+extern void SPI_Quad_Program(int addr, uint16_t *data, int num, int csn);
+extern void SPI_Quad_Read(int addr, uint16_t *data, int num, int csn);
 extern uint8_t SPI_3wire_BUSY(int csn);
 
 extern void SPI_3Wire_Test(void);
