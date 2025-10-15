@@ -23,7 +23,7 @@
 extern void Service_PECI(void);
 extern void Service_PECI_Data(void);
 extern void Service_PECI_Command(void);
-extern void Init_PECI(void);
+extern void PECI_Init(void);
 extern void PECI_Set_Pad(u16 VTTlev, u8 PADsel);
 extern void Calc_CPU_Temperature(void);
 extern BYTE PECI_ReadDIB_TEST(void);

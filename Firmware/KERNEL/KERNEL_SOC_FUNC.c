@@ -521,12 +521,10 @@ void __weak SECTION(".init.module") Module_init(void)
 	owi_init();
 	// 13.Initialize The OWI
 	rtc_init();
-
-	// 16.Initialize The ADC
+	// 14.Initialize The ADC
 	adc_init();
-	// 17. Initialize The timer and The watch dog
+	// 15 Initialize The timer and The watch dog
 	time_init();
-
 	dprint("End init \n");
 	return;
 }
