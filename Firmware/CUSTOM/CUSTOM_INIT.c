@@ -100,7 +100,7 @@ void Default_Freq(void)
 		{
 			clock_div = (CHIP_CLOCK_SWITCH - 1); //配置主时钟分频
 		}
-		if((!SYSCTL_ESTAT_EFUSE_EC_DEBUG) && (!SYSCTL_ESTAT_EFUSE_CRYPTO_DEBUG))//如果是走ec_debug并且子系统没起来
+		if((!SYSCTL_ESTAT_EFUSE_EC_DEBUG) && (!SYSCTL_ESTAT_EFUSE_CRYPTO_DEBUG))//如果是走ec_debug并且子系统没起来,此时iram0代码还没考虑,不考虑通知需求
 		{
 				//修改SPIF resume和下一次suspend之间的时间，要求最小100us
 			uint32_t trsmax = ((CHIP_CLOCK_INT_HIGH / 10000) / (clock_div + 1));
@@ -111,7 +111,7 @@ void Default_Freq(void)
 		}
 		else
 		{
-			Default_Mailbox_SetClockFrequency(CHIP_CLOCK_SWITCH - 1);
+			Default_Mailbox_SetClockFrequency(clock_div);
 		}
 
 	}
