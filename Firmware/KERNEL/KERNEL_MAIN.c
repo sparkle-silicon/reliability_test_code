@@ -517,7 +517,11 @@ VBYTEP OPTIMIZE0 USED SPIF_Read_Interface(register DWORD size, register DWORD ad
 #undef temp_data
 }
 
-uint8_t ccc_data[10] = { 0x1,0x2,0x3,0x4,0x5,0x6,0x7,0x8,0x9,0xa };
+uint8_t ccc_wdata[10] = { 0x1,0x2,0x3,0x4,0x5,0x6,0x7,0x8,0x9,0xa };
+uint8_t ccc_rdata[10] = { 0,0,0,0,0,0,0,0,0,0 };
+uint8_t ccc_rdata1[10] = { 0,0,0,0,0,0,0,0,0,0 };
+uint8_t ccc_dr_rdata[10] = { 0,0,0,0,0,0,0,0,0,0 };
+uint8_t ccc_dr_rdata1[10] = { 0,0,0,0,0,0,0,0,0,0 };
 
 //----------------------------------------------------------------------------
 // FUNCTION: main
@@ -536,8 +540,26 @@ int __weak main(void)
 	// 2. print Operational information
 	dprint("This is %s flash main\n", (SYSCTL_PIO_CFG & BIT1) ? "external" : "internal");
 	dprint("CPU freq at %d Hz\n", CPU_FREQ);
-	I3C_MASTER_BC_CCC_WRITE(ccc_data, 5, SETMWL_BC_CMD, 0, 0, I3C_MASTER0);
-	// I3C_MASTER_PV_WRITE_WITH7E(uint8_t dynamic_addr, uint8_t * data, uint16_t bytelen, BYTE i3c_mux);
+	/******仅供i3c测试,泽宇先别删这段测试代码start */
+	I3C_MASTER_BC_CCC_WRITE(ccc_wdata, 2, SETMWL_BC_CMD, 0, 0, I3C_MASTER0);
+	printf("slave0 maxlength:%x\n", SLAVE0_MAXLIMITS);
+	I3C_MASTER_PV_WRITE_WITH7E(0x3a, ccc_wdata, 5, I3C_MASTER0);
+	I3C_SLAVE_READ(ccc_rdata, 5, I3C_SLAVE0);
+	for (int i = 0; i < 5; i++)
+	{
+		printf("private read data%x:%x\n", i, ccc_rdata[i]);
+	}
+	I3C_SLAVE_WRITE(ccc_wdata, 5, I3C_SLAVE0);
+	I3C_MASTER_PV_READ_WITH7E(0x3a, ccc_rdata1, 5, I3C_MASTER0);
+	for (int i = 0; i < 5; i++)
+	{
+		printf("private read data%x:%x\n", i, ccc_rdata1[i]);
+	}
+	I3C_MASTER_DR_CCC_WRITE(0x3a, ccc_wdata, 2, SETMWL_DR_CMD, 0, 0, I3C_MASTER0);
+	printf("slave0 maxlength:%x\n", SLAVE0_MAXLIMITS);
+	I3C_MASTER_DR_CCC_READ(0x3a, ccc_dr_rdata, 1, GETDCR_DR_CMD, 0, 0, I3C_MASTER0);
+	printf("private read dcr:%x\n", ccc_dr_rdata[0]);
+	/*******end */
 	main_loop();
 	return 0;
 }
