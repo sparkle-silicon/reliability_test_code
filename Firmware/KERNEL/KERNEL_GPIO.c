@@ -753,11 +753,6 @@ void sysctl_iomux_cec1(void)
 {
 	sysctl_iomux_config(GPIOB, 31, 2);
 }
-void sysctl_iomux_owi()
-{
-	sysctl_iomux_config(GPIOA, 29, 1);
-	sysctl_iomux_config(GPIOB, 5, 1);
-}
 void sysctl_iomux_peci()
 {
 	sysctl_iomux_config(GPIOB, 14, 2);

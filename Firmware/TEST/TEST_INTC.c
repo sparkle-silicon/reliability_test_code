@@ -1,7 +1,7 @@
 /*
  * @Author: Maple
- * @LastEditors: error: error: git config user.name & please set dead value or install git && error: git config user.email & please set dead value or install git & please set dead value or install git
- * @LastEditTime: 2023-04-20 21:44:47
+ * @LastEditors: daweslinyu daowes.ly@qq.com
+ * @LastEditTime: 2025-10-17 15:17:35
  * @Description:
  *
  *
@@ -897,7 +897,7 @@ void intr1_smbus5(void) // 28
         // I2c_Writeb(0, I2C_ENABLE_OFFSET,baseaddr);
     }
 }
-void intr1_owi(void) // 29
+void intr1_null29(void) // 29
 {
 #if ENABLE_DEBUGGER_SUPPORT
     Intr_num[125]++;
@@ -1695,7 +1695,7 @@ const FUNCT_PTR_V_V intr1_service[] =
         intr1_sm4,         //  26
         intr1_smbus4,      //  27
         intr1_smbus5,      //  28
-        intr1_owi,         //  29
+        intr1_null29,         //  29
         intr1_cec,         //  30
         intr1_peci,        //  31
         intr1_null32,      //  32
