@@ -219,6 +219,8 @@ uint32_t I3C_Master_IntrStatus(BYTE i3c_mux)
     if (int_status & INTR_STATUS_TRANSFER_ERR_STS)
     {
         i3c_dprint("I3C_MASTER%d_INTR_STATUS_TRANSFER_ERR_STS\n", i3c_mux);//出错
+        I3C_WriteREG_DWORD(RESET_CTRL_CMD_QUEUE_RST, RESET_CTRL_OFFSET, i3c_mux);
+        I3C_WriteREG_DWORD((DEVICE_CTRL_RESUME | I3C_ReadREG_DWORD(DEVICE_CTRL_OFFSET, i3c_mux)), DEVICE_CTRL_OFFSET, i3c_mux);
         I3C_WriteREG_DWORD((I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux) | INTR_STATUS_TRANSFER_ERR_STS), INTR_STATUS_OFFSET, i3c_mux);//清除中断
     }
     if (int_status & INTR_STATUS_TRANSFER_ABORT_STS)
@@ -288,9 +290,9 @@ BYTE I3C_Legacy_Master_Init(BYTE addr, uint32_t speed, BYTE i3c_mux)
     //Set IBI SIR Request Rejection Control of Command Queue Ready,Transmit And Receive And IBI  Buffer Threshold
     I3C_WriteREG_DWORD((INTR_STATUS_EN_BUS_RESET_DONE_STS_EN | INTR_STATUS_EN_TRANSFER_ERR_STS_EN | INTR_STATUS_EN_TRANSFER_ABORT_STS_EN | INTR_STATUS_EN_RESP_READY_STS_EN | INTR_STATUS_EN_CMD_QUEUE_READY_STS_EN | INTR_STATUS_EN_TX_THLD_STS_EN | INTR_STATUS_EN_RX_THLD_STS_EN), INTR_STATUS_EN_OFFSET, i3c_mux);
     //DMA  master resp thld
-    I3C_WriteREG_DWORD((QUEUE_THLD_CTRL_RESP_BUF_THLD(0x0) | QUEUE_THLD_CTRL_CMD_EMPTY_BUF_THLD(0x1)), QUEUE_THLD_CTRL_OFFSET, i3c_mux);
+    I3C_WriteREG_DWORD((QUEUE_THLD_CTRL_RESP_BUF_THLD(RESP_BUF_THLD_1) | QUEUE_THLD_CTRL_CMD_EMPTY_BUF_THLD(CMD_EMPTY_BUF_THLD_ALLEMPTY)), QUEUE_THLD_CTRL_OFFSET, i3c_mux);
     //Set data buff thld
-    I3C_WriteREG_DWORD((DATA_BUFFER_THLD_CTRL_TX_START_THLD(TX_EMPTY_BUF_THLD_1) | DATA_BUFFER_THLD_CTRL_RX_START_THLD(RX_BUF_THLD_1)) | (DATA_BUFFER_THLD_CTRL_RX_BUF_THLD(RX_BUF_THLD_1) | DATA_BUFFER_THLD_CTRL_TX_EMPTY_BUF_THLD(TX_EMPTY_BUF_THLD_1)), DATA_BUFFER_THLD_CTRL_OFFSET, i3c_mux);
+    I3C_WriteREG_DWORD((DATA_BUFFER_THLD_CTRL_TX_START_THLD(TX_START_THLD_1) | DATA_BUFFER_THLD_CTRL_RX_START_THLD(RX_START_THLD_1)) | (DATA_BUFFER_THLD_CTRL_RX_BUF_THLD(RX_BUF_THLD_1) | DATA_BUFFER_THLD_CTRL_TX_EMPTY_BUF_THLD(TX_EMPTY_BUF_THLD_1)), DATA_BUFFER_THLD_CTRL_OFFSET, i3c_mux);
     return TRUE;
 }
 
@@ -323,7 +325,7 @@ BYTE I3C_Legacy_Master_Write(uint8_t* data, uint16_t bytelen, BYTE i3c_mux)
     {
         if (timeout == 0 || i3c_error)
         {
-            i3c_dprint("fail:INTR_STATUS=%#x\n", I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux));
+            I3C_Master_IntrStatus(i3c_mux);
             i3c_error = 0;
             return FALSE;
         }
@@ -335,7 +337,7 @@ BYTE I3C_Legacy_Master_Write(uint8_t* data, uint16_t bytelen, BYTE i3c_mux)
     {
         if (timeout == 0 || i3c_error)
         {
-            i3c_dprint("fail:INTR_STATUS=%#x\n", I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux));
+            I3C_Master_IntrStatus(i3c_mux);
             i3c_error = 0;
             return FALSE;
         }
@@ -346,7 +348,7 @@ BYTE I3C_Legacy_Master_Write(uint8_t* data, uint16_t bytelen, BYTE i3c_mux)
     {
         if (timeout == 0 || i3c_error)
         {
-            i3c_dprint("fail:INTR_STATUS=%#x\n", I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux));
+            I3C_Master_IntrStatus(i3c_mux);
             i3c_error = 0;
             return FALSE;
         }
@@ -366,7 +368,7 @@ BYTE I3C_Legacy_Master_Write(uint8_t* data, uint16_t bytelen, BYTE i3c_mux)
         {
             if (timeout == 0 || i3c_error)
             {
-                i3c_dprint("fail:INTR_STATUS=%#x\n", I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux));
+                I3C_Master_IntrStatus(i3c_mux);
                 i3c_error = 0;
                 return FALSE;
             }
@@ -406,7 +408,7 @@ uint8_t I3C_Legacy_Master_Read(uint8_t* data, uint16_t bytelen, BYTE i3c_mux)
     {
         if (timeout == 0 || i3c_error)
         {
-            i3c_dprint("fail:INTR_STATUS=%#x\n", I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux));
+            I3C_Master_IntrStatus(i3c_mux);
             i3c_error = 0;
             return FALSE;
         }
@@ -417,7 +419,7 @@ uint8_t I3C_Legacy_Master_Read(uint8_t* data, uint16_t bytelen, BYTE i3c_mux)
     {
         if (timeout == 0 || i3c_error)
         {
-            i3c_dprint("fail:INTR_STATUS=%#x\n", I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux));
+            I3C_Master_IntrStatus(i3c_mux);
             i3c_error = 0;
             return FALSE;
         }
@@ -431,7 +433,7 @@ uint8_t I3C_Legacy_Master_Read(uint8_t* data, uint16_t bytelen, BYTE i3c_mux)
         {
             if (timeout == 0 || i3c_error)
             {
-                i3c_dprint("fail:INTR_STATUS=%#x\n", I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux));
+                I3C_Master_IntrStatus(i3c_mux);
                 i3c_error = 0;
                 return FALSE;
             }
@@ -515,9 +517,9 @@ BYTE I3C_Master_Init(uint32_t speed, BYTE i3c_mux)
     //Controls whether or not I3C_master is enabled And I2C Slave Present 
     I3C_WriteREG_DWORD(DEVICE_CTRL_ENABLE | DEVICE_CTRL_IBA_INCLUDE, DEVICE_CTRL_OFFSET, i3c_mux);
     //Set I3C OD_TIMING
-    I3C_WriteREG_DWORD((SCL_I3C_OD_TIMING_LCNT(lcnt) | SCL_I3C_OD_TIMING_HCNT(hcnt)), SCL_I3C_OD_TIMING_OFFSET, i3c_mux);
+    I3C_WriteREG_DWORD((SCL_I3C_OD_TIMING_LCNT(0xff) | SCL_I3C_OD_TIMING_HCNT(0xff)), SCL_I3C_OD_TIMING_OFFSET, i3c_mux);
     //Set I3C PP_TIMING
-    I3C_WriteREG_DWORD((SCL_I3C_PP_TIMING_LCNT(lcnt) | SCL_I3C_PP_TIMING_HCNT(hcnt)), SCL_I3C_PP_TIMING_OFFSET, i3c_mux);
+    I3C_WriteREG_DWORD((SCL_I3C_PP_TIMING_LCNT(0x5) | SCL_I3C_PP_TIMING_HCNT(0x5)), SCL_I3C_PP_TIMING_OFFSET, i3c_mux);
     //set queue thld ctrl
     temp_data = 0;
     temp_data &= QUEUE_THLD_CTRL_RESP_BUF_THLD0 & QUEUE_THLD_CTRL_CMD_EMPTY_BUF_THLD0 & QUEUE_THLD_CTRL_IBI_STATUS_THLD0;
@@ -531,7 +533,7 @@ BYTE I3C_Master_Init(uint32_t speed, BYTE i3c_mux)
     //Set intr status en
     I3C_WriteREG_DWORD((INTR_STATUS_EN_BUS_RESET_DONE_STS_EN | INTR_STATUS_EN_TRANSFER_ERR_STS_EN | INTR_STATUS_EN_TRANSFER_ABORT_STS_EN | INTR_STATUS_EN_RESP_READY_STS_EN | INTR_STATUS_EN_IBI_THLD_STS_EN | INTR_STATUS_EN_CMD_QUEUE_READY_STS_EN | INTR_STATUS_EN_TX_THLD_STS_EN | INTR_STATUS_EN_RX_THLD_STS_EN), INTR_STATUS_EN_OFFSET, i3c_mux);
     //Set intr signal en
-    I3C_WriteREG_DWORD(INTR_SIGNAL_EN_IBI_THLD_SIGNAL_EN | INTR_SIGNAL_EN_RX_THLD_SIGNAL_EN, INTR_SIGNAL_EN_OFFSET, i3c_mux);
+    I3C_WriteREG_DWORD(INTR_SIGNAL_EN_IBI_THLD_SIGNAL_EN | INTR_SIGNAL_EN_RX_THLD_SIGNAL_EN | INTR_SIGNAL_EN_TRANSFER_ABORT_SIGNAL_EN | INTR_SIGNAL_EN_TRANSFER_ERR_SIGNAL_EN | INTR_SIGNAL_EN_BUS_RESET_DONE_SIGNAL_EN, INTR_SIGNAL_EN_OFFSET, i3c_mux);
 
     return TRUE;
 }
@@ -574,6 +576,16 @@ BYTE I3C_MASTER_ENTDAA(sDEV_CHAR_TABLE* dct, BYTE* dynamic_addr, BYTE i3c_mux)
             temp_data &= DEV_ADDR_TABLE_LOC1_DEV_DYNAMIC_ADDR_PARITY0;
         I3C_WriteREG_DWORD(temp_data, DEV_ADDR_TABLE1_LOC1_OFFSET, i3c_mux);
 
+        for (uint32_t timeout = I3C_TIMEOUT; (I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux) & INTR_STATUS_CMD_QUEUE_READY_STS) == 0; timeout--)
+        {
+            if (timeout == 0 || i3c_error)
+            {
+                I3C_Master_IntrStatus(i3c_mux);
+                i3c_error = 0;
+                return FALSE;
+            }
+            vDelayXus(10);
+        }   //等CMD_QUEUE_READY_STS中断
         //config cmd port
         temp_data = 0;
         temp_data &= (COMMAND_QUEUE_PORT_ADDRESS_ASSIGNMENT_DEV_INDX0);
@@ -583,7 +595,7 @@ BYTE I3C_MASTER_ENTDAA(sDEV_CHAR_TABLE* dct, BYTE* dynamic_addr, BYTE i3c_mux)
         {
             if (timeout == 0 || i3c_error)
             {
-                i3c_dprint("fail:INTR_STATUS=%#x\n", I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux));
+                I3C_Master_IntrStatus(i3c_mux);
                 i3c_error = 0;
                 return FALSE;
             }
@@ -609,7 +621,8 @@ BYTE I3C_MASTER_ENTDAA(sDEV_CHAR_TABLE* dct, BYTE* dynamic_addr, BYTE i3c_mux)
         }
         else
         {
-            i3c_dprint("No%d's addr allocation failure,Response error = %#x\n", dev_tmpcnt, Response_error_status);
+            i3c_dprint("No.%d's slave addr allocating failure,Response error = %#x\n", dev_tmpcnt, Response_error_status);
+            I3C_Master_IntrStatus(i3c_mux);
             return FALSE;
         }
     }
@@ -643,6 +656,17 @@ BYTE I3C_MASTER_SETDASA(BYTE static_addr, BYTE dynamic_addr, BYTE i3c_mux)
     else
         temp_data &= DEV_ADDR_TABLE_LOC1_DEV_DYNAMIC_ADDR_PARITY0;
     I3C_WriteREG_DWORD(temp_data, DEV_ADDR_TABLE1_LOC1_OFFSET, i3c_mux);
+
+    for (uint32_t timeout = I3C_TIMEOUT; (I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux) & INTR_STATUS_CMD_QUEUE_READY_STS) == 0; timeout--)
+    {
+        if (timeout == 0 || i3c_error)
+        {
+            I3C_Master_IntrStatus(i3c_mux);
+            i3c_error = 0;
+            return FALSE;
+        }
+        vDelayXus(10);
+    }   //等CMD_QUEUE_READY_STS中断
     //config CMD port
     temp_data = 0;
     temp_data &= (COMMAND_QUEUE_PORT_ADDRESS_ASSIGNMENT_DEV_INDX0);
@@ -652,7 +676,7 @@ BYTE I3C_MASTER_SETDASA(BYTE static_addr, BYTE dynamic_addr, BYTE i3c_mux)
     {
         if (timeout == 0 || i3c_error)
         {
-            i3c_dprint("fail:INTR_STATUS=%#x\n", I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux));
+            I3C_Master_IntrStatus(i3c_mux);
             i3c_error = 0;
             return FALSE;
         }
@@ -666,7 +690,7 @@ BYTE I3C_MASTER_SETDASA(BYTE static_addr, BYTE dynamic_addr, BYTE i3c_mux)
     }
     else
     {
-        i3c_dprint("fail:Response error = %#x\n", Response_error_status);
+        I3C_Master_IntrStatus(i3c_mux);
         return FALSE;
     }
 }
@@ -697,6 +721,12 @@ BYTE I3C_MASTER_BC_CCC_WRITE(uint8_t* data, uint16_t bytelen, BYTE cmd, uint8_t 
 
     if (bytelen != 0)
     {
+        //配置传输数据长度
+        if (dbp != 0)   //开启defining byte则写入defining byte
+            temp_data |= COMMAND_QUEUE_PORT_COMMAND_TRANSFER_ARGUMENT | COMMAND_QUEUE_PORT_TRANSFER_ARGUMENT_DATA_LENGTH(bytelen) | COMMAND_QUEUE_PORT_TRANSFER_ARGUMENT_DB(db);
+        else
+            temp_data |= COMMAND_QUEUE_PORT_COMMAND_TRANSFER_ARGUMENT | COMMAND_QUEUE_PORT_TRANSFER_ARGUMENT_DATA_LENGTH(bytelen);
+        I3C_WriteREG_DWORD(temp_data, COMMAND_QUEUE_PORT_OFFSET, i3c_mux);
         while (data_len)
         {
             register uint32_t len = (data_len <= 4 ? data_len : 4);
@@ -706,39 +736,23 @@ BYTE I3C_MASTER_BC_CCC_WRITE(uint8_t* data, uint16_t bytelen, BYTE cmd, uint8_t 
             {
                 data_temp.byte[i] = *data_ptr++;
             }
-            //配置传输数据长度
-            if (dbp != 0)   //开启defining byte则写入defining byte
-                temp_data |= COMMAND_QUEUE_PORT_COMMAND_TRANSFER_ARGUMENT | COMMAND_QUEUE_PORT_TRANSFER_ARGUMENT_DATA_LENGTH(4) | COMMAND_QUEUE_PORT_TRANSFER_ARGUMENT_DB(db);
-            else
-                temp_data |= COMMAND_QUEUE_PORT_COMMAND_TRANSFER_ARGUMENT | COMMAND_QUEUE_PORT_TRANSFER_ARGUMENT_DATA_LENGTH(4);
-            I3C_WriteREG_DWORD(temp_data, COMMAND_QUEUE_PORT_OFFSET, i3c_mux);
 
             for (uint32_t timeout = I3C_TIMEOUT; (I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux) & INTR_STATUS_TX_THLD_STS) == 0; timeout--)
             {
                 if (timeout == 0 || i3c_error)
                 {
-                    i3c_dprint("fail:INTR_STATUS=%#x\n", I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux));
+                    I3C_Master_IntrStatus(i3c_mux);
                     i3c_error = 0;
                     return FALSE;
                 }
                 vDelayXus(10);
-            }   //等CMD_QUEUE_READY_STS中断
+            }   //等TX THLD中断状态
             I3C_WriteREG_DWORD(data_temp.dword, TX_DATA_PORT_OFFSET, i3c_mux);//发送数据
         }
     }
-    for (uint32_t timeout = I3C_TIMEOUT; (I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux) & INTR_STATUS_CMD_QUEUE_READY_STS) == 0; timeout--)
-    {
-        if (timeout == 0 || i3c_error)
-        {
-            i3c_dprint("fail:INTR_STATUS=%#x\n", I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux));
-            i3c_error = 0;
-            return FALSE;
-        }
-        vDelayXus(10);
-    }   //等CMD_QUEUE_READY_STS中断
     //issue broadcast ccc cmd
     temp_data = 0;
-    temp_data &= COMMAND_QUEUE_PORT_COMMAND_TRANSFER_COMMAND & COMMAND_QUEUE_PORT_TRANSFER_COMMAND_DEV_INDX0 & COMMAND_QUEUE_PORT_TRANSFER_COMMAND_WRITE & COMMAND_QUEUE_PORT_TRANSFER_COMMAND_SPEED_SDR0;
+    temp_data &= COMMAND_QUEUE_PORT_TRANSFER_COMMAND_BC_TRANSFER & COMMAND_QUEUE_PORT_COMMAND_TRANSFER_COMMAND & COMMAND_QUEUE_PORT_TRANSFER_COMMAND_DEV_INDX0 & COMMAND_QUEUE_PORT_TRANSFER_COMMAND_WRITE & COMMAND_QUEUE_PORT_TRANSFER_COMMAND_SPEED_SDR0;
     temp_data |= COMMAND_QUEUE_PORT_TRANSFER_COMMAND_CMD(cmd) | COMMAND_QUEUE_PORT_TRANSFER_COMMAND_CP | COMMAND_QUEUE_PORT_TRANSFER_COMMAND_ROC | COMMAND_QUEUE_PORT_TRANSFER_COMMAND_TOC;
     if (dbp != 0)
         temp_data |= COMMAND_QUEUE_PORT_TRANSFER_COMMAND_DBP;
@@ -747,7 +761,7 @@ BYTE I3C_MASTER_BC_CCC_WRITE(uint8_t* data, uint16_t bytelen, BYTE cmd, uint8_t 
     {
         if (timeout == 0 || i3c_error)
         {
-            i3c_dprint("fail:INTR_STATUS=%#x\n", I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux));
+            I3C_Master_IntrStatus(i3c_mux);
             i3c_error = 0;
             return FALSE;
         }
@@ -755,13 +769,9 @@ BYTE I3C_MASTER_BC_CCC_WRITE(uint8_t* data, uint16_t bytelen, BYTE cmd, uint8_t 
     }   //等INTR_STATUS_RESP_READY_STS中断
     DWORD Response_error_status = 0;
     Response_error_status = I3C_ReadREG_DWORD(RESPONSE_QUEUE_PORT_OFFSET, i3c_mux) & RESPONSE_QUEUE_PORT_ERR_STS_MASK;
-    if (RESPONSE_QUEUE_PORT_ERR_STS_NO_ERROR == Response_error_status)
+    if (RESPONSE_QUEUE_PORT_ERR_STS_NO_ERROR != Response_error_status)
     {
-        return TRUE;
-    }
-    else
-    {
-        i3c_dprint("fail:Response error = %#x\n", Response_error_status);
+        I3C_Master_IntrStatus(i3c_mux);
         return FALSE;
     }
     return TRUE;
@@ -815,7 +825,7 @@ BYTE I3C_MASTER_DR_CCC_WRITE(uint8_t static_addr, uint8_t* data, uint16_t bytele
             {
                 if (timeout == 0 || i3c_error)
                 {
-                    i3c_dprint("fail:INTR_STATUS=%#x\n", I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux));
+                    I3C_Master_IntrStatus(i3c_mux);
                     i3c_error = 0;
                     return FALSE;
                 }
@@ -840,7 +850,7 @@ BYTE I3C_MASTER_DR_CCC_WRITE(uint8_t static_addr, uint8_t* data, uint16_t bytele
     {
         if (timeout == 0 || i3c_error)
         {
-            i3c_dprint("fail:INTR_STATUS=%#x\n", I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux));
+            I3C_Master_IntrStatus(i3c_mux);
             i3c_error = 0;
             return FALSE;
         }
@@ -896,7 +906,7 @@ BYTE I3C_MASTER_DR_CCC_READ(uint8_t static_addr, uint8_t* data, uint16_t bytelen
     {
         if (timeout == 0 || i3c_error)
         {
-            i3c_dprint("fail:INTR_STATUS=%#x\n", I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux));
+            I3C_Master_IntrStatus(i3c_mux);
             i3c_error = 0;
             return FALSE;
         }
@@ -918,7 +928,7 @@ BYTE I3C_MASTER_DR_CCC_READ(uint8_t static_addr, uint8_t* data, uint16_t bytelen
     {
         if (timeout == 0 || i3c_error)
         {
-            i3c_dprint("fail:INTR_STATUS=%#x\n", I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux));
+            I3C_Master_IntrStatus(i3c_mux);
             i3c_error = 0;
             return FALSE;
         }
@@ -933,7 +943,7 @@ BYTE I3C_MASTER_DR_CCC_READ(uint8_t static_addr, uint8_t* data, uint16_t bytelen
         {
             if (timeout == 0 || i3c_error)
             {
-                i3c_dprint("fail:INTR_STATUS=%#x\n", I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux));
+                I3C_Master_IntrStatus(i3c_mux);
                 i3c_error = 0;
                 return FALSE;
             }
@@ -990,7 +1000,7 @@ BYTE I3C_MASTER_PV_WRITE_WITH7E(uint8_t dynamic_addr, uint8_t* data, uint16_t by
             {
                 if (timeout == 0 || i3c_error)
                 {
-                    i3c_dprint("fail:INTR_STATUS=%#x\n", I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux));
+                    I3C_Master_IntrStatus(i3c_mux);
                     i3c_error = 0;
                     return FALSE;
                 }
@@ -1017,7 +1027,7 @@ BYTE I3C_MASTER_PV_WRITE_WITH7E(uint8_t dynamic_addr, uint8_t* data, uint16_t by
     {
         if (timeout == 0 || i3c_error)
         {
-            i3c_dprint("fail:INTR_STATUS=%#x\n", I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux));
+            I3C_Master_IntrStatus(i3c_mux);
             i3c_error = 0;
             return FALSE;
         }
@@ -1056,7 +1066,7 @@ BYTE I3C_MASTER_PV_READ_WITH7E(uint8_t dynamic_addr, uint8_t* data, uint16_t byt
     {
         if (timeout == 0 || i3c_error)
         {
-            i3c_dprint("fail:INTR_STATUS=%#x\n", I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux));
+            I3C_Master_IntrStatus(i3c_mux);
             i3c_error = 0;
             return FALSE;
         }
@@ -1080,7 +1090,7 @@ BYTE I3C_MASTER_PV_READ_WITH7E(uint8_t dynamic_addr, uint8_t* data, uint16_t byt
     {
         if (timeout == 0 || i3c_error)
         {
-            i3c_dprint("fail:INTR_STATUS=%#x\n", I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux));
+            I3C_Master_IntrStatus(i3c_mux);
             i3c_error = 0;
             return FALSE;
         }
@@ -1094,7 +1104,7 @@ BYTE I3C_MASTER_PV_READ_WITH7E(uint8_t dynamic_addr, uint8_t* data, uint16_t byt
         {
             if (timeout == 0 || i3c_error)
             {
-                i3c_dprint("fail:INTR_STATUS=%#x\n", I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux));
+                I3C_Master_IntrStatus(i3c_mux);
                 i3c_error = 0;
                 return FALSE;
             }
@@ -1158,7 +1168,7 @@ BYTE I3C_MASTER_PV_WRITE_THEN_READ_WITH7E(uint8_t dynamic_addr, uint8_t* wdata, 
     {
         if (timeout == 0 || i3c_error)
         {
-            i3c_dprint("fail:INTR_STATUS=%#x\n", I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux));
+            I3C_Master_IntrStatus(i3c_mux);
             i3c_error = 0;
             return FALSE;
         }

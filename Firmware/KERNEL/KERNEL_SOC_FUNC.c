@@ -539,6 +539,7 @@ void __weak SECTION(".init.module") Module_init(void)
 	kbc_pmc_init();
 	// 10.Initialize  The KBS
 	kbs_init();
+
 	ps2_init();
 #if ( 0)
 	// 11.Initialize The CEC

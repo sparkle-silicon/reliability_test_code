@@ -111,6 +111,8 @@
 #define COMMAND_QUEUE_PORT_COMMAND_MASK 0x00000007UL
 
 #define COMMAND_QUEUE_PORT_TRANSFER_COMMAND_TID(tid) (((tid)<<3)&0x00000078UL) 
+#define COMMAND_QUEUE_PORT_TRANSFER_COMMAND_BC_TRANSFER (~0x00004000UL)
+#define COMMAND_QUEUE_PORT_TRANSFER_COMMAND_DR_TRANSFER (0x00004000UL)
 #define COMMAND_QUEUE_PORT_TRANSFER_COMMAND_CMD(cmd) (((cmd)<<7)&0x00007F80UL)
 #define COMMAND_QUEUE_PORT_TRANSFER_COMMAND_CP0 (~0x00008000UL)
 #define COMMAND_QUEUE_PORT_TRANSFER_COMMAND_CP 0x00008000UL
@@ -147,6 +149,14 @@
 // #define COMMAND_QUEUE_PORT_ADDRESS_ASSIGNMENT_RESV(resv) (((resv)<<27)&0x380000F8UL) 
 #define COMMAND_QUEUE_PORT_ADDRESS_ASSIGNMENT_TOC 0x40000000UL
 // #define COMMAND_QUEUE_PORT_ADDRESS_ASSIGNMENT_RESV 0x80000000UL
+
+#define RESET_CTRL_BUS_RESET 0x80000000UL
+#define RESET_CTRL_IBI_QUEUE_RST 0x00000020UL
+#define RESET_CTRL_RX_FIFO_RST 0x00000010UL
+#define RESET_CTRL_TX_FIFO_RST 0x00000008UL
+#define RESET_CTRL_RESP_QUEUE_RST 0x00000004UL
+#define RESET_CTRL_CMD_QUEUE_RST 0x00000002UL
+#define RESET_CTRL_SOFT_RST 0x00000001UL
 
 #define QUEUE_THLD_CTRL_CMD_EMPTY_BUF_THLD0 (~0x000000FFUL)
 #define QUEUE_THLD_CTRL_CMD_EMPTY_BUF_THLD(thld) ((thld)&0x000000FFUL)
@@ -243,20 +253,41 @@
 #define RX_THLD_STAT_EN HEX02
 #define IBI_THLD_STAT_EN HEX04
 #define CMD_QUEUE_READY_STAT_EN HEX08
+//RESP_BUF_THLD
+#define RESP_BUF_THLD_1 0b000
+//CMD_EMPTY_BUF_THLD
+#define CMD_EMPTY_BUF_THLD_ALLEMPTY 0b000
+#define CMD_EMPTY_BUF_THLD_1 0b001
+#define CMD_EMPTY_BUF_THLD_2 0b010
+#define CMD_EMPTY_BUF_THLD_3 0b011
+//RX START THLD
+#define RX_START_THLD_1 0b000
+#define RX_START_THLD_4 0b001
+#define RX_START_THLD_8 0b010
+#define RX_START_THLD_16 0b011
+#define RX_START_THLD_32 0b100
+#define RX_START_THLD_64 0b101
+//TX START THLD
+#define TX_START_THLD_1 0b000
+#define TX_START_THLD_4 0b001
+#define TX_START_THLD_8 0b010
+#define TX_START_THLD_16 0b011
+#define TX_START_THLD_32 0b100
+#define TX_START_THLD_64 0b101
 //Transmit Buffer Threshold Value
-#define TX_EMPTY_BUF_THLD_1 0x000
-#define TX_EMPTY_BUF_THLD_4 0x001
-#define TX_EMPTY_BUF_THLD_8 0x010
-#define TX_EMPTY_BUF_THLD_16 0x011
-#define TX_EMPTY_BUF_THLD_32 0x100
-#define TX_EMPTY_BUF_THLD_64 0x101
+#define TX_EMPTY_BUF_THLD_1 0b000
+#define TX_EMPTY_BUF_THLD_4 0b001
+#define TX_EMPTY_BUF_THLD_8 0b010
+#define TX_EMPTY_BUF_THLD_16 0b011
+#define TX_EMPTY_BUF_THLD_32 0b100
+#define TX_EMPTY_BUF_THLD_64 0b101
 //Transmit Buffer Threshold Value
-#define RX_BUF_THLD_1 0x000
-#define RX_BUF_THLD_4 0x001
-#define RX_BUF_THLD_8 0x010
-#define RX_BUF_THLD_16 0x011
-#define RX_BUF_THLD_32 0x100
-#define RX_BUF_THLD_64 0x101
+#define RX_BUF_THLD_1 0b000
+#define RX_BUF_THLD_4 0b001
+#define RX_BUF_THLD_8 0b010
+#define RX_BUF_THLD_16 0b011
+#define RX_BUF_THLD_32 0b100
+#define RX_BUF_THLD_64 0b101
 
 #define PP_TIMING_HCNT_MAX 0xff
 #define PP_TIMING_LCNT_MAX 0xff
@@ -337,22 +368,22 @@
 
 
 //device char table structure define
-typedef union DEV_CHAR_TABLE{
+typedef union DEV_CHAR_TABLE {
     u32 dev_char_table1_loc[4];
-    struct{
-        struct{
+    struct {
+        struct {
             uint32_t lsb_provisional_id : 32;
         } loc1;
-        struct{
+        struct {
             uint32_t reserved_loc2;
             uint32_t lsb_provisional_id : 32;
         } loc2;
-        struct{
+        struct {
             uint32_t reserved_loc3 : 16;
             uint32_t bcr : 8;
             uint32_t dcr : 8;
         } loc3;
-        struct{
+        struct {
             uint32_t reserved_loc4 : 24;
             uint32_t dev_dynamic_addr : 8;
         } loc4;
@@ -374,18 +405,18 @@ extern BYTE I3C_WAIT_SDA_PU(BYTE i3c_mux);
 extern uint32_t I3C_Master_RespData_ERRSTS(BYTE i3c_mux);
 extern uint32_t I3C_Master_IntrStatus(BYTE i3c_mux);
 extern BYTE I3C_Legacy_Master_Init(BYTE addr, uint32_t speed, BYTE i3c_mux);
-extern BYTE I3C_Legacy_Master_Write(uint8_t *data, uint16_t bytelen, BYTE i3c_mux);
-extern uint8_t I3C_Legacy_Master_Read(uint8_t *data, uint16_t bytelen, BYTE i3c_mux);
-extern BYTE I3C_Legacy_Master_W2R_Stream(BYTE i3c_addr, BYTE *w_var, WORD w_cnt, BYTE *r_var, WORD r_cnt, BYTE i3c_mux);
+extern BYTE I3C_Legacy_Master_Write(uint8_t* data, uint16_t bytelen, BYTE i3c_mux);
+extern uint8_t I3C_Legacy_Master_Read(uint8_t* data, uint16_t bytelen, BYTE i3c_mux);
+extern BYTE I3C_Legacy_Master_W2R_Stream(BYTE i3c_addr, BYTE* w_var, WORD w_cnt, BYTE* r_var, WORD r_cnt, BYTE i3c_mux);
 extern BYTE I3C_Master_Init(uint32_t speed, BYTE i3c_mux);
-extern BYTE I3C_MASTER_ENTDAA(sDEV_CHAR_TABLE *dct, BYTE *dynamic_addr, BYTE i3c_mux);
+extern BYTE I3C_MASTER_ENTDAA(sDEV_CHAR_TABLE* dct, BYTE* dynamic_addr, BYTE i3c_mux);
 extern BYTE I3C_MASTER_SETDASA(BYTE static_addr, BYTE dynamic_addr, BYTE i3c_mux);
-extern BYTE I3C_MASTER_BC_CCC_WRITE(uint8_t *data, uint16_t bytelen, BYTE cmd, uint8_t dbp, uint8_t db, BYTE i3c_mux);
-extern BYTE I3C_MASTER_DR_CCC_WRITE(uint8_t static_addr, uint8_t *data, uint16_t bytelen, BYTE cmd, uint8_t dbp, uint8_t db, BYTE i3c_mux);
-extern BYTE I3C_MASTER_DR_CCC_READ(uint8_t static_addr, uint8_t *data, uint16_t bytelen, BYTE cmd, uint8_t dbp, uint8_t db, BYTE i3c_mux);
-extern BYTE I3C_MASTER_PV_WRITE_WITH7E(uint8_t dynamic_addr, uint8_t *data, uint16_t bytelen, BYTE i3c_mux);
-extern BYTE I3C_MASTER_PV_READ_WITH7E(uint8_t dynamic_addr, uint8_t *data, uint16_t bytelen, BYTE i3c_mux);
-extern BYTE I3C_MASTER_PV_WRITE_THEN_READ_WITH7E(uint8_t dynamic_addr, uint8_t *wdata, uint16_t wbytelen, uint8_t *rdata, uint16_t rbytelen, BYTE i3c_mux);
+extern BYTE I3C_MASTER_BC_CCC_WRITE(uint8_t* data, uint16_t bytelen, BYTE cmd, uint8_t dbp, uint8_t db, BYTE i3c_mux);
+extern BYTE I3C_MASTER_DR_CCC_WRITE(uint8_t static_addr, uint8_t* data, uint16_t bytelen, BYTE cmd, uint8_t dbp, uint8_t db, BYTE i3c_mux);
+extern BYTE I3C_MASTER_DR_CCC_READ(uint8_t static_addr, uint8_t* data, uint16_t bytelen, BYTE cmd, uint8_t dbp, uint8_t db, BYTE i3c_mux);
+extern BYTE I3C_MASTER_PV_WRITE_WITH7E(uint8_t dynamic_addr, uint8_t* data, uint16_t bytelen, BYTE i3c_mux);
+extern BYTE I3C_MASTER_PV_READ_WITH7E(uint8_t dynamic_addr, uint8_t* data, uint16_t bytelen, BYTE i3c_mux);
+extern BYTE I3C_MASTER_PV_WRITE_THEN_READ_WITH7E(uint8_t dynamic_addr, uint8_t* wdata, uint16_t wbytelen, uint8_t* rdata, uint16_t rbytelen, BYTE i3c_mux);
 extern void I3C_MASTER_IBI_Handler(BYTE i3c_mux);
 extern void I3C_Slave_Init(BYTE static_addr, uint32_t idpartno, uint8_t dcr, uint8_t bcr, uint8_t i3c_mux);
 extern BYTE I3C_SLAVE_INT_ENABLE(DWORD tpye, BYTE i3c_mux);
