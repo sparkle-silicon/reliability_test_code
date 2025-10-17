@@ -313,8 +313,6 @@ extern void sysctl_iomux_adc7(void);
 extern void sysctl_iomux_cec0(uint8_t cec0_sel);
 extern void sysctl_iomux_cec1(void);
 
-extern void sysctl_iomux_owi(void);
-
 extern void sysctl_iomux_gpioe(void);
 extern void sysctl_iomux_kbs(uint32_t kbsn_switch);
 extern void sysctl_iomux_crypto_jtag(void);

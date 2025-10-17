@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-05-30 18:10:49
+ * @LastEditTime: 2025-10-17 14:59:57
  * @Description:
  *
  *
@@ -46,7 +46,6 @@
 #include "KERNEL_PWM.H"
 #include "KERNEL_GPIO.H"
 #include "KERNEL_UART.H"
-#include "KERNEL_OWI.H"
 #include "KERNEL_CEC.H"
 #include "KERNEL_RTC.H"
 #include "KERNEL_TRIM.H"

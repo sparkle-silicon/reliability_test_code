@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-04 17:41:17
+ * @LastEditTime: 2025-10-17 15:03:02
  * @Description:
  *
  *
@@ -53,7 +53,6 @@
 #define PS2_0_CLOCK_EN 1
 #define PS2_1_CLOCK_EN 1
 #define CEC_CLOCK_EN 1
-#define OWI_CLOCK_EN 1
 #define KBS_CLOCK_EN 1
 #define RTC_CLOCK_EN 1
 #define PECI_CLOCK_EN 1
@@ -118,7 +117,7 @@
 #define ROM_EN          0x00100000
 #define CACHE_EN        0x00080000
 #define IVT_EN          0x00040000
-#define OWI_EN          0x00020000
+// #define RESERVD_EN          0x00020000
 #define CEC_EN          0x00010000
 #define SMB4_EN         0x00008000
 #define SMB5_EN         0x00004000
@@ -429,11 +428,6 @@ void Default_Config();
 #define cec_MoudleClock_EN SYSCTL_MODEN1 |= CEC_EN;
 #else
 #define cec_MoudleClock_EN SYSCTL_MODEN1 &= (~CEC_EN);
-#endif
-#if OWI_CLOCK_EN
-#define owi_MoudleClock_EN SYSCTL_MODEN1 |= OWI_EN;
-#else
-#define owi_MoudleClock_EN SYSCTL_MODEN1 &= (~OWI_EN);
 #endif
 #if RTC_CLOCK_EN
 #define rtc_MoudleClock_EN SYSCTL_MODEN1 |= RTC_EN;

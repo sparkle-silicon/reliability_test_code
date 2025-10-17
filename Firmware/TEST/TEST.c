@@ -1,7 +1,7 @@
 /*
  * @Author: Maple
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-06-13 20:27:38
+ * @LastEditTime: 2025-10-17 15:16:55
  * @Description:
  *
  *
@@ -2209,8 +2209,6 @@ BYTE Moudle_test(void)
 				*((unsigned char *)0x4480) = 0xff;
 				printf("*0x4480:%x\n", *((unsigned char *)0x4480));
 
-				// 开时钟：bit17
-				SYSCTL_MODEN1 |= OWI_EN;
 				//初始化
 
 				// 开时钟：bit18

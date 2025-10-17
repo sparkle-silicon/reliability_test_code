@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-07-03 18:37:21
+ * @LastEditTime: 2025-10-17 15:05:17
  * @Description: This file is used for INTC interrupt
  *
  *
@@ -138,7 +138,7 @@ void intr1_cec0(void) __weak;	  // 25
 void intr1_cec1(void) __weak;	  // 26
 void intr1_smbus4(void) __weak;		 // 27
 void intr1_smbus5(void) __weak;		 // 28
-void intr1_owi(void) __weak;		 // 29
+void intr1_null29(void) __weak;		 // 29
 void intr1_null30(void) __weak;		 // 30
 void intr1_peci(void) __weak;		 // 31
 void intr1_i3c0(void) __weak;		 // 32
@@ -1823,17 +1823,17 @@ void intr1_smbus5(void) // 28
 	// 	}
 }
 
-void intr1_owi(void) // 29
+void intr1_null29(void) // 29
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[125]++;
 #endif
 #if TEST_INTC
 #if INTC_MODE
-	printf("intr1_owi mask\n");
+	printf("intr1_null29 mask\n");
 	ICTL1_INTMASK3 |= 0x1 << 5;
 #else
-	printf("intr1_owi disable\n");
+	printf("intr1_null29 disable\n");
 	ICTL1_INTEN3 &= ~(0x1 << 5);
 #endif
 #endif
@@ -2999,7 +2999,7 @@ const __weak FUNCT_PTR_V_V intr1_service[] =
 		intr1_cec1,		   // 26
 		intr1_smbus4,	   // 27
 		intr1_smbus5,	   // 28
-		intr1_owi,		   // 29
+		intr1_null29,		   // 29
 		intr1_null30,	   // 30
 		intr1_peci,		   // 31
 		intr1_i3c0,		   // 32

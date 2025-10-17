@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-10 18:28:38
+ * @LastEditTime: 2025-10-17 15:01:20
  * @Description: This is about the  national crypto algorithm implementation
  *
  *
@@ -380,23 +380,6 @@ void cec_init(void)
 	dprint("cec init done.\n");
 #endif
 }
-void owi_init(void)
-{
-#if (OWI_MODULE_EN)
-	owi_MoudleClock_EN;
-	sysctl_iomux_owi();
-	OWI_Init(OWI_DEFAULT_LENGTH, OWI_DEFAULT_CYCLE_NUM, OWI_DEFAULT_T0_HIGH_COUNT, OWI_DEFAULT_T1_HIGH_COUNT, OWI_DEFAULT_CLKDIV);
-	dprint("owi init done.\n");
-#endif
-}
-void rtc_init(void)
-{
-#if (RTC_MODULE_EN)
-	rtc_MoudleClock_EN;
-	RTC_Init(0, 1, LOW_CHIP_CLOCK);
-	dprint("rtc init done.\n");
-#endif
-}
 void adc_init(void)
 {
 #if ADC_MODULE_EN
@@ -465,6 +448,11 @@ void time_init(void)
 	WDT_Init(0x1, 0xa); // FIXME
 	dprint("watchdong init done.\n");
 #endif
+#if (RTC_MODULE_EN)
+	rtc_MoudleClock_EN;
+	RTC_Init(0, 1, LOW_CHIP_CLOCK);
+	dprint("rtc init done.\n");
+#endif
 	// 开启定时器对应功能
 #if TIMER_MODULE_EN
 	TIMER_Init(TIMER2, TIMER2_1ms, 0x1, 0x0); // 1ms service计时函数
@@ -479,7 +467,7 @@ void __weak SECTION(".init.module") Module_init(void)
 {
 	// 1.Initialize The GPIO
 	gpio_init();
-	// 2.Initialize The Mailbox
+	// 2.Initialize The Mailbox	(crypto cpu and mailbox)
 	mailbox_init();
 	// 3.Switch Default SMBUS3 or UARTB 
 	DEFAULT_SMBUS3_UARTB_SEL;
@@ -489,24 +477,20 @@ void __weak SECTION(".init.module") Module_init(void)
 	smbus_init();
 	// 6.Initialize The I3C
 	i3c_init();
-	// 7.Initialize The SPI (SPIF SPIM)
+	// 7.Initialize The SPI (SPIF and SPIM)
 	spi_init();
 	// 8.Initialize The PWM and The TACH
 	pwm_tach_init();
-	// 9.Initialize The Host
+	// 9.Initialize The Host(KBC, PMC, LPC or ESPI, SWUC)
 	host_init();
 	// 10.Initialize  The KBS and The PS2
 	kbs_init();
 	ps2_init();
 	// 11.Initialize The CEC
 	cec_init();
-	// 12.Initialize The OWI
-	owi_init();
-	// 13.Initialize The OWI
-	rtc_init();
-	// 14.Initialize The ADC
+	// 13.Initialize The ADC
 	adc_init();
-	// 15 Initialize The timer and The watch dog
+	// 14 Initialize The timer and The watch dog
 	time_init();
 	dprint("End init \n");
 	return;

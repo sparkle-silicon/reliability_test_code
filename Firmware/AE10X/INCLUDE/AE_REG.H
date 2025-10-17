@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-04 18:21:39
+ * @LastEditTime: 2025-10-17 15:01:59
  * @Description:
  *              define base reg addr
  *              define reg size
@@ -6468,7 +6468,7 @@
 #define SYSCTL_RST0_OFFSET HEX28
 #define SYSCTL_RST1_OFFSET HEX2C
 #define SYSCTL_CLKDIV_SLEEPGPIODB_OFFSET 0x30
-#define SYSCTL_CLKDIV_OWI_OFFSET 0x34
+#define SYSCTL_UNKNOW34_OFFSET 0x34
 #define SYSCTL_CLKDIV_CEC_OFFSET 0x38
 #define SYSCTL_CLKDIV_TMR0_OFFSET 0x3C
 #define SYSCTL_CLKDIV_TMR1_OFFSET 0x40
@@ -6545,7 +6545,7 @@
 #define SYSCTL_RST0 SYSCTL_REG(SYSCTL_RST0_OFFSET)
 #define SYSCTL_RST1 SYSCTL_REG(SYSCTL_RST1_OFFSET)
 #define SYSCTL_CLKDIV_SLEEPGPIODB SYSCTL_REG(SYSCTL_CLKDIV_SLEEPGPIODB_OFFSET)
-#define SYSCTL_CLKDIV_OWI SYSCTL_REG(SYSCTL_CLKDIV_OWI_OFFSET)
+#define SYSCTL_UNKNOW34 SYSCTL_REG(SYSCTL_UNKNOW34_OFFSET)
 #define SYSCTL_CLKDIV_CEC SYSCTL_REG(SYSCTL_CLKDIV_CEC_OFFSET)
 #define SYSCTL_CLKDIV_TMR0 SYSCTL_REG(SYSCTL_CLKDIV_TMR0_OFFSET)
 #define SYSCTL_CLKDIV_TMR1 SYSCTL_REG(SYSCTL_CLKDIV_TMR1_OFFSET)
@@ -6674,18 +6674,6 @@
 #define E2CINTEN SMAILBOX_REG(E2CINTEN_OFFSET)
 #define C2EINT SMAILBOX_REG(C2EINT_OFFSET)
 #define C2EINTEN SMAILBOX_REG(C2EINTEN_OFFSET)
-
-/***********************************OWI**********************************/
-#define LEDC_BASE_ADDR 0x32800UL
-#define LEDC_REG_SIZE DEC32
-#define OWI_GENERAL_CTRL_OFFSET HEX00 // 存储控制信息
-#define OWI_SYMBOL_CTRL_OFFSET HEX04  // 归零码的配置信息
-#define OWI_DATA_OFFSET 0x100         // 存储sdo的发送数据
-#define LEDC_REG_ADDR(offset) REG_ADDR(LEDC_BASE_ADDR, offset)
-#define LEDC_REG(offset) REG32(LEDC_REG_ADDR(offset))
-#define OWI_GENERAL_CTRL LEDC_REG(OWI_GENERAL_CTRL_OFFSET)              // 存储控制信息
-#define OWI_SYMBOL_CTRL LEDC_REG(OWI_SYMBOL_CTRL_OFFSET)                // 归零码控制信息
-#define OWI_DATA(offset) LEDC_REG((OWI_DATA_OFFSET + (offset & 0x1FC))) // 存储sdo的发送数据
 /***********************************eSPI  Register Set**********************************/
 
 /**************eSPI SLAVE***************/
