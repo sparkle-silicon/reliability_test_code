@@ -497,6 +497,7 @@ void __weak SECTION(".init.module") Module_init(void)
 	host_init();
 	// 10.Initialize  The KBS and The PS2
 	kbs_init();
+
 	ps2_init();
 	// 11.Initialize The CEC
 	cec_init();
