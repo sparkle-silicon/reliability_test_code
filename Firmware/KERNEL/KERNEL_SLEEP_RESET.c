@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-08 20:32:10
+ * @LastEditTime: 2025-10-17 23:28:25
  * @Description: This file applys for chip soft reset and chip sleep interface
  *
  *
@@ -114,27 +114,27 @@ void ALIGNED(4) OPTIMIZE(0) CPU_SLP_RES(void)
 	SYSCTL_DVDD_EN &= ~(BIT(1) | BIT(2) | BIT(4) | BIT(5) | BIT(6) | BIT(7) | BIT(11));
 	//mode en
 	SYSCTL_MODEN1 &= ~MAILBOX_EN;
-	SYSCTL_MODEN1 &= ~(CRYPTO_EN|SPIFE_EN|SPIFI_EN|CACHE_EN);
+	SYSCTL_MODEN1 &= ~(CRYPTO_EN | SPIFE_EN | SPIFI_EN | CACHE_EN);
 	//mem retn
-	SYSCTL_RET_CTRL &= ~(BIT(1)|BIT(2)|BIT(4)|BIT(5)|BIT(6)|BIT(7)|BIT(8)|BIT(9)|BIT(10)|BIT(11));//3μA
-	#ifdef SUPPORT_DEEPSLEEP
-	//vcore->1.0V
-	SYSCTL_PMU_CFG&=(~(0xff<<10));
-	SYSCTL_PMU_CFG|=22<<10;
-	#endif
-	#ifdef SUPPORT_SLEEP
-	//switch osc to 3m
-	SYSCTL_CLKDIV_OSC96M=0x3F;
-	#endif
-	//cpu sleep
+	SYSCTL_RET_CTRL &= ~(BIT(1) | BIT(2) | BIT(4) | BIT(5) | BIT(6) | BIT(7) | BIT(8) | BIT(9) | BIT(10) | BIT(11));//3μA
+#ifdef SUPPORT_DEEPSLEEP
+//vcore->1.0V
+	SYSCTL_PMU_CFG &= (~(0xff << 10));
+	SYSCTL_PMU_CFG |= 22 << 10;
+#endif
+#ifdef SUPPORT_SLEEP
+//switch osc to 3m
+	SYSCTL_CLKDIV_OSC96M = 0x3F;
+#endif
+//cpu sleep
 	asm volatile("wfi");
 	nop; nop; nop; nop; nop; nop;
 	SYSCTL_PMU_CFG = SYSCTL_PMU_CFG_CONTEXT;
 	//restore
-	SYSCTL_DVDD_EN |= (BIT(1)|BIT(2)|BIT(4)|BIT(5)|BIT(6)|BIT(7)|BIT(11));
-	REG8(0xbffff)=0;
-	nop;nop;nop;nop;nop;nop;
-	SYSCTL_DVDD_EN &= ~((BIT(1)|BIT(2)|BIT(4)|BIT(5)|BIT(6)|BIT(7)|BIT(11)) << 12);//iso enable
+	SYSCTL_DVDD_EN |= (BIT(1) | BIT(2) | BIT(4) | BIT(5) | BIT(6) | BIT(7) | BIT(11));
+	REG8(0xbffff) = 0;
+	nop; nop; nop; nop; nop; nop;
+	SYSCTL_DVDD_EN &= ~((BIT(1) | BIT(2) | BIT(4) | BIT(5) | BIT(6) | BIT(7) | BIT(11)) << 12);//iso enable
 	SYSCTL_RET_CTRL = SYSCTL_RET_CTRL_CONTEXT;
 	SYSCTL_PIO0_CFG = SYSCTL_PIO0_CFG_CONTEXT;
 	SYSCTL_PIO1_CFG = SYSCTL_PIO1_CFG_CONTEXT;
@@ -450,7 +450,6 @@ void CHIP_Deep_Sleep2(void)
 	SYSCTL_PIO1_IECFG = 0xffffffff;
 	SYSCTL_PIO2_IECFG = 0xffffffff;
 	SYSCTL_PIO3_IECFG = 0xffffffff;
-	ADC_PM = 0b11;//ADC low power config bit0 close ldo and bit1 close comp
 	SYSCTL_CLKDIV_PECI = 0x0;
 	SYSCTL_SWITCH_PLL = (0x1 << 5) | (0x1 << 4) | (0x1 << 3) | (0x0 << 2) | (0x1 << 1);//sleep mode=1,dlsp=1,disable_osc80m = 1,main_clk_sel = 0
 	printf("SYSCTL_SWITCH_PLL:0x%x\n", SYSCTL_SWITCH_PLL);

@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-06-04 16:04:40
+ * @LastEditTime: 2025-10-17 22:15:15
  * @Description:
  *
  *
@@ -281,7 +281,7 @@ void ALIGNED(4) OPTIMIZE0 SECTION(".update.sms")  EC_SMS_Update(void)
         WDT_CRR = 0x76; /*当此位为空发送fifo写入数据*/
     PRINTF_TX = 'Z';
     *((volatile uint8_t *)(SRAM_BASE_ADDR + 0x100)) = 'Z';
-    WDT_TORR = 0xffff; // 设置最长延时
+    WDT_TORR0 = 0xff; WDT_TORR1 = 0xff;// 设置最长延时
     WDT_CR |= 0x02;    // 进入wdt中断
     WDT_CRR = 0x76;    // 重启计数器
     SYSCTL_CFG |= BIT3;
@@ -406,7 +406,7 @@ void ALIGNED(4) OPTIMIZE0 SECTION(".update.io")   EC_IO_Update(void)
         {
             PRINTF_TX = 'h';
             //update_debug
-            WDT_TORR = 0xffff; // 设置最长延时
+            WDT_TORR0 = 0xff; WDT_TORR1 = 0xff; // 设置最长延时
             WDT_CR |= 0x02; // 进入wdt中断
             WDT_CRR = 0x76;    // 重启计数器
             SYSCTL_CFG |= (1 << 3);
@@ -495,7 +495,7 @@ void SECTION(".update.function") Flash_Update_Function(void)
     {
         update_mode = mode;
         update_flag = flag;
-        WDT_TORR = 0xffff; // 设置最长延时
+        WDT_TORR0 = 0xff; WDT_TORR1 = 0xff; // 设置最长延时
         WDT_CR &= !0x02; // 不进入wdt中断
         WDT_CRR = 0x76;    // 重启计数器
         //清除中断
@@ -583,7 +583,7 @@ void ALIGNED(4) Mailbox_4KSMS_UPDATE(BYTE mode, DWORD fw_size, DWORD start_addr)
     {
         // printf("更新完毕\n");
         PRINTF_TX = 'D';
-        WDT_TORR = 0xffff; // 设置最长延时
+        WDT_TORR0 = 0xff; WDT_TORR1 = 0xff; // 设置最长延时
         WDT_CR |= 0x02;    // 进入wdt中断
         WDT_CRR = 0x76;    // 重启计数器
         SYSCTL_CFG |= BIT3;

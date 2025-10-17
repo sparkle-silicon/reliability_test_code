@@ -46,9 +46,9 @@ int TIMER_Init(u8 index, u32 load_count, u8 loop_enable, u8 int_mask)
 #endif
 	// enable TIMER
 	// set control value.
-	TIMER_REG(0x14 * index + TIMER0_TLC0_OFFSET) = load_count & 0xFF;
-	TIMER_REG(0x14 * index + TIMER0_TLC1_OFFSET) = (load_count >> 8) & 0xFF;
-	TIMER_REG(0x14 * index + TIMER0_TCR_OFFSET) = (0x1 << 0) | (loop_enable << 1) | (int_mask << 2);
+	TIMER_REG(0x14 * index + TIMER_TLC0_OFFSET) = load_count & 0xFF;
+	TIMER_REG(0x14 * index + TIMER_TLC1_OFFSET) = (load_count >> 8) & 0xFF;
+	TIMER_REG(0x14 * index + TIMER_TCR_OFFSET) = (0x1 << 0) | (loop_enable << 1) | (int_mask << 2);
 	return 0;
 }
 /**
@@ -60,8 +60,8 @@ int TIMER_Init(u8 index, u32 load_count, u8 loop_enable, u8 int_mask)
  */
 int TIMER_Disable(u8 index)
 {
-	TIMER_REG(0x14 * index + TIMER0_TCR_OFFSET) &= ~TIMER_EN;
-	return TIMER_REG(0x14 * index + TIMER0_TCR_OFFSET);
+	TIMER_REG(0x14 * index + TIMER_TCR_OFFSET) &= ~TIMER_EN;
+	return TIMER_REG(0x14 * index + TIMER_TCR_OFFSET);
 }
 /**
  * @brief 使能timer定时器
@@ -72,7 +72,7 @@ int TIMER_Disable(u8 index)
  */
 void TIMER_Enable(u8 index)
 {
-	TIMER_REG(0x14 * index + TIMER0_TCR_OFFSET) |= TIMER_EN;
+	TIMER_REG(0x14 * index + TIMER_TCR_OFFSET) |= TIMER_EN;
 }
 /**
  * @brief timer定时中断屏蔽
@@ -86,11 +86,11 @@ void TIMER_Int_Mask(u8 index, u8 int_mask)
 {
 	if(int_mask == 0)
 	{
-		TIMER_REG(0x14 * index + TIMER0_TCR_OFFSET) &= (~TIMER_MASK_EN);
+		TIMER_REG(0x14 * index + TIMER_TCR_OFFSET) &= (~TIMER_MASK_EN);
 	}
 	else
 	{
-		TIMER_REG(0x14 * index + TIMER0_TCR_OFFSET) |= TIMER_MASK_EN;
+		TIMER_REG(0x14 * index + TIMER_TCR_OFFSET) |= TIMER_MASK_EN;
 	}
 }
 void InternalWDTNow(void)
@@ -223,7 +223,7 @@ void Timer_Int_Clear(BYTE channel)
 		case TIMER3:
 			TIMER3_TEOI;
 			break;
-	}	
+	}
 }
 //-----------------------------------------------------------------------------
 // Delay 1ms function use timer 1

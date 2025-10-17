@@ -1,7 +1,7 @@
 /*
  * @Author: Maple
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-17 15:16:55
+ * @LastEditTime: 2025-10-17 22:55:20
  * @Description:
  *
  *
@@ -2592,9 +2592,9 @@ BYTE Moudle_test(void)
 
 			if(Mtimer_Cunt == 15000)
 			{
-				TIMER_REG(0x14 * 0 + TIMER0_TCR_OFFSET) &= ~(0x1 << 0);
-				TIMER_REG(0x14 * 1 + TIMER0_TCR_OFFSET) &= ~(0x1 << 0);
-				TIMER_REG(0x14 * 3 + TIMER0_TCR_OFFSET) &= ~(0x1 << 0);//disable
+				TIMER_REG(0x14 * 0 + TIMER_TCR_OFFSET) &= ~(0x1 << 0);
+				TIMER_REG(0x14 * 1 + TIMER_TCR_OFFSET) &= ~(0x1 << 0);
+				TIMER_REG(0x14 * 3 + TIMER_TCR_OFFSET) &= ~(0x1 << 0);//disable
 				printf("disable irq\n");
 			}
 
@@ -3249,9 +3249,9 @@ void SCI_enhance_SW_Config(uint8_t PMC_Channel)
 void SCI_test(void)
 {
 #if SCI_Test
-	GPIOA_REG(GPIO_INPUT_VAL) |= ((0x0) << 0);//GPIO:0
+	GPIO0_REG(GPIO_INPUT_VAL) |= ((0x0) << 0);//GPIO:0
 	sysctl_iomux_config(GPIOA, 27, 1);	//set GPD3 as SCI
-	GPIOA_REG(GPIO_INPUT_VAL) |= ((0x1) << 0);//GPIO:1
+	GPIO0_REG(GPIO_INPUT_VAL) |= ((0x1) << 0);//GPIO:1
 	//PMC1 compatible mode sci test config
 #if 0
 	SCI_Compatible_HW_Config(1);
@@ -3298,9 +3298,9 @@ void SCI_test(void)
 void SMI_test(void)
 {
 #if SMI_Test
-	GPIOA_REG(GPIO_INPUT_VAL) |= ((0x0) << 0);//GPIO:0
+	GPIO0_REG(GPIO_INPUT_VAL) |= ((0x0) << 0);//GPIO:0
 	sysctl_iomux_config(GPIOA, 28, 1);       //set GPD4 as SMI
-	GPIOA_REG(GPIO_INPUT_VAL) |= ((0x1) << 0);//GPIO:0
+	GPIO0_REG(GPIO_INPUT_VAL) |= ((0x1) << 0);//GPIO:0
 #if 0
 	//PMC1 compatible mode smi test config(HW)
 	KBC_CTL |= 0x10;  //PMC12HIE SET 1

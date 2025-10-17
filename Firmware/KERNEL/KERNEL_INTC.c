@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-17 15:05:17
+ * @LastEditTime: 2025-10-17 22:45:50
  * @Description: This file is used for INTC interrupt
  *
  *
@@ -3041,9 +3041,9 @@ BYTE Int_Control0_Enable(BYTE int_num)
 {
 	BYTE offset = int_num / 8;		  // 偏移
 	BYTE mask = 0x1 << (int_num % 8); // 掩码
-	if(offset <= (ICTL0_INTEN7_OFFSET - ICTL0_INTEN0_OFFSET))
+	if(offset <= (ICTL_INTEN7_OFFSET - ICTL_INTEN0_OFFSET))
 	{
-		INTC0_REG(ICTL0_INTEN0_OFFSET + offset) |= mask;
+		INTC0_REG(ICTL_INTEN0_OFFSET + offset) |= mask;
 	}
 	else
 	{
@@ -3056,9 +3056,9 @@ BYTE Int_Control1_Enable(BYTE int_num)
 {
 	BYTE offset = int_num / 8;		  // 偏移
 	BYTE mask = 0x1 << (int_num % 8); // 掩码
-	if(offset <= (ICTL1_INTEN7_OFFSET - ICTL1_INTEN0_OFFSET))
+	if(offset <= (ICTL_INTEN7_OFFSET - ICTL_INTEN0_OFFSET))
 	{
-		INTC1_REG(ICTL1_INTEN0_OFFSET + offset) |= mask;
+		INTC1_REG(ICTL_INTEN0_OFFSET + offset) |= mask;
 	}
 	else
 	{
@@ -3072,9 +3072,9 @@ BYTE Int_Control0_Disable(BYTE int_num)
 {
 	BYTE offset = int_num / 8;		  // 偏移
 	BYTE mask = 0x1 << (int_num % 8); // 掩码
-	if(offset <= (ICTL0_INTEN7_OFFSET - ICTL0_INTEN0_OFFSET))
+	if(offset <= (ICTL_INTEN7_OFFSET - ICTL_INTEN0_OFFSET))
 	{
-		INTC0_REG(ICTL0_INTEN0_OFFSET + offset) &= ~mask;
+		INTC0_REG(ICTL_INTEN0_OFFSET + offset) &= ~mask;
 	}
 	else
 	{
@@ -3087,9 +3087,9 @@ BYTE Int_Control1_Disable(BYTE int_num)
 {
 	BYTE offset = int_num / 8;		  // 偏移
 	BYTE mask = 0x1 << (int_num % 8); // 掩码
-	if(offset <= (ICTL1_INTEN7_OFFSET - ICTL1_INTEN0_OFFSET))
+	if(offset <= (ICTL_INTEN7_OFFSET - ICTL_INTEN0_OFFSET))
 	{
-		INTC1_REG(ICTL1_INTEN0_OFFSET + offset) &= ~mask;
+		INTC1_REG(ICTL_INTEN0_OFFSET + offset) &= ~mask;
 	}
 	else
 	{
@@ -3103,9 +3103,9 @@ BYTE Int_Control0_Mask(BYTE int_num)
 {
 	BYTE offset = int_num / 8;		  // 偏移
 	BYTE mask = 0x1 << (int_num % 8); // 掩码
-	if(offset <= (ICTL0_INTMASK7_OFFSET - ICTL0_INTMASK0_OFFSET))
+	if(offset <= (ICTL_INTMASK7_OFFSET - ICTL_INTMASK0_OFFSET))
 	{
-		INTC0_REG(ICTL0_INTMASK0_OFFSET + offset) |= mask;
+		INTC0_REG(ICTL_INTMASK0_OFFSET + offset) |= mask;
 	}
 	else
 	{
@@ -3118,9 +3118,9 @@ BYTE Int_Control1_Mask(BYTE int_num)
 {
 	BYTE offset = int_num / 8;		  // 偏移
 	BYTE mask = 0x1 << (int_num % 8); // 掩码
-	if(offset <= (ICTL1_INTMASK7_OFFSET - ICTL1_INTMASK0_OFFSET))
+	if(offset <= (ICTL_INTMASK7_OFFSET - ICTL_INTMASK0_OFFSET))
 	{
-		INTC1_REG(ICTL1_INTMASK0_OFFSET + offset) |= mask;
+		INTC1_REG(ICTL_INTMASK0_OFFSET + offset) |= mask;
 	}
 	else
 	{
@@ -3134,9 +3134,9 @@ BYTE Int_Control0_Unmask(BYTE int_num)
 {
 	BYTE offset = int_num / 8;		  // 偏移
 	BYTE mask = 0x1 << (int_num % 8); // 掩码
-	if(offset <= (ICTL0_INTMASK7_OFFSET - ICTL0_INTMASK0_OFFSET))
+	if(offset <= (ICTL_INTMASK7_OFFSET - ICTL_INTMASK0_OFFSET))
 	{
-		INTC0_REG(ICTL0_INTMASK0_OFFSET + offset) &= ~mask;
+		INTC0_REG(ICTL_INTMASK0_OFFSET + offset) &= ~mask;
 	}
 	else
 	{
@@ -3149,9 +3149,9 @@ BYTE Int_Control1_Unmask(BYTE int_num)
 {
 	BYTE offset = int_num / 8;		  // 偏移
 	BYTE mask = 0x1 << (int_num % 8); // 掩码
-	if(offset <= (ICTL1_INTMASK7_OFFSET - ICTL1_INTMASK0_OFFSET))
+	if(offset <= (ICTL_INTMASK7_OFFSET - ICTL_INTMASK0_OFFSET))
 	{
-		INTC1_REG(ICTL1_INTMASK0_OFFSET + offset) &= ~mask;
+		INTC1_REG(ICTL_INTMASK0_OFFSET + offset) &= ~mask;
 	}
 	else
 	{
@@ -3165,9 +3165,9 @@ BYTE Int_Control0_Status(BYTE int_num)
 {
 	BYTE offset = int_num / 8;		  // 偏移
 	BYTE mask = 0x1 << (int_num % 8); // 掩码
-	if(offset <= (ICTL0_MASKSTATUS7_OFFSET - ICTL0_MASKSTATUS0_OFFSET))
+	if(offset <= (ICTL_MASKSTATUS7_OFFSET - ICTL_MASKSTATUS0_OFFSET))
 	{
-		return (INTC0_REG(ICTL0_MASKSTATUS0_OFFSET + offset) & mask) != 0;
+		return (INTC0_REG(ICTL_MASKSTATUS0_OFFSET + offset) & mask) != 0;
 	}
 	else
 	{
@@ -3179,9 +3179,9 @@ BYTE Int_Control1_Status(BYTE int_num)
 {
 	BYTE offset = int_num / 8;		  // 偏移
 	BYTE mask = 0x1 << (int_num % 8); // 掩码
-	if(offset <= (ICTL1_MASKSTATUS7_OFFSET - ICTL1_MASKSTATUS0_OFFSET))
+	if(offset <= (ICTL_MASKSTATUS7_OFFSET - ICTL_MASKSTATUS0_OFFSET))
 	{
-		return (INTC1_REG(ICTL1_MASKSTATUS0_OFFSET + offset) & mask) != 0;
+		return (INTC1_REG(ICTL_MASKSTATUS0_OFFSET + offset) & mask) != 0;
 	}
 	else
 	{
@@ -3193,9 +3193,9 @@ BYTE Int_Control0_Enable_Read(BYTE int_num)
 {
 	BYTE offset = int_num / 8;		  // 偏移
 	BYTE mask = 0x1 << (int_num % 8); // 掩码
-	if(offset <= (ICTL0_INTEN7_OFFSET - ICTL0_INTEN0_OFFSET))
+	if(offset <= (ICTL_INTEN7_OFFSET - ICTL_INTEN0_OFFSET))
 	{
-		return (INTC0_REG(ICTL0_INTEN0_OFFSET + offset) & mask) != 0;
+		return (INTC0_REG(ICTL_INTEN0_OFFSET + offset) & mask) != 0;
 	}
 	else
 	{
@@ -3207,9 +3207,9 @@ BYTE Int_Control1_Enable_Read(BYTE int_num)
 {
 	BYTE offset = int_num / 8;		  // 偏移
 	BYTE mask = 0x1 << (int_num % 8); // 掩码
-	if(offset <= (ICTL1_INTEN7_OFFSET - ICTL1_INTEN0_OFFSET))
+	if(offset <= (ICTL_INTEN7_OFFSET - ICTL_INTEN0_OFFSET))
 	{
-		return (INTC1_REG(ICTL1_INTEN0_OFFSET + offset) & mask) != 0;
+		return (INTC1_REG(ICTL_INTEN0_OFFSET + offset) & mask) != 0;
 	}
 	else
 	{
@@ -3221,9 +3221,9 @@ BYTE Int_Control0_Mask_Read(BYTE int_num)
 {
 	BYTE offset = int_num / 8;		  // 偏移
 	BYTE mask = 0x1 << (int_num % 8); // 掩码
-	if(offset <= (ICTL0_INTMASK7_OFFSET - ICTL0_INTMASK0_OFFSET))
+	if(offset <= (ICTL_INTMASK7_OFFSET - ICTL_INTMASK0_OFFSET))
 	{
-		return (INTC0_REG(ICTL0_INTMASK0_OFFSET + offset) & mask) != 0;
+		return (INTC0_REG(ICTL_INTMASK0_OFFSET + offset) & mask) != 0;
 	}
 	else
 	{
@@ -3235,9 +3235,9 @@ BYTE Int_Control1_Mask_Read(BYTE int_num)
 {
 	BYTE offset = int_num / 8;		  // 偏移
 	BYTE mask = 0x1 << (int_num % 8); // 掩码
-	if(offset <= (ICTL1_INTMASK7_OFFSET - ICTL1_INTMASK0_OFFSET))
+	if(offset <= (ICTL_INTMASK7_OFFSET - ICTL_INTMASK0_OFFSET))
 	{
-		return (INTC1_REG(ICTL1_INTMASK0_OFFSET + offset) & mask) != 0;
+		return (INTC1_REG(ICTL_INTMASK0_OFFSET + offset) & mask) != 0;
 	}
 	else
 	{

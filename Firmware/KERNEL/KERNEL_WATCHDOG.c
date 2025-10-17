@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-01-11 14:37:19
+ * @LastEditTime: 2025-10-17 22:16:56
  * @Description:
  *
  *
@@ -63,7 +63,8 @@ void WDT_Init(BYTE mode, WORD count)
 	return;
 #endif
 	WDT_CR = 0x1d | ((mode & 0x1) << 1);
-	WDT_TORR = count;
+	uWord torr = { .word = count };
+	WDT_TORR0 = torr.byte[0]; WDT_TORR1 = torr.byte[1];
 	WDT_FeedDog();
 	return;
 }

@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-17 15:01:20
+ * @LastEditTime: 2025-10-17 15:48:24
  * @Description: This is about the  national crypto algorithm implementation
  *
  *
@@ -67,9 +67,9 @@ void uart_init(void)
 	flag |= BIT3;
 	baud[3] = serial_init(UARTB_CHANNEL, UARTB_BAUD);
 #endif
-	for (int cnt = 0; cnt < 4; cnt++)
+	for(int cnt = 0; cnt < 4; cnt++)
 	{
-		if (flag & BIT(cnt))
+		if(flag & BIT(cnt))
 		{
 			dprint("Actual baud rate of the serial port %X == %d.\n", ((cnt < 2) ? cnt : (cnt + 8)), baud[cnt]);
 		}
@@ -193,7 +193,7 @@ void spi_init(void)
 	dprint("SPI Master init done.\n");
 #if SPIF_EN_Init
 	spif_MoudleClock_EN;
-	if (SYSCTL_PIO_CFG & BIT1)//使用外部FLASH
+	if(SYSCTL_PIO_CFG & BIT1)//使用外部FLASH
 	{
 		SPIFI_Init();//内部SPIF无法控制,因此主要是内部引脚开关,内部FLASH运行状态之类的控制
 		dprint("INTERNAL FLASH init done.\n");
@@ -201,7 +201,7 @@ void spi_init(void)
 	else//使用内部FLASH才能初始化
 	{
 		sysctl_iomux_spif(SPIF_CSN_SEL, SPIF_QE_SEL, SPIF_WP_SEL);
-}
+	}
 	SPIFE_Init();//初始化外部FLASH的一些细节,注意,如果使用外部FLASH可能会和cache冲突
 	dprint("EXTERNAL FLASH init done.\n");
 #endif
@@ -421,14 +421,12 @@ void adc_init(void)
 void time_init(void)
 {
 #if TIMER_MODULE_EN
-	// timer0/1 时钟分频设置 32.768k/(2<<division)
 	SYSCTL_CLKDIV_TMR0 = TIMER0_Division;
 	timer0_MoudleClock_EN;
 	TIMER_Init(TIMER0, 1, 0x0, 0x1); // delay~=65us
 	SYSCTL_CLKDIV_TMR1 = TIMER1_Division;
 	timer1_MoudleClock_EN;			 // ms delay
 	TIMER_Init(TIMER1, 1, 0x0, 0x1); // delay~=65us
-	// timer2/3 时钟分频设置 24.576Mhz/(2<<division)
 	SYSCTL_CLKDIV_TMR2 = TIMER2_Division;
 	timer2_MoudleClock_EN;			 // 1ms service
 	TIMER_Init(TIMER2, 1, 0x0, 0x1); // delay~= 0.083us
@@ -436,7 +434,7 @@ void time_init(void)
 	timer3_MoudleClock_EN;			 // us delay
 	TIMER_Init(TIMER3, 1, 0x0, 0x1); // delay~=0.083us
 
-	while ((TIMER_TRIS & 0xf) != 0xf)
+	while((TIMER_TRIS & 0xf) != 0xf)
 		;
 	TIMER_TEOI; // clear all interrupt
 	dprint("Timer init done\n");
@@ -503,7 +501,7 @@ void exit(int __status)
 NORETURN USED void _exit(int __status)
 {
 	dprint("exit status doc %d\n", __status);
-	while (1)
+	while(1)
 		;
 }
 #endif

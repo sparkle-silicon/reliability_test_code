@@ -354,15 +354,15 @@ int main()
 	SPI_Flash_Test();
 #endif
 #if SCI_Test
-	GPIOA_REG(GPIO_INPUT_VAL) |= ((0x0) << 0);
-	GPIOA_REG(GPIO_INPUT_EN) |= ((0x1) << 0);
-	GPIOA_REG(GPIO_LOW_IE) &= (~(0x1) << 0);
+	GPIO0_REG(GPIO_INPUT_VAL) |= ((0x0) << 0);
+	GPIO0_REG(GPIO_INPUT_EN) |= ((0x1) << 0);
+	GPIO0_REG(GPIO_LOW_IE) &= (~(0x1) << 0);
 	SCI_test();
 #endif
 #if SMI_Test
-	GPIOA_REG(GPIO_INPUT_VAL) |= ((0x0) << 0);
-	GPIOA_REG(GPIO_INPUT_EN) |= ((0x1) << 0);
-	GPIOA_REG(GPIO_LOW_IE) &= (~(0x1) << 0);
+	GPIO0_REG(GPIO_INPUT_VAL) |= ((0x0) << 0);
+	GPIO0_REG(GPIO_INPUT_EN) |= ((0x1) << 0);
+	GPIO0_REG(GPIO_LOW_IE) &= (~(0x1) << 0);
 	SMI_test();
 #endif
 

@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-06-03 17:06:52
+ * @LastEditTime: 2025-10-17 22:43:11
  * @Description: This file is used for SPI Flash Interface
  *
  *
@@ -609,7 +609,7 @@ FUNCT_PTR_V_V Load_Smfi_To_Dram(FUNCT_PTR_V_V func, const int malloc_size)
 void RunSPIF_WriteFromRAM(DWORD addr, BYTEP write_buff, WORD lentgh)
 {
    Disable_Interrupt_Main_Switch();                  // Disable All Interrupt
-   WDT_REG(0x4) = 0xffff;                            // 设置最长延时
+   WDT_TORR0 = 0xff; WDT_TORR1 = 0xff;                               // 设置最长延时
    WDT_CRR = 0x76;                                   // 重启计数器
    Spif_Ptr = Load_Fla_If_To_Ram(SPIF_Write, 0x600); // Load Fla_If Code to DRAM
    (*Spif_Ptr)(addr, write_buff, lentgh);                    // Do Function at 0x21000,this 0x21000 just for test,maybe cause some problem
@@ -632,7 +632,7 @@ void RunSPIF_WriteFromRAM(DWORD addr, BYTEP write_buff, WORD lentgh)
 void RunSPIF_ReadFromRAM(DWORD addr, BYTEP read_buff, WORD lentgh)
 {
    Disable_Interrupt_Main_Switch();                  // Disable All Interrupt
-   WDT_REG(0x4) = 0xffff;                            // 设置最长延时
+   WDT_TORR0 = 0xff; WDT_TORR1 = 0xff;                           // 设置最长延时
    WDT_CRR = 0x76;                                   // 重启计数器
    Spif_Ptr = Load_Fla_If_To_Ram(SPIF_Read, 0x800); // Load Fla_If Code to DRAM
    (*Spif_Ptr)(addr, read_buff, lentgh);                     // Do Function at 0x21000,this 0x21000 just for test,maybe cause some problem

@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2023-10-09 17:53:09
+ * @LastEditTime: 2025-10-17 17:31:19
  * @Description:
  *
  *
@@ -19,22 +19,7 @@
 #include "AE_REG.H"
 #include "AE_CONFIG.H"
 #include "KERNEL_MEMORY.H"
-#define TIMERn_TCR 0x8  // value to set
-#define TIMERn_TEOI 0xc // clear interrupt
-#define TIMERn_TIS 0x10 // interrupt status
-#if 0
-#define TIMER_TIS 0xA0  // TIMER0~3 interrupt status
-#define TIMER_TEOI 0xA4 // TIMER0~3 interrupt clear
-#define TIMER_TRIS 0xA8 // TIMER0~3 interrupt raw status
-#define TIMER0_TCR (*(volatile u8 *)0x1808)
-#define TIMER0_TIS (*(volatile u8 *)0x1810)
-#define TIMER1_TCR (*(volatile u8 *)0x181C)
-#define TIMER1_TIS (*(volatile u8 *)0x1824)
-#define TIMER2_TCR (*(volatile u8 *)0x1830)
-#define TIMER2_TIS (*(volatile u8 *)0x1838)
-#define TIMER3_TCR (*(volatile u8 *)0x1844)
-#define TIMER3_TIS (*(volatile u8 *)0x18A0)
-#endif
+
 #define TIMER0 0x0
 #define TIMER1 0x1
 #define TIMER2 0x2
