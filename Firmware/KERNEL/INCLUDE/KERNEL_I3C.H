@@ -337,6 +337,8 @@
 #define IDEXT_DCR(dcr) (((dcr)<<8) & 0x0000FF00UL)
 #define IDEXT_BCR(bcr) (((bcr)<<16)& 0x00FF0000UL)
 
+#define STATUS_RXPEND 0x00000800UL
+
 //DMA Control register
 #define DMAFB_RX_DISABLE HEX00
 #define DMAFB_RX_ENABLE HEX01
@@ -421,6 +423,8 @@ extern BYTE I3C_SLAVE_INT_ENABLE(DWORD tpye, BYTE i3c_mux);
 extern BYTE I3C_SLAVE_INT_DISABLE(DWORD tpye, BYTE i3c_mux);
 extern BYTE I3C_SLAVE_IBI_HOTJOIN(uint8_t addr, uint32_t idpartno, uint8_t dcr, uint8_t bcr, BYTE i3c_mux);
 extern BYTE I3C_SLAVE_IBI_DATA(uint8_t addr, uint8_t ibi_data, uint32_t idpartno, uint8_t dcr, uint8_t bcr, BYTE i3c_mux);
+extern BYTE I3C_SLAVE_WRITE(uint8_t* data, uint8_t bytelen, BYTE i3c_mux);
+extern BYTE I3C_SLAVE_READ(uint8_t* data, uint8_t bytelen, BYTE i3c_mux);
 // extern void I3C_LOOP_Test(void);
 
 #endif

@@ -373,7 +373,7 @@ BYTE I3C_Legacy_Master_Write(uint8_t* data, uint16_t bytelen, BYTE i3c_mux)
                 i3c_error = 0;
                 return FALSE;
             }
-            vDelayXus(10);
+
         }   //等CMD_QUEUE_READY_STS中断
         I3C_WriteREG_DWORD(data_temp.dword, TX_DATA_PORT_OFFSET, i3c_mux);//发送数据
     }
@@ -438,7 +438,7 @@ uint8_t I3C_Legacy_Master_Read(uint8_t* data, uint16_t bytelen, BYTE i3c_mux)
                 i3c_error = 0;
                 return FALSE;
             }
-            vDelayXus(10);
+
         }
         uDword data_temp;
         data_temp.dword = I3C_ReadREG_DWORD(RX_DATA_PORT_OFFSET, i3c_mux);
@@ -534,7 +534,7 @@ BYTE I3C_Current_Master_Init(uint32_t speed, BYTE i3c_mux)
     //Set intr status en
     I3C_WriteREG_DWORD((INTR_STATUS_EN_BUS_RESET_DONE_STS_EN | INTR_STATUS_EN_TRANSFER_ERR_STS_EN | INTR_STATUS_EN_TRANSFER_ABORT_STS_EN | INTR_STATUS_EN_RESP_READY_STS_EN | INTR_STATUS_EN_IBI_THLD_STS_EN | INTR_STATUS_EN_CMD_QUEUE_READY_STS_EN | INTR_STATUS_EN_TX_THLD_STS_EN | INTR_STATUS_EN_RX_THLD_STS_EN), INTR_STATUS_EN_OFFSET, i3c_mux);
     //Set intr signal en
-    I3C_WriteREG_DWORD(INTR_SIGNAL_EN_IBI_THLD_SIGNAL_EN | INTR_SIGNAL_EN_RX_THLD_SIGNAL_EN | INTR_SIGNAL_EN_TRANSFER_ABORT_SIGNAL_EN | INTR_SIGNAL_EN_TRANSFER_ERR_SIGNAL_EN | INTR_SIGNAL_EN_BUS_RESET_DONE_SIGNAL_EN, INTR_SIGNAL_EN_OFFSET, i3c_mux);
+    I3C_WriteREG_DWORD(INTR_SIGNAL_EN_IBI_THLD_SIGNAL_EN | INTR_SIGNAL_EN_TRANSFER_ABORT_SIGNAL_EN | INTR_SIGNAL_EN_TRANSFER_ERR_SIGNAL_EN | INTR_SIGNAL_EN_BUS_RESET_DONE_SIGNAL_EN, INTR_SIGNAL_EN_OFFSET, i3c_mux);
 
     return TRUE;
 }
@@ -585,7 +585,6 @@ BYTE I3C_MASTER_ENTDAA(sDEV_CHAR_TABLE* dct, BYTE* dynamic_addr, BYTE i3c_mux)
                 i3c_error = 0;
                 return FALSE;
             }
-            vDelayXus(10);
         }   //等CMD_QUEUE_READY_STS中断
         //config cmd port
         temp_data = 0;
@@ -666,7 +665,7 @@ BYTE I3C_MASTER_SETDASA(BYTE static_addr, BYTE dynamic_addr, BYTE i3c_mux)
             i3c_error = 0;
             return FALSE;
         }
-        vDelayXus(10);
+
     }   //等CMD_QUEUE_READY_STS中断
     //config CMD port
     temp_data = 0;
@@ -746,7 +745,7 @@ BYTE I3C_MASTER_BC_CCC_WRITE(uint8_t* data, uint16_t bytelen, BYTE cmd, uint8_t 
                     i3c_error = 0;
                     return FALSE;
                 }
-                vDelayXus(10);
+
             }   //等TX THLD中断状态
             I3C_WriteREG_DWORD(data_temp.dword, TX_DATA_PORT_OFFSET, i3c_mux);//发送数据
         }
@@ -766,7 +765,7 @@ BYTE I3C_MASTER_BC_CCC_WRITE(uint8_t* data, uint16_t bytelen, BYTE cmd, uint8_t 
             i3c_error = 0;
             return FALSE;
         }
-        vDelayXus(10);
+
     }   //等INTR_STATUS_RESP_READY_STS中断
     DWORD Response_error_status = 0;
     Response_error_status = I3C_ReadREG_DWORD(RESPONSE_QUEUE_PORT_OFFSET, i3c_mux) & RESPONSE_QUEUE_PORT_ERR_STS_MASK;
@@ -781,7 +780,7 @@ BYTE I3C_MASTER_BC_CCC_WRITE(uint8_t* data, uint16_t bytelen, BYTE cmd, uint8_t 
 /**
 * @brief I3C MASTER directed ccc write函数
 *
-* @param static_addr 设备动态地址
+* @param dynamic_addr 设备动态地址
 * @param data 传输数据指针
 * @param bytelen 传输数据长度
 * @param cmd directed cmd
@@ -792,7 +791,7 @@ BYTE I3C_MASTER_BC_CCC_WRITE(uint8_t* data, uint16_t bytelen, BYTE cmd, uint8_t 
 *
 * @note 无
 */
-BYTE I3C_MASTER_DR_CCC_WRITE(uint8_t static_addr, uint8_t* data, uint16_t bytelen, BYTE cmd, uint8_t dbp, uint8_t db, BYTE i3c_mux)
+BYTE I3C_MASTER_DR_CCC_WRITE(uint8_t dynamic_addr, uint8_t* data, uint16_t bytelen, BYTE cmd, uint8_t dbp, uint8_t db, BYTE i3c_mux)
 {
     uint8_t* data_ptr = data;
     uint32_t data_len = bytelen;
@@ -806,6 +805,12 @@ BYTE I3C_MASTER_DR_CCC_WRITE(uint8_t static_addr, uint8_t* data, uint16_t bytele
 
     if (bytelen != 0)
     {
+        //配置传输数据长度
+        if (dbp != 0)   //开启defining byte则写入defining byte
+            temp_data |= COMMAND_QUEUE_PORT_COMMAND_TRANSFER_ARGUMENT | COMMAND_QUEUE_PORT_TRANSFER_ARGUMENT_DATA_LENGTH(bytelen) | COMMAND_QUEUE_PORT_TRANSFER_ARGUMENT_DB(db);
+        else
+            temp_data |= COMMAND_QUEUE_PORT_COMMAND_TRANSFER_ARGUMENT | COMMAND_QUEUE_PORT_TRANSFER_ARGUMENT_DATA_LENGTH(bytelen);
+        I3C_WriteREG_DWORD(temp_data, COMMAND_QUEUE_PORT_OFFSET, i3c_mux);
         while (data_len)
         {
             register uint32_t len = (data_len <= 4 ? data_len : 4);
@@ -815,13 +820,6 @@ BYTE I3C_MASTER_DR_CCC_WRITE(uint8_t static_addr, uint8_t* data, uint16_t bytele
             {
                 data_temp.byte[i] = *data_ptr++;
             }
-
-            //配置传输数据长度
-            if (dbp != 0)   //开启defining byte则写入defining byte
-                temp_data |= COMMAND_QUEUE_PORT_COMMAND_TRANSFER_ARGUMENT | COMMAND_QUEUE_PORT_TRANSFER_ARGUMENT_DATA_LENGTH(4) | COMMAND_QUEUE_PORT_TRANSFER_ARGUMENT_DB(db);
-            else
-                temp_data |= COMMAND_QUEUE_PORT_COMMAND_TRANSFER_ARGUMENT | COMMAND_QUEUE_PORT_TRANSFER_ARGUMENT_DATA_LENGTH(4);
-            I3C_WriteREG_DWORD(temp_data, COMMAND_QUEUE_PORT_OFFSET, i3c_mux);
             for (uint32_t timeout = I3C_TIMEOUT; (I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux) & INTR_STATUS_TX_THLD_STS) == 0; timeout--)
             {
                 if (timeout == 0 || i3c_error)
@@ -830,7 +828,7 @@ BYTE I3C_MASTER_DR_CCC_WRITE(uint8_t static_addr, uint8_t* data, uint16_t bytele
                     i3c_error = 0;
                     return FALSE;
                 }
-                vDelayXus(10);
+
             }   //等CMD_QUEUE_READY_STS中断
             I3C_WriteREG_DWORD(data_temp.dword, TX_DATA_PORT_OFFSET, i3c_mux);//发送数据
         }
@@ -838,12 +836,16 @@ BYTE I3C_MASTER_DR_CCC_WRITE(uint8_t static_addr, uint8_t* data, uint16_t bytele
     //config static addr
     temp_data = 0;
     temp_data &= (DEV_ADDR_TABLE_LOC1_DEVICE_I3C);
-    temp_data |= DEV_ADDR_TABLE_LOC1_STATIC_ADDRESS(static_addr);
+    temp_data |= DEV_ADDR_TABLE_LOC1_DEV_DYNAMIC_ADDR(dynamic_addr);
+    if (DEV_ADDR_TABLE_LOC1_DEV_DYNAMIC_ADDR_PARITY(dynamic_addr) != 0)
+        temp_data |= DEV_ADDR_TABLE_LOC1_DEV_DYNAMIC_ADDR_PARITY(dynamic_addr);
+    else
+        temp_data &= DEV_ADDR_TABLE_LOC1_DEV_DYNAMIC_ADDR_PARITY0;
     I3C_WriteREG_DWORD(temp_data, DEV_ADDR_TABLE1_LOC1_OFFSET, i3c_mux);
     //issue directed ccc cmd
     temp_data = 0;
     temp_data &= COMMAND_QUEUE_PORT_COMMAND_TRANSFER_COMMAND & COMMAND_QUEUE_PORT_TRANSFER_COMMAND_DEV_INDX0 & COMMAND_QUEUE_PORT_TRANSFER_COMMAND_WRITE & COMMAND_QUEUE_PORT_TRANSFER_COMMAND_SPEED_SDR0;
-    temp_data |= COMMAND_QUEUE_PORT_TRANSFER_COMMAND_CMD(cmd) | COMMAND_QUEUE_PORT_TRANSFER_COMMAND_CP | COMMAND_QUEUE_PORT_TRANSFER_COMMAND_ROC | COMMAND_QUEUE_PORT_TRANSFER_COMMAND_TOC;
+    temp_data |= COMMAND_QUEUE_PORT_TRANSFER_COMMAND_DR_TRANSFER | COMMAND_QUEUE_PORT_TRANSFER_COMMAND_CMD(cmd) | COMMAND_QUEUE_PORT_TRANSFER_COMMAND_CP | COMMAND_QUEUE_PORT_TRANSFER_COMMAND_ROC | COMMAND_QUEUE_PORT_TRANSFER_COMMAND_TOC;
     if (dbp != 0)
         temp_data |= COMMAND_QUEUE_PORT_TRANSFER_COMMAND_DBP;
     I3C_WriteREG_DWORD(temp_data, COMMAND_QUEUE_PORT_OFFSET, i3c_mux);
@@ -855,17 +857,13 @@ BYTE I3C_MASTER_DR_CCC_WRITE(uint8_t static_addr, uint8_t* data, uint16_t bytele
             i3c_error = 0;
             return FALSE;
         }
-        vDelayXus(10);
+
     }   //等INTR_STATUS_RESP_READY_STS中断
     DWORD Response_error_status = 0;
     Response_error_status = I3C_ReadREG_DWORD(RESPONSE_QUEUE_PORT_OFFSET, i3c_mux) & RESPONSE_QUEUE_PORT_ERR_STS_MASK;
-    if (RESPONSE_QUEUE_PORT_ERR_STS_NO_ERROR == Response_error_status)
+    if (RESPONSE_QUEUE_PORT_ERR_STS_NO_ERROR != Response_error_status)
     {
-        return TRUE;
-    }
-    else
-    {
-        i3c_dprint("fail:Response error = %#x\n", Response_error_status);
+        I3C_Master_IntrStatus(i3c_mux);
         return FALSE;
     }
     return TRUE;
@@ -874,7 +872,7 @@ BYTE I3C_MASTER_DR_CCC_WRITE(uint8_t static_addr, uint8_t* data, uint16_t bytele
 /**
 * @brief I3C MASTER directed ccc read函数
 *
-* @param static_addr 设备动态地址
+* @param dynamic_addr 设备动态地址
 * @param data 传输数据指针
 * @param bytelen 传输数据长度
 * @param cmd directed cmd
@@ -885,7 +883,7 @@ BYTE I3C_MASTER_DR_CCC_WRITE(uint8_t static_addr, uint8_t* data, uint16_t bytele
 *
 * @note 无
 */
-BYTE I3C_MASTER_DR_CCC_READ(uint8_t static_addr, uint8_t* data, uint16_t bytelen, BYTE cmd, uint8_t dbp, uint8_t db, BYTE i3c_mux)
+BYTE I3C_MASTER_DR_CCC_READ(uint8_t dynamic_addr, uint8_t* data, uint16_t bytelen, BYTE cmd, uint8_t dbp, uint8_t db, BYTE i3c_mux)
 {
     uint8_t* data_ptr = data;
     uint32_t data_len = bytelen;
@@ -899,29 +897,23 @@ BYTE I3C_MASTER_DR_CCC_READ(uint8_t static_addr, uint8_t* data, uint16_t bytelen
 
     //配置传输数据长度
     if (dbp != 0)   //开启defining byte则写入defining byte
-        temp_data |= COMMAND_QUEUE_PORT_COMMAND_TRANSFER_ARGUMENT | COMMAND_QUEUE_PORT_TRANSFER_ARGUMENT_DATA_LENGTH(4) | COMMAND_QUEUE_PORT_TRANSFER_ARGUMENT_DB(db);
+        temp_data |= COMMAND_QUEUE_PORT_COMMAND_TRANSFER_ARGUMENT | COMMAND_QUEUE_PORT_TRANSFER_ARGUMENT_DATA_LENGTH(bytelen) | COMMAND_QUEUE_PORT_TRANSFER_ARGUMENT_DB(db);
     else
-        temp_data |= COMMAND_QUEUE_PORT_COMMAND_TRANSFER_ARGUMENT | COMMAND_QUEUE_PORT_TRANSFER_ARGUMENT_DATA_LENGTH(4);
+        temp_data |= COMMAND_QUEUE_PORT_COMMAND_TRANSFER_ARGUMENT | COMMAND_QUEUE_PORT_TRANSFER_ARGUMENT_DATA_LENGTH(bytelen);
     I3C_WriteREG_DWORD(temp_data, COMMAND_QUEUE_PORT_OFFSET, i3c_mux);
-    for (uint32_t timeout = I3C_TIMEOUT; (I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux) & INTR_STATUS_CMD_QUEUE_READY_STS) == 0; timeout--)
-    {
-        if (timeout == 0 || i3c_error)
-        {
-            I3C_Master_IntrStatus(i3c_mux);
-            i3c_error = 0;
-            return FALSE;
-        }
-        nop;
-    } // 等待CMD_COMPLETE中断
     //config static addr
     temp_data = 0;
     temp_data &= (DEV_ADDR_TABLE_LOC1_DEVICE_I3C);
-    temp_data |= DEV_ADDR_TABLE_LOC1_STATIC_ADDRESS(static_addr);
+    temp_data |= DEV_ADDR_TABLE_LOC1_DEV_DYNAMIC_ADDR(dynamic_addr);
+    if (DEV_ADDR_TABLE_LOC1_DEV_DYNAMIC_ADDR_PARITY(dynamic_addr) != 0)
+        temp_data |= DEV_ADDR_TABLE_LOC1_DEV_DYNAMIC_ADDR_PARITY(dynamic_addr);
+    else
+        temp_data &= DEV_ADDR_TABLE_LOC1_DEV_DYNAMIC_ADDR_PARITY0;
     I3C_WriteREG_DWORD(temp_data, DEV_ADDR_TABLE1_LOC1_OFFSET, i3c_mux);
     //issue directed ccc cmd
     temp_data = 0;
     temp_data &= COMMAND_QUEUE_PORT_COMMAND_TRANSFER_COMMAND & COMMAND_QUEUE_PORT_TRANSFER_COMMAND_DEV_INDX0 & COMMAND_QUEUE_PORT_TRANSFER_COMMAND_SPEED_SDR0;
-    temp_data |= COMMAND_QUEUE_PORT_TRANSFER_COMMAND_CMD(cmd) | COMMAND_QUEUE_PORT_TRANSFER_COMMAND_CP | COMMAND_QUEUE_PORT_TRANSFER_COMMAND_ROC | COMMAND_QUEUE_PORT_TRANSFER_COMMAND_TOC | COMMAND_QUEUE_PORT_TRANSFER_COMMAND_READ;
+    temp_data |= COMMAND_QUEUE_PORT_TRANSFER_COMMAND_DR_TRANSFER | COMMAND_QUEUE_PORT_TRANSFER_COMMAND_CMD(cmd) | COMMAND_QUEUE_PORT_TRANSFER_COMMAND_CP | COMMAND_QUEUE_PORT_TRANSFER_COMMAND_ROC | COMMAND_QUEUE_PORT_TRANSFER_COMMAND_TOC | COMMAND_QUEUE_PORT_TRANSFER_COMMAND_READ;
     if (dbp != 0)
         temp_data |= COMMAND_QUEUE_PORT_TRANSFER_COMMAND_DBP;
     I3C_WriteREG_DWORD(temp_data, COMMAND_QUEUE_PORT_OFFSET, i3c_mux);
@@ -933,7 +925,7 @@ BYTE I3C_MASTER_DR_CCC_READ(uint8_t static_addr, uint8_t* data, uint16_t bytelen
             i3c_error = 0;
             return FALSE;
         }
-        vDelayXus(10);
+
     }   //等INTR_STATUS_RESP_READY_STS中断
 
     while (data_len)
@@ -948,7 +940,7 @@ BYTE I3C_MASTER_DR_CCC_READ(uint8_t static_addr, uint8_t* data, uint16_t bytelen
                 i3c_error = 0;
                 return FALSE;
             }
-            vDelayXus(10);
+
         }
         uDword data_temp;
         data_temp.dword = I3C_ReadREG_DWORD(RX_DATA_PORT_OFFSET, i3c_mux);
@@ -985,6 +977,9 @@ BYTE I3C_MASTER_PV_WRITE_WITH7E(uint8_t dynamic_addr, uint8_t* data, uint16_t by
 
     if (bytelen != 0)
     {
+        //配置传输数据长度
+        temp_data |= COMMAND_QUEUE_PORT_COMMAND_TRANSFER_ARGUMENT | COMMAND_QUEUE_PORT_TRANSFER_ARGUMENT_DATA_LENGTH(bytelen);
+        I3C_WriteREG_DWORD(temp_data, COMMAND_QUEUE_PORT_OFFSET, i3c_mux);
         while (data_len)
         {
             register uint32_t len = (data_len <= 4 ? data_len : 4);
@@ -994,9 +989,6 @@ BYTE I3C_MASTER_PV_WRITE_WITH7E(uint8_t dynamic_addr, uint8_t* data, uint16_t by
             {
                 data_temp.byte[i] = *data_ptr++;
             }
-            //配置传输数据长度
-            temp_data |= COMMAND_QUEUE_PORT_COMMAND_TRANSFER_ARGUMENT | COMMAND_QUEUE_PORT_TRANSFER_ARGUMENT_DATA_LENGTH(4);
-            I3C_WriteREG_DWORD(temp_data, COMMAND_QUEUE_PORT_OFFSET, i3c_mux);
             for (uint32_t timeout = I3C_TIMEOUT; (I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux) & INTR_STATUS_TX_THLD_STS) == 0; timeout--)
             {
                 if (timeout == 0 || i3c_error)
@@ -1005,15 +997,15 @@ BYTE I3C_MASTER_PV_WRITE_WITH7E(uint8_t dynamic_addr, uint8_t* data, uint16_t by
                     i3c_error = 0;
                     return FALSE;
                 }
-                vDelayXus(10);
-            }   //等CMD_QUEUE_READY_STS中断 
+
+            }   //等待INTR_STATUS_TX_THLD_STS 
             I3C_WriteREG_DWORD(data_temp.dword, TX_DATA_PORT_OFFSET, i3c_mux);//发送数据
         }
     }
     //config dynamic addr
     temp_data = 0;
     temp_data &= (DEV_ADDR_TABLE_LOC1_DEVICE_I3C);
-    temp_data |= DEV_ADDR_TABLE_LOC1_STATIC_ADDRESS(dynamic_addr);
+    temp_data |= DEV_ADDR_TABLE_LOC1_DEV_DYNAMIC_ADDR(dynamic_addr);
     if (DEV_ADDR_TABLE_LOC1_DEV_DYNAMIC_ADDR_PARITY(dynamic_addr) != 0)
         temp_data |= DEV_ADDR_TABLE_LOC1_DEV_DYNAMIC_ADDR_PARITY(dynamic_addr);
     else
@@ -1032,7 +1024,7 @@ BYTE I3C_MASTER_PV_WRITE_WITH7E(uint8_t dynamic_addr, uint8_t* data, uint16_t by
             i3c_error = 0;
             return FALSE;
         }
-        vDelayXus(10);
+
     }   //等INTR_STATUS_RESP_READY_STS中断
     return TRUE;
 }
@@ -1061,22 +1053,12 @@ BYTE I3C_MASTER_PV_READ_WITH7E(uint8_t dynamic_addr, uint8_t* data, uint16_t byt
     }
 
     //配置传输长度
-    temp_data |= COMMAND_QUEUE_PORT_COMMAND_TRANSFER_ARGUMENT | COMMAND_QUEUE_PORT_TRANSFER_ARGUMENT_DATA_LENGTH(4);
+    temp_data |= COMMAND_QUEUE_PORT_COMMAND_TRANSFER_ARGUMENT | COMMAND_QUEUE_PORT_TRANSFER_ARGUMENT_DATA_LENGTH(bytelen);
     I3C_WriteREG_DWORD(temp_data, COMMAND_QUEUE_PORT_OFFSET, i3c_mux);
-    for (uint32_t timeout = I3C_TIMEOUT; (I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux) & INTR_STATUS_CMD_QUEUE_READY_STS) == 0; timeout--)
-    {
-        if (timeout == 0 || i3c_error)
-        {
-            I3C_Master_IntrStatus(i3c_mux);
-            i3c_error = 0;
-            return FALSE;
-        }
-        nop;
-    } // 等待CMD_COMPLETE中断
     //config dynamic addr
     temp_data = 0;
     temp_data &= (DEV_ADDR_TABLE_LOC1_DEVICE_I3C);
-    temp_data |= DEV_ADDR_TABLE_LOC1_STATIC_ADDRESS(dynamic_addr);
+    temp_data |= DEV_ADDR_TABLE_LOC1_DEV_DYNAMIC_ADDR(dynamic_addr);
     if (DEV_ADDR_TABLE_LOC1_DEV_DYNAMIC_ADDR_PARITY(dynamic_addr) != 0)
         temp_data |= DEV_ADDR_TABLE_LOC1_DEV_DYNAMIC_ADDR_PARITY(dynamic_addr);
     else
@@ -1095,7 +1077,6 @@ BYTE I3C_MASTER_PV_READ_WITH7E(uint8_t dynamic_addr, uint8_t* data, uint16_t byt
             i3c_error = 0;
             return FALSE;
         }
-        vDelayXus(10);
     }   //等INTR_STATUS_RESP_READY_STS中断
     while (data_len)
     {
@@ -1109,7 +1090,7 @@ BYTE I3C_MASTER_PV_READ_WITH7E(uint8_t dynamic_addr, uint8_t* data, uint16_t byt
                 i3c_error = 0;
                 return FALSE;
             }
-            vDelayXus(10);
+
         }
         uDword data_temp;
         data_temp.dword = I3C_ReadREG_DWORD(RX_DATA_PORT_OFFSET, i3c_mux);
@@ -1173,7 +1154,7 @@ BYTE I3C_MASTER_PV_WRITE_THEN_READ_WITH7E(uint8_t dynamic_addr, uint8_t* wdata, 
             i3c_error = 0;
             return FALSE;
         }
-        vDelayXus(10);
+
     }
     if (rbytelen != 0)
     {
@@ -1399,7 +1380,7 @@ BYTE I3C_SLAVE_IBI_HOTJOIN(uint8_t addr, uint32_t idpartno, uint8_t dcr, uint8_t
 }
 
 /**
-* @brief SLAVE ibi data函数
+* @brief SLAVE write data函数
 *
 * @param addr slave static addr
 * @param ibi_data ibi需要发送的data
@@ -1434,9 +1415,9 @@ BYTE I3C_SLAVE_IBI_DATA(uint8_t addr, uint8_t ibi_data, uint32_t idpartno, uint8
 }
 
 /**
-* @brief SLAVE ibi data函数
+* @brief SLAVE write data函数
 *
-* @param data 需要写入的数据
+* @param data 写入数据的存放位置指针
 * @param bytelen 需要写入的数据长度
 * @param i3c_mux 配置选择，如I3C_SLAVE0、I3C_SLAVE1
 * @return 操作结果
@@ -1449,14 +1430,9 @@ BYTE I3C_SLAVE_WRITE(uint8_t* data, uint8_t bytelen, BYTE i3c_mux)
     uint32_t data_len = bytelen;
     uint32_t temp_data = 0;
 
-    if (data_ptr == NULL || data_len == 0)
+    if ((data_ptr == NULL || data_len == 0) || ((i3c_mux != I3C_SLAVE0) && (i3c_mux != I3C_SLAVE1)))
     {
         i3c_dprint("argument error\n");
-        return FALSE;
-    }
-    if ((i3c_mux != I3C_MASTER0) && (i3c_mux != I3C_MASTER1))
-    {
-        i3c_dprint("controller select fault\n");
         return FALSE;
     }
 
@@ -1469,6 +1445,43 @@ BYTE I3C_SLAVE_WRITE(uint8_t* data, uint8_t bytelen, BYTE i3c_mux)
         }
         temp_data |= *(data_ptr + bytelen - data_len - 1);
         I3C_WriteREG_DWORD(temp_data, WDATAB_OFFSET, i3c_mux);
+    }
+    return TRUE;
+}
+
+/**
+* @brief SLAVE read data函数
+*
+* @param data 读出数据的存放位置指针
+* @param bytelen 需要读出的数据长度
+* @param i3c_mux 配置选择，如I3C_SLAVE0、I3C_SLAVE1
+* @return 操作结果
+*
+* @note 调用此接口发起ibi 发送data
+*/
+BYTE I3C_SLAVE_READ(uint8_t* data, uint8_t bytelen, BYTE i3c_mux)
+{
+    uint8_t* data_ptr = data;
+    uint32_t data_len = bytelen;
+
+    if ((data_ptr == NULL || data_len == 0) || ((i3c_mux != I3C_SLAVE0) && (i3c_mux != I3C_SLAVE1)))
+    {
+        i3c_dprint("argument error\n");
+        return FALSE;
+    }
+
+    for (uint32_t timeout = I3C_TIMEOUT; (I3C_ReadREG_DWORD(STATUS_OFFSET, i3c_mux) & STATUS_RXPEND) == 0; timeout--)
+    {
+        if (timeout == 0)
+        {
+            i3c_dprint("no data can be received\n");
+            return FALSE;
+        }
+    }   //等STATUS_RXPEND置位
+
+    while (data_len--)
+    {
+        *(data_ptr++) = I3C_ReadREG_DWORD(RDATAB_OFFSET, i3c_mux);
     }
     return TRUE;
 }
