@@ -67,9 +67,9 @@ void uart_init(void)
 	flag |= BIT3;
 	baud[3] = serial_init(UARTB_CHANNEL, UARTB_BAUD);
 #endif
-	for(int cnt = 0; cnt < 4; cnt++)
+	for (int cnt = 0; cnt < 4; cnt++)
 	{
-		if(flag & BIT(cnt))
+		if (flag & BIT(cnt))
 		{
 			dprint("Actual baud rate of the serial port %X == %d.\n", ((cnt < 2) ? cnt : (cnt + 8)), baud[cnt]);
 		}
@@ -144,6 +144,20 @@ void smbus_init(void)
 void i3c_init(void)
 {
 #if I3C_MODULE_EN
+	/****************** slave init(only I3C2 and I3C3) ******************/
+#if I3C2_EN_Init
+	i3c2_MoudleClock_EN;
+	sysctl_iomux_slave0();
+	i3c2_pull_up();
+	I3C_Slave_Init(I3C_SLAVE0_DEFAULT_ADDR, I3C_SLAVE0_DEFAULT_IDPARTNO, I3C_SLAVE0_DEFAULT_DCR, I3C_SLAVE0_DEFAULT_BCR, I3C_SLAVE0);
+#endif
+#if I2C3_EN_Init
+	i3c3_MoudleClock_EN;
+	sysctl_iomux_slave1();
+	i3c3_pull_up();
+	I3C_Slave_Init(I3C_SLAVE1_DEFAULT_ADDR, I3C_SLAVE1_DEFAULT_IDPARTNO, I3C_SLAVE1_DEFAULT_DCR, I3C_SLAVE1_DEFAULT_BCR, I3C_SLAVE1);
+#endif
+	dprint("i3c slave init done.\n");
 	/****************** master init(only I3C0 and I3C1) ******************/
 #if I3C0_EN_Init
 	i3c0_MoudleClock_EN;
@@ -159,21 +173,6 @@ void i3c_init(void)
 	I3C_Master_Init(I3C_MASTER1_DEFAULT_ROLE, I3C_MASTER1_SPEED, I3C_MASTER1_DEFAULT_ADDR, I3C_MASTER1_DEFAULT_DCT, I3C_MASTER1_DEFAULT_DYNAMICADDR, I3C_MASTER1);
 #endif
 	dprint("i3c master init done.\n");
-
-	/****************** slave init(only I3C2 and I3C3) ******************/
-#if I3C2_EN_Init
-	i3c2_MoudleClock_EN;
-	sysctl_iomux_slave0();
-	i3c2_pull_up();
-	I3C_Slave_Init(I3C_SLAVE0_DEFAULT_ADDR, I3C_SLAVE0_DEFAULT_IDPARTNO, I3C_SLAVE0_DEFAULT_DCR, I3C_SLAVE0_DEFAULT_BCR, I3C_SLAVE0);
-#endif
-#if I2C3_EN_Init
-	i3c3_MoudleClock_EN;
-	sysctl_iomux_slave1();
-	i3c3_pull_up();
-	I3C_Slave_Init(I3C_SLAVE1_DEFAULT_ADDR, I3C_SLAVE1_DEFAULT_IDPARTNO, I3C_SLAVE1_DEFAULT_DCR, I3C_SLAVE1_DEFAULT_BCR, I3C_SLAVE1);
-#endif
-	dprint("i3c slave init done.\n");
 #endif
 }
 void spi_init(void)
@@ -194,7 +193,7 @@ void spi_init(void)
 	dprint("SPI Master init done.\n");
 #if SPIF_EN_Init
 	spif_MoudleClock_EN;
-	if(SYSCTL_PIO_CFG & BIT1)//使用外部FLASH
+	if (SYSCTL_PIO_CFG & BIT1)//使用外部FLASH
 	{
 		SPIFI_Init();//内部SPIF无法控制,因此主要是内部引脚开关,内部FLASH运行状态之类的控制
 		dprint("INTERNAL FLASH init done.\n");
@@ -202,7 +201,7 @@ void spi_init(void)
 	else//使用内部FLASH才能初始化
 	{
 		sysctl_iomux_spif(SPIF_CSN_SEL, SPIF_QE_SEL, SPIF_WP_SEL);
-	}
+}
 	SPIFE_Init();//初始化外部FLASH的一些细节,注意,如果使用外部FLASH可能会和cache冲突
 	dprint("EXTERNAL FLASH init done.\n");
 #endif
@@ -437,7 +436,7 @@ void time_init(void)
 	timer3_MoudleClock_EN;			 // us delay
 	TIMER_Init(TIMER3, 1, 0x0, 0x1); // delay~=0.083us
 
-	while((TIMER_TRIS & 0xf) != 0xf)
+	while ((TIMER_TRIS & 0xf) != 0xf)
 		;
 	TIMER_TEOI; // clear all interrupt
 	dprint("Timer init done\n");
@@ -485,6 +484,7 @@ void __weak SECTION(".init.module") Module_init(void)
 	host_init();
 	// 10.Initialize  The KBS and The PS2
 	kbs_init();
+
 	ps2_init();
 	// 11.Initialize The CEC
 	cec_init();
@@ -503,7 +503,7 @@ void exit(int __status)
 NORETURN USED void _exit(int __status)
 {
 	dprint("exit status doc %d\n", __status);
-	while(1)
+	while (1)
 		;
 }
 #endif
