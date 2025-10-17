@@ -316,7 +316,7 @@ extern void sysctl_iomux_cec1(void);
 extern void sysctl_iomux_owi(void);
 
 extern void sysctl_iomux_gpioe(void);
-extern void sysctl_iomux_kbs(void);
+extern void sysctl_iomux_kbs(uint32_t kbsn_switch);
 extern void sysctl_iomux_crypto_jtag(void);
 extern void sysctl_iomux_jtag(void);
 
@@ -353,6 +353,7 @@ extern void tach1_pull_up(uint32_t tach_sel);
 extern void tach2_pull_up(void);
 extern void tach3_pull_up(uint32_t tach_sel);
 
+extern void kbs_pull_up(uint32_t kbsn_switch);
 extern BYTE  PIO_Pullup_Config(BYTE  GPIO, BYTE  Num);
 extern char IsGpioOut(DWORD port, DWORD io);
 extern int GPIO_Config(int GPIO, int gpio_no, int mode, int op_val, int int_lv, int pol);

@@ -74,6 +74,7 @@
 #define I3C1_CLOCK_EN 1
 #define I3C2_CLOCK_EN 1
 #define I3C3_CLOCK_EN 1
+#define MAILBOX_CLOCK_EN 1
 /*************时钟模块控制宏*************/
 // SYSCTL MOUDLE ENABLE BIT
 // SYSCTL_MODE0
@@ -249,7 +250,11 @@ void Default_Config();
 #else
 #define adc_MoudleClock_EN SYSCTL_MODEN0 &= (~ADC_EN);
 #endif
-#define PLL_ENF2 (ADC_CLOCK_EN << 27)
+#if MAILBOX_CLOCK_EN
+#define mailbox_MoudleClock_EN SYSCTL_MODEN0 |= MAILBOX_EN;
+#else
+#define mailbox_MoudleClock_EN SYSCTL_MODEN0 &= (~MAILBOX_EN);
+#endif
 #if WDT_CLOCK_EN
 #define wdt_MoudleClock_EN SYSCTL_MODEN0 |= WDT_EN;
 #else

@@ -22,6 +22,11 @@
 //-----------------------------------------------------------------------------
 // PS2 CMD WORD
 //-----------------------------------------------------------------------------
+#define PS2M_CHANNEL 0
+#define PS2K_CHANNEL 1
+#define PS2_0_CHANNEL PS2M_CHANNEL
+#define PS2_1_CHANNEL PS2K_CHANNEL
+
 #define CCMD_MOUSE_DISABLE 0xA7 /* Disable mouse interface */
 #define CCMD_MOUSE_ENABLE 0xA8  /* Enable mouse interface */
 #define CCMD_KBD_DISABLE 0xAD   /* Disable KBD interface */
@@ -133,6 +138,7 @@ extern void InitAndIdentifyPS2(void);
 extern int Send_Aux_Data_To_Host(BYTE auxdata);
 extern int AE10x_PS2_Init(void);
 extern char Disable_Aux_Data_Reporting(BYTE channel);
+extern void PS2_PortN_Init(uint8_t channel);
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 #endif

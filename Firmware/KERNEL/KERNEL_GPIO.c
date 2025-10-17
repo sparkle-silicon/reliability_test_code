@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-10 18:38:36
+ * @LastEditTime: 2025-10-17 10:48:43
  * @Description:
  *
  *
@@ -215,13 +215,13 @@ void sysctl_iomux_config(DWORD port, DWORD io, unsigned port_type)
 	{
 		if(io <= 15)
 		{
-			SYSCTL_PIO0_CFG &= ~(011 << (io << 1));
+			SYSCTL_PIO0_CFG &= ~(0b11 << (io << 1));
 			SYSCTL_PIO0_CFG |= ((port_type & 0b11) << (io << 1));
 		}
 		else if(io <= 31)
 		{
 			io -= 16;
-			SYSCTL_PIO1_CFG &= ~(011 << (io << 1));
+			SYSCTL_PIO1_CFG &= ~(0b11 << (io << 1));
 			SYSCTL_PIO1_CFG |= ((port_type & 0b11) << (io << 1));
 		}
 		else
@@ -233,13 +233,13 @@ void sysctl_iomux_config(DWORD port, DWORD io, unsigned port_type)
 	{
 		if(io <= 15)
 		{
-			SYSCTL_PIO2_CFG &= ~(011 << (io << 1));
+			SYSCTL_PIO2_CFG &= ~(0b11 << (io << 1));
 			SYSCTL_PIO2_CFG |= ((port_type & 0b11) << (io << 1));
 		}
 		else if(io <= 31)
 		{
 			io -= 16;
-			SYSCTL_PIO3_CFG &= ~(011 << (io << 1));
+			SYSCTL_PIO3_CFG &= ~(0b11 << (io << 1));
 			SYSCTL_PIO3_CFG |= ((port_type & 0b11) << (io << 1));
 		}
 		else
@@ -251,7 +251,7 @@ void sysctl_iomux_config(DWORD port, DWORD io, unsigned port_type)
 	{
 		if(io <= 15)
 		{
-			SYSCTL_PIO4_CFG &= ~(011 << (io << 1));
+			SYSCTL_PIO4_CFG &= ~(0b11 << (io << 1));
 			SYSCTL_PIO4_CFG |= ((port_type & 0b11) << (io << 1));
 		}
 		else
@@ -263,7 +263,7 @@ void sysctl_iomux_config(DWORD port, DWORD io, unsigned port_type)
 	{
 		if(io <= 8)
 		{
-			SYSCTL_PIO5_CFG &= ~(011 << (io << 1));
+			SYSCTL_PIO5_CFG &= ~(0b11 << (io << 1));
 			SYSCTL_PIO5_CFG |= ((port_type & 0b11) << (io << 1));
 		}
 		else
@@ -280,8 +280,8 @@ void sysctl_iomux_config(DWORD port, DWORD io, unsigned port_type)
 		}
 		else if(((io >= 16) && (io <= 23)) || ((io >= 0) && (io <= 9)))
 		{
-			SYSCTL_PIO5_CFG &= ~(011 << 18);
-			SYSCTL_PIO5_CFG |= ((port_type & 011) << 18);
+			SYSCTL_PIO5_CFG &= ~(0b11 << 18);
+			SYSCTL_PIO5_CFG |= ((port_type & 0b11) << 18);
 		}
 		else
 		{
@@ -821,15 +821,13 @@ void sysctl_iomux_gpioe(void)
 //      none
 //
 //*****************************************************************************
-void sysctl_iomux_kbs(void)
+void sysctl_iomux_kbs(uint32_t kbsn_switch)
 {
 	sysctl_iomux_switch_kbs_jtag(1);
-#if (KBD_8_n_SWITCH == 17||KBD_8_n_SWITCH == 18)    
-	sysctl_iomux_config(GPIOA, 19, 1); // C3 kso 16
-#endif
-#if(KBD_8_n_SWITCH == 18)
-	sysctl_iomux_config(GPIOA, 21, 1); // C3 kso 17
-#endif
+	if(kbsn_switch == 17 || kbsn_switch == 18)
+		sysctl_iomux_config(GPIOA, 19, 1); // C3 kso 16
+	if(kbsn_switch == 18)
+		sysctl_iomux_config(GPIOA, 21, 1); // C3 kso 17
 }
 //*****************************************************************************
 //
@@ -1336,25 +1334,24 @@ void cec1_pull_up(void)
 //      none
 //
 //*****************************************************************************
-void kbs_pull_up(void)
+void kbs_pull_up(uint32_t kbsn_switch)
 {
-	for(register unsigned char i = 8; i <= 31; i++)
+	for(register unsigned char i = 0; i <= 23; i++)
 	{
 		//考虑KBS扫描逻辑，不做低电平判断
-		if((((KBS_EXTERNAL_PULL_UP) & (1 << (i - 8))) == 0) && ((((KBS_INTERNAL_PULL_UP) & (1 << (i - 8))) == (1 << (i - 8)))))
+		if((((KBS_EXTERNAL_PULL_UP) & (1 << (i))) == 0) && ((((KBS_INTERNAL_PULL_UP) & (1 << (i))) == (1 << (i)))))
 			PIO_Pullup_Config(GPIOE, i); // gpe all pull up
 	}
-#if (KBD_8_n_SWITCH == 17 || KBD_8_n_SWITCH == 18)
-	//考虑KBS扫描逻辑，不做低电平判断
-	if((((KBS_EXTERNAL_PULL_UP) & (1 << (24))) == 0) && ((((KBS_INTERNAL_PULL_UP) & (1 << (24))) == (1 << (24)))))
-		PIO_Pullup_Config(GPIOA, 19); // C3 kso 16
-#endif
-#if (KBD_8_n_SWITCH == 18)
-	//考虑KBS扫描逻辑，不做低电平判断
-	if((((KBS_EXTERNAL_PULL_UP) & (1 << (25))) == 0) && ((((KBS_INTERNAL_PULL_UP) & (1 << (25))) == (1 << (25)))))
-		PIO_Pullup_Config(GPIOA, 21); // C3 kso 17
-#endif
-	SYSCTL_PIO3_UDCFG |= 0x00ff0000;//kbs in maintain pull up 
+	if(kbsn_switch == 17 || kbsn_switch == 18)
+	{//考虑KBS扫描逻辑，不做低电平判断
+		if((((KBS_EXTERNAL_PULL_UP) & (1 << (24))) == 0) && ((((KBS_INTERNAL_PULL_UP) & (1 << (24))) == (1 << (24)))))
+			PIO_Pullup_Config(GPIOA, 19); // C3 kso 16
+	}
+	if(kbsn_switch == 18)
+	{//考虑KBS扫描逻辑，不做低电平判断
+		if((((KBS_EXTERNAL_PULL_UP) & (1 << (25))) == 0) && ((((KBS_INTERNAL_PULL_UP) & (1 << (25))) == (1 << (25)))))
+			PIO_Pullup_Config(GPIOA, 21); // C3 kso 17
+	}
 }
 /**
  * @brief GPIO配置函数，用于配置GPIO的工作模式及中断相关参数

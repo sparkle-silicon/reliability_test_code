@@ -1211,6 +1211,17 @@ void InitAndIdentifyPS2(void)
 		}
 	}
 }
+void PS2_PortN_Init(uint8_t channel)
+{
+	if(channel > 1) return;
+	BYTEP BASE_ADDR = (BYTEP)PS2_PORT0_BASE_ADDR;
+	if(channel)
+	{
+		BASE_ADDR = (BYTEP)PS2_PORT1_BASE_ADDR;
+	}
+	REG8(REG_ADDR(BASE_ADDR, PS2_PORT0_CPSR)) = (((HIGHT_CHIP_CLOCK * 5) / 1000 + 500) / 1000);		 // 5us
+	REG8(REG_ADDR(BASE_ADDR, PS2_PORT0_DVR_OFFSET)) = (((HIGHT_CHIP_CLOCK / PS2_PORT0_CPSR) / 1000 + 5) / 10); // 100us
+}
 /*-----------------------------------------------------------------------------
  * End
  *---------------------------------------------------------------------------*/

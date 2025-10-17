@@ -17,8 +17,8 @@
 #define __KERNEL_CEC_H_
 #include "AE_GLOBAL.H"
 #include "AE_REG.H"
-#define CEC0_mode_select                      0//"1": as initiator; "0" as follower
-#define CEC1_mode_select                      0//"1": as initiator; "0" as follower
+#define CEC0_CHANNEL 0
+#define CEC1_CHANNEL 1
 #define CEC_Destination_address              0x0F//option. and the "F" mean broadcast
 #define CEC_Initiator_address                0x0F//as device address while CEC used to follower 
  //the bit of cec interrupt_enable_register
@@ -59,5 +59,5 @@
 // WORD CEC_Read(BYTE offset);
 extern void CEC_initiator_init(BYTE channel);
 extern void CEC_follower_init(BYTE channel);
-extern void CEC_Frame_send(BYTE channel, char* data, BYTE len, BYTE broadcast);
+extern void CEC_Frame_send(BYTE channel, char *data, BYTE len, BYTE broadcast);
 #endif

@@ -19,7 +19,7 @@
 #include "AE_REG.H"
 #include "AE_CONFIG.H"
 #include "KERNEL_MEMORY.H"
-extern void OWI_Init(u8 data_len, u8 out_clk, u8 T1H, u8 T0H);
+extern void OWI_Init(u8 data_len, u8 out_clk, u8 T0H, u8 T1H, u8 clkdiv);
 extern void OWI_GO(u16 reset_us);
 extern void OWI_Set_Data(u8 led_num_start, u8 led_num_over, u32 data);
 extern void OWI_Clear_Data(u8 led_num_start, u8 led_num_over);

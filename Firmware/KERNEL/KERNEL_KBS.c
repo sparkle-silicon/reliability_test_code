@@ -246,9 +246,9 @@ void KBD_Default_KBS_INFO(void)
     KBS_REPEAT = TM_REPEAT;
 }
 /* ----------------------------------------------------------------------------
- * FUNCTION: KayBoardScan_config - Scanner Keyboard Initialization.
+ * FUNCTION: KBS_Init - Scanner Keyboard Initialization.
  * ------------------------------------------------------------------------- */
-void KayBoardScan_config(void)
+void KBS_Init(void)
 {
 #if (KBD_8_n_SWITCH == 18)
     KBS_KSDC2R = KBS_KSDC2R_SSEL_18 | KBS_KSDC2R_DELAY57;

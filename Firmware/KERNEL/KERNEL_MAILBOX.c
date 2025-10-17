@@ -43,7 +43,7 @@ void Process_Tasks(void)
     }
 }
 
-void mailbox_init(void)
+void Mailbox_Init(void)
 {
     MAILBOX_SELF_CMD =
         MAILBOX_SELF_INFO1 =
@@ -148,7 +148,6 @@ void Mailbox_Cryp_Selfcheck(void *param)
 void Mailbox_SetClockFrequency(void *param)
 {
     TaskParams *params = (TaskParams *)param;
-    // CHIP_CLOCK_SWITCH = params->E2C_INFO1;//设置多少分频
     MAILBOX_SELF_INFO1 = params->E2C_INFO1;//通知子系统设置多少分频
     MAILBOX_SELF_CMD = MAILBOX_CMD_FREQ_SYNC;
     MAILBOX_SET_IRQ(MAILBOX_Control_IRQ_NUMBER);
@@ -161,7 +160,7 @@ void AwaitCrypSelfcheck(void)
 {
     TaskParams Params;
     task_head = Add_Task((TaskFunction)Mailbox_Read_EFUSE_Trigger, Params, &task_head);//安全使能是否打开
-    mailbox_init();
+    Mailbox_Init();
     while(EFUSE_Avail == 0)
     {
         Service_Process_Tasks();
@@ -198,35 +197,6 @@ void AwaitCrypSelfcheck(void)
         }
     }
 
-}
-
-void CheckClockFrequencyChange(void)
-{
-    //后续根据文档修改为主系统直接访问efuse的bit位
-    TaskParams Params;
-    task_head = Add_Task((TaskFunction)Mailbox_Read_EFUSE_Trigger, Params, &task_head);//安全使能是否打开
-    mailbox_init();
-    Module_init();//暂时保留，后续根据实际情况是否需要调用初始化
-    while(EFUSE_Avail == 0)
-    {
-        Service_Process_Tasks();
-        Service_Mailbox();
-    }
-    EFUSE_Avail = 0;
-    if(((MAILBOX_OTHER_INFO2 & BIT(29)) != 0) && (CHIP_CLOCK_SWITCH != 1))//clock frequency need set
-    {
-        // CHIP_CLOCK_SWITCH = 1;//设置全局分频变量
-        SYSCTL_CLKDIV_OSC96M = (CHIP_CLOCK_SWITCH - 1);//96M
-        __nop
-    }
-    else
-    {
-        // CHIP_CLOCK_SWITCH = CHIP_CLOCK_SWITCH;
-        SYSCTL_CLKDIV_OSC96M = (CHIP_CLOCK_SWITCH - 1);//96M
-        __nop
-    }
-    AwaitCrypSelfcheck();//等待子系统自检完成
-    Module_init();//暂时保留，后续根据实际情况是否需要调用初始化
 }
 
 void Transfer_IntFlashToExtFlash(uint32_t destAddr, uint32_t srcAddr, size_t dataSize)
@@ -630,9 +600,7 @@ void Mailbox_Control(void)
     else if(C2E_CMD == MAILBOX_CMD_FREQ_SYNC)
     {
         /* 响应子系统降频 */
-        // if(CHIP_CLOCK_SWITCH == 0)
-        //     CHIP_CLOCK_SWITCH = 1;
-        SYSCTL_CLKDIV_OSC96M = (CHIP_CLOCK_SWITCH - 1);
+        // SYSCTL_CLKDIV_OSC96M = (CHIP_CLOCK_SWITCH - 1);
         __nop
             Module_init();//暂时保留，后续根据实际情况是否需要调用初始化
         eFlash_Forbid_Flag = 1;   // 降频到48MHz后，设置eFlash禁止主系统访问标志

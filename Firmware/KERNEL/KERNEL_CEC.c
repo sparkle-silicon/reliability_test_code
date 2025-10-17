@@ -54,15 +54,15 @@ void CEC_follower_init(BYTE channel)
 //  return :
 //              none
 //******************************************************************************
-void CEC_Frame_send(BYTE channel, char* data, BYTE len, BYTE broadcast)
+void CEC_Frame_send(BYTE channel, char *data, BYTE len, BYTE broadcast)
 {
 
-    if (len > 15)
+    if(len > 15)
     {
         dprint("the frame length exceeded !!\n");
         return;
     }
-    if (broadcast) // head
+    if(broadcast) // head
     {
         CECn_CTRL(channel) |= CEC_Ctr_sdb;
         // CECn_DA(channel) = (CEC_Initiator_address << 4) | CEC_Destination_address;
@@ -73,10 +73,21 @@ void CEC_Frame_send(BYTE channel, char* data, BYTE len, BYTE broadcast)
         // CECn_DA(channel) = (CEC_Initiator_address << 4) | CEC_Destination_address;
     }
 
-    for (int i = 0; i < len - 1; i++)
+    for(int i = 0; i < len - 1; i++)
     {
         CECn_DA(channel) = data[i];
     }
     CECn_DA(channel) = data[len - 1] | CEC_send_EOM;
     CECn_CTRL(channel) |= CEC_Ctr_send; // Send fifo
+}
+void CEC_Init(uint8_t channel, uint8_t mode)
+{
+    if(mode)
+    {
+        CEC_initiator_init(channel);
+    }
+    else
+    {
+        CEC_follower_init(channel);
+    }
 }

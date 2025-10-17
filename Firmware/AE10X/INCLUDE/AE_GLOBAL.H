@@ -359,7 +359,6 @@ typedef struct _point{
 #pragma pack(4) // 4字节对齐
 extern int main();
 extern sMode Mode;
-// extern u_int32_t CHIP_CLOCK_SWITCH;
 
 typedef struct _CryptoFlashInfo{
     uint8_t Firmware_ID[16]; // 识别码，确认安全验签位置，和开头识别码做区分

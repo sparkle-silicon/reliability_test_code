@@ -31,6 +31,13 @@ void gpio_init(void)
 	gpio_DefaultConfig();
 #endif
 }
+void mailbox_init(void)
+{
+#if MAILBOX_MODULE_EN
+	mailbox_MoudleClock_EN;
+	Mailbox_Init();
+#endif
+}
 void uart_init(void)
 {
 #if UART_MODULE_EN
@@ -276,7 +283,6 @@ void pwm_tach_init(void)
 	dprint("TACH init done\n");
 #endif
 }
-
 void host_init(void)
 {
 #if HOST_MODULE_EN
@@ -306,8 +312,10 @@ void host_init(void)
 	sysctl_iomux_l80();
 	L80_Init();
 #endif
-#if (KBC_MODULE_EN)
+#if (KBC_MODULE_EN||PMC_MODULE_EN)
 	pmckbc_MoudleClock_EN;
+#endif
+#if (KBC_MODULE_EN)
 	kbc_init();
 	dprint("KBC init done.\n");
 #endif
@@ -331,78 +339,53 @@ void kbs_init(void)
 {
 #if (KBS_MODULE_EN)
 	kbs_MoudleClock_EN;
-	sysctl_iomux_kbs(); // KBD_8_n_SWITCH
-	kbs_pull_up();
-	KayBoardScan_config();
-	dprint("Kbd init done.\n");
+	sysctl_iomux_kbs(KBD_8_n_SWITCH); // KBD_8_n_SWITCH
+	kbs_pull_up(KBD_8_n_SWITCH);
+	KBS_Init();
+	dprint("Kbs init done.\n");
 #endif
-}
-void ps2_0_frequency(void)
-{
-	/*init ps2 0 freq */
-	PS2_PORT0_CPSR = (((HIGHT_CHIP_CLOCK * 5) / 1000 + 500) / 1000);		 // 5us
-	PS2_PORT0_DVR = (((HIGHT_CHIP_CLOCK / PS2_PORT0_CPSR) / 1000 + 5) / 10); // 100us
-}
-void ps2_1_frequency(void)
-{
-	/*init ps2 1 freq */
-	PS2_PORT1_CPSR = (((HIGHT_CHIP_CLOCK * 5) / 1000 + 500) / 1000);		 // 5us
-	PS2_PORT1_DVR = (((HIGHT_CHIP_CLOCK / PS2_PORT0_CPSR) / 1000 + 5) / 10); // 100us
 }
 void ps2_init(void)
 {
 #if (PS2_MODULE_EN)
 #if PS2_0_EN_Init
 	ps2_0_MoudleClock_EN;
-	ps2_0_frequency();
 	sysctl_iomux_ps2_0(PS2_0_CLK_SEL, PS2_0_DAT_SEL);
 	ps2_0_pull_up(PS2_0_CLK_SEL, PS2_0_DAT_SEL);
+	PS2_PortN_Init(PS2_0_CHANNEL);//仅初始化通道,Device初始化应该由实际情况实现
 #endif
 #if PS2_1_EN_Init
 	ps2_1_MoudleClock_EN;
-	ps2_1_frequency();
 	sysctl_iomux_ps2_1(PS2_1_CLK_SEL, PS2_1_DAT_SEL);
 	ps2_1_pull_up(PS2_1_CLK_SEL, PS2_1_DAT_SEL);
+	PS2_PortN_Init(PS2_1_CHANNEL);//仅初始化通道,Device初始化应该由实际情况实现
 #endif
 	dprint("Ps2 init done.\n");
 #endif
 }
-
 void cec_init(void)
 {
 #if (CEC_MODULE_EN)
 	cec_MoudleClock_EN;
-
 #if CEC0_EN_Init
-	sysctl_iomux_cec0(0);
-	cec0_pull_up(0);
-#if CEC0_mode_select
-	CEC_initiator_init(0);
-#else
-	CEC_follower_init(0);
+	sysctl_iomux_cec0(CEC0_PIN_SEL);
+	cec0_pull_up(CEC0_PIN_SEL);
+	CEC_Init(CEC0_CHANNEL, CEC0_MODE_SWITCH);
 #endif
-#endif
-
 #if CEC1_EN_Init
 	sysctl_iomux_cec1();
 	cec1_pull_up();
-#if CEC1_mode_select
-	CEC_initiator_init(1);
-#else
-	CEC_follower_init(1);
+	CEC_Init(CEC1_CHANNEL, CEC1_MODE_SWITCH);
 #endif
-#endif
-
 	dprint("cec init done.\n");
 #endif
 }
 void owi_init(void)
 {
 #if (OWI_MODULE_EN)
-	SYSCTL_CLKDIV_OWI = 0x0; // 时钟1分频,分频数为0base
 	owi_MoudleClock_EN;
 	sysctl_iomux_owi();
-	OWI_Init(128, 30, 20, 10);
+	OWI_Init(OWI_DEFAULT_LENGTH, OWI_DEFAULT_CYCLE_NUM, OWI_DEFAULT_T0_HIGH_COUNT, OWI_DEFAULT_T1_HIGH_COUNT, OWI_DEFAULT_CLKDIV);
 	dprint("owi init done.\n");
 #endif
 }
@@ -506,11 +489,11 @@ void __weak SECTION(".init.module") Module_init(void)
 	smbus_init();
 	// 6.Initialize The I3C
 	i3c_init();
-	// 7.Initialize The SPI
+	// 7.Initialize The SPI (SPIF SPIM)
 	spi_init();
 	// 8.Initialize The PWM and The TACH
 	pwm_tach_init();
-	// 9.Initialize The KBC and The PMC
+	// 9.Initialize The Host
 	host_init();
 	// 10.Initialize  The KBS and The PS2
 	kbs_init();

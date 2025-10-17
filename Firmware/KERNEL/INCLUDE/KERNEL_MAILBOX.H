@@ -21,8 +21,7 @@
 #include "AE_CONFIG.H"
 typedef void (*TaskFunction)(void *); // 定义任务函数类型，接受参数
 // 定义一个结构体来封装多个参数
-typedef struct
-{
+typedef struct{
     DWORD E2C_INFO1;
     DWORD E2C_INFO2;
     DWORD E2C_INFO3;
@@ -31,8 +30,7 @@ typedef struct
     DWORD E2C_INFO6;
 } TaskParams;
 
-typedef struct Task
-{
+typedef struct Task{
     TaskFunction function; // 任务函数指针
     TaskParams params;     // 任务参数
     struct Task *next;     // 指向下一个任务
@@ -182,7 +180,7 @@ while(MAILBOX_OTHER_INT&MAILBOX_IRQ_BIT(irq_number)); \
 #define APB_REL BIT(30)
 #define APB_REQ BIT(31)
 
-extern void mailbox_init(void);
+extern void Mailbox_Init(void);
 void Mailbox_Control();
 void Mailbox_Firmware();
 void Mailbox_Efuse();
@@ -207,7 +205,6 @@ extern void Process_Tasks(void);
 extern Task *Add_Task(TaskFunction function, TaskParams params, Task **head);
 extern void Mailbox_Cryp_Selfcheck(void *param);
 extern void AwaitCrypSelfcheck(void);
-extern void CheckClockFrequencyChange(void);
 extern void Mailbox_SetClockFrequency(void *param);
 void Transfer_IntFlashToExtFlash(uint32_t destAddr, uint32_t srcAddr, size_t dataSize);
 void Transfer_ExtFlashToIntFlash(uint32_t destAddr, uint32_t srcAddr, size_t dataSize);

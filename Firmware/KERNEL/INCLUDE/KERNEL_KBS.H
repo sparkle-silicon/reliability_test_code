@@ -157,7 +157,7 @@ extern BYTE KBS_Buffer_Get(BYTEP);
 extern void KBS_Run(void);
 extern void KBS_Set_KBS_INFO(VBYTE type_rate);
 extern void KBD_CLear_Buffer(void);//zb 10.26 add
-extern void KayBoardScan_config(void);
+extern void KBS_Init(void);
 extern BYTE KBS_Buffer_Input(BYTE   row_column);
 extern BYTE  KBS_Buffer_puts(const BYTE *pntr);
 extern void KBD_Default_Typematic(void);

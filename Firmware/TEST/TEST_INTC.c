@@ -15,13 +15,13 @@
  */
 #include "TEST_INTC.H"
 #if TEST
-extern uint32_t* Lpc_Mon_Ptr;
+extern uint32_t *Lpc_Mon_Ptr;
 void intr0_gpio_a0(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
     Intr_num[32]++;
 #endif
-    if (GPIO0_INTSTATUS0 & (0x1 << 0)) // if int happened
+    if(GPIO0_INTSTATUS0 & (0x1 << 0)) // if int happened
     {
         // BRAM_EC_Read();
         // BRAM_EC_Write();
@@ -820,7 +820,7 @@ void intr1_sm3(void) // 25
 }
 void intr1_sm4(void) // 26
 {
-    if ((SM4_STATUS & SM4_STATUS_DONE))
+    if((SM4_STATUS & SM4_STATUS_DONE))
     {
         SM4_INT |= SM4_INT_INT;
     }
@@ -838,26 +838,26 @@ void intr1_smbus4(void) // 27
     ic_stat = I2c_Readb(I2C_STATUS_OFFSET, baseaddr);
     int_stat = i2c_dw_read_clear_intrbits(baseaddr); // clear interrupts
     dprint("int stat is %d \n", int_stat);
-    if (int_stat & I2C_INTR_TX_ABRT)
+    if(int_stat & I2C_INTR_TX_ABRT)
     {
         dprint("iic send erro !!! \n");
         i2c_dw_tx_abrt(baseaddr);
     }
-    if (int_stat & I2C_INTR_RX_FULL) // start req judge (set flags)
+    if(int_stat & I2C_INTR_RX_FULL) // start req judge (set flags)
     {
     }
-    if (int_stat & I2C_INTR_TX_EMPTY) // sFIFO almost empty
+    if(int_stat & I2C_INTR_TX_EMPTY) // sFIFO almost empty
     {
     }
-    if (int_stat & I2C_INTR_RD_REQ) // read request only once
+    if(int_stat & I2C_INTR_RD_REQ) // read request only once
     {
     }
-    if (!(ic_stat & I2C_SLV_ACTIVITY))
+    if(!(ic_stat & I2C_SLV_ACTIVITY))
     {
         // dprint("the iic of slave is dead! \n");
         // I2c_Writeb(0, I2C_ENABLE_OFFSET,baseaddr);
     }
-    if (!(ic_stat & I2C_MST_ACTIVITY))
+    if(!(ic_stat & I2C_MST_ACTIVITY))
     {
         // dprint("the iic of master is dead! \n");
         // I2c_Writeb(0, I2C_ENABLE_OFFSET,baseaddr);
@@ -872,26 +872,26 @@ void intr1_smbus5(void) // 28
     DWORD ic_stat, int_stat;
     ic_stat = I2c_Readb(I2C_STATUS_OFFSET, baseaddr);
     int_stat = i2c_dw_read_clear_intrbits(baseaddr); // clear interrupts
-    if (int_stat & I2C_INTR_TX_ABRT)
+    if(int_stat & I2C_INTR_TX_ABRT)
     {
         dprint("iic send erro !!! \n");
         i2c_dw_tx_abrt(baseaddr);
     }
-    if (int_stat & I2C_INTR_RX_FULL) // start req judge (set flags)
+    if(int_stat & I2C_INTR_RX_FULL) // start req judge (set flags)
     {
     }
-    if (int_stat & I2C_INTR_TX_EMPTY) // sFIFO almost empty
+    if(int_stat & I2C_INTR_TX_EMPTY) // sFIFO almost empty
     {
     }
-    if (int_stat & I2C_INTR_RD_REQ) // read request only once
+    if(int_stat & I2C_INTR_RD_REQ) // read request only once
     {
     }
-    if (!(ic_stat & I2C_SLV_ACTIVITY))
+    if(!(ic_stat & I2C_SLV_ACTIVITY))
     {
         // dprint("the iic of slave is dead! \n");
         // I2c_Writeb(0, I2C_ENABLE_OFFSET,baseaddr);
     }
-    if (!(ic_stat & I2C_MST_ACTIVITY))
+    if(!(ic_stat & I2C_MST_ACTIVITY))
     {
         // dprint("the iic of master is dead! \n");
         // I2c_Writeb(0, I2C_ENABLE_OFFSET,baseaddr);
@@ -910,28 +910,28 @@ void intr1_cec(void) // 30
 #endif
     DWORD stat, int_stat;
     stat = CEC_Read(CEC_SR_OFFSET);
-    if ((stat & 0xF0) != 0)
+    if((stat & 0xF0) != 0)
     {
         dprint("CEC statu : \n", stat);
         dprint("statu erro ! \n");
         CEC_Write(0, CEC_CTRL_OFFSET); // disable the CEC
     }
     int_stat = CEC_Read(CEC_ISR_OFFSET);
-#if CEC0_mode_select // initiator
-    if (int_stat & CEC_intStatue_sbis)
+#if CEC0_MODE_SWITCH // initiator
+    if(int_stat & CEC_intStatue_sbis)
     {
     }
-    if (int_stat & CEC_intStatue_sfis)
+    if(int_stat & CEC_intStatue_sfis)
     {
     }
 #else               // follower
-    if (int_stat & CEC_intStatue_rhis)
+    if(int_stat & CEC_intStatue_rhis)
     {
     }
-    if (int_stat & CEC_intStatue_fbis)
+    if(int_stat & CEC_intStatue_fbis)
     {
     }
-    if (int_stat & CEC_intStatue_rfis)
+    if(int_stat & CEC_intStatue_rfis)
     {
     }
 #endif
@@ -1096,9 +1096,9 @@ void intr1_ps2_1(void)
     Intr_num[142]++;
 #endif
 #endif
-    if (MS_Main_CHN == 2)
+    if(MS_Main_CHN == 2)
         Handle_Mouse(MS_Main_CHN - 1);
-    else if (KB_Main_CHN == 2)
+    else if(KB_Main_CHN == 2)
         Handle_Kbd(KB_Main_CHN - 1);
 }
 #if defined(AE101)
@@ -1186,14 +1186,14 @@ void intr1_spim(void)
     Intr_num[146]++;
 #endif
 #endif
-    if ((SPIM_ISR & 0X10)) // fifo接收满中断
+    if((SPIM_ISR & 0X10)) // fifo接收满中断
     {
-        if (SPI_Read_Start == 2) // 读命令完成准备读出
+        if(SPI_Read_Start == 2) // 读命令完成准备读出
         {
-            while (!(SPIM_SR & 0x4))
+            while(!(SPIM_SR & 0x4))
                 ;
             data = SPIM_DA0;
-            if (data == 0xff)
+            if(data == 0xff)
             {
                 // dprint("data is %#x \n",data);
             }
@@ -1204,14 +1204,14 @@ void intr1_spim(void)
             }
         }
     }
-    if (SPIM_ISR & 0X8) // fifo接收溢出中断
+    if(SPIM_ISR & 0X8) // fifo接收溢出中断
     {
         SPIM_ISR |= 0x8; // 清除中断
     }
-    if (SPIM_ISR & 0x2) // 发送fifo满中断
+    if(SPIM_ISR & 0x2) // 发送fifo满中断
     {
     }
-    if ((SPIM_ISR & 0x1) && (!(SPIM_IMSR & 0x1))) // 发送fifo空中断
+    if((SPIM_ISR & 0x1) && (!(SPIM_IMSR & 0x1))) // 发送fifo空中断
     {
         SPI_Block_Erase(0x0, 0);                     // 擦除
         SPI_Page_Program(0, 256, SPI_Write_Buff, 0); // 写入
@@ -1240,35 +1240,35 @@ void intr1_smbus0(void)
     // dprint("int stat is %d \n",int_stat);
     // dprint("int raw_stat is %d \n",raw_int);
     // dprint("int mask is %d \n",mask);
-    if (int_stat & I2C_INTR_TX_ABRT)
+    if(int_stat & I2C_INTR_TX_ABRT)
     {
         dprint("iic send erro !!! \n");
         i2c_dw_tx_abrt(baseaddr);
     }
-    if (int_stat & I2C_INTR_RX_FULL) // start req judge (set flags)
+    if(int_stat & I2C_INTR_RX_FULL) // start req judge (set flags)
     {
-#if ENABLE_DEBUGGER_SUPPORT
+    #if ENABLE_DEBUGGER_SUPPORT
         Debugger_Cmd_IRQ(0);
-#endif
+    #endif
     }
-    if (int_stat & I2C_INTR_TX_EMPTY) // sFIFO almost empty
+    if(int_stat & I2C_INTR_TX_EMPTY) // sFIFO almost empty
     {
-#if ENABLE_DEBUGGER_SUPPORT
+    #if ENABLE_DEBUGGER_SUPPORT
         Debugger_I2c_Send(0);
-#endif
+    #endif
     }
-    if (int_stat & I2C_INTR_RD_REQ) // read request only once
+    if(int_stat & I2C_INTR_RD_REQ) // read request only once
     {
-#if ENABLE_DEBUGGER_SUPPORT
+    #if ENABLE_DEBUGGER_SUPPORT
         Debugger_I2c_Req(0);
-#endif
+    #endif
     }
-    if (!(ic_stat & I2C_SLV_ACTIVITY))
+    if(!(ic_stat & I2C_SLV_ACTIVITY))
     {
         // dprint("the iic of slave is dead! \n");
         // I2c_Writeb(0, I2C_ENABLE_OFFSET,baseaddr);
     }
-    if (!(ic_stat & I2C_MST_ACTIVITY))
+    if(!(ic_stat & I2C_MST_ACTIVITY))
     {
         // dprint("the iic of master is dead! \n");
         // I2c_Writeb(0, I2C_ENABLE_OFFSET,baseaddr);
@@ -1290,27 +1290,27 @@ void intr1_smbus1(void)
     DWORD ic_stat, int_stat;
     ic_stat = I2c_Readb(I2C_STATUS_OFFSET, baseaddr);
     int_stat = i2c_dw_read_clear_intrbits(baseaddr); // clear interrupts
-    if (int_stat & I2C_INTR_TX_ABRT)
+    if(int_stat & I2C_INTR_TX_ABRT)
     {
         dprint("iic action erro !!! \n");
         i2c_dw_tx_abrt(baseaddr);
         I2c_Writeb(0, I2C_INTR_MASK_OFFSET, baseaddr);
     }
-    if (int_stat & I2C_INTR_RX_FULL)
+    if(int_stat & I2C_INTR_RX_FULL)
     {
     }
-    if (int_stat & I2C_INTR_TX_EMPTY) // sFIFO almost empty
+    if(int_stat & I2C_INTR_TX_EMPTY) // sFIFO almost empty
     {
     }
-    if (int_stat & I2C_INTR_RD_REQ) // read request only once
+    if(int_stat & I2C_INTR_RD_REQ) // read request only once
     {
     }
-    if (!(ic_stat & I2C_SLV_ACTIVITY))
+    if(!(ic_stat & I2C_SLV_ACTIVITY))
     {
         // dprint("the iic of slave is dead! \n");
         // I2c_Writeb(0, I2C_ENABLE_OFFSET,baseaddr);
     }
-    if (!(ic_stat & I2C_MST_ACTIVITY))
+    if(!(ic_stat & I2C_MST_ACTIVITY))
     {
         // dprint("the iic of master is dead! \n");
         // I2c_Writeb(0, I2C_ENABLE_OFFSET,baseaddr);
@@ -1332,26 +1332,26 @@ void intr1_smbus2(void)
     DWORD ic_stat, int_stat;
     ic_stat = I2c_Readb(I2C_STATUS_OFFSET, baseaddr);
     int_stat = i2c_dw_read_clear_intrbits(baseaddr); // clear interrupts
-    if (int_stat & I2C_INTR_TX_ABRT)
+    if(int_stat & I2C_INTR_TX_ABRT)
     {
         dprint("iic action erro !!! \n");
         i2c_dw_tx_abrt(baseaddr);
     }
-    if (int_stat & I2C_INTR_RX_FULL)
+    if(int_stat & I2C_INTR_RX_FULL)
     {
     }
-    if (int_stat & I2C_INTR_TX_EMPTY) // sFIFO almost empty
+    if(int_stat & I2C_INTR_TX_EMPTY) // sFIFO almost empty
     {
     }
-    if (int_stat & I2C_INTR_RD_REQ) // read request only once
+    if(int_stat & I2C_INTR_RD_REQ) // read request only once
     {
     }
-    if (!(ic_stat & I2C_SLV_ACTIVITY))
+    if(!(ic_stat & I2C_SLV_ACTIVITY))
     {
         // dprint("the iic of slave is dead! \n");
         // I2c_Writeb(0, I2C_ENABLE_OFFSET,baseaddr);
     }
-    if (!(ic_stat & I2C_MST_ACTIVITY))
+    if(!(ic_stat & I2C_MST_ACTIVITY))
     {
         // dprint("the iic of master is dead! \n");
         // I2c_Writeb(0, I2C_ENABLE_OFFSET,baseaddr);
@@ -1373,26 +1373,26 @@ void intr1_smbus3(void)
     DWORD ic_stat, int_stat;
     ic_stat = I2c_Readb(I2C_STATUS_OFFSET, baseaddr);
     int_stat = i2c_dw_read_clear_intrbits(baseaddr); // clear interrupts
-    if (int_stat & I2C_INTR_TX_ABRT)
+    if(int_stat & I2C_INTR_TX_ABRT)
     {
         dprint("iic action erro !!! \n");
         i2c_dw_tx_abrt(baseaddr);
     }
-    if (int_stat & I2C_INTR_RX_FULL)
+    if(int_stat & I2C_INTR_RX_FULL)
     {
     }
-    if (int_stat & I2C_INTR_TX_EMPTY) // sFIFO almost empty
+    if(int_stat & I2C_INTR_TX_EMPTY) // sFIFO almost empty
     {
     }
-    if (int_stat & I2C_INTR_RD_REQ) // read request only once
+    if(int_stat & I2C_INTR_RD_REQ) // read request only once
     {
     }
-    if (!(ic_stat & I2C_SLV_ACTIVITY))
+    if(!(ic_stat & I2C_SLV_ACTIVITY))
     {
         // dprint("the iic of slave is dead! \n");
         // I2c_Writeb(0, I2C_ENABLE_OFFSET,baseaddr);
     }
-    if (!(ic_stat & I2C_MST_ACTIVITY))
+    if(!(ic_stat & I2C_MST_ACTIVITY))
     {
         // dprint("the iic of master is dead! \n");
         // I2c_Writeb(0, I2C_ENABLE_OFFSET,baseaddr);
@@ -1400,20 +1400,15 @@ void intr1_smbus3(void)
 }
 #if defined(AE101)
 void intr1_null53(void) // 53 55
-{
-}
+{}
 void intr1_null54(void) // 54 56
-{
-}
+{}
 void intr1_null55(void) // 55 57
-{
-}
+{}
 void intr1_null56(void) // 56 58
-{
-}
+{}
 void intr1_null57(void) // 57 59
-{
-}
+{}
 #elif (defined(AE102) || defined(AE103))
 void intr1_can0(void)
 {
@@ -1428,7 +1423,7 @@ void intr1_can0(void)
 #endif
 #endif
 #if CAN0_Receive
-    if (CAN0_IR & 0x1)
+    if(CAN0_IR & 0x1)
     {
         dprint("RMC:%d\n", CAN0_RMC);
         CAN0_ReceiveData(CAN0_ReadBuff);
@@ -1450,7 +1445,7 @@ void intr1_can1(void)
 #endif
 #endif
 #if CAN1_Receive
-    if (CAN1_IR & 0x1)
+    if(CAN1_IR & 0x1)
     {
         dprint("RMC:%d\n", CAN1_RMC);
         CAN1_ReceiveData(CAN1_ReadBuff);
@@ -1472,7 +1467,7 @@ void intr1_can2(void)
 #endif
 #endif
 #if CAN2_Receive
-    if (CAN2_IR & 0x1)
+    if(CAN2_IR & 0x1)
     {
         dprint("RMC:%d\n", CAN2_RMC);
         CAN2_ReceiveData(CAN2_ReadBuff);
@@ -1494,7 +1489,7 @@ void intr1_can3(void)
 #endif
 #endif
 #if CAN3_Receive
-    if (CAN3_IR & 0x1)
+    if(CAN3_IR & 0x1)
     {
         dprint("RMC:%d\n", CAN3_RMC);
         CAN3_ReceiveData(CAN3_ReadBuff);
@@ -1545,21 +1540,21 @@ void intr1_lpc_mon(void)
 #endif
 #endif
     //*((volatile uint8_t *)(0x30810)) = 0x1f;
-    * (Lpc_Mon_Ptr + LPC_MON_CNT) = *((volatile uint32_t*)(0x30814)); // when data full region 4byte
+    *(Lpc_Mon_Ptr + LPC_MON_CNT) = *((volatile uint32_t *)(0x30814)); // when data full region 4byte
     dprint("LPC_MON Data is 0x%lx\n", *(Lpc_Mon_Ptr + LPC_MON_CNT));
     // dprint("INTR_RAW is 0x%lx\n", INTR_RAW);
-    if ((*(Lpc_Mon_Ptr + LPC_MON_CNT)) & (0x40404040))
+    if((*(Lpc_Mon_Ptr + LPC_MON_CNT)) & (0x40404040))
     {
         LPC_SOF = 1;
     }
-    if ((*(Lpc_Mon_Ptr + LPC_MON_CNT)) & (0x20202020))
+    if((*(Lpc_Mon_Ptr + LPC_MON_CNT)) & (0x20202020))
     {
         LPC_EOF = 1;
         // dprint("LPC_EOF=%d\n",LPC_EOF);
     }
     LPC_Monitor();
     LPC_MON_CNT++;
-    if (LPC_MON_CNT > 100)
+    if(LPC_MON_CNT > 100)
     {
         LPC_MON_CNT = 0;
     }

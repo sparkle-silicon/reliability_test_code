@@ -47,8 +47,9 @@ void OWI_Clear_Data(u8 led_num_start, u8 led_num_over)
 }
 
 // OWI模块初始化
-void OWI_Init(u8 data_len, u8 out_clk, u8 T1H, u8 T0H)
+void OWI_Init(u8 data_len, u8 out_clk, u8 T0H, u8 T1H, u8 clkdiv)
 {
+    SYSCTL_CLKDIV_OWI = clkdiv; // 时钟1分频,分频数为0base
     OWI_SYMBOL_CTRL = ((u32)T0H | ((u32)T1H << 8));
     data_len -= 1;
     out_clk = (out_clk <= 3) ? 3 : out_clk - 1;

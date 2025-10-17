@@ -14,8 +14,6 @@
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
 #include "CUSTOM_INIT.H"
-
-// u_int32_t CHIP_CLOCK_SWITCH = CHIP_CLOCK_SWITCH; // 1(96) 2(48) 3(32) 4（24）5（19.2）分频数（时钟）  
 /****************************************************************************
 * SPKAE10X Init FLOW :
 * 1. DoubleBoot (Custom Configuration Double Boot Addr，Function Is Get_DoubleBoot_ADDR() In File CUSTOM_INIT.c)

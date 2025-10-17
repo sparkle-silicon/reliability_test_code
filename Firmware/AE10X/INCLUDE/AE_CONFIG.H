@@ -135,10 +135,12 @@
 #define UART_MODULE_EN 1
 #define I3C_MODULE_EN 1
   // reserved
-#define CEC_MODULE_EN 1
+#define CEC_MODULE_EN 0
 #define OWI_MODULE_EN 0
 #define RTC_MODULE_EN 0
 #define PECI_MODULE_EN 0
+#define MAILBOX_MODULE_EN 0
+
 /****************************************************************************
  * Switch
  *****************************************************************************/
@@ -413,6 +415,9 @@
 //CEC
 #define CEC0_EN_Init 0 & CEC_CLOCK_EN
 #define CEC1_EN_Init 0 & CEC_CLOCK_EN
+#define CEC0_PIN_SEL 0
+#define CEC0_MODE_SWITCH                      0//"1": as initiator; "0" as follower
+#define CEC1_MODE_SWITCH                      0//"1": as initiator; "0" as follower
 #define CEC0_EXTERNAL_PULL_UP 1
 #define CEC0_INTERNAL_PULL_UP 0
 #define CEC1_EXTERNAL_PULL_UP 1
@@ -435,6 +440,12 @@
 #define HOST_SCI_PIN_SEL 0
 #define HOST_P80_En_Init 0
 
+//OWI
+#define OWI_DEFAULT_LENGTH 128
+#define OWI_DEFAULT_CYCLE_NUM 30
+#define OWI_DEFAULT_T0_HIGH_COUNT 10
+#define OWI_DEFAULT_T1_HIGH_COUNT 20
+#define OWI_DEFAULT_CLKDIV 0
 //KBS
 //                             0123456789ABCDEFGHIJKLMNO
 #define KBS_EXTERNAL_PULL_UP 0b1111111111111111111111111
