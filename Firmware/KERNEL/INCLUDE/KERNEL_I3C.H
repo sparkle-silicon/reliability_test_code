@@ -365,8 +365,6 @@
     (_count % 2 == 0) ? 1 : 0;                 /* 若1的个数为偶数，校验位为1；否则为0（确保总数为奇数） */ \
 })
 
-
-
 //device char table structure define
 typedef union DEV_CHAR_TABLE {
     u32 dev_char_table1_loc[4];
