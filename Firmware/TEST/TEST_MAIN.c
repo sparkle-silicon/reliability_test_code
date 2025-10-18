@@ -1,7 +1,7 @@
 /*
  * @Author: Maple
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-06-04 17:26:07
+ * @LastEditTime: 2025-10-18 18:26:40
  * @Description:
  *
  *
@@ -25,7 +25,7 @@
 // {
 // 	uint8_t pwm_led_mode = 0;
 // 	{//进入低功耗模式(具体可配置未知，目的只是为了输出pwm led)
-// 		SYSCTL_SWITCH_PLL = 0;//0x304D4=sleep mode,32K clock,32.768K clock
+// 		SYSCTL_SLEEPCFG = 0;//0x304D4=sleep mode,32K clock,32.768K clock
 // 		SYSCTL_PMUCSR |= BIT(20);//0x30498 = enable WFI
 // 	}
 // //配置TIMER2定时器中断2sec唤醒一次
@@ -396,25 +396,25 @@ int main()
 
 // // 	//sleep mode config
 // // 	GPIO_Input_EN(GPIOA, 3, ENABLE);
-// // 	SYSCTL_SWITCH_PLL &= ~(BIT2);//main_clk_sel = 0  32k
-// // 	//SYSCTL_SWITCH_PLL |= BIT2;//main_clk_sel = 1
+// // 	SYSCTL_SLEEPCFG &= ~(BIT2);//main_clk_sel = 0  32k
+// // 	//SYSCTL_SLEEPCFG |= BIT2;//main_clk_sel = 1
 // // 	SYSCTL_DVDD_EN |= BIT4 | BIT5 | BIT6;
 // // 	SYSCTL_DVDD_EN &= ~(BIT0 | BIT1 | BIT2);
-// // 	//SYSCTL_SWITCH_PLL |= BIT1;//enable osc80m
-// // 	SYSCTL_SWITCH_PLL &= ~(BIT1 | BIT3); // disable osc80m 并设置 sleep mode
-// // 	//printf("SYSCTL_SWITCH_PLL:%x\n", SYSCTL_SWITCH_PLL);
+// // 	//SYSCTL_SLEEPCFG |= BIT1;//enable osc80m
+// // 	SYSCTL_SLEEPCFG &= ~(BIT1 | BIT3); // disable osc80m 并设置 sleep mode
+// // 	//printf("SYSCTL_SLEEPCFG:%x\n", SYSCTL_SLEEPCFG);
 // // 	SYSCTL_CLKDIV_SPIS = 0x0;
 // // 	SYSCTL_CLKDIV_PECI = 0x0;
 // // 	SYSCTL_PMUCSR |= BIT(20);//Enable WFI Mode
-// // 	SYSCTL_PIO0_IECFG = 0x7008008;
-// // 	//printf("SYSCTL_PIO0_IECFG:0x%x\n", SYSCTL_PIO0_IECFG);
-// // 	SYSCTL_PIO1_IECFG = 0x8;
+// // 	SYSCTL_PIOA_IECFG = 0x7008008;
+// // 	//printf("SYSCTL_PIOA_IECFG:0x%x\n", SYSCTL_PIOA_IECFG);
+// // 	SYSCTL_PIOB_IECFG = 0x8;
 // // 	//GPIO_Input_EN(GPIOA, 3, ENABLE);
-// // 	//printf("SYSCTL_PIO1_IECFG:0x%x\n", SYSCTL_PIO1_IECFG);
-// // 	SYSCTL_PIO2_IECFG = 0x0;
-// // 	//printf("SYSCTL_PIO2_IECFG:0x%x\n", SYSCTL_PIO2_IECFG);
-// // 	SYSCTL_PIO3_IECFG = 0x3000000;
-// // 	//printf("SYSCTL_PIO3_IECFG:0x%x\n", SYSCTL_PIO3_IECFG);
+// // 	//printf("SYSCTL_PIOB_IECFG:0x%x\n", SYSCTL_PIOB_IECFG);
+// // 	SYSCTL_PIOCD_IECFG = 0x0;
+// // 	//printf("SYSCTL_PIOCD_IECFG:0x%x\n", SYSCTL_PIOCD_IECFG);
+// // 	SYSCTL_PIOE_IECFG = 0x3000000;
+// // 	//printf("SYSCTL_PIOE_IECFG:0x%x\n", SYSCTL_PIOE_IECFG);
 // // 	ADC_PM = 0b11;//ADC low power config bit0 close ldo and bit1 close comp
 // // //#if GPIOB4_NOSET//NOUP
 // // 	//mode 0 no run 
@@ -434,7 +434,7 @@ int main()
 // // // #if SUPPORT_GPIO_WAKEUP	
 // // // 	GPIO_Config(GPIOA, 0, 2, 0, 1, 0);
 // // // #endif
-// // 	//printf("SYSCTL_SWITCH_PLL:0x%x\n", SYSCTL_SWITCH_PLL);
+// // 	//printf("SYSCTL_SLEEPCFG:0x%x\n", SYSCTL_SLEEPCFG);
 // // 	//sysctl_iomux_pwm1();
 // // 	//PWM_Init_channel(PWM_CHANNEL1, PWM_HIGH, PWM_CLK0, PWM_CTR0, 50, 0);
 // // 	//asm volatile("wfi");
@@ -442,17 +442,17 @@ int main()
 // void AE103_Deep_Sleep(void)
 // {
 
-// // 	SYSCTL_PIO0_IECFG = 0x0;
+// // 	SYSCTL_PIOA_IECFG = 0x0;
 // // #if 0//NOUP
 // // 	if(SYSCTL_PIO_CFG & BIT1)
-// // 		SYSCTL_PIO1_IECFG = 0x00f00000;//only open spif
+// // 		SYSCTL_PIOB_IECFG = 0x00f00000;//only open spif
 // // 	else
-// // 		SYSCTL_PIO1_IECFG = 0x0;
+// // 		SYSCTL_PIOB_IECFG = 0x0;
 // // #else//GPIOB4_NOSET
 // // 	if(SYSCTL_PIO_CFG & BIT1)
-// // 		SYSCTL_PIO1_IECFG = 0x00f00000 | BIT4;// open spif
+// // 		SYSCTL_PIOB_IECFG = 0x00f00000 | BIT4;// open spif
 // // 	else
-// // 		SYSCTL_PIO1_IECFG = BIT4;
+// // 		SYSCTL_PIOB_IECFG = BIT4;
 // // 	ICTL0_INTMASK4 |= BIT4;
 // // 	GPIO1_INTMASK0 |= BIT4;//先屏蔽中断
 // // 	GPIO1_DDR0 &= (~BIT4);//配置位输入
@@ -467,11 +467,11 @@ int main()
 // // #endif
 
 // // 	if(SYSCTL_PIO_CFG & BIT1)
-// // 		SYSCTL_PIO1_IECFG = 0x00f00000;//only open spif
+// // 		SYSCTL_PIOB_IECFG = 0x00f00000;//only open spif
 // // 	else
-// // 		SYSCTL_PIO1_IECFG = 0x0;//only open spif
-// // 	SYSCTL_PIO2_IECFG = 0x0;
-// // 	SYSCTL_PIO3_IECFG = 0x0;
+// // 		SYSCTL_PIOB_IECFG = 0x0;//only open spif
+// // 	SYSCTL_PIOCD_IECFG = 0x0;
+// // 	SYSCTL_PIOE_IECFG = 0x0;
 // // 	SYSCTL_CLKDIV_I3C = 0x0;
 // // 	SYSCTL_CLKDIV_PECI = 0x0;
 // // 	SYSCTL_PMUCSR |= BIT(20);//Enable WFI Mode
@@ -480,7 +480,7 @@ int main()
 // // 	//BIT1:0:Disable Internel OSC192M(1:ENable Internel OSC192M)
 // // 	//BIT2:1:Sleep Main Freq Set High Clock(0:Sleep Main Freq Set Low Clock)
 // // 	//BIT3:0:Sleep No close High Clock(1:wait main freq set low clock(bit2=0),close high clock)
-// // 	SYSCTL_SWITCH_PLL = BIT3 | BIT0;
+// // 	SYSCTL_SLEEPCFG = BIT3 | BIT0;
 // // 	ADC_PM = 0b11;//ADC low power config bit0 close ldo and bit1 close comp 
 // // 	SYSCTL_DVDD_EN |= BIT4 | BIT5 | BIT6;
 // // 	SYSCTL_DVDD_EN &= ~(BIT0 | BIT1 | BIT2);
@@ -555,7 +555,7 @@ int main()
 // 	//BIT1:0:Disable Internel OSC192M(1:ENable Internel OSC192M)
 // 	//BIT2:1:Sleep Main Freq Set High Clock(0:Sleep Main Freq Set Low Clock)
 // 	//BIT3:0:Sleep No close High Clock(1:wait main freq set low clock(bit2=0),close high clock)
-// 	SYSCTL_SWITCH_PLL = BIT3 | BIT0;
+// 	SYSCTL_SLEEPCFG = BIT3 | BIT0;
 // 	//mode 0 pwm(bit11)run
 // 	SYSCTL_MODEN0 = PWM_EN;
 // 	//modle 1 spif(bit3)run apb(11)run cache(19)run 
@@ -568,9 +568,9 @@ int main()
 // {
 //     while(1)
 //     {
-//         if(C2EINT == 0x2)
+//         if(MAILBOX_C2EINT == 0x2)
 //         {
-//             if(C2EINFO0 == 0x13)
+//             if(MAILBOX_C2EINFO0 == 0x13)
 //             {
 //                 PRINTF_TX = 'S';
 //                 PRINTF_TX = 'U';
@@ -606,13 +606,13 @@ int main()
 //     sysctl_iomux_config(GPIOB, 30, 0x1);//hold
 //     /* 中断屏蔽 */
 //     Disable_Interrupt_Main_Switch();
-//     E2CINFO0 = 0x13;
-//     E2CINFO1 = flashOption;//0x0:内部flash，0x1:外部flash
-//     E2CINFO2 = FM_size;//更新大小
-//     E2CINFO3 = Update_Addr;//更新地址
+//     MAILBOX_E2CINFO0 = 0x13;
+//     MAILBOX_E2CINFO1 = flashOption;//0x0:内部flash，0x1:外部flash
+//     MAILBOX_E2CINFO2 = FM_size;//更新大小
+//     MAILBOX_E2CINFO3 = Update_Addr;//更新地址
 //     /* 进入ram跑代码 */
 //     Smf_Ptr = Load_Smfi_To_Dram(Go2Ram_WaitUpdate, 0x400);
-//     E2CINT = 0x2; // 触发对应中断
+//     MAILBOX_E2CINT = 0x2; // 触发对应中断
 //     (*Smf_Ptr)(); // Do Function at malloc address
 // }
 
@@ -1155,7 +1155,7 @@ int main()
 // 	// 	case 0x8:  // rom_wdt_feed=
 // 	// 	case 0x18: // rom_uart=
 // 	// 	case 0x1C: // rom_ejtag=
-// 	// 	case 0x30: // ROM_SPIF_ERASE=
+// 	// 	case 0x30: // ROM_SPIFE_ERASE=
 // 	// 	case 0x44: // rom_exit=
 // 	// 		((FUNCT_PTR_V_V)(*(DWORDP)(0x10000 + offset)))();
 // 	// 		break;
@@ -1176,10 +1176,10 @@ int main()
 // 	// 		break;
 // 	// 	case 0x28: // rom_memset
 // 	// 	case 0x2C: // ROM_strcmp
-// 	// 	case 0x34: // SPIF_Write_Interface=
+// 	// 	case 0x34: // SPIFE_Write_Interface=
 // 	// 		((FUNCT_PTR_V_D_D_BP) * (DWORDP)(0x10000 + offset))(0x10, 0x22000, (BYTEP)rompatch_test_ch);
 // 	// 		break;
-// 	// 	case 0x38: // SPIF_Read_Interface=
+// 	// 	case 0x38: // SPIFE_Read_Interface=
 // 	// 		((FUNCT_PTR_VBP_D_D_BP) * (DWORDP)(0x10000 + offset))(0x10, 0x22000, (BYTEP)receive_buffer);
 // 	// 		((FUNCT_PTR_V_BP) * (DWORDP)(0x10010))((BYTEP)receive_buffer);
 // 	// 		break;
@@ -1204,22 +1204,22 @@ int main()
 // }
 // void ALIGNED(4) OPTIMIZE0 clear_internel_flash(void)
 // {
-// 	u32 spif_ctrl0 = SPIF_CTRL0;
+// 	u32 spif_ctrl0 = SPIFE_CTL0;
 // 	REG32(0x3047C) &= 0xfffffffd;
 // 	SYSCTL_RST1 |= 0x00000100; // 复位
 // 	SYSCTL_RST1 &= 0xfffffeff; // 清除复位
-// 	while(!(SPIF_READY & 0x1))
+// 	while(!(SPIFE_RDY & SPIF_RDY_READY))
 // 		WDT_CRR = WDT_CRR_CRR; // 读忙
-// 	while(SPIF_STATUS & 0xf)
+// 	while(SPIFE_STA & 0xf)
 // 		WDT_CRR = WDT_CRR_CRR; // 直到写完
-// 	while(!(SPIF_READY & 0x1))
+// 	while(!(SPIFE_RDY & SPIF_RDY_READY))
 // 		WDT_CRR = WDT_CRR_CRR; // 读忙
-// 	SPIF_FIFO_TOP = 0xc7;
-// 	while(!(SPIF_READY & 0x1))
+// 	SPIFE_FTOP = 0xc7;
+// 	while(!(SPIFE_RDY & SPIF_RDY_READY))
 // 		WDT_CRR = WDT_CRR_CRR; // 读忙
-// 	while(SPIF_STATUS & 0xf)
+// 	while(SPIFE_STA & 0xf)
 // 		WDT_CRR = WDT_CRR_CRR; // 直到写完
-// 	while(!(SPIF_READY & 0x1))
+// 	while(!(SPIFE_RDY & SPIF_RDY_READY))
 // 		WDT_CRR = WDT_CRR_CRR; // 读忙
 // 	REG32(0x3047C) |= 0x00000002;
 // 	SYSCTL_RST1 |= 0x00000100; // 复位
@@ -1227,13 +1227,13 @@ int main()
 // 	__nop;
 // 	__nop;
 // 	SYSCTL_RST1 &= 0xfffffeff; // 清除复位
-// 	SPIF_CTRL0 = spif_ctrl0;
+// 	SPIFE_CTL0 = spif_ctrl0;
 // 	__nop;
 // 	__nop;
 // 	__nop;
-// 	while(SPIF_STATUS & 0xf)
+// 	while(SPIFE_STA & 0xf)
 // 		WDT_CRR = WDT_CRR_CRR; // 直到写完
-// 	while(!(SPIF_READY & 0x1))
+// 	while(!(SPIFE_RDY & SPIF_RDY_READY))
 // 		WDT_CRR = WDT_CRR_CRR; // 读忙
 // 	__nop;
 // 	__nop;

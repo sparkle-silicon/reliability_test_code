@@ -364,10 +364,10 @@
 #define BRAM_MemBase (SPI_MemBase + MEMORY_016SIZE) // 0x20210
 #define BRAM_ReadBuff ((VBYTEP)(BRAM_MemBase + 0))  // 定义一个48字节的数组
 /*SPIF Interface*/
-#define SPIF_MemBase (BRAM_MemBase + MEMORY_064SIZE) // 0x20250
-#define Flash_Capacity (*(VDWORDP)(SPIF_MemBase + 0x0))// 存放flash容量 单位字节
+#define SPIFE_MemBase (BRAM_MemBase + MEMORY_064SIZE) // 0x20250
+#define Flash_Capacity (*(VDWORDP)(SPIFE_MemBase + 0x0))// 存放flash容量 单位字节
 /*ShareMemory*/
-#define SM_MemBase (SPIF_MemBase + MEMORY_032SIZE) // 0x20270
+#define SM_MemBase (SPIFE_MemBase + MEMORY_032SIZE) // 0x20270
 /*SWUC Module*/
 #define SWUC_MemBase (SM_MemBase + MEMORY_032SIZE) // 0x20290
 /*I3C Module*/
@@ -473,10 +473,10 @@
 #define SYSCTL_PIO3_CFG_Value (*(DWORDP)(GPIO_InitInfo_MemBase + 44))
 #define SYSCTL_PIO4_CFG_Value (*(DWORDP)(GPIO_InitInfo_MemBase + 48))
 #define SYSCTL_PIO5_CFG_Value (*(DWORDP)(GPIO_InitInfo_MemBase + 52))
-#define SYSCTL_PIO0_UDCFG_Value (*(DWORDP)(GPIO_InitInfo_MemBase + 56))
-#define SYSCTL_PIO1_UDCFG_Value (*(DWORDP)(GPIO_InitInfo_MemBase + 60))
-#define SYSCTL_PIO2_UDCFG_Value (*(DWORDP)(GPIO_InitInfo_MemBase + 64))
-#define SYSCTL_PIO3_UDCFG_Value (*(DWORDP)(GPIO_InitInfo_MemBase + 68))
+#define SYSCTL_PIOA_UPCFG_Value (*(DWORDP)(GPIO_InitInfo_MemBase + 56))
+#define SYSCTL_PIOB_UPCFG_Value (*(DWORDP)(GPIO_InitInfo_MemBase + 60))
+#define SYSCTL_PIOCD_UPCFG_Value (*(DWORDP)(GPIO_InitInfo_MemBase + 64))
+#define SYSCTL_PIOE_UPCFG_Value (*(DWORDP)(GPIO_InitInfo_MemBase + 68))
 #define SYSCTL_PIO4_UDCFG_Value (*(DWORDP)(GPIO_InitInfo_MemBase + 72))
 #define SYSCTL_PIO5_UDCFG_Value (*(DWORDP)(GPIO_InitInfo_MemBase + 76))
 

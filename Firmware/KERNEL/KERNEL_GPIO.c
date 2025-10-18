@@ -978,19 +978,19 @@ BYTE PIO_Pullup_Config(BYTE GPIO, BYTE Num)
 	switch(GPIO)
 	{
 		case GPIOA:
-			SYSCTL_PIO0_UDCFG |= (0x1 << Num);
+			SYSCTL_PIOA_UPCFG |= (0x1 << Num);
 			break;
 		case GPIOB:
-			SYSCTL_PIO1_UDCFG |= (0x1 << Num);
+			SYSCTL_PIOB_UPCFG |= (0x1 << Num);
 			break;
 		case GPIOC:
-			SYSCTL_PIO2_UDCFG |= (0x1 << Num);
+			SYSCTL_PIOCD_UPCFG |= (0x1 << Num);
 			break;
 		case GPIOD:
-			SYSCTL_PIO2_UDCFG |= (0x1 << (Num + 16));
+			SYSCTL_PIOCD_UPCFG |= (0x1 << (Num + 16));
 			break;
 		case GPIOE:
-			SYSCTL_PIO3_UDCFG |= (0x1 << Num);
+			SYSCTL_PIOE_UPCFG |= (0x1 << Num);
 			break;
 		default:
 			dprint("参数选择错误\n");
@@ -1386,7 +1386,7 @@ int GPIO_Config(int GPIO, int gpio_no, int mode, int op_val, int int_lv, int pol
 		}
 		else if(mode == 0) // input
 		{
-			//(*((BYTEP )(SYSCTL_PIO0_UDCFG)))|=((0x1)<<gpio_no);//配置上拉
+			//(*((BYTEP )(SYSCTL_PIOA_UPCFG)))|=((0x1)<<gpio_no);//配置上拉
 			GPIO0_REG(GPIO_INPUT_EN + (gpio_no / 8)) &= (VBYTE)(~((0x1) << (gpio_no % 8))); // 配置输入模式
 			GPIO0_REG(GPIO_LOW_IE + (gpio_no / 8)) &= (VBYTE)(~((0x1) << (gpio_no % 8)));   // 配置GPIO模式(非中断)
 		}
@@ -1421,7 +1421,7 @@ int GPIO_Config(int GPIO, int gpio_no, int mode, int op_val, int int_lv, int pol
 		}
 		else if(mode == 0) // input
 		{
-			//(*((BYTEP )(SYSCTL_PIO0_UDCFG)))|=((0x1)<<gpio_no);//配置上拉
+			//(*((BYTEP )(SYSCTL_PIOA_UPCFG)))|=((0x1)<<gpio_no);//配置上拉
 			GPIO1_REG(GPIO_INPUT_EN + (gpio_no / 8)) &= (~((0x1) << (gpio_no % 8))); // 配置输入模式
 			GPIO1_REG(GPIO_LOW_IE + (gpio_no / 8)) &= (~((0x1) << (gpio_no % 8)));   // 配置GPIO模式(非中断)
 		}
@@ -1479,7 +1479,7 @@ int GPIO_Config(int GPIO, int gpio_no, int mode, int op_val, int int_lv, int pol
 				}
 				else
 				{
-					//(*((BYTEP )(SYSCTL_PIO0_UDCFG)))|=((0x1)<<gpio_no);//配置上拉
+					//(*((BYTEP )(SYSCTL_PIOA_UPCFG)))|=((0x1)<<gpio_no);//配置上拉
 					GPIO2_REG(0x10) &= (~((0x1) << gpio_no)); // 配置输入模式					
 				}
 
@@ -1504,7 +1504,7 @@ int GPIO_Config(int GPIO, int gpio_no, int mode, int op_val, int int_lv, int pol
 			}
 			else if(mode == 0) // input
 			{
-				//(*((BYTEP )(SYSCTL_PIO0_UDCFG)))|=((0x1)<<gpio_no);//配置上拉
+				//(*((BYTEP )(SYSCTL_PIOA_UPCFG)))|=((0x1)<<gpio_no);//配置上拉
 				GPIO2_REG(GPIO_INPUT_EN + (gpio_no / 8)) &= (~((0x1) << (gpio_no % 8))); // 配置输入模式
 				GPIO2_REG(GPIO_LOW_IE + (gpio_no / 8)) &= (~((0x1) << (gpio_no % 8)));   // 配置GPIO模式(非中断)
 			}
@@ -1539,7 +1539,7 @@ int GPIO_Config(int GPIO, int gpio_no, int mode, int op_val, int int_lv, int pol
 			}
 			else if(mode == 0) // input
 			{
-				//(*((BYTEP )(SYSCTL_PIO0_UDCFG)))|=((0x1)<<gpio_no);//配置上拉
+				//(*((BYTEP )(SYSCTL_PIOA_UPCFG)))|=((0x1)<<gpio_no);//配置上拉
 				GPIO3_REG(GPIO_INPUT_EN + (gpio_no / 8)) &= (~((0x1) << (gpio_no % 8))); // 配置输入模式
 				GPIO3_REG(GPIO_LOW_IE + (gpio_no / 8)) &= (~((0x1) << (gpio_no % 8)));   // 配置GPIO模式(非中断)
 			}
@@ -1574,43 +1574,43 @@ void GPIO_Input_EN(int GPIO, int gpio_no, char sw)
 		case GPIOA:
 			if(sw == ENABLE)
 			{
-				SYSCTL_PIO0_IECFG |= (0x1 << gpio_no);
+				SYSCTL_PIOA_IECFG |= (0x1 << gpio_no);
 
 			}
 			else
 			{
-				SYSCTL_PIO0_IECFG &= ~(0x1 << gpio_no);
+				SYSCTL_PIOA_IECFG &= ~(0x1 << gpio_no);
 			}
 			break;
 		case GPIOB:
 			if(sw == ENABLE)
 			{
-				SYSCTL_PIO1_IECFG |= (0x1 << gpio_no);
+				SYSCTL_PIOB_IECFG |= (0x1 << gpio_no);
 			}
 			else
 			{
-				SYSCTL_PIO1_IECFG &= ~(0x1 << gpio_no);
+				SYSCTL_PIOB_IECFG &= ~(0x1 << gpio_no);
 			}
 			break;
 		case GPIOC:
 		case GPIOD:
 			if(sw == ENABLE)
 			{
-				SYSCTL_PIO2_IECFG |= (0x1 << gpio_no);
+				SYSCTL_PIOCD_IECFG |= (0x1 << gpio_no);
 			}
 			else
 			{
-				SYSCTL_PIO2_IECFG &= ~(0x1 << gpio_no);
+				SYSCTL_PIOCD_IECFG &= ~(0x1 << gpio_no);
 			}
 			break;
 		case GPIOE:
 			if(sw == ENABLE)
 			{
-				SYSCTL_PIO3_IECFG |= (0x1 << gpio_no);
+				SYSCTL_PIOE_IECFG |= (0x1 << gpio_no);
 			}
 			else
 			{
-				SYSCTL_PIO3_IECFG &= ~(0x1 << gpio_no);
+				SYSCTL_PIOE_IECFG &= ~(0x1 << gpio_no);
 			}
 			break;
 		default:
@@ -1729,9 +1729,9 @@ void GPIO_1V8(int GPIO, int gpio_no, char sw)
 		offset = 24;
 	}
 	if(sw)
-		SYSCTL_PAD_1P8 |= BIT(offset);
+		SYSCTL_PAD_1P8EN0 |= BIT(offset);
 	else
-		SYSCTL_PAD_1P8 &= ~BIT(offset);
+		SYSCTL_PAD_1P8EN0 &= ~BIT(offset);
 
 }
 

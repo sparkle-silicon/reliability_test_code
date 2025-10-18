@@ -523,7 +523,7 @@ void __interrupt SM_EC_HANDLER(void)
 		{
 			printf("Write_buff[%d] is %#x\n",i,Write_buff[i]);
 		} */
-		RunSPIF_WriteFromRAM((SMF_FADDR0 & 0xff) + ((SMF_FADDR1 << 8) & 0xff00) + ((SMF_FADDR2 << 16) & 0xff0000), Write_buff);
+		RunSPIFE_WriteFromRAM((SMF_FADDR0 & 0xff) + ((SMF_FADDR1 << 8) & 0xff00) + ((SMF_FADDR2 << 16) & 0xff0000), Write_buff);
 	}
 	else if(SMF_CMD == 0x3) // 读
 	{
@@ -542,7 +542,7 @@ void __interrupt SM_EC_HANDLER(void)
 		printf("SMF_FADDR1 is %#x\n", SMF_FADDR1);
 		printf("SMF_FADDR2 is %#x\n", SMF_FADDR2);
 		printf("addr is %#x\n", (SMF_FADDR0 & 0xff) + ((SMF_FADDR1 << 8) & 0xff00) + ((SMF_FADDR2 << 16) & 0xff0000));
-		RunSPIF_WriteFromRAM((SMF_FADDR0 & 0xff) + ((SMF_FADDR1 << 8) & 0xff00) + ((SMF_FADDR2 << 16) & 0xff0000), Write_buff);
+		RunSPIFE_WriteFromRAM((SMF_FADDR0 & 0xff) + ((SMF_FADDR1 << 8) & 0xff00) + ((SMF_FADDR2 << 16) & 0xff0000), Write_buff);
 	}
 };
 void __interrupt SM_HOST_HANDLER(void)
@@ -610,7 +610,7 @@ void __interrupt TIMER3_HANDLER(void)
 };
 extern BYTE intr_st;
 /*Intr0*/
-void __interrupt INTR0_HANDLER(void)
+void __interrupt INTC0_HANDLER(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[30]++;
@@ -640,7 +640,7 @@ void __interrupt INTR0_HANDLER(void)
 	(intr0_service[(num)])(); // Dispatch to service handler.
 }
 /*Intr1*/
-void __interrupt INTR1_HANDLER(void)
+void __interrupt INTC1_HANDLER(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[31]++;

@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-09 17:18:57
+ * @LastEditTime: 2025-10-18 18:23:06
  * @Description:
  *
  *
@@ -29,8 +29,6 @@ __BEGIN_DECLS
 #define IRQ1_CONTROL_BIT 0x1        // P144
 #define IRQ12_CONTROL_BIT 0x2       // P144
 #define IRQ11_CONTROL_BIT 0x4       // P144
-#define UARTn_IER 0x1
-#define UARTn_LCR 0x3
 #define DLAB BIT7
 #define printdbg dprint
 extern void Module_init();

@@ -13,8 +13,8 @@
  * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
-#ifndef __KERNEL_SPIF_H_
-#define __KERNEL_SPIF_H_
+#ifndef __KERNEL_SPIFE_H_
+#define __KERNEL_SPIFE_H_
 #include "AE_GLOBAL.H"
 #include "AE_REG.H"
 #include "AE_CONFIG.H"
@@ -28,12 +28,12 @@
 #define FLASH_WRIT_CMD 0x06
 #define FLASH_READ_CMD 0x03
 
-#define SPIF_RDY            0x1
-#define SPIF_Write_Status   0x1
-#define SPIF_Sleep_State    0x2
-#define Spif_Int_Mask (SPIF_INT_MASK &= ~(0x1))
-#define Spif_Int_Unmask (SPIF_INT_MASK |= 0x1)
-#define Spif_Int_Mask_Read ((SPIF_INT_MASK & 0x1) != 0)
+#define SPIF_RDY_READY       0x1
+#define SPIFE_Write_Status   0x1
+#define SPIFE_Sleep_State    0x2
+#define Spif_Int_Mask (SPIFE_INTMASK &= ~(0x1))
+#define Spif_Int_Unmask (SPIFE_INTMASK |= 0x1)
+#define Spif_Int_Mask_Read ((SPIFE_INTMASK & 0x1) != 0)
 extern FUNCT_PTR_V_D_BP_L Spif_Ptr;
 extern BYTE Write_buff[256];
 extern BYTE Read_buff[256];
@@ -41,7 +41,7 @@ extern VBYTE *Tmp_code_pointer;
 extern VBYTE *Tmp_XPntr;
 extern void SPIFI_Init(void);
 extern void SPIFE_Init(void);
-extern void SPIF_READ_ID(void);
+extern void SPIFE_READ_ID(void);
 extern void ExtFlash_Deep_Power_Down(void);
 extern void ExtFlash_Exit_Power_Down(void);
 extern FUNCT_PTR_V_D_BP_L Load_Fla_If_To_Ram(FUNCT_PTR_V_D_BP_L funcpoint, const int malloc_size);
@@ -50,10 +50,10 @@ extern void Transport_Func_To_iram1(FUNCT_PTR_V_V funcpoint, const int malloc_si
 extern FUNCT_PTR_V_V Load_Smfi_To_Dram(FUNCT_PTR_V_V func, const int malloc_size);
 extern void Dram_Part_Init(void);
 extern void Dram_Read(void);
-extern ALIGNED(4) void SPIF_Write(DWORD addr, BYTEP write_buff, WORD length);
-extern ALIGNED(4) void SPIF_Read(DWORD addr, BYTEP read_buff, WORD length);
-extern void RunSPIF_WriteFromRAM(DWORD addr, BYTEP write_buff, WORD lentgh);
-extern void RunSPIF_ReadFromRAM(DWORD addr, BYTEP read_buff, WORD lentgh);
+extern ALIGNED(4) void SPIFE_Write(DWORD addr, BYTEP write_buff, WORD length);
+extern ALIGNED(4) void SPIFE_Read(DWORD addr, BYTEP read_buff, WORD length);
+extern void RunSPIFE_WriteFromRAM(DWORD addr, BYTEP write_buff, WORD lentgh);
+extern void RunSPIFE_ReadFromRAM(DWORD addr, BYTEP read_buff, WORD lentgh);
 extern void Smfi_Ram_Code(void);
 extern void Flash_Update_Utility(void);
 #endif

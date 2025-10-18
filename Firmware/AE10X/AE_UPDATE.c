@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-17 22:15:15
+ * @LastEditTime: 2025-10-18 18:24:51
  * @Description:
  *
  *
@@ -50,11 +50,11 @@ void ALIGNED(4) OPTIMIZE0 SECTION(".update.uart") EC_UART_Update(void)
     /***********数据擦写********/
     while(!(UPDATE_LSR & UART_LSR_TEMP));
     UPDATE_TX = '1'; // 开始擦写
-    while(!(SPIF_READY & 0x1));
-    SPIF_FIFO_TOP = 0xc7;
-    while(!(SPIF_READY & 0x1));
-    while(SPIF_STATUS & 0xf);
-    while(!(SPIF_READY & 0x1));
+    while(!(SPIFE_RDY & SPIF_RDY_READY));
+    SPIFE_FTOP = 0xc7;
+    while(!(SPIFE_RDY & SPIF_RDY_READY));
+    while(SPIFE_STA & 0xf);
+    while(!(SPIFE_RDY & SPIF_RDY_READY));
     while(!(UPDATE_LSR & UART_LSR_TEMP));
     UPDATE_TX = '2';    // 结束擦写
     //PRINTF_TX='a';
@@ -133,50 +133,50 @@ void ALIGNED(4) OPTIMIZE0 SECTION(".update.uart") EC_UART_Update(void)
         {
             u32 addr = (u32)cnt * (u32)update_code_size + j * (u32)256;
             addrs = ((addr & 0xFF) << 24) + ((addr & 0xFF00) << 8) + ((addr & 0XFF0000) >> 8) + 0x02; // 设置地址
-            while(!(SPIF_READY & 0x1));
-            SPIF_DBYTE = 0xff;
-            while(!(SPIF_READY & 0x1));
-            SPIF_FIFO_TOP = addrs; // 数据地址
+            while(!(SPIFE_RDY & SPIF_RDY_READY));
+            SPIFE_DBYTE = 0xff;
+            while(!(SPIFE_RDY & SPIF_RDY_READY));
+            SPIFE_FTOP = addrs; // 数据地址
             for(i = 0; i < 64; i++)
             {
-                while((SPIF_FIFO_CNT & 0x3) != 0);
-                SPIF_FIFO_TOP = *(u32 *)(buf_p + j * 256 + i * 4);
+                while((SPIFE_FCNT & 0x3) != 0);
+                SPIFE_FTOP = *(u32 *)(buf_p + j * 256 + i * 4);
             }
-            while(!(SPIF_READY & 0x1));
-            while(SPIF_STATUS & 0xf);
-            while(!(SPIF_READY & 0x1));
+            while(!(SPIFE_RDY & SPIF_RDY_READY));
+            while(SPIFE_STA & 0xf);
+            while(!(SPIFE_RDY & SPIF_RDY_READY));
         #if WRITE_READ_CHECK
             UPDATE_TX = 'b';    // 正在读flash数据
             while(!(UPDATE_LSR & UART_LSR_DR))
                 WDT_CRR = 0x76;
                 // 读数据
             addrs = addrs & 0xffffff00 + 0x03; // 修改内容
-            while(!(SPIF_READY & 0x1))
+            while(!(SPIFE_RDY & SPIF_RDY_READY))
                 WDT_CRR = 0x76; // 读忙
-            SPIF_DBYTE = 0xff;
-            while(!(SPIF_READY & 0x1))
+            SPIFE_DBYTE = 0xff;
+            while(!(SPIFE_RDY & SPIF_RDY_READY))
                 WDT_CRR = 0x76;    // 读忙
-            SPIF_FIFO_TOP = addrs; // 数据地址
+            SPIFE_FTOP = addrs; // 数据地址
             register u32 checkdata, checksum1 = 0, checksum2 = 0;
             for(int i = 0; i < 64; i++)
             {
-                while((SPIF_FIFO_CNT & 0x3) == 0)
+                while((SPIFE_FCNT & 0x3) == 0)
                 {
                     WDT_CRR = 0x76; // 读忙
                 }
-                checkdata = SPIF_FIFO_TOP;
-                // while(!(SPIF_READY&0x1))WDT_CRR =0x76;//读忙
+                checkdata = SPIFE_FTOP;
+                // while(!(SPIFE_RDY&SPIF_RDY_READY))WDT_CRR =0x76;//读忙
                 if(i < 32)
                     checksum1 += ((checkdata >> 0) & 0xff) + ((checkdata >> 8) & 0xff) + ((checkdata >> 16) & 0xff) + ((checkdata >> 24) & 0xff);
                 else
                     checksum2 += ((checkdata >> 0) & 0xff) + ((checkdata >> 8) & 0xff) + ((checkdata >> 16) & 0xff) + ((checkdata >> 24) & 0xff);
                 WDT_CRR = 0x76;
             }
-            while(!(SPIF_READY & 0x1))
+            while(!(SPIFE_RDY & SPIF_RDY_READY))
                 WDT_CRR = 0x76; // 读忙
-            while(SPIF_STATUS & 0xf)
+            while(SPIFE_STA & 0xf)
                 WDT_CRR = 0x76; // 直到写完
-            while(!(SPIF_READY & 0x1))
+            while(!(SPIFE_RDY & SPIF_RDY_READY))
                 WDT_CRR = 0x76;
             UPDATE_TX = 'c'; // 正在校验flash数据
             // 判断是否错误，如果错误，一切从头开始
@@ -224,14 +224,14 @@ void ALIGNED(4) OPTIMIZE0 SECTION(".update.sms")  EC_SMS_Update(void)
     PRINTF_TX = '1';
     while(*((volatile uint8_t *)(SRAM_BASE_ADDR + 0X100)) != 0X11)
         WDT_CRR = 0x76;
-    while(!(SPIF_READY & 0x1))
+    while(!(SPIFE_RDY & SPIF_RDY_READY))
         WDT_CRR = 0x76;
-    SPIF_FIFO_TOP = 0xc7;
-    while(!(SPIF_READY & 0x1))
+    SPIFE_FTOP = 0xc7;
+    while(!(SPIFE_RDY & SPIF_RDY_READY))
         WDT_CRR = 0x76;
-    while(SPIF_STATUS & 0xf)
+    while(SPIFE_STA & 0xf)
         WDT_CRR = 0x76;
-    while(!(SPIF_READY & 0x1))
+    while(!(SPIFE_RDY & SPIF_RDY_READY))
         WDT_CRR = 0x76;
     *((volatile uint8_t *)(SRAM_BASE_ADDR + 0X100)) = 0x22;
     PRINTF_TX = '2';
@@ -253,23 +253,23 @@ void ALIGNED(4) OPTIMIZE0 SECTION(".update.sms")  EC_SMS_Update(void)
         Update_Addr = (uint32_t)(Update_Addr0 << 24) + (uint32_t)(Update_Addr1 << 16) + (uint32_t)(Update_Addr2 << 8) + (uint32_t)(0x2);
         PRINTF_TX = 'D';
         *((volatile uint8_t *)(SRAM_BASE_ADDR + 0x100)) = 0xDD;
-        while(!(SPIF_READY & 0x1))
+        while(!(SPIFE_RDY & SPIF_RDY_READY))
             WDT_CRR = 0x76;
-        SPIF_DBYTE = 0xff;
-        while(!(SPIF_READY & 0x1))
+        SPIFE_DBYTE = 0xff;
+        while(!(SPIFE_RDY & SPIF_RDY_READY))
             WDT_CRR = 0x76;
-        SPIF_FIFO_TOP = Update_Addr;
+        SPIFE_FTOP = Update_Addr;
         for(i = 0; i < 64; i++)
         {
-            while((SPIF_FIFO_CNT & 0x3) != 0)
+            while((SPIFE_FCNT & 0x3) != 0)
                 WDT_CRR = 0x76;
-            SPIF_FIFO_TOP = *((volatile uint32_t *)(update_buf + i * 4));
+            SPIFE_FTOP = *((volatile uint32_t *)(update_buf + i * 4));
         }
-        while(!(SPIF_READY & 0x1))
+        while(!(SPIFE_RDY & SPIF_RDY_READY))
             WDT_CRR = 0x76;
-        while(SPIF_STATUS & 0xf)
+        while(SPIFE_STA & 0xf)
             WDT_CRR = 0x76;
-        while(!(SPIF_READY & 0x1))
+        while(!(SPIFE_RDY & SPIF_RDY_READY))
             WDT_CRR = 0x76;
         // 该位置设置为写使能
         while(*((volatile uint8_t *)(SRAM_BASE_ADDR + 0x100)) != 0xDD);
@@ -294,14 +294,14 @@ void ALIGNED(4) OPTIMIZE0 SECTION(".update.io")   EC_IO_Update(void)
     uint8_t Smf_Addr0, Smf_Addr1, Smf_Addr2, Smf_Data0, Smf_Data1, Smf_Data2, Smf_Data3;
     uint32_t Page_Write_Addr = 0;
     char check_flag = 1;
-    while(!(SPIF_READY & 0x1))
+    while(!(SPIFE_RDY & SPIF_RDY_READY))
         WDT_CRR = 0x76;
-    SPIF_FIFO_TOP = 0xc7;
-    while(!(SPIF_READY & 0x1))
+    SPIFE_FTOP = 0xc7;
+    while(!(SPIFE_RDY & SPIF_RDY_READY))
         WDT_CRR = 0x76;
-    while(SPIF_STATUS & 0x1)
+    while(SPIFE_STA & 0x1)
         WDT_CRR = 0x76;
-    while(!(SPIF_READY & 0x1))
+    while(!(SPIFE_RDY & SPIF_RDY_READY))
         WDT_CRR = 0x76;
     PRINTF_TX = 'a';//擦除完成打印
     PMC2_DOR = 0x5A; // response to erase flash ok
@@ -337,34 +337,34 @@ void ALIGNED(4) OPTIMIZE0 SECTION(".update.io")   EC_IO_Update(void)
             _R8++;
             if(_R8 >= 64)//收完了256个字节开始往flash里面写256字节数据
             {
-                while(!(SPIF_READY & 0x1))
+                while(!(SPIFE_RDY & SPIF_RDY_READY))
                     WDT_CRR = 0x76;
-                SPIF_DBYTE = 0xff;
-                while(!(SPIF_READY & 0x1))
+                SPIFE_DBYTE = 0xff;
+                while(!(SPIFE_RDY & SPIF_RDY_READY))
                     WDT_CRR = 0x76;
-                SPIF_FIFO_TOP = Page_Write_Addr;
+                SPIFE_FTOP = Page_Write_Addr;
                 for(_R7 = 0; _R7 < 64; _R7++)
                 {
-                    while((SPIF_FIFO_CNT & 0x3) != 0)
+                    while((SPIFE_FCNT & 0x3) != 0)
                         WDT_CRR = 0x76;
-                    SPIF_FIFO_TOP = data[_R7];
+                    SPIFE_FTOP = data[_R7];
                 }
-                while(!(SPIF_READY & 0x1))
+                while(!(SPIFE_RDY & SPIF_RDY_READY))
                     WDT_CRR = 0x76;
-                while(SPIF_STATUS & 0x1)
+                while(SPIFE_STA & 0x1)
                     WDT_CRR = 0x76;
-                while(!(SPIF_READY & 0x1))
+                while(!(SPIFE_RDY & SPIF_RDY_READY))
                     WDT_CRR = 0x76;
                 PRINTF_TX = 'w';//写入完成打印
                 /*校验*/
-                SPIF_DBYTE = 0xff;
-                while(!(SPIF_READY & 0x1));
-                SPIF_FIFO_TOP = (Page_Write_Addr - 0x2 + 0x3);
+                SPIFE_DBYTE = 0xff;
+                while(!(SPIFE_RDY & SPIF_RDY_READY));
+                SPIFE_FTOP = (Page_Write_Addr - 0x2 + 0x3);
                 for(_R7 = 0; _R7 < 64; _R7++)
                 {
-                    while((SPIF_FIFO_CNT & 0x3) == 0)
+                    while((SPIFE_FCNT & 0x3) == 0)
                         WDT_CRR = 0x76;
-                    if(data[_R7] != SPIF_FIFO_TOP)//校验失败
+                    if(data[_R7] != SPIFE_FTOP)//校验失败
                     {
                         check_flag = 0;
                     }
@@ -383,17 +383,17 @@ void ALIGNED(4) OPTIMIZE0 SECTION(".update.io")   EC_IO_Update(void)
                         }
                     }
                 }
-                while(!(SPIF_READY & 0x1));
-                while(SPIF_STATUS & 0x1);
-                while(!(SPIF_READY & 0x1));
+                while(!(SPIFE_RDY & SPIF_RDY_READY));
+                while(SPIFE_STA & 0x1);
+                while(!(SPIFE_RDY & SPIF_RDY_READY));
                 /*校验*/
             }
             if((check_flag == 0) && (_R8 >= 64))//校验失败处理
             {
-                while(!(SPIF_READY & 0x1));
-                SPIF_FIFO_TOP = (Page_Write_Addr - 0x2 + 0x20);
-                while(!(SPIF_READY & 0x1));
-                while(SPIF_STATUS & 0x1);
+                while(!(SPIFE_RDY & SPIF_RDY_READY));
+                SPIFE_FTOP = (Page_Write_Addr - 0x2 + 0x20);
+                while(!(SPIFE_RDY & SPIF_RDY_READY));
+                while(SPIFE_STA & 0x1);
             }
             else
             {
@@ -520,14 +520,14 @@ void SECTION(".update.function") Flash_Update_Function(void)
 //     if (ROM_COPY_CNT < Remaining_size)
 //     {
 //         // select_flash(EXTERNAL_FLASH);
-//         // SPIF_Read_Interface(256, (DWORD)(0x0 + ROM_COPY_CNT), (BYTEP)(0x31000)); // 需要更新的数据从外部FLASH读入
-//         E2CINFO0 = 0x10;                                  // 命令字
-//         E2CINFO1 = ((DWORD)(0x3 << 24) | Remaining_size); // BYTE3:固件位置标志 BYTE0~2:固件大小
-//         E2CINFO2 = start_addr + ROM_COPY_CNT;             // 更新起始地址
+//         // SPIFE_Read_Interface(256, (DWORD)(0x0 + ROM_COPY_CNT), (BYTEP)(0x31000)); // 需要更新的数据从外部FLASH读入
+//         MAILBOX_E2CINFO0 = 0x10;                                  // 命令字
+//         MAILBOX_E2CINFO1 = ((DWORD)(0x3 << 24) | Remaining_size); // BYTE3:固件位置标志 BYTE0~2:固件大小
+//         MAILBOX_E2CINFO2 = start_addr + ROM_COPY_CNT;             // 更新起始地址
 //         ROM_COPY_CNT += 256;
-//         printf("d:%x,%x,%x\n", E2CINFO0, E2CINFO1, E2CINFO2);
-//         E2CINT = 0x2; // 触发对应中断
-//         // while ((C2EINFO1 != 0x1) || (C2EINFO1 != 0x2))
+//         printf("d:%x,%x,%x\n", MAILBOX_E2CINFO0, MAILBOX_E2CINFO1, MAILBOX_E2CINFO2);
+//         MAILBOX_E2CINT = 0x2; // 触发对应中断
+//         // while ((MAILBOX_C2EINFO1 != 0x1) || (MAILBOX_C2EINFO1 != 0x2))
 //         //     ; // 等待子系统更新回复
 //     }
 //     else
@@ -543,7 +543,7 @@ void ALIGNED(4) EC_SinglePage_Update(void)
 
     Rewrite_cnt = *((VBYTEP)(SRAM_BASE_ADDR + 0x107));
 
-    // 将重写的数据及地址写入E2CINFO
+    // 将重写的数据及地址写入MAILBOX_E2CINFO
     if(Rewrite_cnt != 0)
     {
         for(int i = 0; i <= (Rewrite_cnt / 2); i++)
@@ -551,9 +551,9 @@ void ALIGNED(4) EC_SinglePage_Update(void)
             *((VDWORDP)(0x32008 + i * 4)) = *((VDWORDP)(SRAM_BASE_ADDR + 0x108 + i * 4));
         }
     }
-    E2CINFO0 = 0x11;
-    E2CINFO1 = (DWORD)(*((VBYTEP)(SRAM_BASE_ADDR + 0x107)) << 24) + (DWORD)(*((VBYTEP)(SRAM_BASE_ADDR + 0x106)) << 16) + (DWORD)(*((VBYTEP)(SRAM_BASE_ADDR + 0x105)) << 8) + (DWORD)(*((VBYTEP)(SRAM_BASE_ADDR + 0x104)));
-    E2CINT = 0x2; // 触发对应中断
+    MAILBOX_E2CINFO0 = 0x11;
+    MAILBOX_E2CINFO1 = (DWORD)(*((VBYTEP)(SRAM_BASE_ADDR + 0x107)) << 24) + (DWORD)(*((VBYTEP)(SRAM_BASE_ADDR + 0x106)) << 16) + (DWORD)(*((VBYTEP)(SRAM_BASE_ADDR + 0x105)) << 8) + (DWORD)(*((VBYTEP)(SRAM_BASE_ADDR + 0x104)));
+    MAILBOX_E2CINT = 0x2; // 触发对应中断
     while(C2E_CMD != 0x11); // 等待子系统完毕回复
     return;
 }
@@ -570,16 +570,16 @@ void ALIGNED(4) Mailbox_4KSMS_UPDATE(BYTE mode, DWORD fw_size, DWORD start_addr)
     //     return;
     // }
 
-    E2CINFO0 = 0x10;                            // 命令字
-    E2CINFO1 = ((DWORD)(mode << 24) | fw_size); // BYTE3:固件位置标志 BYTE0~2:固件大小
-    E2CINFO2 = start_addr;                      // 更新起始地址
-    // printf("d:%x,%x,%x\n", E2CINFO0, E2CINFO1, E2CINFO2);
+    MAILBOX_E2CINFO0 = 0x10;                            // 命令字
+    MAILBOX_E2CINFO1 = ((DWORD)(mode << 24) | fw_size); // BYTE3:固件位置标志 BYTE0~2:固件大小
+    MAILBOX_E2CINFO2 = start_addr;                      // 更新起始地址
+    // printf("d:%x,%x,%x\n", MAILBOX_E2CINFO0, MAILBOX_E2CINFO1, MAILBOX_E2CINFO2);
     PRINTF_TX = 'C';
-    E2CINT = 0x2; // 触发对应中断
+    MAILBOX_E2CINT = 0x2; // 触发对应中断
     while(C2E_CMD != 0x10); // 等待子系统更新完毕回复
     // WDT_CRR = 0x76;
 
-    if(C2EINFO1 == 0x1)
+    if(MAILBOX_C2EINFO1 == 0x1)
     {
         // printf("更新完毕\n");
         PRINTF_TX = 'D';
@@ -588,7 +588,7 @@ void ALIGNED(4) Mailbox_4KSMS_UPDATE(BYTE mode, DWORD fw_size, DWORD start_addr)
         WDT_CRR = 0x76;    // 重启计数器
         SYSCTL_CFG |= BIT3;
     }
-    else if(C2EINFO1 == 0x2)
+    else if(MAILBOX_C2EINFO1 == 0x2)
         // printf("更新失败\n");
         PRINTF_TX = 'E';
     else
@@ -634,7 +634,7 @@ void ALIGNED(4) Mailbox_Update_Function(BYTE mode, DWORD fwsize, DWORD update_ad
     else
     {
         printf("无效更新模式，请确认更新命令\n");
-        C2EINFO1 = 0x2; // 固件更新不成功
+        MAILBOX_C2EINFO1 = 0x2; // 固件更新不成功
         return;
     }
 }
@@ -670,16 +670,16 @@ void WaitCrypUpdate(void)
 {
     while(1)
     {
-        if(C2EINT == 0x2)
+        if(MAILBOX_C2EINT == 0x2)
         {
             do
             {
-                C2EINT = C2EINT;
+                MAILBOX_C2EINT = MAILBOX_C2EINT;
                 nop;
             }
-            while(C2EINT);
-            while((C2EINFO0 != 0x14));
-            if(C2EINFO1 == 0x1)
+            while(MAILBOX_C2EINT);
+            while((MAILBOX_C2EINFO0 != 0x14));
+            if(MAILBOX_C2EINFO1 == 0x1)
             {
                 PRINTF_TX = 'S';
                 PRINTF_TX = 'U';
@@ -693,7 +693,7 @@ void WaitCrypUpdate(void)
             }
             else//失败
             {
-                switch((C2EINFO1 >> 8) & 0xff)
+                switch((MAILBOX_C2EINFO1 >> 8) & 0xff)
                 {
                     case 0x01://crc32校验失败,回退备份成功
                         reportDone(0, 0x01);//回复上位机一笔数据处理完毕
@@ -794,18 +794,18 @@ void Cryp_Update_Function(void)
     Disable_Interrupt_Main_Switch();
 
     //通知子系统进入更新函数
-    E2CINFO0 = 0x14;
-    E2CINFO1 = 0x0;
-    E2CINT = 0x2;
-    while(C2EINT != 0x2);
+    MAILBOX_E2CINFO0 = 0x14;
+    MAILBOX_E2CINFO1 = 0x0;
+    MAILBOX_E2CINT = 0x2;
+    while(MAILBOX_C2EINT != 0x2);
     do
     {
-        C2EINT = C2EINT;
+        MAILBOX_C2EINT = MAILBOX_C2EINT;
         nop;
     }
-    while(C2EINT);
-    while(C2EINFO0 != 0x14);
-    while(C2EINFO1 != 0x00);//子系统回复处理完毕
+    while(MAILBOX_C2EINT);
+    while(MAILBOX_C2EINFO0 != 0x14);
+    while(MAILBOX_C2EINFO1 != 0x00);//子系统回复处理完毕
     reportDone(0, 0xAA);//回复上位机芯片已经进入更新函数
     printf("send 0xaa to host\n");
 
@@ -845,19 +845,19 @@ void Cryp_Update_Function(void)
     }
     printf("\n");
     memcpy((void *)((uint8_t *)(SRAM_BASE_ADDR + 0x100)), (void *)Temp_buffer, sizeof(sCryptoFlashInfo));
-    E2CINFO0 = 0x14;
-    E2CINFO1 = 0x1;//发送固件信息
-    E2CINT = 0x2;//给子系统发送命令
-    while(C2EINT != 0x2);
+    MAILBOX_E2CINFO0 = 0x14;
+    MAILBOX_E2CINFO1 = 0x1;//发送固件信息
+    MAILBOX_E2CINT = 0x2;//给子系统发送命令
+    while(MAILBOX_C2EINT != 0x2);
     do
     {
-        C2EINT = C2EINT;
+        MAILBOX_C2EINT = MAILBOX_C2EINT;
         nop;
     }
-    while(C2EINT);
-    while(C2EINFO0 != 0x14);
-    while(C2EINFO1 != 0x01);//子系统回复处理完毕
-    E2CINFO0 = 0; E2CINFO1 = 0;//复位该寄存器值
+    while(MAILBOX_C2EINT);
+    while(MAILBOX_C2EINFO0 != 0x14);
+    while(MAILBOX_C2EINFO1 != 0x01);//子系统回复处理完毕
+    MAILBOX_E2CINFO0 = 0; MAILBOX_E2CINFO1 = 0;//复位该寄存器值
     reportDone(0, 0xAA);//回复上位机获取固件信息命令处理完毕
     printf("send 0xaa to host\n");
 
@@ -908,19 +908,19 @@ void Cryp_Update_Function(void)
             }
         }
         memcpy((void *)((uint8_t *)(SRAM_BASE_ADDR + 0x100)), (void *)Temp_buffer, 256);
-        E2CINFO0 = 0x14;
-        E2CINFO1 = 0x2;//发送code密文
-        E2CINT = 0x2;//给子系统发送命令
-        while(C2EINT != 0x2);
+        MAILBOX_E2CINFO0 = 0x14;
+        MAILBOX_E2CINFO1 = 0x2;//发送code密文
+        MAILBOX_E2CINT = 0x2;//给子系统发送命令
+        while(MAILBOX_C2EINT != 0x2);
         do
         {
-            C2EINT = C2EINT;
+            MAILBOX_C2EINT = MAILBOX_C2EINT;
             nop;
         }
-        while(C2EINT);
-        while(C2EINFO0 != 0x14);
-        while(C2EINFO1 != 0x2);//子系统回复处理完毕
-        E2CINFO0 = 0; E2CINFO1 = 0;//复位该寄存器值
+        while(MAILBOX_C2EINT);
+        while(MAILBOX_C2EINFO0 != 0x14);
+        while(MAILBOX_C2EINFO1 != 0x2);//子系统回复处理完毕
+        MAILBOX_E2CINFO0 = 0; MAILBOX_E2CINFO1 = 0;//复位该寄存器值
         reportDone(0, 0xAA);//回复上位机一笔数据处理完毕
         printf("send 0xaa to host\n");
         printf("i:%d CopySize:%d\n", i + 256, CrypDramCodeinfo.Crypto_CopySize);
@@ -995,26 +995,26 @@ char ExtFlash_Update_Function(void)
     printf("Fw_Size:%d Copy_Addr:%08x Backup_Addr:%08x Backup_Fw_Size:%d Backup_En:%d Rest_Flag:%d\n", Fw_Size, Copy_Addr, Backup_Addr, Backup_Fw_Size, Backup_En, Rest_Flag);
 
     //将头信息传递给子系统
-    E2CINFO1 = 0x0;				//选择外部flash
-    E2CINFO2 = Copy_Addr;     	//更新flash的起始地址
-    E2CINFO3 = Fw_Size;       	//更新flash的大小
-    E2CINFO4 = Backup_Addr;     	//备份区flash的起始地址
-    E2CINFO5 = Backup_Fw_Size;  	//备份程序的大小
-    E2CINFO6 = Backup_En;       	//备份使能状态
-    E2CINFO7 = Fw_crc32;			//固件内容crc校验码
-    E2CINFO0 = 0x13;				//通知子系统更新命令
-    E2CINT = 0x2;					//通知子系统更新命令
+    MAILBOX_E2CINFO1 = 0x0;				//选择外部flash
+    MAILBOX_E2CINFO2 = Copy_Addr;     	//更新flash的起始地址
+    MAILBOX_E2CINFO3 = Fw_Size;       	//更新flash的大小
+    MAILBOX_E2CINFO4 = Backup_Addr;     	//备份区flash的起始地址
+    MAILBOX_E2CINFO5 = Backup_Fw_Size;  	//备份程序的大小
+    MAILBOX_E2CINFO6 = Backup_En;       	//备份使能状态
+    MAILBOX_E2CINFO7 = Fw_crc32;			//固件内容crc校验码
+    MAILBOX_E2CINFO0 = 0x13;				//通知子系统更新命令
+    MAILBOX_E2CINT = 0x2;					//通知子系统更新命令
     //等待子系统收到数据后回应
-    while(C2EINT != 0x2);
+    while(MAILBOX_C2EINT != 0x2);
     do
     {
-        C2EINT = C2EINT;
+        MAILBOX_C2EINT = MAILBOX_C2EINT;
         nop;
     }
-    while(C2EINT);
-    while((C2EINFO0 != 0x13));
-    Ack_Sta = (C2EINFO1 & 0xff);
-    Err_Sta = (C2EINFO1 >> 8) & 0xff;
+    while(MAILBOX_C2EINT);
+    while((MAILBOX_C2EINFO0 != 0x13));
+    Ack_Sta = (MAILBOX_C2EINFO1 & 0xff);
+    Err_Sta = (MAILBOX_C2EINFO1 >> 8) & 0xff;
     if(Ack_Sta == 0x2)
     {
         if(Err_Sta < 4)
@@ -1075,40 +1075,40 @@ char ExtFlash_Update_Function(void)
         {
             Sram_idx = 0;
             //通知子系统进行烧录
-            E2CINFO1 = 0x2;
-            E2CINFO0 = 0x13;
-            E2CINT = 0x2;
+            MAILBOX_E2CINFO1 = 0x2;
+            MAILBOX_E2CINFO0 = 0x13;
+            MAILBOX_E2CINT = 0x2;
             //等待子系统烧录完成
         #if ROM_DEBUG
         //printf("wait cry write over\n");
         #endif
-            while(C2EINT != 0x2);
+            while(MAILBOX_C2EINT != 0x2);
             do
             {
-                C2EINT = C2EINT;
+                MAILBOX_C2EINT = MAILBOX_C2EINT;
                 nop;
             }
-            while(C2EINT);
-            while((C2EINFO0 != 0x13) || (C2EINFO1 != 0x03));
+            while(MAILBOX_C2EINT);
+            while((MAILBOX_C2EINFO0 != 0x13) || (MAILBOX_C2EINFO1 != 0x03));
         }
         reportDone(0, 0xAA);//回复上位机一笔数据处理完毕
         nop; nop; nop; nop; nop;
     }
     //回复子系统上位机到EC数据校验结果
-    E2CINFO1 = Crc_fail_flag;     //通知子系统校验结果
-    E2CINFO0 = 0x13;				//通知子系统更新命令
-    E2CINT = 0x2;					//通知子系统更新命令
+    MAILBOX_E2CINFO1 = Crc_fail_flag;     //通知子系统校验结果
+    MAILBOX_E2CINFO0 = 0x13;				//通知子系统更新命令
+    MAILBOX_E2CINT = 0x2;					//通知子系统更新命令
     //等待子系统回复更新结果
-    while(C2EINT != 0x2);
+    while(MAILBOX_C2EINT != 0x2);
     do
     {
-        C2EINT = C2EINT;
+        MAILBOX_C2EINT = MAILBOX_C2EINT;
         nop;
     }
-    while(C2EINT);
-    while((C2EINFO0 != 0x13));
-    Ack_Sta = (C2EINFO1 & 0xff);
-    Err_Sta = (C2EINFO1 >> 8) & 0xff;
+    while(MAILBOX_C2EINT);
+    while((MAILBOX_C2EINFO0 != 0x13));
+    Ack_Sta = (MAILBOX_C2EINFO1 & 0xff);
+    Err_Sta = (MAILBOX_C2EINFO1 >> 8) & 0xff;
     if(Ack_Sta == 0x2)
         if(Err_Sta == 0x4)
             Crc_fail_flag = 1;

@@ -17,13 +17,11 @@
 /*-----------------------------------------------------------------------------
  * Data Structure
  *---------------------------------------------------------------------------*/
-typedef struct InitGPIOReg
-{
+typedef struct InitGPIOReg{
     VBYTE *reg;
     BYTE value;
 } sInitGPIOReg;
-typedef struct InitGPIORegXWORD
-{
+typedef struct InitGPIORegXWORD{
     VDWORD *reg;
     DWORD value;
 } sInitGPIORegXWORD;
@@ -68,24 +66,22 @@ const sInitGPIORegXWORD InitGPIORegXWORD[] =
 
     {&SYSCTL_PIO0_CFG, PinA0_15_IoMux},
     {&SYSCTL_PIO1_CFG, PinA16_31_IoMux},
-    {&SYSCTL_PIO0_UDCFG, PinA0_31_PullUp},
+    {&SYSCTL_PIOA_UPCFG, PinA0_31_PullUp},
     {&SYSCTL_PIO2_CFG, PinB0_15_IoMux},
     {&SYSCTL_PIO3_CFG, PinB16_31_IoMux},
-    {&SYSCTL_PIO1_UDCFG, PinB0_31_PullUp},
+    {&SYSCTL_PIOB_UPCFG, PinB0_31_PullUp},
     {&SYSCTL_PIO4_CFG, PinC0_15_IoMux},
     {&SYSCTL_PIO5_CFG, PinDE_IoMux},
-    {&SYSCTL_PIO2_UDCFG, PinCD_PullUp},
-    {&SYSCTL_PIO3_UDCFG, PinE0_23_PullUp},
+    {&SYSCTL_PIOCD_UPCFG, PinCD_PullUp},
+    {&SYSCTL_PIOE_UPCFG, PinE0_23_PullUp},
 
 };
-typedef struct GetGPIORegInfo
-{
+typedef struct GetGPIORegInfo{
     VBYTE *reg;
     VBYTE *Membase;
 }sGetGPIORegInfo;
 
-typedef struct GetGPIOMuxInfo
-{
+typedef struct GetGPIOMuxInfo{
     VDWORD *reg;
     VDWORD *Membase;
 }sGetGPIOMuxInfo;
@@ -125,13 +121,13 @@ sGetGPIORegInfo aGetGPIORegInfo[] =
 sGetGPIOMuxInfo aGetGPIOMuxInfo[] =
 {
     {&SYSCTL_PIO0_CFG, &SYSCTL_PIO0_CFG_Value},
-    {&SYSCTL_PIO0_UDCFG, &SYSCTL_PIO0_UDCFG_Value},
+    {&SYSCTL_PIOA_UPCFG, &SYSCTL_PIOA_UPCFG_Value},
     {&SYSCTL_PIO1_CFG, &SYSCTL_PIO1_CFG_Value},
-    {&SYSCTL_PIO1_UDCFG, &SYSCTL_PIO1_UDCFG_Value},
+    {&SYSCTL_PIOB_UPCFG, &SYSCTL_PIOB_UPCFG_Value},
     {&SYSCTL_PIO2_CFG, &SYSCTL_PIO2_CFG_Value},
-    {&SYSCTL_PIO2_UDCFG, &SYSCTL_PIO2_UDCFG_Value},
+    {&SYSCTL_PIOCD_UPCFG, &SYSCTL_PIOCD_UPCFG_Value},
     {&SYSCTL_PIO3_CFG, &SYSCTL_PIO3_CFG_Value},
-    {&SYSCTL_PIO3_UDCFG, &SYSCTL_PIO3_UDCFG_Value},
+    {&SYSCTL_PIOE_UPCFG, &SYSCTL_PIOE_UPCFG_Value},
     {&SYSCTL_PIO4_CFG, &SYSCTL_PIO4_CFG_Value},
     {&SYSCTL_PIO5_CFG, &SYSCTL_PIO5_CFG_Value},
 

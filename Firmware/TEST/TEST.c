@@ -252,10 +252,10 @@ BYTE Moudle_test(void)
 			// 		sysctl_iomux_uart2();
 			// 		printf("SYSCTL_PIO3_CFG%x:\n", SYSCTL_PIO3_CFG);      //查看GPIOB23的复用
 			// 	#ifdef AE102
-			// 		printf("SYSCTL_PIO3_UDCFG%x:\n", SYSCTL_PIO3_UDCFG);  //查看GPIOB23是否上拉
+			// 		printf("SYSCTL_PIOE_UPCFG%x:\n", SYSCTL_PIOE_UPCFG);  //查看GPIOB23是否上拉
 			// 	#endif
 			// 	#ifdef TEST103
-			// 		printf("SYSCTL_PIO1_UDCFG%x:\n", SYSCTL_PIO1_UDCFG);  //查看GPIOB23是否上拉
+			// 		printf("SYSCTL_PIOB_UPCFG%x:\n", SYSCTL_PIOB_UPCFG);  //查看GPIOB23是否上拉
 			// 	#endif
 			// 		serial_init(2, 115200);
 			// 		Uart_Int_Disable(2, 0);
@@ -431,8 +431,8 @@ BYTE Moudle_test(void)
 				SYSCTL_PIO5_UDCFG &= 0xffffff7f;                                ////bit7,0:为uartb，1：SMCLK
 			#endif
 			#ifdef TEST103
-				printf("SYSCTL_PIO1_UDCFG000:%lx\n", SYSCTL_PIO1_UDCFG);  //查看GPIOB25,26是否上拉
-				SYSCTL_PIO1_UDCFG &= 0xf9ffffff;                                ////bit7,0:为uartb，1：SMCLK
+				printf("SYSCTL_PIOB_UPCFG000:%lx\n", SYSCTL_PIOB_UPCFG);  //查看GPIOB25,26是否上拉
+				SYSCTL_PIOB_UPCFG &= 0xf9ffffff;                                ////bit7,0:为uartb，1：SMCLK
 			#endif
 						//
 				sysctl_iomux_uartb();
@@ -1340,7 +1340,7 @@ BYTE Moudle_test(void)
 			if(Mtimer_Cunt == 1000)
 			{
 				dprint("Reading FLASH ID test\n");
-				SPIF_READ_ID();
+				SPIFE_READ_ID();
 			}
 			BYTE data[256];
 			if(Mtimer_Cunt == 2000)
@@ -1350,7 +1350,7 @@ BYTE Moudle_test(void)
 				{
 					data[i] = i;
 				}
-				RunSPIF_WriteFromRAM(0x01CC00, data, 256);
+				RunSPIFE_WriteFromRAM(0x01CC00, data, 256);
 				dprint("FLASH write complete\n");
 			}
 			if(Mtimer_Cunt == 3000)
@@ -1360,7 +1360,7 @@ BYTE Moudle_test(void)
 				{
 					data[i] = 0;
 				}
-				RunSPIF_ReadFromRAM(0x01CC00, data, 256);
+				RunSPIFE_ReadFromRAM(0x01CC00, data, 256);
 			}
 			if(Mtimer_Cunt == 4000)
 			{
@@ -1369,7 +1369,7 @@ BYTE Moudle_test(void)
 				{
 					data[i] = 0xaa;
 				}
-				RunSPIF_WriteFromRAM(0x01CC00, data, 256);
+				RunSPIFE_WriteFromRAM(0x01CC00, data, 256);
 				dprint("complete\n");
 			}
 			if(Mtimer_Cunt == 5000)
@@ -1379,7 +1379,7 @@ BYTE Moudle_test(void)
 				{
 					data[i] = 0;
 				}
-				RunSPIF_ReadFromRAM(0x01CC00, data, 256);
+				RunSPIFE_ReadFromRAM(0x01CC00, data, 256);
 			}
 			if(Mtimer_Cunt >= 6000)
 			{
@@ -2222,7 +2222,7 @@ BYTE Moudle_test(void)
 				*((unsigned char *)0x30C00) = 0xff;
 				printf("*0x30C00:%x\n", *((unsigned char *)0x30C00));
 
-				//SYSCTL_MODEN1 |= SPIF_EMB_EN; 
+				//SYSCTL_MODEN1 |= SPIFE_EMB_EN; 
 				//初始化
 				*((unsigned char *)0x33400) = 0xff;
 				printf("*0x33400:%x\n", *((unsigned char *)0x33400));

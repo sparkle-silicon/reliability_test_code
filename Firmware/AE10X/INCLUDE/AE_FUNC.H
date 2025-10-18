@@ -63,7 +63,7 @@
 #define TIMER0_CLOCK_EN 1
 #define ICTL_CLOCK_EN 1 // 中断控制器模块使能控制
 #define H2E_CLOCK_EN 1  // H2E模块使能控制
-#define SPIF_CLOCK_EN 1
+#define SPIFE_CLOCK_EN 1
 #define SRAM_CLOCK_EN 1
 #define GPIODB_CLOCK_EN 1 // GPIO去抖使能
 #define SYSCTL_CLOCK_EN 1
@@ -394,7 +394,7 @@ void Default_Config();
 #else
 #define h2e_MoudleClock_EN SYSCTL_MODEN1 &= (~H2E_EN);
 #endif
-#if SPIF_CLOCK_EN
+#if SPIFE_CLOCK_EN
 #define spif_MoudleClock_EN SYSCTL_MODEN1 |= SPIFE_EN;
 #else
 #define spif_MoudleClock_EN SYSCTL_MODEN1 &= (~SPIFE_EN);

@@ -81,7 +81,7 @@ void RTC_Deep_Sleep_Test(u32 sleep_time)
     //BIT1:0:Disable Internel OSC192M(1:ENable Internel OSC192M)
     //BIT2:1:Sleep Main Freq Set High Clock(0:Sleep Main Freq Set Low Clock)
     //BIT3:0:Sleep No close High Clock(1:wait main freq set low clock(bit2=0),close high clock)
-    SYSCTL_SWITCH_PLL = BIT3 | BIT0;
+    SYSCTL_SLEEPCFG = BIT3 | BIT0;
     // SYSCTL_MODEN0 = UART0_EN; //
     SYSCTL_MODEN0 = 0;
     SYSCTL_MODEN1 = RTC_EN | SPIFE_EN | CACHE_EN;

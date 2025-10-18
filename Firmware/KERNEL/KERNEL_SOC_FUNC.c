@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-17 15:48:24
+ * @LastEditTime: 2025-10-18 15:52:02
  * @Description: This is about the  national crypto algorithm implementation
  *
  *
@@ -191,7 +191,7 @@ void spi_init(void)
 	SPIM_Init(SPIM_DEFAULT_DLY, SPIM_DEFAULT_CPOL, SPIM_DEFAULT_CPHA, SPIM_DEFAULT_LSB, SPIM_DEFAULT_DSSP, SPIM_DEFAULT_CPSRR);
 #endif
 	dprint("SPI Master init done.\n");
-#if SPIF_EN_Init
+#if SPIFE_EN_Init
 	spif_MoudleClock_EN;
 	if(SYSCTL_PIO_CFG & BIT1)//使用外部FLASH
 	{
@@ -200,7 +200,7 @@ void spi_init(void)
 	}
 	else//使用内部FLASH才能初始化
 	{
-		sysctl_iomux_spif(SPIF_CSN_SEL, SPIF_QE_SEL, SPIF_WP_SEL);
+		sysctl_iomux_spif(SPIFE_CSN_SEL, SPIFE_QE_SEL, SPIFE_WP_SEL);
 	}
 	SPIFE_Init();//初始化外部FLASH的一些细节,注意,如果使用外部FLASH可能会和cache冲突
 	dprint("EXTERNAL FLASH init done.\n");
@@ -423,16 +423,16 @@ void time_init(void)
 #if TIMER_MODULE_EN
 	SYSCTL_CLKDIV_TMR0 = TIMER0_Division;
 	timer0_MoudleClock_EN;
-	TIMER_Init(TIMER0, 1, 0x0, 0x1); // delay~=65us
+	TIMER_Init(TIMER0, 1, 0x0, 0x1); // 24Mdelay~= 0.083us,96Mdelay~=0.041us
 	SYSCTL_CLKDIV_TMR1 = TIMER1_Division;
 	timer1_MoudleClock_EN;			 // ms delay
-	TIMER_Init(TIMER1, 1, 0x0, 0x1); // delay~=65us
+	TIMER_Init(TIMER1, 1, 0x0, 0x1); // 24Mdelay~= 0.083us,96Mdelay~=0.041us
 	SYSCTL_CLKDIV_TMR2 = TIMER2_Division;
 	timer2_MoudleClock_EN;			 // 1ms service
-	TIMER_Init(TIMER2, 1, 0x0, 0x1); // delay~= 0.083us
+	TIMER_Init(TIMER2, 1, 0x0, 0x1); // 24Mdelay~= 0.083us,96Mdelay~=0.041us
 	SYSCTL_CLKDIV_TMR3 = TIMER3_Division;
 	timer3_MoudleClock_EN;			 // us delay
-	TIMER_Init(TIMER3, 1, 0x0, 0x1); // delay~=0.083us
+	TIMER_Init(TIMER3, 1, 0x0, 0x1); // 24Mdelay~= 0.083us,96Mdelay~=0.041us
 
 	while((TIMER_TRIS & 0xf) != 0xf)
 		;

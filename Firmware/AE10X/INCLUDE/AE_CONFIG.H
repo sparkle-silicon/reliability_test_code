@@ -119,9 +119,9 @@
 #define I2C_MODULE_EN 1
 #define PS2_MODULE_EN 0
 #define KBS_MODULE_EN 0
-#define SPIF_MODULE_EN 1
+#define SPIFE_MODULE_EN 1
 #define SPIM_MODULE_EN 0
-#define SPI_MODULE_EN (SPIM_MODULE_EN||SPIF_MODULE_EN)
+#define SPI_MODULE_EN (SPIM_MODULE_EN||SPIFE_MODULE_EN)
 #define WDT_MODULE_EN 0
 #define PWM_MODULE_EN 0
 #define TACH_MODULE_EN 0
@@ -356,10 +356,10 @@
 #define SPIM_MISO_SEL 0
 #define SPIM_QE_SEL 0
 
-#define SPIF_EN_Init 0&SPIF_CLOCK_EN
-#define SPIF_CSN_SEL 0
-#define SPIF_QE_SEL 0
-#define SPIF_WP_SEL 0
+#define SPIFE_EN_Init 0&SPIFE_CLOCK_EN
+#define SPIFE_CSN_SEL 0
+#define SPIFE_QE_SEL 0
+#define SPIFE_WP_SEL 0
 
 // PWM TACH 初始化
 #define PWM0_EN_Init 1 & PWM_CLOCK_EN

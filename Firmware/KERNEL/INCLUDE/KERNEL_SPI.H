@@ -56,10 +56,10 @@
 #define rdovm				HEX20 //RDNUM接收完毕中断屏蔽位
 #define errm				HEX40 //错误中断屏蔽位
 /************SPI Register define***************/
-#define SPIF_CTL_FOUR       HEX02
-#define SPIF_CTL_TWO        HEX00
-#define SPIF_SUSPEND_EN     HEX01
-#define SPIF_SUSPEND_DISEN  HEX00
+#define SPIFE_CTL_FOUR       HEX02
+#define SPIFE_CTL_TWO        HEX00
+#define SPIFE_SUSPEND_EN     HEX01
+#define SPIFE_SUSPEND_DISEN  HEX00
 /* SPI 状态寄存器位定 */
 #define SPI_BSY      HEX10 // SPI-M busy标志位，0x0 表示空闲，0x1 表示传输中
 #define SPI_RFF      HEX08 // 接收FIFO满标志位，0x0 表示不满，0x1 表示满

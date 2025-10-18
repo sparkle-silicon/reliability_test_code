@@ -60,8 +60,8 @@ void __interrupt SECTION(".interrupt.TIMER0_HANDLER") TIMER0_HANDLER(void) __wea
 void __interrupt SECTION(".interrupt.TIMER1_HANDLER") TIMER1_HANDLER(void) __weak;
 void __interrupt SECTION(".interrupt.TIMER2_HANDLER") TIMER2_HANDLER(void) __weak;
 void __interrupt SECTION(".interrupt.TIMER3_HANDLER") TIMER3_HANDLER(void) __weak;
-void __interrupt SECTION(".interrupt.INTR0_HANDLER") INTR0_HANDLER(void) __weak;
-void __interrupt SECTION(".interrupt.INTR1_HANDLER") INTR1_HANDLER(void) __weak;
+void __interrupt SECTION(".interrupt.INTC0_HANDLER") INTC0_HANDLER(void) __weak;
+void __interrupt SECTION(".interrupt.INTC1_HANDLER") INTC1_HANDLER(void) __weak;
 /***************weak声明*********************/
 /*----------------------------------LINE------------------------------------*/
 void irqc_enable_interrupt(uint32_t source)
@@ -513,7 +513,7 @@ void __interrupt SECTION(".interrupt.UART0_HANDLER") UART0_HANDLER(void)
 		{
 			UART0_RX;//读出异常值
 			irqprint("Receive error\n");//报错
-			SYSCTL_PIO0_UDCFG |= (1 << 24);
+			SYSCTL_PIOA_UPCFG |= (1 << 24);
 		}//接收错误
 
 	}
@@ -572,7 +572,7 @@ void __interrupt SECTION(".interrupt.UARTA_HANDLER") UARTA_HANDLER(void)
 		{
 			UARTA_RX;//读出异常值
 			irqprint("Receive error\n");//报错
-			SYSCTL_PIO0_UDCFG |= (1 << 8);
+			SYSCTL_PIOA_UPCFG |= (1 << 8);
 		}//接收错误
 
 	}
@@ -661,7 +661,7 @@ void __interrupt SECTION(".interrupt.UARTB_HANDLER") UARTB_HANDLER(void)
 		{
 			UARTB_RX;//读出异常值
 			irqprint("Receive error\n");//报错
-			SYSCTL_PIO1_UDCFG |= (1 << 25);
+			SYSCTL_PIOB_UPCFG |= (1 << 25);
 		}//接收错误
 
 	}
@@ -841,7 +841,7 @@ void __interrupt SECTION(".interrupt.TIMER3_HANDLER") TIMER3_HANDLER(void)
 	}
 };
 /*Intr0*/
-void __interrupt SECTION(".interrupt.INTR0_HANDLER") INTR0_HANDLER(void)
+void __interrupt SECTION(".interrupt.INTC0_HANDLER") INTC0_HANDLER(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[30]++;
@@ -869,7 +869,7 @@ void __interrupt SECTION(".interrupt.INTR0_HANDLER") INTR0_HANDLER(void)
 	(intr0_service[(num)])(); // Dispatch to service handler.
 }
 /*Intr1*/
-void __interrupt SECTION(".interrupt.INTR1_HANDLER") INTR1_HANDLER(void)
+void __interrupt SECTION(".interrupt.INTC1_HANDLER") INTC1_HANDLER(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[31]++;

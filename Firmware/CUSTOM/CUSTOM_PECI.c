@@ -53,12 +53,12 @@ void PECI_Set_Pad(u16 VTTlev, u8 PADsel)
 {
     if(PADsel)
     {
-        SYSCTL_PAD_PECI &= ~(0b1111 << 8);
-        SYSCTL_PAD_PECI |= BIT(15) | ((VTTlev & 0b1111) << 8);
+        SYSCTL_PECI_PAD_CTRL &= ~(0b1111 << 8);
+        SYSCTL_PECI_PAD_CTRL |= BIT(15) | ((VTTlev & 0b1111) << 8);
     }
     else
     {
-        SYSCTL_PAD_PECI &= ~BIT(15);
+        SYSCTL_PECI_PAD_CTRL &= ~BIT(15);
         PECI_HOCTLR |= BIT7;
         PECI_PADCTLR &= 0xfc;
         PECI_PADCTLR |= VTTlev & 0b11;

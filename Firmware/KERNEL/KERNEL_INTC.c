@@ -2177,7 +2177,7 @@ void intr1_uart1(void)
 		{
 			UART1_RX;					 // 读出异常值
 			irqprint("Receive error\n"); // 报错
-			SYSCTL_PIO1_UDCFG |= BIT3;
+			SYSCTL_PIOB_UPCFG |= BIT3;
 		} // 接收错误
 	}
 #if (ENABLE_COMMAND_SUPPORT && COMMAND_UART_SWITCH == 1)
@@ -2739,14 +2739,14 @@ void intr1_mailbox(void)
 	Intr_num[157]++;
 #endif
 	// printf("c2e int\n");
-	Mailbox_Int_Store = C2EINT;
-	C2E_CMD = C2EINFO0;
+	Mailbox_Int_Store = MAILBOX_C2EINT;
+	C2E_CMD = MAILBOX_C2EINFO0;
 	do
 	{
-		C2EINT = C2EINT;
+		MAILBOX_C2EINT = MAILBOX_C2EINT;
 		nop;
 	}
-	while(C2EINT); // 清除中断
+	while(MAILBOX_C2EINT); // 清除中断
 	F_Service_Mailbox = 1;
 }
 

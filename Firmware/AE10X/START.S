@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-04 18:44:22
+ * @LastEditTime: 2025-10-18 17:52:36
  * @Description: 
  * 
  * 
@@ -49,8 +49,8 @@ vector_base:
     .word  TIMER1_HANDLER//27
     .word  TIMER2_HANDLER//28
     .word  TIMER3_HANDLER//29
-    .word  INTR0_HANDLER//30
-    .word  INTR1_HANDLER//31
+    .word  INTC0_HANDLER//30
+    .word  INTC1_HANDLER//31
     j (trap_entry+0x80080-0x30880)//j trap_entry//跳转硬件错误处理函数//由于IVT导致此处偏移有问题；
 	/*原计算公式：offset = trap_entr -0x80080
 	需求计算公式：offset = trap_entr -0x30880

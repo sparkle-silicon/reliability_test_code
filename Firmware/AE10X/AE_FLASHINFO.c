@@ -57,9 +57,9 @@ USED sFixedFlashInfo Fix_flash_info = {
 	.EXTERNAL_FLASH_CTRL.Firmware_4KSector = (Firmware_nKsize / 4 - 1),
 
 	// FLASH	地址
-	.IVT = ((uint32_t)&vector_base - (FLASH_BASE_ADDR)), // 中断向量表
-	.Restart = ((uint32_t)&_start - (FLASH_BASE_ADDR)),  // 起始地址
-	// .DynamicFlashInfo = ((uint32_t)&Dy_flash_info - (FLASH_BASE_ADDR)), // 由编译填入
+	.IVT = ((uint32_t)&vector_base - (FLASH_CACHE_BASE_ADDR)), // 中断向量表
+	.Restart = ((uint32_t)&_start - (FLASH_CACHE_BASE_ADDR)),  // 起始地址
+	// .DynamicFlashInfo = ((uint32_t)&Dy_flash_info - (FLASH_CACHE_BASE_ADDR)), // 由编译填入
 		.PATCH = {
 		[0] .data.dword = 0xa001,
 		[0].addrl = (PATCH0_ADDR >> 2) & 0xff,

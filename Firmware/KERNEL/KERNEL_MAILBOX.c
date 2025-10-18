@@ -84,13 +84,13 @@ void Mailbox_ExecuteFirmwareUpdate(void *param)
         {
             SYSCTL_RST1 &= 0xfffffeff; // 释放复位
         }
-        if(SPIF_STATUS & BIT4)               // 0:2线，1:4线
+        if(SPIFE_STA & BIT4)               // 0:2线，1:4线
         {
-            SPIF_CTRL0 |= BIT1; // 成功则使用4线模式
+            SPIFE_CTL0 |= BIT1; // 成功则使用4线模式
         }
         else
         {
-            SPIF_CTRL0 &= ~BIT1; // 失败使用二线模式
+            SPIFE_CTL0 &= ~BIT1; // 失败使用二线模式
         }
     }
     MAILBOX_SET_IRQ(MAILBOX_Firmware_IRQ_NUMBER);                                 // 触发对应中断
@@ -346,7 +346,7 @@ void Mailbox_UpdateHMACKey_Trigger(void)
         | (eRPMC_UpdateHMACKey.Cmd_Type << 8)
         | (eRPMC_UpdateHMACKey.Counter_Addr << 16)
         | (eRPMC_UpdateHMACKey.Rsvd << 24);
-    printf("E2CINFO1:0x%x\n", MAILBOX_SELF_INFO1);
+    printf("MAILBOX_E2CINFO1:0x%x\n", MAILBOX_SELF_INFO1);
     MAILBOX_SET_IRQ(MAILBOX_eRPMC_IRQ_NUMBER);           // 触发子系统中断
     command_processed = false;
     eRPMC_Busy_Status = 1;
@@ -393,7 +393,7 @@ void Mailbox_IncrementCounter_Trigger(void)
         | (eRPMC_IncrementCounter.Cmd_Type << 8)
         | (eRPMC_IncrementCounter.Counter_Addr << 16)
         | (eRPMC_IncrementCounter.Rsvd << 24);
-    printf("E2CINFO1:0x%x\n", MAILBOX_SELF_INFO1);
+    printf("MAILBOX_E2CINFO1:0x%x\n", MAILBOX_SELF_INFO1);
     MAILBOX_SET_IRQ(MAILBOX_eRPMC_IRQ_NUMBER);           // 触发子系统中断
     command_processed = false;
     eRPMC_Busy_Status = 1;

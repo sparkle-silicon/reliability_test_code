@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-04 14:35:44
+ * @LastEditTime: 2025-10-18 18:25:58
  * @Description:
  *
  *
@@ -16,7 +16,7 @@
 #include "AE_INCLUDE.H"
 #include "KERNEL_INCLUDE.H"
 #include "CUSTOM_INCLUDE.H"
-extern Task* task_head;
+extern Task *task_head;
 #define printf_instructions_msg " \
 \n\
 ************************************************************************************\n\
@@ -138,11 +138,11 @@ void Service_MS_1(void)
 {
 #define Stress_test_printf 0
 #if Stress_test_printf
-	for (int i = 4096; i; i--)
+	for(int i = 4096; i; i--)
 		dprint("AAAAA\n");
 #endif
 #if (Service_MS_1_START == 1)
-	if (F_Service_MS_1 == 0)
+	if(F_Service_MS_1 == 0)
 		return;
 	else /*if (F_Service_MS_1 == 1)*/
 	{
@@ -154,15 +154,15 @@ void Service_MS_1(void)
 	//  }
 	Event_1ms();
 	timer_1ms_count++;
-	if (timer_1ms_count >= 10)
+	if(timer_1ms_count >= 10)
 	{
 		timer_1ms_count = 0;
 	}
-	if ((timer_1ms_count % 5) == 0) // 5ms
+	if((timer_1ms_count % 5) == 0) // 5ms
 	{
 		Event_5ms();
 		timer_5ms_count++;
-		if (timer_5ms_count % 2 == 1) // 10ms events
+		if(timer_5ms_count % 2 == 1) // 10ms events
 		{
 			EventA_10ms();
 		}
@@ -170,22 +170,22 @@ void Service_MS_1(void)
 		{
 			EventB_10ms();
 		}
-		if (timer_5ms_count == 2)
+		if(timer_5ms_count == 2)
 		{
 			EventA_50ms();
 		}
-		else if (timer_5ms_count == 4)
+		else if(timer_5ms_count == 4)
 		{
 			EventB_50ms();
 		}
-		else if (timer_5ms_count == 6)
+		else if(timer_5ms_count == 6)
 		{
 			EventC_50ms();
 		}
-		else if (timer_5ms_count == 8)
+		else if(timer_5ms_count == 8)
 		{
 			timer_100ms_count++;
-			if (timer_100ms_count % 2 == 1)
+			if(timer_100ms_count % 2 == 1)
 			{
 				EventA_100ms();
 			}
@@ -194,60 +194,60 @@ void Service_MS_1(void)
 				EventB_100ms();
 			}
 		}
-		else if (timer_5ms_count >= 10)
+		else if(timer_5ms_count >= 10)
 		{
 			timer_5ms_count = 0;
 		}
-		if (timer_5ms_count == 0) // 50ms
+		if(timer_5ms_count == 0) // 50ms
 		{
 			timer_50ms_count++;
-			if (timer_50ms_count % 2 == 0)
+			if(timer_50ms_count % 2 == 0)
 			{
 				EventC_100ms();
 			}
-			if (timer_50ms_count == 4)
+			if(timer_50ms_count == 4)
 			{
 				EventA_500ms();
 			}
-			else if (timer_50ms_count == 6)
+			else if(timer_50ms_count == 6)
 			{
 				EventB_500ms();
 			}
-			else if (timer_50ms_count == 8)
+			else if(timer_50ms_count == 8)
 			{
 				EventC_500ms();
 			}
-			else if (timer_50ms_count == 10)
+			else if(timer_50ms_count == 10)
 			{
 				EventA_1s();
 			}
-			else if (timer_50ms_count == 12)
+			else if(timer_50ms_count == 12)
 			{
 				EventB_1s();
 			}
-			else if (timer_50ms_count == 14)
+			else if(timer_50ms_count == 14)
 			{
 				EventA_500ms();
 			}
-			else if (timer_50ms_count == 16)
+			else if(timer_50ms_count == 16)
 			{
 				EventB_500ms();
 			}
-			else if (timer_50ms_count == 18)
+			else if(timer_50ms_count == 18)
 			{
 				EventC_500ms();
 			}
-			else if (timer_50ms_count == 20)
+			else if(timer_50ms_count == 20)
 			{
 				EventC_1s();
 				timer_50ms_count = 0;
 				timer_1s_count++;
-				if (timer_1s_count == 60)
+				if(timer_1s_count == 60)
 				{
 					Event_1min();
 					timer_1s_count = 0;
 					timer_1min_count++;
-					if (timer_1min_count == 60)
+					if(timer_1min_count == 60)
 					{
 						timer_1min_count = 0;
 						timer_1hours_count++;
@@ -264,7 +264,7 @@ void Service_MS_1(void)
 void Service_Mailbox(void)
 {
 #if (Service_Mailbox_START == 1)
-	if (F_Service_Mailbox == 1)
+	if(F_Service_Mailbox == 1)
 	{
 		F_Service_Mailbox = 0;
 		Mailbox_C2E_Service();
@@ -277,7 +277,7 @@ void Service_Mailbox(void)
 void Service_Reserved2(void)
 {
 #if (Service_Reserved2_START == 1)
-	if (F_Service_Reserved2)
+	if(F_Service_Reserved2)
 	{
 		F_Service_Reserved2 = 0;
 	}
@@ -289,7 +289,7 @@ void Service_Reserved2(void)
 void Service_Reserved3(void)
 {
 #if (Service_Reserved3_START == 1)
-	if (F_Service_Reserved3)
+	if(F_Service_Reserved3)
 	{
 		F_Service_Reserved3 = 0;
 	}
@@ -301,7 +301,7 @@ void Service_Reserved3(void)
 //----------------------------------------------------------------------------
 void Service_CPU_WakeUp(void)
 {
-	if (F_Service_WakeUp)
+	if(F_Service_WakeUp)
 	{
 		F_Service_WakeUp = 0;
 		dprint("cpu wake service complete!\n");
@@ -315,16 +315,16 @@ void Service_CPU_WakeUp(void)
 void Service_PUTC(void)
 {
 #if SUPPORT_REAL_OR_DELAY_PRINTF
-	if (F_Service_PUTC && (!print_number))
+	if(F_Service_PUTC && (!print_number))
 		return;
 	// if(print_number&&(PRINTF_LSR & UART_LSR_TEMP) )
-	while (print_number && (!(PRINTF_LSR & UART_LSR_THRE)))
+	while(print_number && (!(PRINTF_LSR & UART_LSR_THRE)))
 	{
 		PRINTF_TX = print_buff[PRINT_SERVICE_CNT];
 		// print_buff[PRINT_SERVICE_CNT]='\0';
 		PRINT_SERVICE_CNT++;
 		print_number--;
-		if (PRINT_SERVICE_CNT >= PRINT_MAX_SIZE)
+		if(PRINT_SERVICE_CNT >= PRINT_MAX_SIZE)
 			PRINT_SERVICE_CNT = 0;
 	}
 #endif
@@ -336,9 +336,9 @@ void Service_PUTC(void)
 void Service_CMD(void)
 {
 #if ENABLE_COMMAND_SUPPORT
-	if (F_Service_CMD)
+	if(F_Service_CMD)
 	{
-		CMD_RUN((volatile char*)&CMD_UART_CNT, (char*)CMD_UART_BUFF);
+		CMD_RUN((volatile char *)&CMD_UART_CNT, (char *)CMD_UART_BUFF);
 		CMD_UART_CNT = 0;
 		F_Service_CMD = 0;
 	}
@@ -347,12 +347,12 @@ void Service_CMD(void)
 #if ENABLE_DEBUGGER_SUPPORT
 void Service_Debugger(void)
 {
-	if (F_Service_Debugger)
+	if(F_Service_Debugger)
 	{
 		Debug_Timeout_Count = 5000;
 		I2C0_INTR_MASK &= ~(0x1 << 2); // 屏蔽接收中断
 		// Uart_Int_Disable(UARTA_CHANNEL, 0);
-		while (F_Service_Debugger_Cmd != F_Service_Debugger_Cnt)
+		while(F_Service_Debugger_Cmd != F_Service_Debugger_Cnt)
 			Deubgger_Cmd_Parsing(Debugger_Cmd[F_Service_Debugger_Cnt++]);
 		F_Service_Debugger = 0;
 		// Uart_Int_Enable(UARTA_CHANNEL, 0);
@@ -361,7 +361,7 @@ void Service_Debugger(void)
 	else
 	{
 		Debug_Timeout_Count--;
-		if (Debug_Timeout_Count == 0)
+		if(Debug_Timeout_Count == 0)
 		{
 			Debug_Timeout_Count = 5000;
 			Buf_flag = 0;
@@ -375,25 +375,25 @@ void Service_Debugger(void)
 	// 	assert_print("iicFeedback %#x\n", iicFeedback);
 	// 	F_Service_Debugger_Send = 0;
 	// }
-	if (F_Service_Debugger_Rrq)
+	if(F_Service_Debugger_Rrq)
 	{
 		Debugger_I2c_Req(DEBUGGER_I2C_CHANNEL);
 		assert_print("iicFeedback %#x\n", iicFeedback);
 		F_Service_Debugger_Rrq = 0;
-		switch (DEBUGGER_I2C_CHANNEL) // 打开RD_REQ中断
+		switch(DEBUGGER_I2C_CHANNEL) // 打开RD_REQ中断
 		{
-		case I2C_CHANNEL_0:
-			I2C0_INTR_MASK |= 0x20;
-		case I2C_CHANNEL_1:
-			I2C1_INTR_MASK |= 0x20;
-		case I2C_CHANNEL_2:
-			I2C2_INTR_MASK |= 0x20;
-		case I2C_CHANNEL_3:
-			I2C3_INTR_MASK |= 0x20;
-		case I2C_CHANNEL_4:
-			I2C4_INTR_MASK |= 0x20;
-		case I2C_CHANNEL_5:
-			I2C5_INTR_MASK |= 0x20;
+			case I2C_CHANNEL_0:
+				I2C0_INTR_MASK |= 0x20;
+			case I2C_CHANNEL_1:
+				I2C1_INTR_MASK |= 0x20;
+			case I2C_CHANNEL_2:
+				I2C2_INTR_MASK |= 0x20;
+			case I2C_CHANNEL_3:
+				I2C3_INTR_MASK |= 0x20;
+			case I2C_CHANNEL_4:
+				I2C4_INTR_MASK |= 0x20;
+			case I2C_CHANNEL_5:
+				I2C5_INTR_MASK |= 0x20;
 		}
 	}
 }
@@ -447,7 +447,7 @@ const short array_count = sizeof(service_table) / sizeof(FUNCT_PTR_V_V);
 void main_service(void)
 {
 
-	if (_R1 >= sizeof(service_table) / sizeof(FUNCT_PTR_V_V))
+	if(_R1 >= sizeof(service_table) / sizeof(FUNCT_PTR_V_V))
 		_R1 = 0;
 	(service_table[_R1])();
 	_R1++;
@@ -460,11 +460,11 @@ void main_loop(void)
 {
 	dprint("Enter main_service \n");
 
-	while (1)
+	while(1)
 	{
-		if (E2CINFO7 & 0x1)
+		if(MAILBOX_E2CINFO7 & 0x1)
 		{
-			E2CINFO7 = 0x0;
+			MAILBOX_E2CINFO7 = 0x0;
 			Enter_LowPower_Mode();
 		}
 
@@ -472,45 +472,45 @@ void main_loop(void)
 	}
 }
 
-VBYTEP OPTIMIZE0 USED SPIF_Read_Interface(register DWORD size, register DWORD addr, BYTEP read_buff)
+VBYTEP OPTIMIZE0 USED SPIFE_Read_Interface(register DWORD size, register DWORD addr, BYTEP read_buff)
 {
-	BYTE SPIF_READ_COMMAND;
-	DWORD SPIF_J;
-#define temp_addrs SPIF_addrs
-#define temp_data SPIF_data
-	if (size & 0b11)
+	BYTE SPIFE_READ_COMMAND;
+	DWORD SPIFE_J;
+#define temp_addrs SPIFE_addrs
+#define temp_data SPIFE_data
+	if(size & 0b11)
 	{
 		size += 0b100;
 		size &= ~0b11;
 	}
 	// PRINTF_TX('M');
-	while (!(SPIF_READY & 0x1))
+	while(!(SPIFE_RDY & SPIF_RDY_READY))
 		;
 	// PRINTF_TX('N');
 	// rom_wdt_feed();
-	while (SPIF_STATUS & 0xf)
+	while(SPIFE_STA & 0xf)
 		;
 	// PRINTF_TX('W');
 	// rom_wdt_feed(); // 直到写完
-	while (!(SPIF_READY & 0x1))
+	while(!(SPIFE_RDY & SPIF_RDY_READY))
 		;
 	// rom_wdt_feed(); // 读忙
-	SPIF_DBYTE = (size - 1) & 0xff;
-	while (!(SPIF_READY & 0x1))
+	SPIFE_DBYTE = (size - 1) & 0xff;
+	while(!(SPIFE_RDY & SPIF_RDY_READY))
 		;
 	// rom_wdt_feed();
-	if (SPIF_CTRL0 & BIT1)
-		SPIF_READ_COMMAND = 0x6b;
+	if(SPIFE_CTL0 & BIT1)
+		SPIFE_READ_COMMAND = 0x6b;
 	else
-		SPIF_READ_COMMAND = 0x3b;
-	SPIF_FIFO_TOP = (((addr & 0xFF) << 24) + ((addr & 0xFF00) << 8) + ((addr & 0xFF0000) >> 8) + SPIF_READ_COMMAND);
-	for (SPIF_J = 0; SPIF_J < (size >> 2); SPIF_J++)
+		SPIFE_READ_COMMAND = 0x3b;
+	SPIFE_FTOP = (((addr & 0xFF) << 24) + ((addr & 0xFF00) << 8) + ((addr & 0xFF0000) >> 8) + SPIFE_READ_COMMAND);
+	for(SPIFE_J = 0; SPIFE_J < (size >> 2); SPIFE_J++)
 	{
-		while ((SPIF_FIFO_CNT & 0x3) == 0)
+		while((SPIFE_FCNT & 0x3) == 0)
 			;
 		// rom_wdt_feed();
-		// printf("TOP:%x", SPIF_FIFO_TOP);
-		(*((DWORDP)(&(read_buff[SPIF_J << 2])))) = SPIF_FIFO_TOP;
+		// printf("TOP:%x", SPIFE_FTOP);
+		(*((DWORDP)(&(read_buff[SPIFE_J << 2])))) = SPIFE_FTOP;
 	}
 	return read_buff;
 #undef temp_addrs
@@ -545,13 +545,13 @@ int __weak main(void)
 	printf("slave0 maxlength:%x\n", SLAVE0_MAXLIMITS);
 	I3C_MASTER_PV_WRITE_WITH7E(0x3a, ccc_wdata, 5, I3C_MASTER0);
 	I3C_SLAVE_READ(ccc_rdata, 5, I3C_SLAVE0);
-	for (int i = 0; i < 5; i++)
+	for(int i = 0; i < 5; i++)
 	{
 		printf("private read data%x:%x\n", i, ccc_rdata[i]);
 	}
 	I3C_SLAVE_WRITE(ccc_wdata, 5, I3C_SLAVE0);
 	I3C_MASTER_PV_READ_WITH7E(0x3a, ccc_rdata1, 5, I3C_MASTER0);
-	for (int i = 0; i < 5; i++)
+	for(int i = 0; i < 5; i++)
 	{
 		printf("private read data%x:%x\n", i, ccc_rdata1[i]);
 	}

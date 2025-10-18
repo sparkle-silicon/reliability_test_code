@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-17 22:43:11
+ * @LastEditTime: 2025-10-18 18:26:26
  * @Description: This file is used for SPI Flash Interface
  *
  *
@@ -33,17 +33,17 @@ void SPIFI_Init(void)
 }
 void SPIFE_Init(void)
 {
-#if (!SPIF_CLOCK_EN)
+#if (!SPIFE_CLOCK_EN)
    return;
 #endif
-   SPIF_CTRL0 |= 0x1; // 擦写时允许挂起
+   SPIFE_CTL0 |= 0x1; // 擦写时允许挂起
    if(SYSCTL_PIO_CFG & BIT1)//使用外部FLASH
    {
    }
    else
    {
-      SPIF_READ_ID();
-      if(SPIF_QE_SEL)
+      SPIFE_READ_ID();
+      if(SPIFE_QE_SEL)
       {
          //初始化4线
       }
@@ -51,19 +51,19 @@ void SPIFE_Init(void)
 
 }
 // 读取id
-void SPIF_READ_ID(void)
+void SPIFE_READ_ID(void)
 {
-#if (!SPIF_CLOCK_EN)
+#if (!SPIFE_CLOCK_EN)
    return;
 #endif
-   while(!(SPIF_READY & SPIF_RDY));
-   SPIF_DBYTE = 0x2;
-   while(!(SPIF_READY & SPIF_RDY));
-   // SPIF_FIFO_TOP = FLASH_ID_CMD;
-   SPIF_FIFO_TOP = 0x9f;
-   // while(!(SPIF_READY & SPIF_RDY));
-   while(((SPIF_FIFO_CNT & 0x3) == 0));
-   dprint("read flash id is %#x\n", SPIF_FIFO_TOP);
+   while(!(SPIFE_RDY & SPIF_RDY_READY));
+   SPIFE_DBYTE = 0x2;
+   while(!(SPIFE_RDY & SPIF_RDY_READY));
+   // SPIFE_FTOP = FLASH_ID_CMD;
+   SPIFE_FTOP = 0x9f;
+   // while(!(SPIFE_RDY & SPIF_RDY_READY));
+   while(((SPIFE_FCNT & 0x3) == 0));
+   dprint("read flash id is %#x\n", SPIFE_FTOP);
 }
 /**
  * @brief 写入flash操作
@@ -73,12 +73,12 @@ void SPIF_READ_ID(void)
  * @param length        要写入的字节数，必须小于或等于页的大小(256字节)。
  *
  * @note
- * - 该函数建议不要直接使用，在RunSPIF_WriteFromRAM函数中调用
+ * - 该函数建议不要直接使用，在RunSPIFE_WriteFromRAM函数中调用
  * @return
  */
-ALIGNED(4) void SPIF_Write(DWORD addr, BYTEP write_buff, WORD length)
+ALIGNED(4) void SPIFE_Write(DWORD addr, BYTEP write_buff, WORD length)
 {
-#if (!SPIF_CLOCK_EN)
+#if (!SPIFE_CLOCK_EN)
    return;
 #endif
    DWORD i, j, write_data = 0;
@@ -87,59 +87,59 @@ ALIGNED(4) void SPIF_Write(DWORD addr, BYTEP write_buff, WORD length)
    BYTE _4ByteCunt = 0;
    BYTE temp_length = 0;
    PRINTF_TX = 'a';
-   while(!(SPIF_READY & SPIF_RDY));
-   SPIF_FIFO_TOP = temp_addrs + FLASH_SECT_ERASE_CMD;   //Sector Erase
-   while(!(SPIF_READY & SPIF_RDY));
-   while(SPIF_STATUS & SPIF_Write_Status);
-   while(!(SPIF_READY & SPIF_RDY));
+   while(!(SPIFE_RDY & SPIF_RDY_READY));
+   SPIFE_FTOP = temp_addrs + FLASH_SECT_ERASE_CMD;   //Sector Erase
+   while(!(SPIFE_RDY & SPIF_RDY_READY));
+   while(SPIFE_STA & SPIFE_Write_Status);
+   while(!(SPIFE_RDY & SPIF_RDY_READY));
    PRINTF_TX = 'b';
    _4ByteCunt = length / 4;
    temp_length = length % 4;
    //写
-   SPIF_DBYTE = length - 1;                 //准备写256字节
-   while(!(SPIF_READY & SPIF_RDY));
-   SPIF_FIFO_TOP = (temp_addrs + FLASH_PAGE_PROGRAM_CMD);  //Page Program
+   SPIFE_DBYTE = length - 1;                 //准备写256字节
+   while(!(SPIFE_RDY & SPIF_RDY_READY));
+   SPIFE_FTOP = (temp_addrs + FLASH_PAGE_PROGRAM_CMD);  //Page Program
    if(_4ByteCunt != 0)
    {
       for(i = 0; i < (length / 4); i++)
       {
          j = i * 4;
          write_data = write_buff[j] | (write_buff[j + 1] << 8) | (write_buff[j + 2] << 16) | (write_buff[j + 3] << 24);
-         temp_status = SPIF_FIFO_CNT;
+         temp_status = SPIFE_FCNT;
          while((temp_status & 0x3) >= 2)
          {
-            temp_status = SPIF_FIFO_CNT;
+            temp_status = SPIFE_FCNT;
          }
-         SPIF_FIFO_TOP = write_data;
+         SPIFE_FTOP = write_data;
       }
       switch(temp_length)
       {
          case 1:
             write_data = write_buff[j + 4];
-            temp_status = SPIF_FIFO_CNT;
+            temp_status = SPIFE_FCNT;
             while((temp_status & 0x3) >= 2)
             {
-               temp_status = SPIF_FIFO_CNT;
+               temp_status = SPIFE_FCNT;
             }
-            SPIF_FIFO_TOP = write_data;
+            SPIFE_FTOP = write_data;
             break;
          case 2:
             write_data = write_buff[j + 4] | (write_buff[j + 5] << 8);
-            temp_status = SPIF_FIFO_CNT;
+            temp_status = SPIFE_FCNT;
             while((temp_status & 0x3) >= 2)
             {
-               temp_status = SPIF_FIFO_CNT;
+               temp_status = SPIFE_FCNT;
             }
-            SPIF_FIFO_TOP = write_data;
+            SPIFE_FTOP = write_data;
             break;
          case 3:
             write_data = write_buff[j + 4] | (write_buff[j + 5] << 8) | (write_buff[j + 6] << 16);
-            temp_status = SPIF_FIFO_CNT;
+            temp_status = SPIFE_FCNT;
             while((temp_status & 0x3) >= 2)
             {
-               temp_status = SPIF_FIFO_CNT;
+               temp_status = SPIFE_FCNT;
             }
-            SPIF_FIFO_TOP = write_data;
+            SPIFE_FTOP = write_data;
             break;
       }
    }
@@ -149,38 +149,38 @@ ALIGNED(4) void SPIF_Write(DWORD addr, BYTEP write_buff, WORD length)
       {
          case 1:
             write_data = write_buff[0];
-            temp_status = SPIF_FIFO_CNT;
+            temp_status = SPIFE_FCNT;
             while((temp_status & 0x3) >= 2)
             {
-               temp_status = SPIF_FIFO_CNT;
+               temp_status = SPIFE_FCNT;
             }
-            SPIF_FIFO_TOP = write_data;
+            SPIFE_FTOP = write_data;
             break;
          case 2:
             write_data = write_buff[0] | (write_buff[1] << 8);
-            temp_status = SPIF_FIFO_CNT;
+            temp_status = SPIFE_FCNT;
             while((temp_status & 0x3) >= 2)
             {
-               temp_status = SPIF_FIFO_CNT;
+               temp_status = SPIFE_FCNT;
             }
-            SPIF_FIFO_TOP = write_data;
+            SPIFE_FTOP = write_data;
             break;
          case 3:
             write_data = write_buff[0] | (write_buff[1] << 8) | (write_buff[2] << 16);
-            temp_status = SPIF_FIFO_CNT;
+            temp_status = SPIFE_FCNT;
             while((temp_status & 0x3) >= 2)
             {
-               temp_status = SPIF_FIFO_CNT;
+               temp_status = SPIFE_FCNT;
             }
-            SPIF_FIFO_TOP = write_data;
+            SPIFE_FTOP = write_data;
             break;
       }
    }
-   while(!(SPIF_READY & SPIF_RDY));
-   while(SPIF_STATUS & SPIF_Write_Status);
-   while(!(SPIF_READY & SPIF_RDY));
+   while(!(SPIFE_RDY & SPIF_RDY_READY));
+   while(SPIFE_STA & SPIFE_Write_Status);
+   while(!(SPIFE_RDY & SPIF_RDY_READY));
    PRINTF_TX = 'c';
-   while(!(SPIF_READY & SPIF_RDY));
+   while(!(SPIFE_RDY & SPIF_RDY_READY));
 }
 
 /**
@@ -193,11 +193,11 @@ ALIGNED(4) void SPIF_Write(DWORD addr, BYTEP write_buff, WORD length)
  * @return
  *
  * @note
- * - 该函数建议不要直接使用，在RunSPIF_ReadFromRAM函数中调用
+ * - 该函数建议不要直接使用，在RunSPIFE_ReadFromRAM函数中调用
  */
-ALIGNED(4) void SPIF_Read(DWORD addr, BYTEP read_buff, WORD length)
+ALIGNED(4) void SPIFE_Read(DWORD addr, BYTEP read_buff, WORD length)
 {
-#if (!SPIF_CLOCK_EN)
+#if (!SPIFE_CLOCK_EN)
    return;
 #endif
    uint32_t temp_addrs = ((addr & 0xFF) << 24) + ((addr & 0xFF00) << 8) + ((addr & 0xFF0000) >> 8);//设置地址
@@ -205,63 +205,63 @@ ALIGNED(4) void SPIF_Read(DWORD addr, BYTEP read_buff, WORD length)
    BYTE temp_status = 0;
    uint32_t temp_data[64];
    length = (length + 3) & ~3;
-   while(!(SPIF_READY & SPIF_RDY));
-   SPIF_DBYTE = length - 1;
-   while(!(SPIF_READY & SPIF_RDY));
-   SPIF_FIFO_TOP = (temp_addrs + FLASH_READ_CMD);
+   while(!(SPIFE_RDY & SPIF_RDY_READY));
+   SPIFE_DBYTE = length - 1;
+   while(!(SPIFE_RDY & SPIF_RDY_READY));
+   SPIFE_FTOP = (temp_addrs + FLASH_READ_CMD);
    for(j = 0; j < (length / 4); j++)
    {
       i = j * 4;
-      temp_status = SPIF_FIFO_CNT;
+      temp_status = SPIFE_FCNT;
       while((temp_status & 0x3) == 0)
       {
-         temp_status = SPIF_FIFO_CNT;
+         temp_status = SPIFE_FCNT;
       }
-      temp_data[j] = SPIF_FIFO_TOP;
+      temp_data[j] = SPIFE_FTOP;
       read_buff[i] = (temp_data[j] & 0xff);
       read_buff[i + 1] = (temp_data[j] & 0xff00) >> 8;
       read_buff[i + 2] = (temp_data[j] & 0xff0000) >> 16;
       read_buff[i + 3] = (temp_data[j] & 0xff000000) >> 24;
    }
-   while(!(SPIF_READY & SPIF_RDY));
-   while(SPIF_STATUS & SPIF_Write_Status);
-   while(!(SPIF_READY & SPIF_RDY));
+   while(!(SPIFE_RDY & SPIF_RDY_READY));
+   while(SPIFE_STA & SPIFE_Write_Status);
+   while(!(SPIFE_RDY & SPIF_RDY_READY));
    PRINTF_TX = 'd';
 }
 
 void ExtFlash_Deep_Power_Down(void)
 {
-#if (!SPIF_CLOCK_EN)
-   printf("SPIF_CLOCK is not enable\n");
+#if (!SPIFE_CLOCK_EN)
+   printf("SPIFE_CLOCK is not enable\n");
    return;
 #endif
-   while(!(SPIF_READY & SPIF_RDY));
-   while(SPIF_STATUS & 0xf);
-   SPIF_FIFO_TOP = 0xb9;
+   while(!(SPIFE_RDY & SPIF_RDY_READY));
+   while(SPIFE_STA & 0xf);
+   SPIFE_FTOP = 0xb9;
    for(int i = 0; i < 1000; i++)
    {
       nop;
    }
-   while(!(SPIF_READY & SPIF_RDY));
-   while(SPIF_STATUS & 0xb);
-   while(!(SPIF_READY & SPIF_RDY));
+   while(!(SPIFE_RDY & SPIF_RDY_READY));
+   while(SPIFE_STA & 0xb);
+   while(!(SPIFE_RDY & SPIF_RDY_READY));
 }
 
 void ExtFlash_Exit_Power_Down(void)
 {
-#if (!SPIF_CLOCK_EN)
-   printf("SPIF_CLOCK is not enable\n");
+#if (!SPIFE_CLOCK_EN)
+   printf("SPIFE_CLOCK is not enable\n");
    return;
 #endif
-   while(!(SPIF_READY & SPIF_RDY));
-   SPIF_FIFO_TOP = 0xab;
+   while(!(SPIFE_RDY & SPIF_RDY_READY));
+   SPIFE_FTOP = 0xab;
    for(int i = 0; i < 1000; i++)
    {
       nop;
    }
-   while(!(SPIF_READY & SPIF_RDY));
-   while(SPIF_STATUS & 0xb);
-   while(!(SPIF_READY & SPIF_RDY));
+   while(!(SPIFE_RDY & SPIF_RDY_READY));
+   while(SPIFE_STA & 0xb);
+   while(!(SPIFE_RDY & SPIF_RDY_READY));
 }
 
 void Smfi_Ram_Code(void)
@@ -288,7 +288,7 @@ void Smfi_Ram_Code(void)
    {
       case 0x9f: // read id
       {
-         // SPIF_READ_ID();
+         // SPIFE_READ_ID();
       }
       break;
       case 0xc7: // chip erase
@@ -297,20 +297,20 @@ void Smfi_Ram_Code(void)
       break;
       case 0x20: // sector erase
       {
-         temp_status = SPIF_READY;
+         temp_status = SPIFE_RDY;
          while(!(temp_status & 0x1))
          {
-            temp_status = SPIF_READY;
+            temp_status = SPIFE_RDY;
          }
             //fla_if_write(FLA_FIFO_TOP_ADDR, 0x00c80020);
-         SPIF_FIFO_TOP = Smfi_Write_Addr;
-         while(!(SPIF_READY & SPIF_RDY));
-         temp_status = SPIF_STATUS;
+         SPIFE_FTOP = Smfi_Write_Addr;
+         while(!(SPIFE_RDY & SPIF_RDY_READY));
+         temp_status = SPIFE_STA;
          while(temp_status & 0x1)
          {
-            temp_status = SPIF_STATUS;
+            temp_status = SPIFE_STA;
          }
-         while(!(SPIF_READY & SPIF_RDY));
+         while(!(SPIFE_RDY & SPIF_RDY_READY));
          PRINTF_TX = 'b';
       }
       break;
@@ -324,38 +324,38 @@ void Smfi_Ram_Code(void)
       break;
       case 0x02: // page program
       {
-         SPIF_DBYTE = 0xff;
-         temp_status = SPIF_READY;
+         SPIFE_DBYTE = 0xff;
+         temp_status = SPIFE_RDY;
          while(!(temp_status & 0x1))
          {
-            temp_status = SPIF_READY;
+            temp_status = SPIFE_RDY;
          }
          // fla_if_write(FLA_FIFO_TOP_ADDR, 0x00c80002);
-         SPIF_FIFO_TOP = Smfi_Write_Addr;
+         SPIFE_FTOP = Smfi_Write_Addr;
          for(i = 0; i < 64; i++)
          {
-            temp_status = SPIF_FIFO_CNT;
+            temp_status = SPIFE_FCNT;
             while((temp_status & 0x3) >= 2)
             {
-               temp_status = SPIF_FIFO_CNT;
+               temp_status = SPIFE_FCNT;
             }
             // fla_if_write(FLA_FIFO_TOP_ADDR, ((i<<24)|(i<<16)|(i<<8)|(i)));
-            SPIF_FIFO_TOP = Smfi_Write_Data;
+            SPIFE_FTOP = Smfi_Write_Data;
          }
-         temp_status = SPIF_READY;
+         temp_status = SPIFE_RDY;
          while(!(temp_status & 0x1))
          {
-            temp_status = SPIF_READY;
+            temp_status = SPIFE_RDY;
          }
-         temp_status = SPIF_STATUS;
+         temp_status = SPIFE_STA;
          while(temp_status & 0x1)
          {
-            temp_status = SPIF_STATUS;
+            temp_status = SPIFE_STA;
          }
-         temp_status = SPIF_READY;
+         temp_status = SPIFE_RDY;
          while(!(temp_status & 0x1))
          {
-            temp_status = SPIF_READY;
+            temp_status = SPIFE_RDY;
          }
          PRINTF_TX = 'c';
       }
@@ -363,20 +363,20 @@ void Smfi_Ram_Code(void)
       case 0x03: // read data
       {
          Smf_Sram_Base = 0x00; // set rewrite sram addr[11:4]
-         temp_status = SPIF_READY;
+         temp_status = SPIFE_RDY;
          while(!(temp_status & 0x1))
          {
-            temp_status = SPIF_READY;
+            temp_status = SPIFE_RDY;
          }
-         SPIF_DBYTE = 0xff;
+         SPIFE_DBYTE = 0xff;
          // fla_if_write(FLA_DBYTE_ADDR, Smf_Num-1);
-         temp_status = SPIF_READY;
+         temp_status = SPIFE_RDY;
          while(!(temp_status & 0x1))
          {
-            temp_status = SPIF_READY;
+            temp_status = SPIFE_RDY;
          }
          // fla_if_write(FLA_FIFO_TOP_ADDR, 0x00c80003);
-         SPIF_FIFO_TOP = Smfi_Write_Addr;
+         SPIFE_FTOP = Smfi_Write_Addr;
          // if((Smf_Num%4) != 0)
          // Read_Num = Smf_Num/4 + 1;
          // else Read_Num = Smf_Num/4;
@@ -384,29 +384,29 @@ void Smfi_Ram_Code(void)
          for(j = 0; j < 64; j++)
          // for(j=0;j<Read_Num;j++)
          {
-            temp_status = SPIF_FIFO_CNT;
+            temp_status = SPIFE_FCNT;
             while((temp_status & 0x3) == 0)
             {
-               temp_status = SPIF_FIFO_CNT;
+               temp_status = SPIFE_FCNT;
             }
-            // data[j] = SPIF_FIFO_TOP;
-            *((volatile uint32_t *)(SRAM_BASE_ADDR + Smf_Sram_Base + j * 4)) = SPIF_FIFO_TOP;
+            // data[j] = SPIFE_FTOP;
+            *((volatile uint32_t *)(SRAM_BASE_ADDR + Smf_Sram_Base + j * 4)) = SPIFE_FTOP;
          }
          PRINTF_TX = 'x';
-         temp_status = SPIF_READY;
+         temp_status = SPIFE_RDY;
          while(!(temp_status & 0x1))
          {
-            temp_status = SPIF_READY;
+            temp_status = SPIFE_RDY;
          }
-         temp_status = SPIF_STATUS;
+         temp_status = SPIFE_STA;
          while(temp_status & 0x1)
          {
-            temp_status = SPIF_STATUS;
+            temp_status = SPIFE_STA;
          }
-         temp_status = SPIF_READY;
+         temp_status = SPIFE_RDY;
          while(!(temp_status & 0x1))
          {
-            temp_status = SPIF_READY;
+            temp_status = SPIFE_RDY;
          }
          PRINTF_TX = 'd';
       }
@@ -414,35 +414,35 @@ void Smfi_Ram_Code(void)
       case 0x12: // firmware cycle write
       {
          Smfi_Custom_Addr = (uint32_t)(Smf_Addr0 << 24) + (uint32_t)(Smf_Addr1 << 16) + (uint32_t)(Smf_Addr2 << 8) + 0x02;
-         SPIF_DBYTE = 0x0;
-         temp_status = SPIF_READY;
+         SPIFE_DBYTE = 0x0;
+         temp_status = SPIFE_RDY;
          while(!(temp_status & 0x1))
          {
-            temp_status = SPIF_READY;
+            temp_status = SPIFE_RDY;
          }
          // fla_if_write(FLA_FIFO_TOP_ADDR, 0x00c80002);
-         SPIF_FIFO_TOP = Smfi_Custom_Addr;
-         temp_status = SPIF_FIFO_CNT;
+         SPIFE_FTOP = Smfi_Custom_Addr;
+         temp_status = SPIFE_FCNT;
          while((temp_status & 0x3) >= 2)
          {
-            temp_status = SPIF_FIFO_CNT;
+            temp_status = SPIFE_FCNT;
          }
          // fla_if_write(FLA_FIFO_TOP_ADDR, ((i<<24)|(i<<16)|(i<<8)|(i)));
-         SPIF_FIFO_TOP = Smfi_Write_Data;
-         temp_status = SPIF_READY;
+         SPIFE_FTOP = Smfi_Write_Data;
+         temp_status = SPIFE_RDY;
          while(!(temp_status & 0x1))
          {
-            temp_status = SPIF_READY;
+            temp_status = SPIFE_RDY;
          }
-         temp_status = SPIF_STATUS;
+         temp_status = SPIFE_STA;
          while(temp_status & 0x1)
          {
-            temp_status = SPIF_STATUS;
+            temp_status = SPIFE_STA;
          }
-         temp_status = SPIF_READY;
+         temp_status = SPIFE_RDY;
          while(!(temp_status & 0x1))
          {
-            temp_status = SPIF_READY;
+            temp_status = SPIFE_RDY;
          }
          PRINTF_TX = 'e';
       }
@@ -450,39 +450,39 @@ void Smfi_Ram_Code(void)
       case 0x13: // firmware cycle read
       {
          Smfi_Custom_Addr = (uint32_t)(Smf_Addr0 << 24) + (uint32_t)(Smf_Addr1 << 16) + (uint32_t)(Smf_Addr2 << 8) + 0x03;
-         temp_status = SPIF_READY;
+         temp_status = SPIFE_RDY;
          while(!(temp_status & 0x1))
          {
-            temp_status = SPIF_READY;
+            temp_status = SPIFE_RDY;
          }
-         SPIF_DBYTE = 0x0;
-         temp_status = SPIF_READY;
+         SPIFE_DBYTE = 0x0;
+         temp_status = SPIFE_RDY;
          while(!(temp_status & 0x1))
          {
-            temp_status = SPIF_READY;
+            temp_status = SPIFE_RDY;
          }
          // fla_if_write(FLA_FIFO_TOP_ADDR, 0x00c80003);
-         SPIF_FIFO_TOP = Smfi_Custom_Addr;
-         temp_status = SPIF_FIFO_CNT;
+         SPIFE_FTOP = Smfi_Custom_Addr;
+         temp_status = SPIFE_FCNT;
          while((temp_status & 0x3) == 0)
          {
-            temp_status = SPIF_FIFO_CNT;
+            temp_status = SPIFE_FCNT;
          }
-         temp_data = SPIF_FIFO_TOP;
-         temp_status = SPIF_READY;
+         temp_data = SPIFE_FTOP;
+         temp_status = SPIFE_RDY;
          while(!(temp_status & 0x1))
          {
-            temp_status = SPIF_READY;
+            temp_status = SPIFE_RDY;
          }
-         temp_status = SPIF_STATUS;
+         temp_status = SPIFE_STA;
          while(temp_status & 0x1)
          {
-            temp_status = SPIF_STATUS;
+            temp_status = SPIFE_STA;
          }
-         temp_status = SPIF_READY;
+         temp_status = SPIFE_RDY;
          while(!(temp_status & 0x1))
          {
-            temp_status = SPIF_READY;
+            temp_status = SPIFE_RDY;
          }
          Smf_Data0 = (uint8_t)temp_data;
          Smf_Data1 = (uint8_t)(temp_data >> 8);
@@ -606,12 +606,12 @@ FUNCT_PTR_V_V Load_Smfi_To_Dram(FUNCT_PTR_V_V func, const int malloc_size)
  *
  * @return
  */
-void RunSPIF_WriteFromRAM(DWORD addr, BYTEP write_buff, WORD lentgh)
+void RunSPIFE_WriteFromRAM(DWORD addr, BYTEP write_buff, WORD lentgh)
 {
    Disable_Interrupt_Main_Switch();                  // Disable All Interrupt
    WDT_TORR0 = 0xff; WDT_TORR1 = 0xff;                               // 设置最长延时
    WDT_CRR = 0x76;                                   // 重启计数器
-   Spif_Ptr = Load_Fla_If_To_Ram(SPIF_Write, 0x600); // Load Fla_If Code to DRAM
+   Spif_Ptr = Load_Fla_If_To_Ram(SPIFE_Write, 0x600); // Load Fla_If Code to DRAM
    (*Spif_Ptr)(addr, write_buff, lentgh);                    // Do Function at 0x21000,this 0x21000 just for test,maybe cause some problem
    Enable_Interrupt_Main_Switch();
    free(Spif_Ptr);  // 释放通过 malloc 分配的内存空间
@@ -627,14 +627,14 @@ void RunSPIF_WriteFromRAM(DWORD addr, BYTEP write_buff, WORD lentgh)
  * @return
  *
  * @note
- * - 该函数建议不要直接使用，在RunSPIF_ReadFromRAM函数中调用
+ * - 该函数建议不要直接使用，在RunSPIFE_ReadFromRAM函数中调用
  */
-void RunSPIF_ReadFromRAM(DWORD addr, BYTEP read_buff, WORD lentgh)
+void RunSPIFE_ReadFromRAM(DWORD addr, BYTEP read_buff, WORD lentgh)
 {
    Disable_Interrupt_Main_Switch();                  // Disable All Interrupt
    WDT_TORR0 = 0xff; WDT_TORR1 = 0xff;                           // 设置最长延时
    WDT_CRR = 0x76;                                   // 重启计数器
-   Spif_Ptr = Load_Fla_If_To_Ram(SPIF_Read, 0x800); // Load Fla_If Code to DRAM
+   Spif_Ptr = Load_Fla_If_To_Ram(SPIFE_Read, 0x800); // Load Fla_If Code to DRAM
    (*Spif_Ptr)(addr, read_buff, lentgh);                     // Do Function at 0x21000,this 0x21000 just for test,maybe cause some problem
    Enable_Interrupt_Main_Switch();
    free(Spif_Ptr);  // 释放通过 malloc 分配的内存空间
