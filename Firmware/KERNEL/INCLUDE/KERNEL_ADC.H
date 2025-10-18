@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2023-12-22 11:41:33
+ * @LastEditTime: 2025-10-18 21:27:41
  * @Description:
  *
  *
@@ -32,17 +32,19 @@
 #define ADC_CHANNEL10 10
 #define ADC_CHANNEL11 11
 
-#define Databuffer_channel0 0
-#define Databuffer_channel1 1
-#define Databuffer_channel2 2
-#define Databuffer_channel3 3
-#define Databuffer_channel4 4
-#define Databuffer_channel5 5
-#define Databuffer_channel6 6
-#define Databuffer_channel7 7
+#define ADC_CLOCK (CHIP_CLOCK_INT_HIGH / ((SYSCTL_CLKDIV_OSC96M_ADC&0x3F)+((SYSCTL_CLKDIV_OSC96M_ADC>>6)&0x3F)))
 
-#define SingleEnded 0
-#define FullyDifferential 1
+#define ADC_DATA_CHANNEL0 0
+#define ADC_DATA_CHANNEL1 1
+#define ADC_DATA_CHANNEL2 2
+#define ADC_DATA_CHANNEL3 3
+#define ADC_DATA_CHANNEL4 4
+#define ADC_DATA_CHANNEL5 5
+#define ADC_DATA_CHANNEL6 6
+#define ADC_DATA_CHANNEL7 7
+
+#define ADC_SINGLEENDED 0
+#define ADC_FULLYDIFFEENTIAL 1
 
  /**************************ADC Register define**************************/
 #define ADC_CTRL_TRIGGER_SOFT       HEX00

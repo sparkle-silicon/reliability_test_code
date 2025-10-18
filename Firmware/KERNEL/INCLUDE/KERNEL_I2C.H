@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-07-07 11:15:33
+ * @LastEditTime: 2025-10-18 20:56:44
  * @Description:
  *
  *
@@ -170,7 +170,10 @@
 #define I2C_READ 0x100
 #define I2C_STOP 0x200
 #define I2C_RESTART 0x4
-#define I2CTimeOut	(HIGHT_CHIP_CLOCK/15/20)	//TimeOut set
+
+#define SMUBUS_CLOCK  (HIGHT_CHIP_CLOCK / (SYSCTL_CLKDIV_SMB+1)) //SMBUS clock
+#define I2CTimeOut	(SMUBUS_CLOCK/15/20)	//TimeOut set
+
 
 //*****************************************************************************
 // extern functions

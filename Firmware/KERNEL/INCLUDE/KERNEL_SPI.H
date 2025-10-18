@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2023-12-21 18:30:51
+ * @LastEditTime: 2025-10-18 20:57:16
  * @Description:
  *
  *
@@ -18,6 +18,8 @@
 #include "AE_GLOBAL.H"
 #include "AE_REG.H"
 #include "AE_CONFIG.H"
+
+#define SPIM_CLOCK  (HIGHT_CHIP_CLOCK / (SYSCTL_CLKDIV_SPIM+1)) 
 
 #define SPIM_CPOL_HIGH HIGH
 #define SPIM_CPOL_LOW LOW
@@ -71,6 +73,7 @@
 #define SPI_Dual     HEX01
 #define SPI_Quad     HEX02
 #define SPI_3Wire    HEX03
+
 
 extern BYTE SPI_Write_Buff[256];
 extern void SPIM_Init(BYTE dly, BYTE cpol, BYTE cpha, BYTE lsb, BYTE dssp, BYTE cpsr);

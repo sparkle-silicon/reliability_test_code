@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-18 15:52:02
+ * @LastEditTime: 2025-10-18 21:19:56
  * @Description: This is about the  national crypto algorithm implementation
  *
  *
@@ -24,6 +24,7 @@ void gpio_init(void)
 {
 #if GPIO_MODULE_EN
 	gpio_MoudleClock_EN;
+	SYSCTL_CLKDIV_GPIODB = GPIODB_CLOCK_DIVISION; // set clock division to 0
 	gpiodb_MoudleClock_EN;
 	// 1.default config pin iomux and pull up
 	pin_DefaultConfig();
@@ -41,6 +42,7 @@ void mailbox_init(void)
 void uart_init(void)
 {
 #if UART_MODULE_EN
+	SYSCTL_CLKDIV_UART = UART_CLOCK_DIVISION;
 	int flag = 0;
 	int baud[4];
 #ifdef UART0_BAUD
@@ -80,6 +82,7 @@ void uart_init(void)
 void smbus_init(void)
 {
 #if I2C_MODULE_EN
+	SYSCTL_CLKDIV_SMB = SMUBUS_CLOCK_DIVISION;
 #if I2C0_EN_Init||((DEBUGGER_OUTPUT_SWITCH == 1)&&(DEBUGGER_I2C_CHANNEL==I2C_CHANNEL_0))
 	smbus0_MoudleClock_EN;
 	sysctl_iomux_i2c0(I2C0_CLK_SEL, I2C0_DAT_SEL);
@@ -144,6 +147,7 @@ void smbus_init(void)
 void i3c_init(void)
 {
 #if I3C_MODULE_EN
+	// SYSCTL_CLKDIV_I3C = I3C_CLOCK_DIVISION;
 	/****************** slave init(only I3C2 and I3C3) ******************/
 #if I3C2_EN_Init
 	i3c2_MoudleClock_EN;
@@ -179,6 +183,7 @@ void spi_init(void)
 {
 #if SPI_MODULE_EN
 #if SPIM_EN_Init
+	SYSCTL_CLKDIV_SPIM = SPIM_CLOCK_DIVISION;
 	spim_MoudleClock_EN;
 	sysctl_iomux_spim(SPIM_MOSI_SEL, SPIM_MISO_SEL, SPIM_QE_SEL);
 #if SPIM_CS_EN
@@ -327,6 +332,7 @@ void host_init(void)
 	dprint("PMC init done.\n");
 #endif
 #if (PECI_MODULE_EN)
+	SYSCTL_CLKDIV_PECI = PECI_CLOCK_DIVISION;
 	peci_MoudleClock_EN;
 	sysctl_iomux_peci();
 	PECI_Init();
@@ -347,6 +353,7 @@ void kbs_init(void)
 void ps2_init(void)
 {
 #if (PS2_MODULE_EN)
+	SYSCTL_CLKDIV_PS2 = PS2_CLOCK_DIVISION;
 #if PS2_0_EN_Init
 	ps2_0_MoudleClock_EN;
 	sysctl_iomux_ps2_0(PS2_0_CLK_SEL, PS2_0_DAT_SEL);
@@ -365,6 +372,7 @@ void ps2_init(void)
 void cec_init(void)
 {
 #if (CEC_MODULE_EN)
+	SYSCTL_CLKDIV_CEC = CEC_CLOCK_DIVISION; // 24M clock
 	cec_MoudleClock_EN;
 #if CEC0_EN_Init
 	sysctl_iomux_cec0(CEC0_PIN_SEL);
@@ -382,38 +390,39 @@ void cec_init(void)
 void adc_init(void)
 {
 #if ADC_MODULE_EN
+	SYSCTL_CLKDIV_OSC96M_ADC = ADC_CLOCK_DIVISION;
 	adc_MoudleClock_EN;
 #if (ADC0_EN_Init)
 	sysctl_iomux_adc0();
-	ADC_SW_Sample_Init_Single(ADC_CHANNEL0, Databuffer_channel0, SingleEnded);
+	ADC_SW_Sample_Init_Single(ADC_CHANNEL0, ADC_DATA_CHANNEL0, ADC_SINGLEENDED);
 #endif
 #if (ADC1_EN_Init)
 	sysctl_iomux_adc1();
-	ADC_SW_Sample_Init_Single(ADC_CHANNEL1, Databuffer_channel1, SingleEnded);
+	ADC_SW_Sample_Init_Single(ADC_CHANNEL1, ADC_DATA_CHANNEL1, ADC_SINGLEENDED);
 #endif
 #if (ADC2_EN_Init)
 	sysctl_iomux_adc2();
-	ADC_SW_Sample_Init_Single(ADC_CHANNEL2, Databuffer_channel2, SingleEnded);
+	ADC_SW_Sample_Init_Single(ADC_CHANNEL2, ADC_DATA_CHANNEL2, ADC_SINGLEENDED);
 #endif
 #if (ADC3_EN_Init)
 	sysctl_iomux_adc3();
-	ADC_SW_Sample_Init_Single(ADC_CHANNEL3, Databuffer_channel3, SingleEnded);
+	ADC_SW_Sample_Init_Single(ADC_CHANNEL3, ADC_DATA_CHANNEL3, ADC_SINGLEENDED);
 #endif
 #if (ADC4_EN_Init)
 	sysctl_iomux_adc4();
-	ADC_SW_Sample_Init_Single(ADC_CHANNEL4, Databuffer_channel4, SingleEnded);
+	ADC_SW_Sample_Init_Single(ADC_CHANNEL4, ADC_DATA_CHANNEL4, ADC_SINGLEENDED);
 #endif
 #if (ADC5_EN_Init)
 	sysctl_iomux_adc5();
-	ADC_SW_Sample_Init_Single(ADC_CHANNEL5, Databuffer_channel5, SingleEnded);
+	ADC_SW_Sample_Init_Single(ADC_CHANNEL5, ADC_DATA_CHANNEL5, ADC_SINGLEENDED);
 #endif
 #if (ADC6_EN_Init)
 	sysctl_iomux_adc6();
-	ADC_SW_Sample_Init_Single(ADC_CHANNEL6, Databuffer_channel6, SingleEnded);
+	ADC_SW_Sample_Init_Single(ADC_CHANNEL6, ADC_DATA_CHANNEL6, ADC_SINGLEENDED);
 #endif
 #if (ADC7_EN_Init)
 	sysctl_iomux_adc7();
-	ADC_SW_Sample_Init_Single(ADC_CHANNEL7, Databuffer_channel7, SingleEnded);
+	ADC_SW_Sample_Init_Single(ADC_CHANNEL7, ADC_DATA_CHANNEL7, ADC_SINGLEENDED);
 #endif
 	dprint("ADC init done \n");
 #endif
@@ -421,16 +430,19 @@ void adc_init(void)
 void time_init(void)
 {
 #if TIMER_MODULE_EN
-	SYSCTL_CLKDIV_TMR0 = TIMER0_Division;
+	SYSCTL_CLKDIV_TMR0 = TIMER0_CLOCK_DIVISION;
 	timer0_MoudleClock_EN;
 	TIMER_Init(TIMER0, 1, 0x0, 0x1); // 24Mdelay~= 0.083us,96Mdelay~=0.041us
-	SYSCTL_CLKDIV_TMR1 = TIMER1_Division;
+
+	SYSCTL_CLKDIV_TMR1 = TIMER1_CLOCK_DIVISION;
 	timer1_MoudleClock_EN;			 // ms delay
 	TIMER_Init(TIMER1, 1, 0x0, 0x1); // 24Mdelay~= 0.083us,96Mdelay~=0.041us
-	SYSCTL_CLKDIV_TMR2 = TIMER2_Division;
+
+	SYSCTL_CLKDIV_TMR2 = TIMER2_CLOCK_DIVISION;
 	timer2_MoudleClock_EN;			 // 1ms service
 	TIMER_Init(TIMER2, 1, 0x0, 0x1); // 24Mdelay~= 0.083us,96Mdelay~=0.041us
-	SYSCTL_CLKDIV_TMR3 = TIMER3_Division;
+
+	SYSCTL_CLKDIV_TMR3 = TIMER3_CLOCK_DIVISION;
 	timer3_MoudleClock_EN;			 // us delay
 	TIMER_Init(TIMER3, 1, 0x0, 0x1); // 24Mdelay~= 0.083us,96Mdelay~=0.041us
 
@@ -439,24 +451,17 @@ void time_init(void)
 	TIMER_TEOI; // clear all interrupt
 	dprint("Timer init done\n");
 #endif
-#if WDT_MODULE_EN
-	/*wdt*/
-	wdt_MoudleClock_EN;
-	WDT_Init(0x1, 0xa); // FIXME
-	dprint("watchdong init done.\n");
-#endif
+
 #if (RTC_MODULE_EN)
 	rtc_MoudleClock_EN;
 	RTC_Init(0, 1, LOW_CHIP_CLOCK);
 	dprint("rtc init done.\n");
 #endif
-	// 开启定时器对应功能
-#if TIMER_MODULE_EN
-	TIMER_Init(TIMER2, TIMER2_1ms, 0x1, 0x0); // 1ms service计时函数
-#endif
-	// 复位看门狗
 #if WDT_MODULE_EN
-	WDT_FeedDog();
+	/*wdt*/
+	wdt_MoudleClock_EN;
+	WDT_Init(0x1, 0xa); // FIXME
+	dprint("watchdong init done.\n");
 #endif
 }
 
@@ -482,7 +487,6 @@ void __weak SECTION(".init.module") Module_init(void)
 	host_init();
 	// 10.Initialize  The KBS and The PS2
 	kbs_init();
-
 	ps2_init();
 	// 11.Initialize The CEC
 	cec_init();

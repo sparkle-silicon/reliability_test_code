@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-17 15:01:39
+ * @LastEditTime: 2025-10-18 21:19:59
  * @Description:
  *
  *
@@ -172,10 +172,11 @@
 #define CHIP_CLOCK_SWITCH 4     // 1(96) 2(48) 3(32) 4（24）5（19.2）分频数（时钟）
 #define LOW_CHIP_CLOCK CHIP_CLOCK_INT_LOW
 #define HIGHT_CHIP_CLOCK (CHIP_CLOCK_INT_HIGH / (SYSCTL_CLKDIV_OSC96M+1)) // 96M/CHIP_CLOCK_SWITCH
-#define TIMER_FREQ LOW_CHIP_CLOCK * 2
+#define CPU_TIMER_FREQ (LOW_CHIP_CLOCK)
 
-// #define ADC_CLOCK_SWITCH 7
-// #define ADC_CLOCK (CHIP_CLOCK_INT_HIGH / ((ADC_CLOCK_SWITCH) ? (ADC_CLOCK_SWITCH * 2) : 1)) // 96M/ADC_CLOCK_SWITCH
+#define ADC_CLOCK_DIVISION_ADC_CLK_POS 0x7
+#define ADC_CLOCK_DIVISION_ADC_CLK_NEG 0x17
+#define ADC_CLOCK_DIVISION ((ADC_CLOCK_DIVISION_ADC_CLK_NEG&0x3F)|((ADC_CLOCK_DIVISION_ADC_CLK_POS&0x3F)<<6))
 // uart 功能选择 suggestions COMMAND_UART_SWITCH == PRINTF_UART_SWITCH != DEBUG_UART_SWITCH
 #if ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_OUTPUT_SWITCH==0)
 #define DEBUG_UART_SWITCH 1
@@ -184,7 +185,9 @@
 #endif
 #define PRINTF_UART_SWITCH 0                 // 串口引脚选择 uarta对应数值2 uartb对应数值3
 #define COMMAND_UART_SWITCH PRINTF_UART_SWITCH // It's aobut receive uart, comand send is printf.
-
+//GPIO
+#define GPIODB_CLOCK_DIVISION	0
+#define  GPIODB_CLOCK  (LOW_CHIP_CLOCK / (GPIODB_CLOCK_DIVISION+1)) 
 /****************************************************************************
  * Module SWITCH Enable
  *****************************************************************************/
@@ -220,6 +223,7 @@
    * (48M):           91.55       3000000         <=300000       115200/256000
    *注：频率都在理想范围内计算，实际存在误差，波特率精度应在±1%~±5%区间
    */
+#define UART_CLOCK_DIVISION 0
 #if (COMMAND_UART_SWITCH == 0 || DEBUG_UART_SWITCH == 0 || PRINTF_UART_SWITCH == 0)
 #define UART0_BAUD 115200
 #endif
@@ -237,6 +241,7 @@
 #define UARTA_TX_SEL 0
 #define UARTA_RX_SEL 0
    // I2C 初始化
+#define SMUBUS_CLOCK_DIVISION 0
 #define I2C0_EN_Init 1 & SMBUS0_CLOCK_EN
 #define I2C0_SPEED 100000
 #define I2C0_DEFAULT_ROLE I2C_NO_ROLE
@@ -305,6 +310,7 @@
 #define I2C0_DAT_SEL 0
 #define I2C2_CLK_SEL 0
 //I3C相关宏控
+// #define I3C_CLOCK_DIVISION 0
 #define I3C0_EN_Init 1 & I3C0_CLOCK_EN
 #define I3C_MASTER0_SPEED  SDR_DEFAULT_SPEED
 #define I3C_MASTER0_DEFAULT_ROLE  I3C_MASTER0_INTFMODE
@@ -342,6 +348,8 @@
 #define I3C3_INTERNAL_PULL_UP 0
 
 //SPI初始化
+#define SPIM_CLOCK_DIVISION 0
+
 #define SPIM_EN_Init 0&SPIM_CLOCK_EN
 #define SPIM_CS_EN 1&SPIM_CLOCK_EN
 #define SPIM_DEFAULT_DLY 0
@@ -390,6 +398,7 @@
 #define TACH1_PIN_SEL 0
 #define TACH3_PIN_SEL 0
 // PS2初始化
+#define PS2_CLOCK_DIVISION 0
 #define PS2_0_EN_Init 1 & PS2_0_CLOCK_EN
 #define PS2_0_EXTERNAL_PULL_UP 1
 #define PS2_0_INTERNAL_PULL_UP 0
@@ -412,6 +421,7 @@
 #define ADC6_EN_Init 0 & ADC_CLOCK_EN
 #define ADC7_EN_Init 0 & ADC_CLOCK_EN
 //CEC
+#define CEC_CLOCK_DIVISION 0x0
 #define CEC0_EN_Init 0 & CEC_CLOCK_EN
 #define CEC1_EN_Init 0 & CEC_CLOCK_EN
 #define CEC0_PIN_SEL 0
@@ -452,6 +462,13 @@
 #if (PECI_MODULE_EN & I2C2_EN_Init)
 #warning "You want use PECI ,but I2C2 Enable, They reuse the same pin"
 #endif
+//PECI
+#define PECI_CLOCK_DIVISION 0x0
+//TIME
+#define TIMER0_CLOCK_DIVISION 0x0
+#define TIMER1_CLOCK_DIVISION 0x0
+#define TIMER2_CLOCK_DIVISION 0x0
+#define TIMER3_CLOCK_DIVISION 0x0
 
 /****************************************************************************
  * Debug enable

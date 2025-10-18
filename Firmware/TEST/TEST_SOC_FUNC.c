@@ -1,7 +1,7 @@
 /*
  * @Author: Maple
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-06-20 10:53:01
+ * @LastEditTime: 2025-10-18 20:51:25
  * @Description: This file is used for soc module initiliazation and configuration
  *
  *
@@ -34,7 +34,7 @@ void ps2_1_init_test(void)
 {
 	register u8 timeout;
 	PS2_PORT1_CR = 0xAA;
-	timeout = (HIGHT_CHIP_CLOCK / 100000);
+	timeout = (PS2_CLOCK / 100000);
 	do
 	{
 		if(PS2_PORT1_IBUF == 0x55)break;

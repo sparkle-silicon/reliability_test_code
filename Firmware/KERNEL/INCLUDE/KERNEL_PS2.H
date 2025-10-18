@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-02-29 11:43:08
+ * @LastEditTime: 2025-10-18 20:57:37
  * @Description:
  *
  *
@@ -18,6 +18,8 @@
 #include "AE_GLOBAL.H"
 #include "AE_REG.H"
 #include "AE_CONFIG.H"
+
+#define PS2_CLOCK  (HIGHT_CHIP_CLOCK / (SYSCTL_CLKDIV_PS2+1)) 
 #define PS2_WaitTime 3000
 //-----------------------------------------------------------------------------
 // PS2 CMD WORD

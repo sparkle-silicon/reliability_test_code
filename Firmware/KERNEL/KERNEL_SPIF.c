@@ -27,8 +27,8 @@ BYTE Read_buff[256] = { 0 };
 // char Read_buff[]="";
 void SPIFI_Init(void)
 {
-      //可选屏蔽内部SPIF引脚,降低功耗用
-      //
+   // SYSCTL_PIOE_IECFG &= ~(0x33000000); //可选屏蔽内部SPIF引脚,降低功耗用
+    //
    return;
 }
 void SPIFE_Init(void)

@@ -50,7 +50,7 @@ uint32_t get_timer_value()
 }
 uint32_t get_timer_freq()
 {
-  return TIMER_FREQ;
+  return CPU_TIMER_FREQ;
 }
 uint32_t get_instret_value()
 {

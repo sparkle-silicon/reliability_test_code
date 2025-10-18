@@ -17,8 +17,12 @@
 #define __KERNEL_CEC_H_
 #include "AE_GLOBAL.H"
 #include "AE_REG.H"
+
 #define CEC0_CHANNEL 0
 #define CEC1_CHANNEL 1
+
+#define CEC_CLOCK  (HIGHT_CHIP_CLOCK / (SYSCTL_CLKDIV_CEC+1))
+
 #define CEC_Destination_address              0x0F//option. and the "F" mean broadcast
 #define CEC_Initiator_address                0x0F//as device address while CEC used to follower 
  //the bit of cec interrupt_enable_register
@@ -55,6 +59,7 @@
 #define CEC_intStatue_erris                  0x20//action erro int
 //the bit of EOM in block
 #define CEC_send_EOM                         0x100
+
 // void CEC_Write(WORD value, BYTE offset);
 // WORD CEC_Read(BYTE offset);
 extern void CEC_initiator_init(BYTE channel);

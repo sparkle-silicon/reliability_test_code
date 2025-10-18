@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-08 23:46:15
+ * @LastEditTime: 2025-10-18 20:28:14
  * @Description:
  *
  *
@@ -48,11 +48,7 @@ int serial_config(BYTE uart_num, DWORD baudrate)
     VBYTEP uart_ier = (VBYTEP)REG_ADDR(g_uart_base, UART_IER_OFFSET);
     register DWORD divisor;
     register DWORD freq;
-#if 1||(OSC_CLOCK_SWITCH==0)
-    freq = HIGHT_CHIP_CLOCK;
-#else
-    freq = CPU_FREQ;//如果时钟不标准则可以使用现场推算的（例如晶振不标准，但必须是外部PPL锁屏成比例的时钟）
-#endif
+    freq = UART_CLOCK;
     divisor = freq / baudrate + (0b100 << (uart_num >> 1)); // 27
     // Set DLAB to 1 in LCR
     *uart_lcr = UART_LCR_DLAB | UART_LCR_DLS_8bit;

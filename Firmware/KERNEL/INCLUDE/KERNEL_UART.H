@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-08 23:11:40
+ * @LastEditTime: 2025-10-18 20:56:06
  * @Description:
  *
  *
@@ -71,6 +71,9 @@
 /* IP register */
 #define UART_IP_TXWM 0x1
 #define UART_IP_RXWM 0x2
+
+#define UART_CLOCK  (HIGHT_CHIP_CLOCK / (SYSCTL_CLKDIV_UART+1)) // UART clock
+
 extern BYTE Uart_Int_Enable(BYTE channel, BYTE type);
 extern BYTE Uart_Int_Disable(BYTE channel, BYTE type);
 extern BYTE Uart_Int_Enable_Read(BYTE channel, BYTE type);

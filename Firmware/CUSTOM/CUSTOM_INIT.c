@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-10 17:22:37
+ * @LastEditTime: 2025-10-18 20:15:50
  * @Description:
  *
  *
@@ -323,5 +323,9 @@ void Device_init(void)
 #endif
 #if SUPPORT_SHAREMEM_PNP
 	ShareMem_PNP_Config();
+#endif
+		// 开启定时器对应功能
+#if TIMER_MODULE_EN
+	TIMER_Init(TIMER2, TIMER2_1ms, 0x1, 0x0); // 1ms service计时函数
 #endif
 } // 初始化配置

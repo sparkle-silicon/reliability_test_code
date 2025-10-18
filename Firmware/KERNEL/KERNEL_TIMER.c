@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2023-11-03 11:47:11
+ * @LastEditTime: 2025-10-18 20:23:05
  * @Description:
  *
  *
@@ -256,6 +256,6 @@ void wait_seconds(size_t n)
 	// Don't start measuruing until we see an mtime tick
 	enable_mcycle_minstret(); // 打开定时器
 	start_mtime = mtime_lo();
-	while((mtime_lo() - start_mtime) <= (n * TIMER_FREQ));
+	while((mtime_lo() - start_mtime) <= (n * CPU_TIMER_FREQ));
 	disable_mcycle_minstret(); // 关闭定时器
 }

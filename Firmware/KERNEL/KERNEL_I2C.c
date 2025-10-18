@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-10 17:26:54
+ * @LastEditTime: 2025-10-18 20:32:05
  * @Description:
  *
  *
@@ -838,8 +838,8 @@ void I2c_Master_Controller_Init(WORD i2c_channel, DWORD speed, BYTE spklen)
 	control = SMBUSn_CON0(i2c_channel);
 	control &= ~I2C_CON_SPEED_HIGH;// clear speed mode set
 	/* SET HCNT & LCNT*/
-	hcnt = (((HIGHT_CHIP_CLOCK / speed + 1) / 2 * 1) - 9 - spklen); // PCLK/(SMBUS_HZ/2(H or L) /USER_FREQ)
-	lcnt = (((HIGHT_CHIP_CLOCK / speed + 1) / 2 * 1) - 3); // PCLK/(SMBUS_HZ/2(H or L) /USER_FREQ)	
+	hcnt = (((SMUBUS_CLOCK / speed + 1) / 2 * 1) - 9 - spklen); // PCLK/(SMBUS_HZ/2(H or L) /USER_FREQ)
+	lcnt = (((SMUBUS_CLOCK / speed + 1) / 2 * 1) - 3); // PCLK/(SMBUS_HZ/2(H or L) /USER_FREQ)	
 
 	if(speed <= 100000)//100kHz
 	{
@@ -895,8 +895,8 @@ void I2c_Slave_Init(WORD i2c_channel, DWORD speed, BYTE spklen)
 	control &= ~I2C_CON_SPEED_HIGH;// clear speed mode set
 
 	/* SET HCNT & LCNT*/
-	hcnt = (((HIGHT_CHIP_CLOCK / speed + 1) / 2 * 1) - 9 - spklen); // PCLK/(SMBUS_HZ/2(H or L) /USER_FREQ)
-	lcnt = (((HIGHT_CHIP_CLOCK / speed + 1) / 2 * 1) - 3); // PCLK/(SMBUS_HZ/2(H or L) /USER_FREQ)
+	hcnt = (((SMUBUS_CLOCK / speed + 1) / 2 * 1) - 9 - spklen); // PCLK/(SMBUS_HZ/2(H or L) /USER_FREQ)
+	lcnt = (((SMUBUS_CLOCK / speed + 1) / 2 * 1) - 3); // PCLK/(SMBUS_HZ/2(H or L) /USER_FREQ)
 
 	if(speed <= 100000)//100kHz
 	{

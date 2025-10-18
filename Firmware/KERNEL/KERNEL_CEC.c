@@ -1,7 +1,7 @@
 /*
  * @Author: Yangxiaolong
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-17 21:56:55
+ * @LastEditTime: 2025-10-18 20:30:22
  * @Description:
  *
  *
@@ -27,7 +27,7 @@ void CEC_initiator_init(BYTE channel)
 {
     // enable the interrupt
     CECn_IER(channel) = CEC_Int_Send_Frame | CEC_Int_Send_Block | CEC_Int_erro;
-    CECn_CPSR(channel) = (HIGHT_CHIP_CLOCK / 10000) - 1;
+    CECn_CPSR(channel) = (CEC_CLOCK / 10000) - 1;
     CECn_CTRL(channel) = CEC_Ctr_Clean_tFIFO | CEC_Ctr_sdb | CEC_Ctr_en; // enable the broadcast frame send
 }
 //*****************************************************************************
@@ -42,7 +42,7 @@ void CEC_follower_init(BYTE channel)
 {
     // enable the interrup
     CECn_IER(channel) = CEC_Int_Receive_Head | CEC_Int_Receive_Block | CEC_Int_Receive_Frame | CEC_Int_erro;
-    CECn_CPSR(channel) = (HIGHT_CHIP_CLOCK / 10000) - 1;
+    CECn_CPSR(channel) = (CEC_CLOCK / 10000) - 1;
     CECn_ADDR(channel) = CEC_Initiator_address;                                        //"Initiator_address" as device_addr while follower
     CECn_CTRL(channel) = CEC_Ctr_Clean_rFIFO | CEC_Ctr_eba | CEC_Ctr_rad | CEC_Ctr_en; // receive data no matter address
 }

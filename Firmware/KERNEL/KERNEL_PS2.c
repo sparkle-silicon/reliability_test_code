@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-17 23:11:26
+ * @LastEditTime: 2025-10-18 20:35:46
  * @Description: This file is used to handling PS2 interface
  *
  *
@@ -1214,8 +1214,8 @@ void InitAndIdentifyPS2(void)
 void PS2_PortN_Init(uint8_t channel)
 {
 	if(channel > 1) return;
-	PS2_PORTn_CPSR(channel) = (((HIGHT_CHIP_CLOCK * 5) / 1000 + 500) / 1000);		 // 5us
-	PS2_PORTn_DVR(channel) = (((HIGHT_CHIP_CLOCK / PS2_PORTn_CPSR(channel)) / 1000 + 5) / 10); // 100us
+	PS2_PORTn_CPSR(channel) = (((PS2_CLOCK * 5) / 1000 + 500) / 1000);		 // 5us
+	PS2_PORTn_DVR(channel) = (((PS2_CLOCK / PS2_PORTn_CPSR(channel)) / 1000 + 5) / 10); // 100us
 }
 /*-----------------------------------------------------------------------------
  * End

@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-02-07 15:57:07
+ * @LastEditTime: 2025-10-18 21:06:17
  * @Description:
  *
  *
@@ -21,6 +21,8 @@
 #include "AE_CONFIG.H"
 #include "AE_PRINTF.H"
 #include "AE_MALLOC.H"
+
+#define PECI_CLOCK  (HIGHT_CHIP_CLOCK / (SYSCTL_CLKDIV_PECI+1)) 
 
  /*-----------------------------------------------------------------------------
  * Local Parameter Definition
@@ -171,11 +173,11 @@ extern BYTE PECI_CheckHostFinish(void);
 extern void ResetPECIStatus(void);
 extern void PECI_HostControl(BYTE control);
 extern BYTE PECI_Ping(BYTE addr, BYTE ReadLen, BYTE WriteLen);
-extern BYTE PECI_GetDIB(BYTE addr, BYTE* ReadData, BYTE ReadLen, BYTE WriteLen);
-extern BYTE PECI_GetTemp(BYTE addr, BYTE* ReadData, BYTE Domain, BYTE ReadLen, BYTE WriteLen);
-extern BYTE PECI_RdPkgConfig(BYTE addr, BYTE* ReadData, BYTE Domain, BYTE Retry, BYTE Index, BYTE LSB, BYTE MSB, BYTE ReadLen, BYTE WriteLen);
-extern BYTE PECI_WrPkgConfig(BYTE addr, BYTE* WriteData, BYTE Domain, BYTE Retry, BYTE Index, BYTE LSB, BYTE MSB, BYTE ReadLen, BYTE WriteLen);
-extern BYTE PECI_RdIAMSR(BYTE addr, BYTE* ReadData, BYTE Domain, BYTE Retry, BYTE ProcessorID, BYTE LSB, BYTE MSB, BYTE ReadLen, BYTE WriteLen);
+extern BYTE PECI_GetDIB(BYTE addr, BYTE *ReadData, BYTE ReadLen, BYTE WriteLen);
+extern BYTE PECI_GetTemp(BYTE addr, BYTE *ReadData, BYTE Domain, BYTE ReadLen, BYTE WriteLen);
+extern BYTE PECI_RdPkgConfig(BYTE addr, BYTE *ReadData, BYTE Domain, BYTE Retry, BYTE Index, BYTE LSB, BYTE MSB, BYTE ReadLen, BYTE WriteLen);
+extern BYTE PECI_WrPkgConfig(BYTE addr, BYTE *WriteData, BYTE Domain, BYTE Retry, BYTE Index, BYTE LSB, BYTE MSB, BYTE ReadLen, BYTE WriteLen);
+extern BYTE PECI_RdIAMSR(BYTE addr, BYTE *ReadData, BYTE Domain, BYTE Retry, BYTE ProcessorID, BYTE LSB, BYTE MSB, BYTE ReadLen, BYTE WriteLen);
 extern BYTE PECI_ReadDIB(void);
 extern BYTE PECI_ReadTemp(void);
 extern BYTE PECI_ReadPowerUnit(void);

@@ -29,9 +29,9 @@
 // 		SYSCTL_PMUCSR |= BIT(20);//0x30498 = enable WFI
 // 	}
 // //配置TIMER2定时器中断2sec唤醒一次
-// 	SYSCTL_CLKDIV_TMR2 = TIMER2_Division;//配置TMR2分频=0
+// 	SYSCTL_CLKDIV_TMR2 = TIMER2_CLOCK_DIVISION;//配置TMR2分频=0
 // 	timer2_MoudleClock_EN;//enable TMR2 mode
-// 	TIMER_Init(TIMER2, (LOW_CHIP_CLOCK / (2 << TIMER2_Division)/*clock=*/ * 2/*sec*/), 0x1/*loop*/, 0x0/**/);
+// 	TIMER_Init(TIMER2, (LOW_CHIP_CLOCK / (2 << TIMER2_CLOCK_DIVISION)/*clock=*/ * 2/*sec*/), 0x1/*loop*/, 0x0/**/);
 // 	//配置PWM波输出
 // 	pwm_MoudleClock_EN;
 // 	PWM_CTRL |= PRESCALE_4;//4分频32000/4=8000
