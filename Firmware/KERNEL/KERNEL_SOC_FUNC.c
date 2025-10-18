@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-18 21:38:59
+ * @LastEditTime: 2025-10-18 22:01:32
  * @Description: This is about the  national crypto algorithm implementation
  *
  *
@@ -490,11 +490,11 @@ void __weak SECTION(".init.module") Module_init(void)
 	ps2_init();
 	// 11.Initialize The CEC
 	cec_init();
-	// 13.Initialize The ADC
+	// 12.Initialize The ADC
 	adc_init();
-	// 14 Initialize The timer and The watch dog and The RTC
+	// 13 Initialize The timer and The watch dog and The RTC
 	time_init();
-	dprint("End init \n");
+	dprint(" Module init End\n");
 	return;
 }
 #if defined(USER_AE10X_LIBC_A)

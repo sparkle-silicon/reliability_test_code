@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-08 22:22:51
+ * @LastEditTime: 2025-10-18 22:04:01
  * @Description:
  *
  *
@@ -82,5 +82,6 @@ void SECTION(".init.flow") Init()
   Device_init();
   // 6.Specific memory space Initialization
   Specific_Mem_init();
+  // dprint("Init Done\n");
   return;
 }

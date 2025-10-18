@@ -153,15 +153,16 @@ void cpu_irq_en(void)
 void SECTION(".init.irq") Irqc_init(void)
 {
 #if IRQC_MODULE_EN
-	//Disable interrupts in general.
+	//0. Disable interrupts in general.
 	clear_csr(mstatus, MSTATUS_MIE);
-	// Set Interrupt controller
+	//1. Set Interrupt controller
 	intc_MoudleClock_EN;
 	intc_init();
-	// Set CPU CSR IRQ
+	//2. Set CPU CSR IRQ
 	cpu_irq_en();
-	// Enable interrupts in general.
+	//3. Enable interrupts in general.
 	set_csr(mstatus, MSTATUS_MIE);
+	// dprint(" Interrupt controller and CPU IRQ init End\n");
 #endif
 }
 #if IRQC_DEBUG

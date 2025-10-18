@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-18 21:56:07
+ * @LastEditTime: 2025-10-18 22:02:55
  * @Description:
  *
  *
@@ -301,7 +301,7 @@ void SECTION(".init.Default") Default_Config()
 //----------------------------------------------------------------------------
 void Device_init(void)
 {
-// Devoce's Function Init Of Modules
+// 0.Devoce's Function Init Of Modules
 #if (PWM_MODULE_EN)
 #if (SUPPORT_FAN1&&(FAN1_PWM_CHANNEL_SWITCH<=7))
 	FAN_Init(FAN1_PWM_CHANNEL_SWITCH, PWM_CLK0, PWM_CTR0);
@@ -312,7 +312,7 @@ void Device_init(void)
 	//LED_Init();
 #endif
 
-//Host Device Init
+//1.Host Device Init
 #if SUPPORT_LD_PNP_DEVBOARD
 	LogicalDevice_PNP_Config();
 #endif
@@ -320,10 +320,11 @@ void Device_init(void)
 	ShareMem_PNP_Config();
 #endif
 
-//Devoce's Driver Init
+//3.Devoce's Driver Init
 	//MOUSE_Init();
 	//KEYBOARD_Init();
 	//TOUCH_Init();
+	//Temp_Init();//
 // #if SUPPORT_ANX7447//PD
 // 	u8 ret = ucsi_init();
 // 	if(ret != UCSI_COMMAND_SUCC)
@@ -332,8 +333,9 @@ void Device_init(void)
 // 		// return UCSI_COMMAND_FAIL;
 // 	}
 // #endif
-//Service Timer 1ms Init
+//4.Service Timer 1ms Init
 #if TIMER_MODULE_EN
 	TIMER_Init(TIMER2, TIMER2_1ms, 0x1, 0x0); // 1ms service计时函数
 #endif
+	// dprint(" Devie init End\n");
 } // 初始化配置
