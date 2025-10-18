@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-18 20:15:50
+ * @LastEditTime: 2025-10-18 21:56:07
  * @Description:
  *
  *
@@ -301,15 +301,7 @@ void SECTION(".init.Default") Default_Config()
 //----------------------------------------------------------------------------
 void Device_init(void)
 {
-	// device PD CHIP Init
-#if SUPPORT_ANX7447
-	u8 ret = ucsi_init();
-	if(ret != UCSI_COMMAND_SUCC)
-	{
-		assert_print("ucsi_init failed.\n");
-		// return UCSI_COMMAND_FAIL;
-	}
-#endif
+// Devoce's Function Init Of Modules
 #if (PWM_MODULE_EN)
 #if (SUPPORT_FAN1&&(FAN1_PWM_CHANNEL_SWITCH<=7))
 	FAN_Init(FAN1_PWM_CHANNEL_SWITCH, PWM_CLK0, PWM_CTR0);
@@ -317,14 +309,30 @@ void Device_init(void)
 #if SUPPORT_FAN2&&(FAN1_PWM_CHANNEL_SWITCH<=7)
 	FAN_Init(FAN2_PWM_CHANNEL_SWITCH, PWM_CLK0, PWM_CTR0);
 #endif
+	//LED_Init();
 #endif
+
+//Host Device Init
 #if SUPPORT_LD_PNP_DEVBOARD
 	LogicalDevice_PNP_Config();
 #endif
 #if SUPPORT_SHAREMEM_PNP
 	ShareMem_PNP_Config();
 #endif
-		// 开启定时器对应功能
+
+//Devoce's Driver Init
+	//MOUSE_Init();
+	//KEYBOARD_Init();
+	//TOUCH_Init();
+// #if SUPPORT_ANX7447//PD
+// 	u8 ret = ucsi_init();
+// 	if(ret != UCSI_COMMAND_SUCC)
+// 	{
+// 		assert_print("ucsi_init failed.\n");
+// 		// return UCSI_COMMAND_FAIL;
+// 	}
+// #endif
+//Service Timer 1ms Init
 #if TIMER_MODULE_EN
 	TIMER_Init(TIMER2, TIMER2_1ms, 0x1, 0x0); // 1ms service计时函数
 #endif

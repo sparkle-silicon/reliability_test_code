@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-18 21:19:59
+ * @LastEditTime: 2025-10-18 21:52:56
  * @Description:
  *
  *
@@ -73,7 +73,7 @@
 // debuger Function Setting
 // EC FIRMWARE UPDATA
 #define SUPPORT_FIRMWARE_UPDATE 0 // firmware update support
-#define SUPPORT_SHAREMEM_PNP 1    // SHM PNP support
+#define SUPPORT_SHAREMEM_PNP 0    // SHM PNP support
 // UART
 #define SUPPORT_REAL_OR_DELAY_PRINTF 0 // 0:实时输出；1：延时输出（延时输出可切换为实时输出）
 #define ENABLE_COMMAND_SUPPORT 1       // CMD Enable

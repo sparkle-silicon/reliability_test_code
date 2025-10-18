@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-17 22:45:50
+ * @LastEditTime: 2025-10-18 21:48:10
  * @Description: This file is used for INTC interrupt
  *
  *
@@ -3248,7 +3248,6 @@ BYTE Int_Control1_Mask_Read(BYTE int_num)
 void intc_init()
 {
 #if ICTL_MODULE_EN
-	intc_MoudleClock_EN;
 	// enable irq interrupt
 	ICTL0_INTEN0 = 0xff;
 	ICTL0_INTEN1 = 0xff;

@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-17 17:28:16
+ * @LastEditTime: 2025-10-18 21:48:17
  * @Description:
  *
  *
@@ -114,11 +114,11 @@ void cpu_irq_en(void)
 {
 	// Have to enable the interrupt both at the GPIO level,
 	// and at the IRQC level.
-	CSR_IRQC_CONFIG(IRQC_INT_DEVICE_CPUS, en, 0, 0);
-	CSR_IRQC_CONFIG(IRQC_INT_DEVICE_CPUT, en, 0, 0);
-	CSR_IRQC_CONFIG(IRQC_INT_DEVICE_CPUR, en, 0, 0);
+	CSR_IRQC_CONFIG(IRQC_INT_DEVICE_CPUS, dis, 0, 0);
+	CSR_IRQC_CONFIG(IRQC_INT_DEVICE_CPUT, dis, 0, 0);
+	CSR_IRQC_CONFIG(IRQC_INT_DEVICE_CPUR, dis, 0, 0);
 	CSR_IRQC_CONFIG(IRQC_INT_DEVICE_SWUC, en, 1, 0);
-	CSR_IRQC_CONFIG(IRQC_INT_DEVICE_LPCRST, dis, 1, 0);
+	CSR_IRQC_CONFIG(IRQC_INT_DEVICE_LPCESPIRST, dis, 1, 0);
 	CSR_IRQC_CONFIG(IRQC_INT_DEVICE_PWRSW, en, 1, 0);
 	CSR_IRQC_CONFIG(IRQC_INT_DEVICE_PS2_0, en, 1, 0);
 	CSR_IRQC_CONFIG(IRQC_INT_DEVICE_KBS_SDV, en, 1, 0);
@@ -153,7 +153,10 @@ void cpu_irq_en(void)
 void SECTION(".init.irq") Irqc_init(void)
 {
 #if IRQC_MODULE_EN
+	//Disable interrupts in general.
+	clear_csr(mstatus, MSTATUS_MIE);
 	// Set Interrupt controller
+	intc_MoudleClock_EN;
 	intc_init();
 	// Set CPU CSR IRQ
 	cpu_irq_en();
