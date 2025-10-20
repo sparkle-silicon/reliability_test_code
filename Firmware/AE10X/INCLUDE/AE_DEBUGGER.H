@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-10 16:07:44
+ * @LastEditTime: 2025-10-20 19:18:14
  * @Description:
  *
  *
@@ -129,7 +129,8 @@ extern void Debugger_I2c_Send(WORD baseaddr);
 extern void DEBUGGER_DATA(void); // Debugger Function read
 extern void DEBUGGER_Change(void);
 extern void KBC_PMC_DataPending(char *KBC_PMC_PendingData);
-extern void Debugger_Send_KBD(void);
+extern void Service_Debugger(void);
+extern void Service_Debugger_Send_KBD(void);
 extern void DEBUGGER_Int(void);
 extern void DEBUGER_putchar(char ch);
 

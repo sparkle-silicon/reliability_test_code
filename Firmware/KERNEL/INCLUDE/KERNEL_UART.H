@@ -82,4 +82,5 @@ extern int serial_init(DWORD uart_num, DWORD baudrate);
 int serial_deinit(DWORD uart_num);/*取消串口初始化（再次使用要重新init）*/
 int serial2gpio(DWORD uart_num);/*串口切换为GPIO，并关闭串口模块*/
 int gpio2serial(DWORD uart_num);/*GPIO切换为串口，并使能串口模块*/
+extern void Service_PUTC(void);
 #endif

@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-18 20:32:05
+ * @LastEditTime: 2025-10-20 16:48:41
  * @Description:
  *
  *
@@ -165,8 +165,8 @@ void I2c_Write_Short(WORD value, WORD regoffset, WORD i2c_channel)
 //*****************************************************************************
 void I2c_Mux_set(BYTE model)
 {
-	SYSCTL_CFG &= ~(7 << 16); // I2C_Mux: bit9~10  clear default: model: 0
-	SYSCTL_CFG |= (model << 16);
+	// SYSCTL_CFG &= ~(7 << 16); // I2C_Mux: bit9~10  clear default: model: 0
+	// SYSCTL_CFG |= (model << 16);
 	return;
 }
 

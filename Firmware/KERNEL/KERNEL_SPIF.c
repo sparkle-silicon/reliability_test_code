@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-18 18:26:26
+ * @LastEditTime: 2025-10-20 17:43:20
  * @Description: This file is used for SPI Flash Interface
  *
  *
@@ -31,6 +31,7 @@ void SPIFI_Init(void)
     //
    return;
 }
+uint32_t EXTERNAL_FLASH_ID = 0;
 void SPIFE_Init(void)
 {
 #if (!SPIFE_CLOCK_EN)
@@ -40,18 +41,15 @@ void SPIFE_Init(void)
    if(SYSCTL_PIO_CFG & BIT1)//使用外部FLASH
    {
    }
-   else
+   else//内部SPIFE
    {
-      SPIFE_READ_ID();
-      if(SPIFE_QE_SEL)
-      {
-         //初始化4线
-      }
+      EXTERNAL_FLASH_ID = SPIFE_READ_ID();
+      dprint("EXTERNAL FLASH ID is %#lx.\n", EXTERNAL_FLASH_ID);
    }
 
 }
 // 读取id
-void SPIFE_READ_ID(void)
+uint32_t SPIFE_READ_ID(void)
 {
 #if (!SPIFE_CLOCK_EN)
    return;
@@ -63,7 +61,52 @@ void SPIFE_READ_ID(void)
    SPIFE_FTOP = 0x9f;
    // while(!(SPIFE_RDY & SPIF_RDY_READY));
    while(((SPIFE_FCNT & 0x3) == 0));
-   dprint("read flash id is %#x\n", SPIFE_FTOP);
+   uint32_t id = SPIFE_FTOP;
+   return id;
+}
+VBYTEP OPTIMIZE0 USED SPIFE_Read_Interface(register DWORD size, register DWORD addr, BYTEP read_buff)
+{
+   BYTE SPIFE_READ_COMMAND;
+   DWORD SPIFE_J;
+#define temp_addrs SPIFE_addrs
+#define temp_data SPIFE_data
+   if(size & 0b11)
+   {
+      size += 0b100;
+      size &= ~0b11;
+   }
+   // PRINTF_TX('M');
+   while(!(SPIFE_RDY & SPIF_RDY_READY))
+      ;
+   // PRINTF_TX('N');
+   // rom_wdt_feed();
+   while(SPIFE_STA & 0xf)
+      ;
+   // PRINTF_TX('W');
+   // rom_wdt_feed(); // 直到写完
+   while(!(SPIFE_RDY & SPIF_RDY_READY))
+      ;
+   // rom_wdt_feed(); // 读忙
+   SPIFE_DBYTE = (size - 1) & 0xff;
+   while(!(SPIFE_RDY & SPIF_RDY_READY))
+      ;
+   // rom_wdt_feed();
+   if(SPIFE_CTL0 & BIT1)
+      SPIFE_READ_COMMAND = 0x6b;
+   else
+      SPIFE_READ_COMMAND = 0x3b;
+   SPIFE_FTOP = (((addr & 0xFF) << 24) + ((addr & 0xFF00) << 8) + ((addr & 0xFF0000) >> 8) + SPIFE_READ_COMMAND);
+   for(SPIFE_J = 0; SPIFE_J < (size >> 2); SPIFE_J++)
+   {
+      while((SPIFE_FCNT & 0x3) == 0)
+         ;
+      // rom_wdt_feed();
+      // printf("TOP:%x", SPIFE_FTOP);
+      (*((DWORDP)(&(read_buff[SPIFE_J << 2])))) = SPIFE_FTOP;
+   }
+   return read_buff;
+#undef temp_addrs
+#undef temp_data
 }
 /**
  * @brief 写入flash操作

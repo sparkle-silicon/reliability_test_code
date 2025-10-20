@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-18 18:24:51
+ * @LastEditTime: 2025-10-20 16:46:57
  * @Description:
  *
  *
@@ -409,7 +409,7 @@ void ALIGNED(4) OPTIMIZE0 SECTION(".update.io")   EC_IO_Update(void)
             WDT_TORR0 = 0xff; WDT_TORR1 = 0xff; // 设置最长延时
             WDT_CR |= 0x02; // 进入wdt中断
             WDT_CRR = 0x76;    // 重启计数器
-            SYSCTL_CFG |= (1 << 3);
+            SYSCTL_CFG |= BIT3;
             goto * 0x80084UL;
             //update_debug
         }

@@ -59,5 +59,5 @@ void SECTION(".init.mem") Specific_Mem_init(void)
         {
                 *((VBYTEP)(SRAM_BASE_ADDR + i)) = 0x0;
         }
-        // dprint(" Specific Memory init End\n");
+        dprint(" Specific Memory init End.\n");
 }

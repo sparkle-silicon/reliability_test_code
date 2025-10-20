@@ -1,7 +1,7 @@
   /*
   * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-08-29 14:11:41
+ * @LastEditTime: 2025-10-20 19:26:02
   * @Description:
   *
   *
@@ -16,6 +16,7 @@
   /******************************************h file********************************************/
 #include "AE_PRINTF.H"
 #ifdef USER_AE10X_LIBC_A
+
 const BYTE _ctype[] = {
 HEX08, HEX08, HEX08, HEX08, HEX08, HEX08, HEX08, HEX08,                                                                 /* 0-7 */
 HEX08, HEX08 | HEX20, HEX08 | HEX20, HEX08 | HEX20, HEX08 | HEX20, HEX08 | HEX20, HEX08, HEX08,                         /* 8-15 */
@@ -816,44 +817,6 @@ USED int _isatty(int fd)
     return 1;
   return 0;
 }
-USED ssize_t _write(int fd, const void *ptr, size_t len)
-{
-  const BYTEP str = (const BYTEP)ptr;
-  if(isatty(fd))
-  {
-    for(size_t j = 0; j < len; j++)
-    {
-      if(*str == '\n')
-      {
-        while(!(PRINTF_LSR & UART_LSR_TEMP))
-          ;
-        PRINTF_TX = '\r';
-      }
-      while(!(PRINTF_LSR & UART_LSR_TEMP))
-        ; /*当此位为空发送fifo写入数据*/
-      PRINTF_TX = *str;
-      str++;
-    }
-    return len;
-  }
-  return -1;
-}
-//.gloable
-USED int _read(int fd, void *ptr, size_t len)
-{
-  BYTEP str = (BYTEP)ptr;
-  if(isatty(fd))
-  {
-    for(size_t j = 0; j < len; j++)
-    {
-      while(!(PRINTF_LSR & UART_LSR_DR))
-        ; /*当此位为空发送fifo写入数据*/
-      *str = PRINTF_RX;
-    }
-    return len;
-  }
-  return -1;
-}
 int strcoll(const char *str1, const char *str2) { return strcmp(str1, str2); }
 char *strcpy(char *__restrict dst0, const char *__restrict src0)
 {
@@ -938,5 +901,5 @@ size_t strspn(const char *s1, const char *s2)
     s1++;
   }
   return s1 - s;
-    }
+}
 #endif

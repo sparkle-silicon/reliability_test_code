@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-06-03 18:16:42
+ * @LastEditTime: 2025-10-20 18:47:03
  * @Description: Custom function support
  *
  *
@@ -299,14 +299,14 @@ void __weak Hook_1minEvent(void)
 void Service_WaitPS2_Handle(void)
 {}
 /* ----------------------------------------------------------------------------
- * FUNCTION: Service_LPCRST
+ * FUNCTION: Service_HOST_RST
  * LPC RESET
  * ------------------------------------------------------------------------- */
-void Service_LPCRST(void)
+void Service_HOST_RST(void)
 {
-    if(F_Service_LPCRST == 1)
+    if(F_Service_HOST_RST == 1)
     {
-        F_Service_LPCRST = 0;
+        F_Service_HOST_RST = 0;
         A20GATE_ON(); // FIXME xia
         CLEAR_MASK(SYSTEM_MISC1, ACPI_OS);
         // Host_Flag = 0x38;

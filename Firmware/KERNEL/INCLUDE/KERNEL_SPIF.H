@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
- * @LastEditors: Iversu
- * @LastEditTime: 2023-04-02 21:28:51
+ * @LastEditors: daweslinyu daowes.ly@qq.com
+ * @LastEditTime: 2025-10-20 17:41:33
  * @Description:
  *
  *
@@ -41,7 +41,7 @@ extern VBYTE *Tmp_code_pointer;
 extern VBYTE *Tmp_XPntr;
 extern void SPIFI_Init(void);
 extern void SPIFE_Init(void);
-extern void SPIFE_READ_ID(void);
+extern uint32_t SPIFE_READ_ID(void);
 extern void ExtFlash_Deep_Power_Down(void);
 extern void ExtFlash_Exit_Power_Down(void);
 extern FUNCT_PTR_V_D_BP_L Load_Fla_If_To_Ram(FUNCT_PTR_V_D_BP_L funcpoint, const int malloc_size);

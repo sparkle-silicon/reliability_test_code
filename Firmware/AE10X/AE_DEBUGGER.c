@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-07-07 11:15:52
+ * @LastEditTime: 2025-10-20 19:17:15
  * @Description:
  *
  *
@@ -55,6 +55,58 @@ int KBC_PMC_PendingRXCount = 0;		 // KBC/PMC Pending in index
 int KBC_PMC_PendingTXCount = 0;		 // KBC/PMC Pending out index
 BYTE dbg_int_buf[3];				 // Debugger interrupt function instruction array
 /*------------Only the slave debugger function is available-------------*/
+void Service_Debugger(void)
+{
+	if(F_Service_Debugger)
+	{
+		Debug_Timeout_Count = 5000;
+		I2C0_INTR_MASK &= ~(0x1 << 2); // 屏蔽接收中断
+		// Uart_Int_Disable(UARTA_CHANNEL, 0);
+		while(F_Service_Debugger_Cmd != F_Service_Debugger_Cnt)
+			Deubgger_Cmd_Parsing(Debugger_Cmd[F_Service_Debugger_Cnt++]);
+		F_Service_Debugger = 0;
+		// Uart_Int_Enable(UARTA_CHANNEL, 0);
+		I2C0_INTR_MASK |= (0x1 << 2);
+	}
+	else
+	{
+		Debug_Timeout_Count--;
+		if(Debug_Timeout_Count == 0)
+		{
+			Debug_Timeout_Count = 5000;
+			Buf_flag = 0;
+			Debug_Temp = 0;
+			F_Service_Debugger_Cmd = F_Service_Debugger_Cnt = 0;
+		}
+	}
+	// if (F_Service_Debugger_Send)
+	// {
+	// 	Debugger_I2c_Send(DEBUGGER_I2C_CHANNEL);
+	// 	assert_print("iicFeedback %#x\n", iicFeedback);
+	// 	F_Service_Debugger_Send = 0;
+	// }
+	if(F_Service_Debugger_Rrq)
+	{
+		Debugger_I2c_Req(DEBUGGER_I2C_CHANNEL);
+		assert_print("iicFeedback %#x\n", iicFeedback);
+		F_Service_Debugger_Rrq = 0;
+		switch(DEBUGGER_I2C_CHANNEL) // 打开RD_REQ中断
+		{
+			case I2C_CHANNEL_0:
+				I2C0_INTR_MASK |= 0x20;
+			case I2C_CHANNEL_1:
+				I2C1_INTR_MASK |= 0x20;
+			case I2C_CHANNEL_2:
+				I2C2_INTR_MASK |= 0x20;
+			case I2C_CHANNEL_3:
+				I2C3_INTR_MASK |= 0x20;
+			case I2C_CHANNEL_4:
+				I2C4_INTR_MASK |= 0x20;
+			case I2C_CHANNEL_5:
+				I2C5_INTR_MASK |= 0x20;
+		}
+	}
+}
 //*****************************************************************************
 //
 //  The Debugger KBC PMC DataPending
@@ -723,7 +775,7 @@ void DEBUGGER_DATA(void) // Debugger Function read
 		 because the web end polling tends to cause the interrupt nesting problem,
 		 so the case is discarded and replaced with the active send.
 		*/
-		/* Debugger_Send_KBD */
+		/* Service_Debugger_Send_KBD */
 	}
 	/* KBC/PMC value */
 	else if(data_base == 0x10002) // this addr will get kbc/pmc value
@@ -820,7 +872,7 @@ void DEBUGGER_DATA(void) // Debugger Function read
 	}
 #endif
 }
-void Debugger_Send_KBD(void)
+void Service_Debugger_Send_KBD(void)
 {
 	if(!F_Service_KBL)
 		return;

@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-18 20:28:14
+ * @LastEditTime: 2025-10-20 19:25:48
  * @Description:
  *
  *
@@ -246,6 +246,23 @@ BYTE Uart_Int_Status(BYTE channel, BYTE type)
             return -1;
     }
 }
+#if SUPPORT_REAL_OR_DELAY_PRINTF
+void Service_PUTC(void)
+{
+    if(F_Service_PUTC && (!print_number))
+        return;
+      // if(print_number&&(PRINTF_LSR & UART_LSR_TEMP) )
+    while(print_number && (!(PRINTF_LSR & UART_LSR_THRE)))
+    {
+        PRINTF_TX = print_buff[PRINT_SERVICE_CNT];
+        // print_buff[PRINT_SERVICE_CNT]='\0';
+        PRINT_SERVICE_CNT++;
+        print_number--;
+        if(PRINT_SERVICE_CNT >= PRINT_MAX_SIZE)
+            PRINT_SERVICE_CNT = 0;
+    }
+}
+#endif
 /**
  * @brief 字符输出
  *
@@ -318,3 +335,43 @@ void DEBUGER_putchar(char ch)
 #endif
 #endif
 }
+#if(defined(USER_RISCV_LIBC_A))
+USED ssize_t _write(int fd, const void *ptr, size_t len)
+{
+    const BYTEP str = (const BYTEP)ptr;
+    if(isatty(fd))
+    {
+        for(size_t j = 0; j < len; j++)
+        {
+            if(*str == '\n')
+            {
+                while(!(PRINTF_LSR & UART_LSR_TEMP))
+                    ;
+                PRINTF_TX = '\r';
+            }
+            while(!(PRINTF_LSR & UART_LSR_TEMP))
+                ; /*当此位为空发送fifo写入数据*/
+            PRINTF_TX = *str;
+            str++;
+        }
+        return len;
+    }
+    return -1;
+}
+//.gloable
+USED int _read(int fd, void *ptr, size_t len)
+{
+    BYTEP str = (BYTEP)ptr;
+    if(isatty(fd))
+    {
+        for(size_t j = 0; j < len; j++)
+        {
+            while(!(PRINTF_LSR & UART_LSR_DR))
+                ; /*当此位为空发送fifo写入数据*/
+            *str = PRINTF_RX;
+        }
+        return len;
+    }
+    return -1;
+}
+#endif

@@ -154,7 +154,7 @@ void Mailbox_SetClockFrequency(void *param)
     command_processed = false;
 }
 
-extern void Service_Process_Tasks(void);
+extern void Service_PROCESS_TASKS(void);
 extern void Service_Mailbox(void);
 void AwaitCrypSelfcheck(void)
 {
@@ -163,7 +163,7 @@ void AwaitCrypSelfcheck(void)
     Mailbox_Init();
     while(EFUSE_Avail == 0)
     {
-        Service_Process_Tasks();
+        Service_PROCESS_TASKS();
         Service_Mailbox();
     }
     EFUSE_Avail = 0;
@@ -173,7 +173,7 @@ void AwaitCrypSelfcheck(void)
         task_head = Add_Task(Mailbox_Cryp_Selfcheck, Params, &task_head);//子系统自检命令触发
         while(Cry_SelfCheck_Flag != 0x1)//等待子系统自检完成
         {
-            Service_Process_Tasks();
+            Service_PROCESS_TASKS();
             Service_Mailbox();
             if(Cry_SelfCheck_Flag & 0x2)//crypto selfcheck err
             {

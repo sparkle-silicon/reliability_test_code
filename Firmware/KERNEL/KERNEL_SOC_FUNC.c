@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-18 22:01:32
+ * @LastEditTime: 2025-10-20 16:25:52
  * @Description: This is about the  national crypto algorithm implementation
  *
  *
@@ -76,7 +76,7 @@ void uart_init(void)
 			dprint("Actual baud rate of the serial port %X == %d.\n", ((cnt < 2) ? cnt : (cnt + 8)), baud[cnt]);
 		}
 	}
-	dprint("Uart init done.\n");
+	dprint("UART init done.\n");
 #endif
 }
 void smbus_init(void)
@@ -141,7 +141,7 @@ void smbus_init(void)
 	I2c_Channel_Init(DEBUGGER_I2C_CHANNEL, DEBUGGER_I2C_SPEED, I2C_SLAVE_ROLE, DEBUGGER_I2C_ADDRESS, 1);
 	SMBUSn_INTR_MASK0(DEBUGGER_I2C_CHANNEL) |= I2C_INTR_RX_FULL;
 #endif
-	dprint("I2c_channel_init done.\n");
+	dprint("SMBUS init done.\n");
 #endif
 }
 void i3c_init(void)
@@ -161,7 +161,7 @@ void i3c_init(void)
 	i3c3_pull_up();
 	I3C_Slave_Init(I3C_SLAVE1_DEFAULT_ADDR, I3C_SLAVE1_DEFAULT_IDPARTNO, I3C_SLAVE1_DEFAULT_DCR, I3C_SLAVE1_DEFAULT_BCR, I3C_SLAVE1);
 #endif
-	dprint("i3c slave init done.\n");
+	dprint("I3C slave init done.\n");
 	/****************** master init(only I3C0 and I3C1) ******************/
 #if I3C0_EN_Init
 	i3c0_MoudleClock_EN;
@@ -176,7 +176,8 @@ void i3c_init(void)
 	i3c1_pull_up();
 	I3C_Master_Init(I3C_MASTER1_DEFAULT_ROLE, I3C_MASTER1_SPEED, I3C_MASTER1_DEFAULT_ADDR, I3C_MASTER1_DEFAULT_DCT, I3C_MASTER1_DEFAULT_DYNAMICADDR, I3C_MASTER1);
 #endif
-	dprint("i3c master init done.\n");
+	dprint("I3C master init done.\n");
+	dprint("I3C init done.\n");
 #endif
 }
 void spi_init(void)
@@ -210,7 +211,7 @@ void spi_init(void)
 	SPIFE_Init();//初始化外部FLASH的一些细节,注意,如果使用外部FLASH可能会和cache冲突
 	dprint("EXTERNAL FLASH init done.\n");
 #endif
-	dprint("SPIF init done.\n");
+	dprint("SPI init done.\n");
 #endif
 
 }
@@ -295,22 +296,22 @@ void host_init(void)
 	//Switch espi
 	sysctl_iomux_host(1, HOST_IRQ_PIN_SEL, HOST_RST_PIN_SEL, 0, 0);
 	ESPI_Init();
-	dprint("espi init done.\n");
+	dprint("ESPI init done.\n");
 #elif LPC_EN_Init
 	// LPC_MoudleClock_EN;
 		//Switch lpc
 	sysctl_iomux_host(0, HOST_IRQ_PIN_SEL, HOST_RST_PIN_SEL, LPC_CLKRUN_PIN_SEL, LPC_PD_PIN_SEL);
 	//lpc init
-	dprint("lpc init done.\n");
+	dprint("LPC init done.\n");
 #else//按照默認選擇初始化
 	sysctl_iomux_host(1, 0, 0, 0, 0);
-	dprint("default host iomux init done.\n");
+	dprint("Default host iomux init done.\n");
 #endif
 #if SWUC_EN_Init
 	swuc_MoudleClock_EN;
 	sysctl_iomux_swuc(SWUC_GA20_ENABLE, SWUC_KRST_ENABLE, SWUC_PWUREQ_ENABLE, HOST_SMI_PLTRST_SWITCH);
 	SWUC_Init(SWUC_GA20_ENABLE, SWUC_GA20_MODE, SWUC_KRST_ENABLE, HOST_SMI_PLTRST_SWITCH, SWUC_PWUREQ_ENABLE, SWUC_ACPI_ENABLE);
-	dprint("swuc init done.\n");
+	dprint("SWUC init done.\n");
 #endif
 #if HOST_P80_En_Init
 	sysctl_iomux_l80();
@@ -336,7 +337,7 @@ void host_init(void)
 	peci_MoudleClock_EN;
 	sysctl_iomux_peci();
 	PECI_Init();
-	dprint("peci init done.\n");
+	dprint("PECI init done.\n");
 #endif
 #endif
 }
@@ -347,7 +348,7 @@ void kbs_init(void)
 	sysctl_iomux_kbs(KBD_8_n_SWITCH); // KBD_8_n_SWITCH
 	kbs_pull_up(KBD_8_n_SWITCH);
 	KBS_Init();
-	dprint("Kbs init done.\n");
+	dprint("KBS init done.\n");
 #endif
 }
 void ps2_init(void)
@@ -366,7 +367,7 @@ void ps2_init(void)
 	ps2_1_pull_up(PS2_1_CLK_SEL, PS2_1_DAT_SEL);
 	PS2_PortN_Init(PS2_1_CHANNEL);//仅初始化通道,Device初始化应该由实际情况实现
 #endif
-	dprint("Ps2 init done.\n");
+	dprint("PS2 init done.\n");
 #endif
 }
 void cec_init(void)
@@ -384,7 +385,7 @@ void cec_init(void)
 	cec1_pull_up();
 	CEC_Init(CEC1_CHANNEL, CEC1_MODE_SWITCH);
 #endif
-	dprint("cec init done.\n");
+	dprint("CEC init done.\n");
 #endif
 }
 void adc_init(void)
@@ -449,19 +450,19 @@ void time_init(void)
 	while((TIMER_TRIS & 0xf) != 0xf)
 		;
 	TIMER_TEOI; // clear all interrupt
-	dprint("Timer init done\n");
+	dprint("TIMER init done\n");
 #endif
 
 #if (RTC_MODULE_EN)
 	rtc_MoudleClock_EN;
 	RTC_Init(0, 1, LOW_CHIP_CLOCK);
-	dprint("rtc init done.\n");
+	dprint("RTC init done.\n");
 #endif
 #if WDT_MODULE_EN
 	/*wdt*/
 	wdt_MoudleClock_EN;
 	WDT_Init(0x1, 0xa); // FIXME
-	dprint("watchdong init done.\n");
+	dprint("WDT init done.\n");
 #endif
 }
 
@@ -494,7 +495,7 @@ void __weak SECTION(".init.module") Module_init(void)
 	adc_init();
 	// 13 Initialize The timer and The watch dog and The RTC
 	time_init();
-	dprint(" Module init End\n");
+	dprint(" Module init End.\n");
 	return;
 }
 #if defined(USER_AE10X_LIBC_A)

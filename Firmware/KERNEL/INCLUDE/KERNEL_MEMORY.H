@@ -67,7 +67,7 @@
 // Lo-Level Service
 #define F_Service_PCI3 (*(VBYTEP)(Service_BASE + 10))      // PMC2 PORT cmd/data process
 #define F_Service_PCI4 (*(VBYTEP)(Service_BASE + 11))      // PMC3 PORT cmd/data process
-#define F_Service_LPCRST (*(VBYTEP)(Service_BASE + 14))    // Meaning unclear
+#define F_Service_HOST_RST (*(VBYTEP)(Service_BASE + 14))    // Meaning unclear
 #define F_Service_PCI5 (*(VBYTEP)(Service_BASE + 15))      // PMC4 PORT cmd/data process
 #define F_Service_PCI6 (*(VBYTEP)(Service_BASE + 16))      // PMC5 PORT cmd/data process
 #define F_Service_Reserved2 (*(VBYTEP)(Service_BASE + 17)) // Meaning unclear

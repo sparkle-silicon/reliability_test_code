@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-18 17:52:36
+ * @LastEditTime: 2025-10-20 16:58:12
  * @Description: 
  * 
  * 
@@ -103,7 +103,6 @@ _start://标签位置
 	.type __scatterload_ram,@function//定义为函数
 __scatterload_ram://将FLASH中指定的内容拷贝到RAM中
 	 /* 使用与上述相同的原理，通过一个循环，将 数据从Flash中搬运到DLM中*/
-#if (defined(flash)||defined(crypto))//更新后防止被复写
     la a1,0x304C0
     lw a0,0(a1)
     andi a0,a0,0x8
@@ -147,7 +146,7 @@ __scatterload_shareram://将SRAM的空间清零
 	sw zero, (a0)
 	addi a0, a0, 4
 	bltu a0, a1, 1b
- #if 0//将FLASH中ROM代码拷贝到ROM中 ,暂时保留,测试代码,正式无效
+#if 0 //将FLASH中ROM代码拷贝到ROM中 ,暂时保留,测试代码,正式无效
 #if (!defined(DUBLE_FIRMWARE2))   
 __scatterload_rom:
 2:
@@ -161,7 +160,6 @@ __scatterload_rom:
 	addi a0, a0, 4
 	addi a1, a1, 4
 	bltu a1, a2, 1b
-#endif
 #endif
 #endif
 2:

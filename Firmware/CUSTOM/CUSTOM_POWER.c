@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-06-04 16:56:13
+ * @LastEditTime: 2025-10-20 16:43:22
  * @Description: Power sequnce control function example
  *
  *
@@ -1612,10 +1612,10 @@ void PWRSW_Rstoutputen(void)
 //-----------------------------------------------------------------------------
 void AutoON_Check_AfterUpdate(void)
 {
-    if(((*(VBYTEP)(0x31FFF)) == 0xDC) && (((*(VBYTEP)(0x31FFE)) == 0xCD)))
+    if((SHARE_RAM8(0xFFF) == 0xDC) && ((SHARE_RAM8(0xFFE) == 0xCD)))
     {
-        (*(VBYTEP)(0x31FFE)) = 0x0;
-        (*(VBYTEP)(0x31FFF)) = 0x0;
+        SHARE_RAM8(0xFFE) = 0x0;
+        SHARE_RAM8(0xFFF) = 0x0;
         Auto_On = 1;
     }
 }

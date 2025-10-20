@@ -108,8 +108,6 @@
 #define Service_PCI4_START 1
 #define Service_PCI5_START 1
 #define Service_PCI6_START 1
-#define Service_Reserved2_START 0
-#define Service_Reserved3_START 0
  /****************************************************************************
   * Module Enable
   *****************************************************************************/

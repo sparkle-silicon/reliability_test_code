@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-18 18:25:58
+ * @LastEditTime: 2025-10-20 19:27:05
  * @Description:
  *
  *
@@ -136,22 +136,15 @@ void Event_1min(void)
 //----------------------------------------------------------------------------
 void Service_MS_1(void)
 {
-#define Stress_test_printf 0
-#if Stress_test_printf
-	for(int i = 4096; i; i--)
-		dprint("AAAAA\n");
-#endif
 #if (Service_MS_1_START == 1)
-	if(F_Service_MS_1 == 0)
-		return;
-	else /*if (F_Service_MS_1 == 1)*/
+	if(F_Service_MS_1)
 	{
 		F_Service_MS_1 = 0;
 	}
-	//  else//  Exception handling chicken
-	//  {
-	//  	dprint("F_Service_MS_1 is %#x ...\n", F_Service_MS_1);
-	//  }
+	else
+	{
+		return;
+	}
 	Event_1ms();
 	timer_1ms_count++;
 	if(timer_1ms_count >= 10)
@@ -272,34 +265,23 @@ void Service_Mailbox(void)
 #endif
 }
 //----------------------------------------------------------------------------
-// FUNCTION: Service_Reserved2
+// FUNCTION: Service_PUTC
+// UART putchar support function
 //----------------------------------------------------------------------------
-void Service_Reserved2(void)
+
+//----------------------------------------------------------------------------
+// FUNCTION: Service_PUTC
+// UART putchar support function
+//----------------------------------------------------------------------------
+void Service_PROCESS_TASKS(void)
 {
-#if (Service_Reserved2_START == 1)
-	if(F_Service_Reserved2)
-	{
-		F_Service_Reserved2 = 0;
-	}
-#endif
+	Process_Tasks();
 }
 //----------------------------------------------------------------------------
-// FUNCTION: Service_Reserved2
-//----------------------------------------------------------------------------
-void Service_Reserved3(void)
-{
-#if (Service_Reserved3_START == 1)
-	if(F_Service_Reserved3)
-	{
-		F_Service_Reserved3 = 0;
-	}
-#endif
-}
-//----------------------------------------------------------------------------
-// FUNCTION: Service_CPU_WakeUp
+// FUNCTION: Service_LowPower
 // CPU Wake Up finction
 //----------------------------------------------------------------------------
-void Service_CPU_WakeUp(void)
+void Service_LowPower(void)
 {
 	if(F_Service_WakeUp)
 	{
@@ -309,103 +291,20 @@ void Service_CPU_WakeUp(void)
 	}
 }
 //----------------------------------------------------------------------------
-// FUNCTION: Service_PUTC
-// UART putchar support function
-//----------------------------------------------------------------------------
-void Service_PUTC(void)
-{
-#if SUPPORT_REAL_OR_DELAY_PRINTF
-	if(F_Service_PUTC && (!print_number))
-		return;
-	// if(print_number&&(PRINTF_LSR & UART_LSR_TEMP) )
-	while(print_number && (!(PRINTF_LSR & UART_LSR_THRE)))
-	{
-		PRINTF_TX = print_buff[PRINT_SERVICE_CNT];
-		// print_buff[PRINT_SERVICE_CNT]='\0';
-		PRINT_SERVICE_CNT++;
-		print_number--;
-		if(PRINT_SERVICE_CNT >= PRINT_MAX_SIZE)
-			PRINT_SERVICE_CNT = 0;
-	}
-#endif
-}
-//----------------------------------------------------------------------------
 // FUNCTION: Service_CMD
 // UART Command support function
 //----------------------------------------------------------------------------
+#if ENABLE_COMMAND_SUPPORT
 void Service_CMD(void)
 {
-#if ENABLE_COMMAND_SUPPORT
 	if(F_Service_CMD)
 	{
 		CMD_RUN((volatile char *)&CMD_UART_CNT, (char *)CMD_UART_BUFF);
 		CMD_UART_CNT = 0;
 		F_Service_CMD = 0;
 	}
-#endif
-}
-#if ENABLE_DEBUGGER_SUPPORT
-void Service_Debugger(void)
-{
-	if(F_Service_Debugger)
-	{
-		Debug_Timeout_Count = 5000;
-		I2C0_INTR_MASK &= ~(0x1 << 2); // 屏蔽接收中断
-		// Uart_Int_Disable(UARTA_CHANNEL, 0);
-		while(F_Service_Debugger_Cmd != F_Service_Debugger_Cnt)
-			Deubgger_Cmd_Parsing(Debugger_Cmd[F_Service_Debugger_Cnt++]);
-		F_Service_Debugger = 0;
-		// Uart_Int_Enable(UARTA_CHANNEL, 0);
-		I2C0_INTR_MASK |= (0x1 << 2);
-	}
-	else
-	{
-		Debug_Timeout_Count--;
-		if(Debug_Timeout_Count == 0)
-		{
-			Debug_Timeout_Count = 5000;
-			Buf_flag = 0;
-			Debug_Temp = 0;
-			F_Service_Debugger_Cmd = F_Service_Debugger_Cnt = 0;
-		}
-	}
-	// if (F_Service_Debugger_Send)
-	// {
-	// 	Debugger_I2c_Send(DEBUGGER_I2C_CHANNEL);
-	// 	assert_print("iicFeedback %#x\n", iicFeedback);
-	// 	F_Service_Debugger_Send = 0;
-	// }
-	if(F_Service_Debugger_Rrq)
-	{
-		Debugger_I2c_Req(DEBUGGER_I2C_CHANNEL);
-		assert_print("iicFeedback %#x\n", iicFeedback);
-		F_Service_Debugger_Rrq = 0;
-		switch(DEBUGGER_I2C_CHANNEL) // 打开RD_REQ中断
-		{
-			case I2C_CHANNEL_0:
-				I2C0_INTR_MASK |= 0x20;
-			case I2C_CHANNEL_1:
-				I2C1_INTR_MASK |= 0x20;
-			case I2C_CHANNEL_2:
-				I2C2_INTR_MASK |= 0x20;
-			case I2C_CHANNEL_3:
-				I2C3_INTR_MASK |= 0x20;
-			case I2C_CHANNEL_4:
-				I2C4_INTR_MASK |= 0x20;
-			case I2C_CHANNEL_5:
-				I2C5_INTR_MASK |= 0x20;
-		}
-	}
 }
 #endif
-//----------------------------------------------------------------------------
-// FUNCTION: Service_PUTC
-// UART putchar support function
-//----------------------------------------------------------------------------
-void Service_Process_Tasks(void)
-{
-	Process_Tasks();
-}
 //-----------------------------------------------------------------------------
 //  Function Pointers
 //-----------------------------------------------------------------------------
@@ -415,31 +314,40 @@ void Service_Process_Tasks(void)
 const FUNCT_PTR_V_V service_table[] =
 {
 	// Hi-Level Service
-	Service_CPU_WakeUp, // cpu wake up
-	Service_PUTC,		// Service printf
-	Service_CMD,		// CMD Run
-	Service_PCI,		// Host send to ec 60/64 Command/Data service
-	Service_Send,		// Send byte from KBC to host
-	Service_Send_PS2,	// Send PS2 interface pending data
-	Service_PCI2,		// PMC1 Host Command/Data service
-	Service_MS_1,		// 5 millisecond elapsed for CUSTOM
-	Service_KBS,		// Keyboard scanner service
-		Service_Mailbox, // Mailbox service
-		Service_Process_Tasks, // Process Tasks
-		// Lo-Level Service
-Service_PCI3,	   // PMC2 Host Command/Data service
-Service_PCI4,	   // PMC3 Host Command/Data service
-Service_LPCRST,	   // Service LPCRST
-Service_PCI5,	   // PMC4 Host Command/Data service
-Service_PCI6,	   // PMC5 Host Command/Data service
-Service_Reserved2, // Reserved
-#if ENABLE_DEBUGGER_SUPPORT
-		Service_Debugger,
-		Debugger_Send_KBD,
+	//高优先级
+	Service_PCI,              // Host send to ec 60/64 Command/Data service
+	Service_Send,             // Send byte from KBC to host service
+	Service_Send_PS2,		  // Send PS2 interface pending data to host service
+	// Mi-Level Service
+	//中优先级
+	Service_MS_1,             // 1 millisecond Service
+	Service_PCI2,             // PMC1 Host Command/Data service
+	Service_KBS,              // Keyboard scanner service
+	Service_PROCESS_TASKS,    // Security SubSystem(Crypto CPU) Mailbox Process Tasks service
+	Service_Mailbox,          // Security SubSystem(Crypto CPU) Mailbox Commands service
+
+	// Lo-Level Service
+	//低优先级
+	Service_PCI3,             // PMC2 Host Command/Data service
+	Service_PCI4,             // PMC3 Host Command/Data service
+	Service_HOST_RST,         //  lpc reset and espi reset Service
+	Service_PCI5,             // PMC4 Host Command/Data service
+	Service_PCI6,             // PMC5 Host Command/Data service
+	Service_LowPower,         // CPU LowPower Service
+
+	// DEBUG Service
+#if SUPPORT_REAL_OR_DELAY_PRINTF
+	Service_PUTC,			  // UART delay printf service 
 #endif
-		Service_Reserved3, // Reserved
+#if ENABLE_COMMAND_SUPPORT
+	Service_CMD,              // UART char command service
+#endif
+#if ENABLE_DEBUGGER_SUPPORT
+	Service_Debugger,         // DEBUGGER service
+	Service_Debugger_Send_KBD,        // DEBUGGER
+#endif
+
 };
-const short array_count = sizeof(service_table) / sizeof(FUNCT_PTR_V_V);
 //----------------------------------------------------------------------------
 // FUNCTION: main_service
 // polling service table
@@ -447,9 +355,12 @@ const short array_count = sizeof(service_table) / sizeof(FUNCT_PTR_V_V);
 void main_service(void)
 {
 
-	if(_R1 >= sizeof(service_table) / sizeof(FUNCT_PTR_V_V))
+	if(_R1 >= (sizeof(service_table) / sizeof(FUNCT_PTR_V_V)))
 		_R1 = 0;
 	(service_table[_R1])();
+// #define HIGH_LEVEL_SERVICE_NUM 8/*((sizeof(service_table) / sizeof(FUNCT_PTR_V_V)) >> 1)*/
+// 	if(_R1 >= HIGH_LEVEL_SERVICE_NUM)
+// 		(service_table[(_R1 % HIGH_LEVEL_SERVICE_NUM)])();
 	_R1++;
 }
 //----------------------------------------------------------------------------
@@ -458,71 +369,20 @@ void main_service(void)
 //----------------------------------------------------------------------------
 void main_loop(void)
 {
-	dprint("Enter main_service \n");
-
+	dprint("Enter main_service.\n");
 	while(1)
 	{
-		if(MAILBOX_E2CINFO7 & 0x1)
-		{
-			MAILBOX_E2CINFO7 = 0x0;
-			Enter_LowPower_Mode();
-		}
-
 		main_service();
 	}
 }
-
-VBYTEP OPTIMIZE0 USED SPIFE_Read_Interface(register DWORD size, register DWORD addr, BYTEP read_buff)
-{
-	BYTE SPIFE_READ_COMMAND;
-	DWORD SPIFE_J;
-#define temp_addrs SPIFE_addrs
-#define temp_data SPIFE_data
-	if(size & 0b11)
-	{
-		size += 0b100;
-		size &= ~0b11;
-	}
-	// PRINTF_TX('M');
-	while(!(SPIFE_RDY & SPIF_RDY_READY))
-		;
-	// PRINTF_TX('N');
-	// rom_wdt_feed();
-	while(SPIFE_STA & 0xf)
-		;
-	// PRINTF_TX('W');
-	// rom_wdt_feed(); // 直到写完
-	while(!(SPIFE_RDY & SPIF_RDY_READY))
-		;
-	// rom_wdt_feed(); // 读忙
-	SPIFE_DBYTE = (size - 1) & 0xff;
-	while(!(SPIFE_RDY & SPIF_RDY_READY))
-		;
-	// rom_wdt_feed();
-	if(SPIFE_CTL0 & BIT1)
-		SPIFE_READ_COMMAND = 0x6b;
-	else
-		SPIFE_READ_COMMAND = 0x3b;
-	SPIFE_FTOP = (((addr & 0xFF) << 24) + ((addr & 0xFF00) << 8) + ((addr & 0xFF0000) >> 8) + SPIFE_READ_COMMAND);
-	for(SPIFE_J = 0; SPIFE_J < (size >> 2); SPIFE_J++)
-	{
-		while((SPIFE_FCNT & 0x3) == 0)
-			;
-		// rom_wdt_feed();
-		// printf("TOP:%x", SPIFE_FTOP);
-		(*((DWORDP)(&(read_buff[SPIFE_J << 2])))) = SPIFE_FTOP;
-	}
-	return read_buff;
-#undef temp_addrs
-#undef temp_data
-}
-
+#define I3C_TEST 1
+#if I3C_TEST//收到,已确认暂时不管这一段代码
 uint8_t ccc_wdata[10] = { 0x1,0x2,0x3,0x4,0x5,0x6,0x7,0x8,0x9,0xa };
 uint8_t ccc_rdata[10] = { 0,0,0,0,0,0,0,0,0,0 };
 uint8_t ccc_rdata1[10] = { 0,0,0,0,0,0,0,0,0,0 };
 uint8_t ccc_dr_rdata[10] = { 0,0,0,0,0,0,0,0,0,0 };
 uint8_t ccc_dr_rdata1[10] = { 0,0,0,0,0,0,0,0,0,0 };
-
+#endif
 //----------------------------------------------------------------------------
 // FUNCTION: main
 // main entry
@@ -540,6 +400,7 @@ int __weak main(void)
 	// 2. print Operational information
 	dprint("This is %s flash main\n", (SYSCTL_PIO_CFG & BIT1) ? "external" : "internal");
 	dprint("CPU freq at %d Hz\n", CPU_FREQ);
+#if I3C_TEST//收到,已确认暂时不管这一段代码
 	/******仅供i3c测试,泽宇先别删这段测试代码start */
 	I3C_MASTER_BC_CCC_WRITE(ccc_wdata, 2, SETMWL_BC_CMD, 0, 0, I3C_MASTER0);
 	printf("slave0 maxlength:%x\n", SLAVE0_MAXLIMITS);
@@ -560,6 +421,7 @@ int __weak main(void)
 	I3C_MASTER_DR_CCC_READ(0x3a, ccc_dr_rdata, 1, GETDCR_DR_CMD, 0, 0, I3C_MASTER0);
 	printf("private read dcr:%x\n", ccc_dr_rdata[0]);
 	/*******end */
+#endif
 	main_loop();
 	return 0;
 }

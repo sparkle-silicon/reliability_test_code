@@ -24,7 +24,7 @@
 /*-----------------------------------------------------------------------------
  * External Calling Process
  *---------------------------------------------------------------------------*/
-extern void Service_LPCRST(void);
+extern void Service_HOST_RST(void);
 extern void Service_WaitPS2_Handle(void);
 extern BYTE OemSetWakeUpSource(void);
 extern void InitWakeFromDeepSleep(void);

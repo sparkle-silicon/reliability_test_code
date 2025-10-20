@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-18 19:52:59
+ * @LastEditTime: 2025-10-20 20:32:18
  * @Description:
  *              define base reg addr
  *              define reg size
@@ -718,7 +718,17 @@
 #define SWUHEIE SWUC_REG(SWUHEIE_OFFSET)
 #endif
 /***********************************BRAM  Register Set**********************************/
+#ifndef BRAM_BASE_ADDR_DEFINE
+#define BRAM_BASE_ADDR_DEFINE
+
 #define BRAM_BASE_ADDR 0x2700UL
+
+#define BATTERY_BRAM_ADDR(offset) REG_ADDR(BRAM_BASE_ADDR,((offset)%0x30))
+
+#define BATTERY_BRAM32(offset) REG32(BATTERY_BRAM_ADDR((offset)&(~0b11)))
+#define BATTERY_BRAM16(offset) REG16(BATTERY_BRAM_ADDR((offset)&(~0b1)))
+#define BATTERY_BRAM8(offset) REG8(BATTERY_BRAM_ADDR((offset)))
+#endif
 /***********************************GPIO  Register Set**********************************/
 #ifndef GPIO_BASE_ADDR_DEFINE
 #define GPIO_BASE_ADDR_DEFINE
@@ -6262,11 +6272,41 @@
 #define PECI_PADCTLR PECI_REG(PECI_PADCTLR_OFFSET)
 #endif
 /**************************************** ROM ****************************************/
+#ifndef ROM_BASE_ADDR_DEFINE
+#define ROM_BASE_ADDR_DEFINE
+
 #define ROM_BASE_ADDR 0x10000UL // 0x17FFF-32K
+
+#define BOOT_ROM_ADDR(offset) REG_ADDR(ROM_BASE_ADDR,((offset)&0x7FFF))
+
+#define BOOT_ROM32(offset) REG32(BOOT_ROM_ADDR((offset)&(~0b11)))
+#define BOOT_ROM16(offset) REG16(BOOT_ROM_ADDR((offset)&(~0b1)))
+#define BOOT_ROM8(offset) REG8(BOOT_ROM_ADDR((offset)))
+#endif
 /**************************************** RAM ****************************************/
+#ifndef RAM_BASE_ADDR_DEFINE
+#define RAM_BASE_ADDR_DEFINE
+
 #define DRAM_BASE_ADDR 0x20000UL // 0x27FFF-32k
 #define IRAM_BASE_ADDR 0x28000UL // 0x2FFFF-32k
 #define IRAM0_BASE_ADDR IRAM_BASE_ADDR
+
+#define DATA_DRAM_ADDR(offset) REG_ADDR(DRAM_BASE_ADDR,((offset)&0x7FFF))
+#define DATA_IRAM_ADDR(offset) REG_ADDR(IRAM_BASE_ADDR,((offset)&0x7FFF))
+#define DATA_RAM_ADDR(offset) REG_ADDR(DRAM_BASE_ADDR,((offset)&0xFFFF))
+
+#define DATA_DRAM32(offset) REG32(DATA_DRAM_ADDR((offset)&(~0b11)))
+#define DATA_DRAM16(offset) REG16(DATA_DRAM_ADDR((offset)&(~0b1)))
+#define DATA_DRAM8(offset) REG8(DATA_DRAM_ADDR((offset)))
+
+#define DATA_IRAM32(offset) REG32(DATA_IRAM_ADDR((offset)&(~0b11)))
+#define DATA_IRAM16(offset) REG16(DATA_IRAM_ADDR((offset)&(~0b1)))
+#define DATA_IRAM8(offset) REG8(DATA_IRAM_ADDR((offset)))
+
+#define DATA_RAM32(offset) REG32(DATA_RAM_ADDR((offset)&(~0b11)))
+#define DATA_RAM16(offset) REG16(DATA_RAM_ADDR((offset)&(~0b1)))
+#define DATA_RAM8(offset) REG8(DATA_RAM_ADDR((offset)))
+#endif
 /***********************************SPI External Flash Control  Register Set**********************************/
 #ifndef SPIFE_BASE_ADDR_DEFINE
 #define SPIFE_BASE_ADDR_DEFINE
@@ -6566,7 +6606,17 @@
 #define DMA_ChEnReg DMA_REG(DMA_ChEnReg_OFFSET)
 #endif
 /*********************************** SRAM(4K SHARE RAM) **********************************/
+#ifndef SRAM_BASE_ADDR_DEFINE
+#define SRAM_BASE_ADDR_DEFINE
+
 #define SRAM_BASE_ADDR 0x31000UL
+
+#define SHARE_RAM_ADDR(offset) REG_ADDR(SRAM_BASE_ADDR,((offset)&0xFFF))
+
+#define SHARE_RAM32(offset) REG32(SHARE_RAM_ADDR((offset)&(~0b11)))
+#define SHARE_RAM16(offset) REG16(SHARE_RAM_ADDR((offset)&(~0b1)))
+#define SHARE_RAM8(offset) REG8(SHARE_RAM_ADDR((offset)))
+#endif
 /***********************************MAILBOX  Register Set**********************************/
 #ifndef MAILBOX_BASE_ADDR_DEFINE
 #define MAILBOX_BASE_ADDR_DEFINE
@@ -7171,7 +7221,7 @@
 
 #define FLASH_CACHE_BASE_ADDR 0x80000UL
 
-#define FLASH_MAP_CACHE_ADDR(flash_addr) REG_ADDR(FLASH_CACHE_BASE_ADDR +(flash_addr))
+#define FLASH_MAP_CACHE_ADDR(flash_addr) REG_ADDR(FLASH_CACHE_BASE_ADDR,(flash_addr))
 
 #define FLASH_MAP_CACHE32(flash_addr) REG32(FLASH_MAP_CACHE_ADDR((flash_addr)&(~0b11)))
 #define FLASH_MAP_CACHE16(flash_addr) REG16(FLASH_MAP_CACHE_ADDR((flash_addr)&(~0b1)))//((FLASH_MAP_CACHE32(flash_addr))>>(((flash_addr)&0b10)<<3))//REG16(FLASH_MAP_CACHE_ADDR((flash_addr)&(~0b1)))

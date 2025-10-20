@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
- * @LastEditors: Iversu
- * @LastEditTime: 2023-04-02 21:29:28
+ * @LastEditors: daweslinyu daowes.ly@qq.com
+ * @LastEditTime: 2025-10-20 20:33:27
  * @Description:
  *
  *
@@ -52,7 +52,7 @@ void BRAM_EC_Write(void)
   int i;
   for(i = 0; i < 48; i++)
   {
-    *((volatile uint8_t *)(BRAM_BASE_ADDR + i)) = 0xec;
+    BATTERY_BRAM8(i) = 0xec;
     vDelayXms(1);
   }
   dprint("bram data is writen!\n");
