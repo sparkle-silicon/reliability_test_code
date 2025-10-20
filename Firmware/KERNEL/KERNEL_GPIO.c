@@ -1766,7 +1766,8 @@ char GPIOAutoTest(void)//102
 	}
 	for(int i = 0; i < 32; i++)
 	{
-		if(i != 16 && i != 19 && i != 20 && i != 21 && i != 22 && i != 23)
+		//if (i != 16 && i != 19 && i != 20 && i != 21 && i != 22 && i != 23)//外部flash
+		if (i != 16 && i != 19)//内部flash
 		{
 			GPIO_Config(GPIOB, i, 1, flag, 0, 0);
 		}
@@ -1807,7 +1808,8 @@ char GPIOAutoTest(void)//102
 	if(flag)
 	{
 		gpa3 |= 0x3;//uart0
-		gpb2 |= 0xf9;//pb16 pb19用作电源 pb20/21/22/23作为两线flash引脚，当代码运行在外部flash不需要检测,需要设置iecfg，否则可能失败
+		//gpb2 |= 0xf9;//pb16 pb19用作电源 pb20/21/22/23作为两线flash引脚，当代码运行在外部flash不需要检测,需要设置iecfg，否则可能失败
+		gpb2 |= 0x9;//pb16 pb19用作电源 
 		gpc1 |= 0x4;//pc10用作电源
 
 		printf("\n");
@@ -1844,7 +1846,8 @@ char GPIOAutoTest(void)//102
 	else
 	{
 		gpa3 &= (~0x3);//uart0
-		gpb2 &= (~0xf9);//pb16 pb19用作电源 pb20/21/22/23作为两线flash引脚，当代码运行在外部flash不需要检测,需要设置iecfg，否则可能失败
+		//gpb2 &= (~0xf9);//pb16 pb19用作电源 pb20/21/22/23作为两线flash引脚，当代码运行在外部flash不需要检测,需要设置iecfg，否则可能失败
+		gpb2 &= (~0x09);//pb16 pb19用作电源 
 		gpc1 &= (~0x4);//pc10用作电源
 
 		printf("\n");

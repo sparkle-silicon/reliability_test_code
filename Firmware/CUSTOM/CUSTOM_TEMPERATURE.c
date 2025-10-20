@@ -57,7 +57,6 @@ char get_temperature(WORD i2c_channel)
         /* Write temp into ECSPACE_BASE_ADDR */
         // CPU_TEMP = temperature[0];
         SYSTEM_TEMP = temperature[1];
-        Req_flag = 0;
         dprint("I2C%d temperature=%d temp[1]=%d.%d\n", i2c_channel, temperature[0], temperature[1], ((((BYTE)temperature[2]) >> 5) & 0x7) * 125);
     }
     return temperature[1];

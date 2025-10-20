@@ -6,8 +6,6 @@
 #include "KERNEL_MEMORY.H"
 #include "KERNEL_PNP.H"
 
-extern void DMA_INIT(BYTE TT_FC, BYTE BLK_TS, BYTE SRC_PER, BYTE DEST_PER, DWORD SAR0, DWORD DAR0, BYTE DmaCfgReg);
-
 //Interrupt Enable Bit
 #define DMA_INT_DIS HEX00
 #define DMA_INT_EN HEX01
@@ -109,5 +107,67 @@ extern void DMA_INIT(BYTE TT_FC, BYTE BLK_TS, BYTE SRC_PER, BYTE DEST_PER, DWORD
 #define DMA_CH_DIS_WE HEX00
 #define DMA_CH_EN_WE HEX01
 
+//DMA_Periph_Type
+#define Only_Memory   0
+                      //  SEL      PER
+#define I3C0_DMA_RX   ((1 << 0)|(0 << 16))
+#define I3C0_DMA_TX   ((1 << 1)|(1 << 24))
+#define I3C1_DMA_RX   ((1 << 2)|(2 << 16))
+#define I3C1_DMA_TX   ((1 << 3)|(3 << 24))
+#define I3C2_DMA_RX   ((1 << 4)|(4 << 16))
+#define I3C2_DMA_TX   ((1 << 5)|(5 << 24))
+#define I3C3_DMA_RX   ((1 << 6)|(6 << 16))
+#define I3C3_DMA_TX   ((1 << 7)|(7 << 24))
+
+#define SUBUS3_DMA_RX  ((1 << 8)|(8 << 16))
+#define SUBUS3_DMA_TX  ((1 << 9)|(9 << 24))
+#define SUBUS4_DMA_RX  ((1 << 10)|(10 << 16))
+#define SUBUS4_DMA_TX  ((1 << 11)|(11 << 24))
+#define SUBUS5_DMA_RX  ((1 << 12)|(12 << 16))
+#define SUBUS5_DMA_TX  ((1 << 13)|(13 << 24))
+#define SUBUS6_DMA_RX  ((1 << 14)|(14 << 16))
+#define SUBUS6_DMA_TX  ((1 << 15)|(15 << 24))
+
+#define UART0_DMA_RX   (((4 << 16)))
+#define UART0_DMA_TX   (((5 << 24)))
+#define UART1_DMA_RX   (((6 << 16)))
+#define UART1_DMA_TX   (((7 << 24)))
+#define UARTA_DMA_RX   (((0 << 16)))
+#define UARTA_DMA_TX   (((1 << 24)))
+#define UARTB_DMA_RX   (((2 << 16)))
+#define UARTB_DMA_TX   (((3 << 24)))
+
+
+#define SPIM_DMA_RX    (((8 << 16)))
+#define SPIM_DMA_TX    (((9 << 24))) 
+
+#define SUBUS0_DMA_RX  (((10 << 16)))
+#define SUBUS0_DMA_TX  (((11 << 24)))
+#define SUBUS1_DMA_RX  (((12 << 16)))
+#define SUBUS1_DMA_TX  (((13 << 24)))
+#define SUBUS2_DMA_RX  (((14 << 16)))
+#define SUBUS2_DMA_TX  (((15 << 24)))
+
+
+//DMA INIT STRUCT
+typedef struct
+{
+    uint8_t DMA_Dest_Width;     //固定32bit
+    uint8_t DMA_Src_Width;      //固定32bit
+    uint8_t DMA_Dest_Inc;       //目标地址自增/自减/不变
+    uint8_t DMA_Src_Inc;        //源地址自增/自减/不变
+    uint8_t DMA_Dest_Msize;     //可默认设置DMA_DEST_MSIZE_32
+    uint8_t DMA_Src_Msize;      //可默认设置DMA_SRC_MSIZE_32
+    uint8_t DMA_Trans_Type;     //传输类型
+    uint32_t DMA_Periph_Type;    //外设类型（内存到内存可不配置）
+    uint32_t DMA_Block_Ts;      //块传输长度
+    uint8_t DMA_Priority;       //优先级
+    uint32_t DMA_Dest_Addr;     //目标地址
+    uint32_t DMA_Src_Addr;      //源地址
+}DMA_InitTypeDef;
 #endif
 
+//function prototypes
+extern void DMA_INIT(BYTE TT_FC, BYTE BLK_TS, BYTE SRC_PER, BYTE DEST_PER, DWORD SAR0, DWORD DAR0, BYTE DmaCfgReg);
+extern void DMA_Init(DMA_InitTypeDef*DMA_Init_Struct);
+extern char DMA_Transfer_Done(void);

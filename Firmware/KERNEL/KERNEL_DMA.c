@@ -18,68 +18,88 @@
 #include "KERNEL_DMA.H"
 
 
- /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     注意：
-     dst_tr_width，src_tr_width的宽度大小只能配置为32位
-     blk_ts最大为0x1f,即只能搬运31趟
-     tt_fc只能配置为0x0,0x1,0x2这三种情况
-     此接口需要配合其他模块的初始化配置使用，请注意检查相关配置
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
- //*****************************************************************************
- //  DMA init
- //
- //  parameter :
- //      TT_FC:                Transfer Type and Flow Control
- //      BLK_TS :              Block Transfer Size
- //      SRC_PER:              Source Hardware Interface
- //      DEST_PER:             Destination hardware interface
- //      SAR0:                 DCurrent Source Address of DMA_CHANNELS_0 transfer
- //      DAR0:                 Current Destination address of DMA_CHANNELS_0 transfer
- //      DmaCfgReg:            This register is used to enable the DW_ahb_dmac
- //  return :
- //      none
- //*****************************************************************************
-void DMA_INIT(BYTE TT_FC, BYTE BLK_TS, BYTE SRC_PER, BYTE DEST_PER, DWORD SAR0, DWORD DAR0, BYTE DmaCfgReg)
+void DMA_Init(DMA_InitTypeDef*DMA_Init_Struct)
 {
-    uint32_t  rdata;
-    //CTL0
-    DMA_CTL0_low = (DMA_LLP_SRC_DIS << 28) | (DMA_LLP_DST_DIS << 27) | (TT_FC << 20) |
-        (DMA_SRC_GATHER_DIS << 18) | (DMA_SRC_GATHER_DIS << 17) | (DMA_SRC_MSIZE_1 << 14) | (DMA_DEST_MSIZE_1 << 11)
-        | (DMA_SINC_INC << 9) | (DMA_DINC_No_chagne << 7) | (DMA_SRC_TR_WIDTH_32bits << 4) | (DMA_DST_TR_WIDTH_32bits << 1)
-        | DMA_INT_DIS;
-
-    rdata = DMA_CTL0_high;
-    rdata &= ~(0xf);
-    DMA_CTL0_high = rdata | (DMA_DONE_EN << 12) | BLK_TS;
-
-    //CFG0
-    rdata = DMA_CFG0_low;
+    uint32_t  rdata=0;
+    uint32_t  wdata=0;
+    uint8_t src_per=0;
+    uint8_t dest_per=0;
+    //SYSCTL_DMA_SEL
+    if (DMA_Init_Struct->DMA_Trans_Type != 0x0)
+    {
+        SYSCTL_DMA_SEL=(DMA_Init_Struct->DMA_Periph_Type)&0xFFFF;
+        printf("SYSCTL_DMA_SEL:0x%x\n",SYSCTL_DMA_SEL);
+    }
+    //CTL0_L
+    wdata = (DMA_Init_Struct->DMA_Dest_Width << 1) | (DMA_Init_Struct->DMA_Src_Width << 4) | 
+    (DMA_Init_Struct->DMA_Dest_Inc << 7) | (DMA_Init_Struct->DMA_Src_Inc << 9) | 
+    (DMA_Init_Struct->DMA_Dest_Msize << 11) | (DMA_Init_Struct->DMA_Src_Msize << 14) | 
+    (DMA_Init_Struct->DMA_Trans_Type << 20);
+    DMA_CTL0_L = wdata;
+    //CTL0_H
+    rdata = DMA_CTL0_H;
+    rdata &= ~(0xfff);
+    DMA_CTL0_H = (rdata | (DMA_DONE_EN << 12) | DMA_Init_Struct->DMA_Block_Ts);
+    printf("DMA_CTL0_L:0x%x DMA_CTL0_H:0x%x \n",DMA_CTL0_L,DMA_CTL0_H);
+    //CFG_L
+    wdata = DMA_Init_Struct->DMA_Priority<<5;
+    rdata = DMA_CFG0_L;
     rdata &= ~((0x1 << 11) | (0x1 << 10));      //源和目标设备都设置为硬件握手
-    DMA_CFG0_low = rdata | (DMA_SRC_HARDWARE_HS << 11) | (DMA_DST_HARDWARE_HS << 10) | (DMA_NOT_SUSPENDED << 8) | (DMA_CH_PRIOR_0 << 5);
+    DMA_CFG0_L = (rdata | wdata);
+    //CFG_H
+    rdata = DMA_CFG0_H;
+    rdata &= ~(0xff<<7);
 
-    //当外设为I3C0-3或者SMBUS3-6需要配置SYSCTL_DMA_SEL
-    if (TT_FC == 0x1)           //Memory to Peripheral
+    if(DMA_Init_Struct->DMA_Periph_Type&(0xff<<24))//tx
     {
-        if ((DAR0 >= 0x38014 && DAR0 <= 0x38A40) || ((DAR0 >= 0x4310 && DAR0 <= 0x4710)))
-            SYSCTL_DMA_SEL = (0x1 << (int)DEST_PER);
-        dprint("dma direction:Memory to Peripheral\n");
+        dest_per=(DMA_Init_Struct->DMA_Periph_Type>>24)&0xf;
     }
-    else if (TT_FC == 0x2)      //Peripheral to Memory
+    else 
     {
-        if ((SAR0 >= 0x38014 && SAR0 <= 0x38A40) || ((SAR0 >= 0x4310 && SAR0 <= 0x4710)))
-            SYSCTL_DMA_SEL = (0x1 << (int)SRC_PER);
-        dprint("dma direction:Peripheral to Memory\n");
+        src_per=(DMA_Init_Struct->DMA_Periph_Type>>16)&0xf;
     }
-    rdata = DMA_CFG0_high;
-    DMA_CFG0_high = (rdata | (DEST_PER << 11) | (SRC_PER << 7));
+    rdata |= (dest_per<<11) | (src_per<<7);
+    // if (DMA_Init_Struct->DMA_Trans_Type == 0x1)
+    // {
+    //     rdata |= ((((DMA_Init_Struct->DMA_Periph_Type)>>16)&0xf)<<11);
+    // }
+    // else if (DMA_Init_Struct->DMA_Trans_Type == 0x2)
+    // {
+    //     rdata |= ((((DMA_Init_Struct->DMA_Periph_Type)>>16)&0xf)<<7);
+    // }
+    // else if (DMA_Init_Struct->DMA_Trans_Type == 0x3)
+    // {
 
+    // }
+    DMA_CFG0_H = rdata;
+    printf("DMA_CFG0_L:0x%x DMA_CFG0_H:0x%x \n",DMA_CFG0_L,DMA_CFG0_H);
     //SAR0
-    DMA_SAR0 = SAR0;
+    DMA_SAR0 = DMA_Init_Struct->DMA_Src_Addr;
     //DAR0
-    DMA_DAR0 = DAR0;
-
-    //enable DMA and DMA_CHANNEL
-    DMA_DmaCfgReg = DmaCfgReg;                       //1:enable DMA,0:disable DMA
-    DMA_ChEnReg = (0x1 | (0x1 << 8));                //1:enable channel_0 , 0:disable channel_0
-    dprint("dma init done\n");
+    DMA_DAR0 = DMA_Init_Struct->DMA_Dest_Addr;
+    //ENABLE DMA and DMA_CHANNEL
+    DMA_DmaCfgReg = 0x1;
+    if(DMA_Init_Struct->DMA_Periph_Type!=SPIM_DMA_RX)
+    {
+        wdata = (0x1 | (0x1<<8));
+        DMA_ChEnReg  = wdata;
+        printf("DMA_Ch EN\n");
+    }
+    printf("DMA_ChEnReg:0x%x\n",DMA_ChEnReg);
+}
+/**
+ * @brief dma传输完成检测(需要确认)
+ * @param  none
+ *
+ * @return done return 1,not done return 0
+ */
+char DMA_Transfer_Done(void)
+{
+    uint8_t ret=0;
+    ret=DMA_CTL0_H&0x1f;
+    if(ret!=0)
+        return 0;
+    else
+        return 1;
+    
 }
