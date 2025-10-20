@@ -181,7 +181,7 @@
 #if ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_OUTPUT_SWITCH==0)
 #define DEBUG_UART_SWITCH 1
 #else
-#undef DEBUG_UART_SWITCH
+#define DEBUG_UART_SWITCH 4                  // >4 is debug off
 #endif
 #define PRINTF_UART_SWITCH 0                 // 串口引脚选择 uarta对应数值2 uartb对应数值3
 #define COMMAND_UART_SWITCH PRINTF_UART_SWITCH // It's aobut receive uart, comand send is printf.

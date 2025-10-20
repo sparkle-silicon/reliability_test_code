@@ -383,6 +383,728 @@ int main()
 	sysctl_iomux_uart3();
 	serial_init(3, 115200);
 #endif
+	
+	// 定义指向起始地址的volatile指针（防止编译器优化写操作）
+    volatile unsigned char *base_addr = (volatile unsigned char *)0x29000;
+	// 定义起始地址的volatile指针（防止编译器优化，确保实际读取内存）
+    volatile  unsigned char *base_addr0 = (volatile  unsigned char *)0x2a000;
+    // 计算地址范围大小：0x2a000 - 0x29000 = 0x1000（共4096个字节）
+    const uint32_t range_size = 0x2b000 - 0x2a000;
+    
+    // 循环写入0到0xff（共256个值，对应0x29000到0x290ff）
+    for (uint16_t i = 0; i < 256; i++) {
+        // base_addr[i] 等价于访问地址 0x29000 + i
+        base_addr[i] = i;
+		printf("0x%x : %x\n", 0x29000+i, base_addr[i]);
+    }
+
+	for (uint32_t i = 0; i < range_size; i++) {
+		//清零
+		*(base_addr0 + i)=0;
+    }
+	printf("dma test start\n");
+	DMA_InitStruct.DMA_Dest_Width=DMA_DST_TR_WIDTH_8bits;
+	DMA_InitStruct.DMA_Src_Width=DMA_SRC_TR_WIDTH_8bits;
+	DMA_InitStruct.DMA_Dest_Inc=DMA_DINC_INC;
+	DMA_InitStruct.DMA_Src_Inc=DMA_SINC_INC;
+	DMA_InitStruct.DMA_Dest_Msize=DMA_DEST_MSIZE_4;
+	DMA_InitStruct.DMA_Src_Msize=DMA_SRC_MSIZE_4;
+	DMA_InitStruct.DMA_Trans_Type=DMA_TT_FC_MtoM_DMA;
+	DMA_InitStruct.DMA_Block_Ts=0x2;
+	DMA_InitStruct.DMA_Priority=0;
+	DMA_InitStruct.DMA_Dest_Addr=0x2a000;
+	DMA_InitStruct.DMA_Src_Addr=0x29000;
+	DMA_Init(&DMA_InitStruct);
+	printf("dma init ok\n");
+	vDelayXms(10);
+
+    // 遍历每个地址并打印
+    for (uint32_t i = 0; i < range_size; i++) {
+        // 每16个字节换行，并在行首打印当前起始地址
+        if (i % 16 == 0) {
+            // 地址格式：0x29000 这样的8位十六进制（前导0补齐）
+            printf("\n0x%08x:  ", (uint32_t)(base_addr0 + i));
+        }
+        // 打印当前字节值（两位十六进制，前导0补齐）
+        printf("%02x ", base_addr0[i]);
+    }
+    printf("\n");  // 最后补一个换行
+
+	//iram -uartb tx
+	// sysctl_iomux_uartb();
+	// serial_init(UARTB_CHANNEL, 115200);
+	// DMA_InitStruct.DMA_Dest_Width=DMA_DST_TR_WIDTH_8bits;
+	// DMA_InitStruct.DMA_Src_Width=DMA_SRC_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Dest_Inc=DMA_DINC_No_chagne;
+	// DMA_InitStruct.DMA_Src_Inc=DMA_SINC_INC;
+	// DMA_InitStruct.DMA_Dest_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Src_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Trans_Type=DMA_TT_FC_MtoP_DMA;
+	// DMA_InitStruct.DMA_Periph_Type=UARTB_DMA_TX;
+	// DMA_InitStruct.DMA_Block_Ts=0x2;
+	// DMA_InitStruct.DMA_Priority=0;
+	// DMA_InitStruct.DMA_Dest_Addr=&UARTB_TX;
+	// DMA_InitStruct.DMA_Src_Addr=0x29000;
+	// DMA_Init(&DMA_InitStruct);
+	// vDelayXms(10);
+
+	//iram -uart0 tx uart0 rx iram
+	// REG32(0x29000)=0xffffff41;//A
+	// REG32(0x29004)=0xffffff42;//B
+	// REG32(0x29008)=0xffffff43;//C
+	// sysctl_iomux_uart0();
+	// serial_init(UART0_CHANNEL, 115200);
+	// DMA_InitStruct.DMA_Dest_Width=DMA_DST_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Src_Width=DMA_SRC_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Dest_Inc=DMA_DINC_No_chagne;
+	// DMA_InitStruct.DMA_Src_Inc=DMA_SINC_INC;
+	// DMA_InitStruct.DMA_Dest_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Src_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Trans_Type=DMA_TT_FC_MtoP_DMA;
+	// DMA_InitStruct.DMA_Periph_Type=UART0_DMA_TX;
+	// DMA_InitStruct.DMA_Block_Ts=0x3;
+	// DMA_InitStruct.DMA_Priority=0;
+	// DMA_InitStruct.DMA_Dest_Addr=&UART0_TX;
+	// DMA_InitStruct.DMA_Src_Addr=0x29000;
+	// DMA_Init(&DMA_InitStruct);
+	// vDelayXms(10);
+
+	// UART0_IER=0;
+	// DMA_InitStruct.DMA_Dest_Width=DMA_DST_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Src_Width=DMA_SRC_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Dest_Inc=DMA_DINC_INC;
+	// DMA_InitStruct.DMA_Src_Inc=DMA_SINC_No_chagne;
+	// DMA_InitStruct.DMA_Dest_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Src_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Trans_Type=DMA_TT_FC_PtoM_DMA;
+	// DMA_InitStruct.DMA_Periph_Type=UART0_DMA_RX;
+	// DMA_InitStruct.DMA_Block_Ts=0x1f;
+	// DMA_InitStruct.DMA_Priority=0;
+	// DMA_InitStruct.DMA_Dest_Addr=0x2a000;
+	// DMA_InitStruct.DMA_Src_Addr=&UART0_TX;
+	// DMA_Init(&DMA_InitStruct);
+
+	//iram -uart1 tx uart1 rx -> iram
+	REG32(0x29000)=0xffffff41;//A
+	REG32(0x29004)=0xffffff42;//B
+	REG32(0x29008)=0xffffff43;//C
+	sysctl_iomux_uart1(0,0);
+	serial_init(UART1_CHANNEL, 115200);
+	DMA_InitStruct.DMA_Dest_Width=DMA_DST_TR_WIDTH_32bits;
+	DMA_InitStruct.DMA_Src_Width=DMA_SRC_TR_WIDTH_32bits;
+	DMA_InitStruct.DMA_Dest_Inc=DMA_DINC_No_chagne;
+	DMA_InitStruct.DMA_Src_Inc=DMA_SINC_INC;
+	DMA_InitStruct.DMA_Dest_Msize=DMA_DEST_MSIZE_32;
+	DMA_InitStruct.DMA_Src_Msize=DMA_DEST_MSIZE_32;
+	DMA_InitStruct.DMA_Trans_Type=DMA_TT_FC_MtoP_DMA;
+	DMA_InitStruct.DMA_Periph_Type=UART1_DMA_TX;
+	DMA_InitStruct.DMA_Block_Ts=0x3;
+	DMA_InitStruct.DMA_Priority=0;
+	DMA_InitStruct.DMA_Dest_Addr=&UART1_TX;
+	DMA_InitStruct.DMA_Src_Addr=0x29000;
+	DMA_Init(&DMA_InitStruct);
+	vDelayXms(10);
+
+	UART1_IER=0;
+	DMA_InitStruct.DMA_Dest_Width=DMA_DST_TR_WIDTH_32bits;
+	DMA_InitStruct.DMA_Src_Width=DMA_SRC_TR_WIDTH_32bits;
+	DMA_InitStruct.DMA_Dest_Inc=DMA_DINC_INC;
+	DMA_InitStruct.DMA_Src_Inc=DMA_SINC_No_chagne;
+	DMA_InitStruct.DMA_Dest_Msize=DMA_DEST_MSIZE_32;
+	DMA_InitStruct.DMA_Src_Msize=DMA_DEST_MSIZE_32;
+	DMA_InitStruct.DMA_Trans_Type=DMA_TT_FC_PtoM_DMA;
+	DMA_InitStruct.DMA_Periph_Type=UART1_DMA_RX;
+	DMA_InitStruct.DMA_Block_Ts=0x1f;
+	DMA_InitStruct.DMA_Priority=0;
+	DMA_InitStruct.DMA_Dest_Addr=0x2a000;
+	DMA_InitStruct.DMA_Src_Addr=&UART1_TX;
+	DMA_Init(&DMA_InitStruct);
+
+	//iram -uarta tx
+	// REG32(0x29000)=0xffffff41;//A
+	// REG32(0x29004)=0xffffff42;//B
+	// REG32(0x29008)=0xffffff43;//C
+	// sysctl_iomux_uarta(0,0);
+	// serial_init(UARTA_CHANNEL, 115200);
+	// DMA_InitStruct.DMA_Dest_Width=DMA_DST_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Src_Width=DMA_SRC_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Dest_Inc=DMA_DINC_No_chagne;
+	// DMA_InitStruct.DMA_Src_Inc=DMA_SINC_INC;
+	// DMA_InitStruct.DMA_Dest_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Src_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Trans_Type=DMA_TT_FC_MtoP_DMA;
+	// DMA_InitStruct.DMA_Periph_Type=UARTA_DMA_TX;
+	// DMA_InitStruct.DMA_Block_Ts=0x2;
+	// DMA_InitStruct.DMA_Priority=0;
+	// DMA_InitStruct.DMA_Dest_Addr=&UARTA_TX;
+	// DMA_InitStruct.DMA_Src_Addr=0x29000;
+	// DMA_Init(&DMA_InitStruct);
+	// vDelayXms(10);
+
+	//iram -> smbus0 tx  smbus0 rx  -> iram 
+	// #define SMBUS I2C_CHANNEL_0						//改
+	// smbus0_MoudleClock_EN;
+	// REG32(0x29000)=0x00000001;//cmd:0x00(w)      data:0x01
+	// REG32(0x29004)=0x00000300;//cmd:0x03(stp/r)  data:0x00
+	// REG32(0x29008)=0xffffff10;//C
+
+	// I2c_Write_Short(0x2, I2C_DMA_CR_OFFSET, SMBUS);       //主机使能DMA
+	// sysctl_iomux_i2c0(I2C0_CLK_SEL, I2C0_DAT_SEL);
+	// I2c_Channel_Init(SMBUS, I2C0_SPEED, I2C_MASTER_ROLE, 0x4c, 1);
+	
+	// DMA_InitStruct.DMA_Dest_Width=DMA_DST_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Src_Width=DMA_SRC_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Dest_Inc=DMA_DINC_No_chagne;
+	// DMA_InitStruct.DMA_Src_Inc=DMA_SINC_INC;
+	// DMA_InitStruct.DMA_Dest_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Src_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Trans_Type=DMA_TT_FC_MtoP_DMA;
+	// DMA_InitStruct.DMA_Periph_Type=SUBUS0_DMA_TX;          //改
+	// DMA_InitStruct.DMA_Block_Ts=0x2;
+	// DMA_InitStruct.DMA_Priority=0;
+	// DMA_InitStruct.DMA_Dest_Addr=0x4010;				// 改
+	// DMA_InitStruct.DMA_Src_Addr=0x29000;
+	// DMA_Init(&DMA_InitStruct);
+	// vDelayXms(10);
+
+	// I2c_Write_Short(0x1, I2C_DMA_CR_OFFSET, SMBUS);       //主机使能DMA
+	// DMA_InitStruct.DMA_Dest_Width=DMA_DST_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Src_Width=DMA_SRC_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Dest_Inc=DMA_DINC_INC;
+	// DMA_InitStruct.DMA_Src_Inc=DMA_SINC_No_chagne;
+	// DMA_InitStruct.DMA_Dest_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Src_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Trans_Type=DMA_TT_FC_PtoM_DMA;
+	// DMA_InitStruct.DMA_Periph_Type=SUBUS0_DMA_RX; 	//改
+	// DMA_InitStruct.DMA_Block_Ts=0x1;
+	// DMA_InitStruct.DMA_Priority=0;
+	// DMA_InitStruct.DMA_Dest_Addr=0x2a000;	
+	// DMA_InitStruct.DMA_Src_Addr=0x4010;			//改
+	// DMA_Init(&DMA_InitStruct);
+	// vDelayXms(10);
+	// printf("temp cmd0:0x%x\n",REG32(0x2a000));
+	// printf("temp cmd1:0x%x\n",REG32(0x2a004));
+	// printf("temp cmd10:0x%x\n",REG32(0x2a008));
+
+	//iram -> smbus1 tx  smbus1 rx  -> iram 
+	// #define SMBUS I2C_CHANNEL_1						//改
+	// smbus0_MoudleClock_EN;
+	// REG32(0x29000)=0x00000001;//cmd:0x00(w)      data:0x01
+	// REG32(0x29004)=0x00000300;//cmd:0x03(stp/r)  data:0x00
+	// REG32(0x29008)=0xffffff10;//C
+
+	// I2c_Write_Short(0x2, I2C_DMA_CR_OFFSET, SMBUS);       //主机使能DMA
+	// sysctl_iomux_i2c1();					//改
+	// I2c_Channel_Init(SMBUS, I2C0_SPEED, I2C_MASTER_ROLE, 0x4c, 1);
+	
+	// DMA_InitStruct.DMA_Dest_Width=DMA_DST_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Src_Width=DMA_SRC_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Dest_Inc=DMA_DINC_No_chagne;
+	// DMA_InitStruct.DMA_Src_Inc=DMA_SINC_INC;
+	// DMA_InitStruct.DMA_Dest_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Src_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Trans_Type=DMA_TT_FC_MtoP_DMA;
+	// DMA_InitStruct.DMA_Periph_Type=SUBUS1_DMA_TX;          //改
+	// DMA_InitStruct.DMA_Block_Ts=0x2;
+	// DMA_InitStruct.DMA_Priority=0;
+	// DMA_InitStruct.DMA_Dest_Addr=0x4110;				// 改
+	// DMA_InitStruct.DMA_Src_Addr=0x29000;
+	// DMA_Init(&DMA_InitStruct);
+	// vDelayXms(10);
+
+	// I2c_Write_Short(0x1, I2C_DMA_CR_OFFSET, SMBUS);       //主机使能DMA
+	// DMA_InitStruct.DMA_Dest_Width=DMA_DST_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Src_Width=DMA_SRC_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Dest_Inc=DMA_DINC_INC;
+	// DMA_InitStruct.DMA_Src_Inc=DMA_SINC_No_chagne;
+	// DMA_InitStruct.DMA_Dest_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Src_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Trans_Type=DMA_TT_FC_PtoM_DMA;
+	// DMA_InitStruct.DMA_Periph_Type=SUBUS1_DMA_RX; 	//改
+	// DMA_InitStruct.DMA_Block_Ts=0x1;
+	// DMA_InitStruct.DMA_Priority=0;
+	// DMA_InitStruct.DMA_Dest_Addr=0x2a000;	
+	// DMA_InitStruct.DMA_Src_Addr=0x4110;			//改
+	// DMA_Init(&DMA_InitStruct);
+	// vDelayXms(10);
+	// printf("temp cmd0:0x%x\n",REG32(0x2a000));
+	// printf("temp cmd1:0x%x\n",REG32(0x2a004));
+	// printf("temp cmd10:0x%x\n",REG32(0x2a008));
+
+
+	//iram -> smbus2 tx  smbus2 rx  -> iram 
+	// #define SMBUS I2C_CHANNEL_2						//改
+	// smbus0_MoudleClock_EN;
+	// REG32(0x29000)=0x00000001;//cmd:0x00(w)      data:0x01
+	// REG32(0x29004)=0x00000300;//cmd:0x03(stp/r)  data:0x00
+	// REG32(0x29008)=0xffffff10;//C
+
+	// I2c_Write_Short(0x2, I2C_DMA_CR_OFFSET, SMBUS);       //主机使能DMA
+	// sysctl_iomux_i2c2(1);					//改
+	// I2c_Channel_Init(SMBUS, I2C0_SPEED, I2C_MASTER_ROLE, 0x4c, 1);
+	
+	// DMA_InitStruct.DMA_Dest_Width=DMA_DST_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Src_Width=DMA_SRC_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Dest_Inc=DMA_DINC_No_chagne;
+	// DMA_InitStruct.DMA_Src_Inc=DMA_SINC_INC;
+	// DMA_InitStruct.DMA_Dest_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Src_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Trans_Type=DMA_TT_FC_MtoP_DMA;
+	// DMA_InitStruct.DMA_Periph_Type=SUBUS2_DMA_TX;          //改
+	// DMA_InitStruct.DMA_Block_Ts=0x2;
+	// DMA_InitStruct.DMA_Priority=0;
+	// DMA_InitStruct.DMA_Dest_Addr=0x4210;				// 改
+	// DMA_InitStruct.DMA_Src_Addr=0x29000;
+	// DMA_Init(&DMA_InitStruct);
+	// vDelayXms(10);
+
+	// I2c_Write_Short(0x1, I2C_DMA_CR_OFFSET, SMBUS);       //主机使能DMA
+	// DMA_InitStruct.DMA_Dest_Width=DMA_DST_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Src_Width=DMA_SRC_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Dest_Inc=DMA_DINC_INC;
+	// DMA_InitStruct.DMA_Src_Inc=DMA_SINC_No_chagne;
+	// DMA_InitStruct.DMA_Dest_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Src_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Trans_Type=DMA_TT_FC_PtoM_DMA;
+	// DMA_InitStruct.DMA_Periph_Type=SUBUS2_DMA_RX; 	//改
+	// DMA_InitStruct.DMA_Block_Ts=0x1;
+	// DMA_InitStruct.DMA_Priority=0;
+	// DMA_InitStruct.DMA_Dest_Addr=0x2a000;	
+	// DMA_InitStruct.DMA_Src_Addr=0x4210;			//改
+	// DMA_Init(&DMA_InitStruct);
+	// vDelayXms(10);
+	// printf("temp cmd0:0x%x\n",REG32(0x2a000));
+	// printf("temp cmd1:0x%x\n",REG32(0x2a004));
+	// printf("temp cmd10:0x%x\n",REG32(0x2a008));
+
+	//iram -> smbus3 tx  smbus3 rx  -> iram 
+	// #define SMBUS I2C_CHANNEL_3						//改
+	// smbus0_MoudleClock_EN;
+	// REG32(0x29000)=0x00000001;//cmd:0x00(w)      data:0x01
+	// REG32(0x29004)=0x00000300;//cmd:0x03(stp/r)  data:0x00
+	// REG32(0x29008)=0xffffff10;//C
+
+	// I2c_Write_Short(0x2, I2C_DMA_CR_OFFSET, SMBUS);       //主机使能DMA
+	// sysctl_iomux_i2c3();					//改
+	// I2c_Channel_Init(SMBUS, I2C0_SPEED, I2C_MASTER_ROLE, 0x4c, 1);
+	
+	// DMA_InitStruct.DMA_Dest_Width=DMA_DST_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Src_Width=DMA_SRC_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Dest_Inc=DMA_DINC_No_chagne;
+	// DMA_InitStruct.DMA_Src_Inc=DMA_SINC_INC;
+	// DMA_InitStruct.DMA_Dest_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Src_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Trans_Type=DMA_TT_FC_MtoP_DMA;
+	// DMA_InitStruct.DMA_Periph_Type=SUBUS3_DMA_TX;          //改
+	// DMA_InitStruct.DMA_Block_Ts=0x2;
+	// DMA_InitStruct.DMA_Priority=0;
+	// DMA_InitStruct.DMA_Dest_Addr=0x4310;				// 改
+	// DMA_InitStruct.DMA_Src_Addr=0x29000;
+	// DMA_Init(&DMA_InitStruct);
+	// vDelayXms(10);
+
+	// I2c_Write_Short(0x1, I2C_DMA_CR_OFFSET, SMBUS);       //主机使能DMA
+	// DMA_InitStruct.DMA_Dest_Width=DMA_DST_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Src_Width=DMA_SRC_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Dest_Inc=DMA_DINC_INC;
+	// DMA_InitStruct.DMA_Src_Inc=DMA_SINC_No_chagne;
+	// DMA_InitStruct.DMA_Dest_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Src_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Trans_Type=DMA_TT_FC_PtoM_DMA;
+	// DMA_InitStruct.DMA_Periph_Type=SUBUS3_DMA_RX; 	//改
+	// DMA_InitStruct.DMA_Block_Ts=0x1;
+	// DMA_InitStruct.DMA_Priority=0;
+	// DMA_InitStruct.DMA_Dest_Addr=0x2a000;	
+	// DMA_InitStruct.DMA_Src_Addr=0x4310;			//改
+	// DMA_Init(&DMA_InitStruct);
+	// vDelayXms(10);
+	// printf("temp cmd0:0x%x\n",REG32(0x2a000));
+	// printf("temp cmd1:0x%x\n",REG32(0x2a004));
+	// printf("temp cmd10:0x%x\n",REG32(0x2a008));
+
+	//iram -> smbus4 tx  smbus4 rx  -> iram 
+	// #define SMBUS I2C_CHANNEL_4						//改
+	// smbus0_MoudleClock_EN;
+	// REG32(0x29000)=0x00000001;//cmd:0x00(w)      data:0x01
+	// REG32(0x29004)=0x00000300;//cmd:0x03(stp/r)  data:0x00
+	// REG32(0x29008)=0xffffff10;//C
+
+	// I2c_Write_Short(0x2, I2C_DMA_CR_OFFSET, SMBUS);       //主机使能DMA
+	// sysctl_iomux_i2c4();					//改
+	// I2c_Channel_Init(SMBUS, I2C0_SPEED, I2C_MASTER_ROLE, 0x4c, 1);
+	// DMA_InitStruct.DMA_Dest_Width=DMA_DST_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Src_Width=DMA_SRC_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Dest_Inc=DMA_DINC_No_chagne;
+	// DMA_InitStruct.DMA_Src_Inc=DMA_SINC_INC;
+	// DMA_InitStruct.DMA_Dest_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Src_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Trans_Type=DMA_TT_FC_MtoP_DMA;
+	// DMA_InitStruct.DMA_Periph_Type=SUBUS4_DMA_TX;          //改
+	// DMA_InitStruct.DMA_Block_Ts=0x2;
+	// DMA_InitStruct.DMA_Priority=0;
+	// DMA_InitStruct.DMA_Dest_Addr=0x4510;				// 改
+	// DMA_InitStruct.DMA_Src_Addr=0x29000;
+	// DMA_Init(&DMA_InitStruct);
+	// vDelayXms(10);
+
+	// I2c_Write_Short(0x1, I2C_DMA_CR_OFFSET, SMBUS);       //主机使能DMA
+	// DMA_InitStruct.DMA_Dest_Width=DMA_DST_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Src_Width=DMA_SRC_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Dest_Inc=DMA_DINC_INC;
+	// DMA_InitStruct.DMA_Src_Inc=DMA_SINC_No_chagne;
+	// DMA_InitStruct.DMA_Dest_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Src_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Trans_Type=DMA_TT_FC_PtoM_DMA;
+	// DMA_InitStruct.DMA_Periph_Type=SUBUS4_DMA_RX; 	//改
+	// DMA_InitStruct.DMA_Block_Ts=0x1;
+	// DMA_InitStruct.DMA_Priority=0;
+	// DMA_InitStruct.DMA_Dest_Addr=0x2a000;	
+	// DMA_InitStruct.DMA_Src_Addr=0x4510;			//改
+	// DMA_Init(&DMA_InitStruct);
+	// vDelayXms(10);
+	// printf("temp cmd0:0x%x\n",REG32(0x2a000));
+	// printf("temp cmd1:0x%x\n",REG32(0x2a004));
+	// printf("temp cmd10:0x%x\n",REG32(0x2a008));
+
+	//iram -> smbus5 tx  smbus5 rx  -> iram 
+	// #define SMBUS I2C_CHANNEL_5						//改
+	// smbus0_MoudleClock_EN;
+	// REG32(0x29000)=0x00000001;//cmd:0x00(w)      data:0x01
+	// REG32(0x29004)=0x00000300;//cmd:0x03(stp/r)  data:0x00
+	// REG32(0x29008)=0xffffff10;//C
+
+	// I2c_Write_Short(0x2, I2C_DMA_CR_OFFSET, SMBUS);       //主机使能DMA
+	// sysctl_iomux_i2c5();					//改
+	// I2c_Channel_Init(SMBUS, I2C0_SPEED, I2C_MASTER_ROLE, 0x4c, 1);
+	
+	// DMA_InitStruct.DMA_Dest_Width=DMA_DST_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Src_Width=DMA_SRC_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Dest_Inc=DMA_DINC_No_chagne;
+	// DMA_InitStruct.DMA_Src_Inc=DMA_SINC_INC;
+	// DMA_InitStruct.DMA_Dest_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Src_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Trans_Type=DMA_TT_FC_MtoP_DMA;
+	// DMA_InitStruct.DMA_Periph_Type=SUBUS5_DMA_TX;          //改
+	// DMA_InitStruct.DMA_Block_Ts=0x2;
+	// DMA_InitStruct.DMA_Priority=0;
+	// DMA_InitStruct.DMA_Dest_Addr=0x4610;				// 改
+	// DMA_InitStruct.DMA_Src_Addr=0x29000;
+	// DMA_Init(&DMA_InitStruct);
+	// vDelayXms(10);
+
+	// I2c_Write_Short(0x1, I2C_DMA_CR_OFFSET, SMBUS);       //主机使能DMA
+	// DMA_InitStruct.DMA_Dest_Width=DMA_DST_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Src_Width=DMA_SRC_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Dest_Inc=DMA_DINC_INC;
+	// DMA_InitStruct.DMA_Src_Inc=DMA_SINC_No_chagne;
+	// DMA_InitStruct.DMA_Dest_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Src_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Trans_Type=DMA_TT_FC_PtoM_DMA;
+	// DMA_InitStruct.DMA_Periph_Type=SUBUS5_DMA_RX; 	//改
+	// DMA_InitStruct.DMA_Block_Ts=0x1;
+	// DMA_InitStruct.DMA_Priority=0;
+	// DMA_InitStruct.DMA_Dest_Addr=0x2a000;	
+	// DMA_InitStruct.DMA_Src_Addr=0x4610;			//改
+	// DMA_Init(&DMA_InitStruct);
+	// vDelayXms(10);
+	// printf("temp cmd0:0x%x\n",REG32(0x2a000));
+	// printf("temp cmd1:0x%x\n",REG32(0x2a004));
+	// printf("temp cmd10:0x%x\n",REG32(0x2a008));
+
+	//iram -> smbus6 tx  smbus6 rx  -> iram 
+	// #define SMBUS I2C_CHANNEL_6						//改
+	// smbus0_MoudleClock_EN;
+	// REG32(0x29000)=0x00000001;//cmd:0x00(w)      data:0x01
+	// REG32(0x29004)=0x00000300;//cmd:0x03(stp/r)  data:0x00
+	// REG32(0x29008)=0xffffff10;//C
+
+	// I2c_Write_Short(0x2, I2C_DMA_CR_OFFSET, SMBUS);       //主机使能DMA
+	// sysctl_iomux_i2c6();					//改
+	// I2c_Channel_Init(SMBUS, I2C0_SPEED, I2C_MASTER_ROLE, 0x4c, 1);
+	// DMA_InitStruct.DMA_Dest_Width=DMA_DST_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Src_Width=DMA_SRC_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Dest_Inc=DMA_DINC_No_chagne;
+	// DMA_InitStruct.DMA_Src_Inc=DMA_SINC_INC;
+	// DMA_InitStruct.DMA_Dest_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Src_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Trans_Type=DMA_TT_FC_MtoP_DMA;
+	// DMA_InitStruct.DMA_Periph_Type=SUBUS6_DMA_TX;          //改
+	// DMA_InitStruct.DMA_Block_Ts=0x2;
+	// DMA_InitStruct.DMA_Priority=0;
+	// DMA_InitStruct.DMA_Dest_Addr=0x4710;				// 改
+	// DMA_InitStruct.DMA_Src_Addr=0x29000;
+	// DMA_Init(&DMA_InitStruct);
+	// vDelayXms(10);
+
+	// I2c_Write_Short(0x1, I2C_DMA_CR_OFFSET, SMBUS);       //主机使能DMA
+	// DMA_InitStruct.DMA_Dest_Width=DMA_DST_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Src_Width=DMA_SRC_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Dest_Inc=DMA_DINC_INC;
+	// DMA_InitStruct.DMA_Src_Inc=DMA_SINC_No_chagne;
+	// DMA_InitStruct.DMA_Dest_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Src_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Trans_Type=DMA_TT_FC_PtoM_DMA;
+	// DMA_InitStruct.DMA_Periph_Type=SUBUS6_DMA_RX; 	//改
+	// DMA_InitStruct.DMA_Block_Ts=0x1;
+	// DMA_InitStruct.DMA_Priority=0;
+	// DMA_InitStruct.DMA_Dest_Addr=0x2a000;	
+	// DMA_InitStruct.DMA_Src_Addr=0x4710;			//改
+	// DMA_Init(&DMA_InitStruct);
+	// vDelayXms(10);
+	// printf("temp cmd0:0x%x\n",REG32(0x2a000));
+	// printf("temp cmd1:0x%x\n",REG32(0x2a004));
+	// printf("temp cmd10:0x%x\n",REG32(0x2a008));
+
+	
+	//uartb rx - iram
+	// sysctl_iomux_uartb();
+	// serial_init(UARTB_CHANNEL, 115200);
+	// UARTB_IER=0;
+	// DMA_InitStruct.DMA_Dest_Width=DMA_DST_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Src_Width=DMA_SRC_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Dest_Inc=DMA_DINC_INC;
+	// DMA_InitStruct.DMA_Src_Inc=DMA_SINC_No_chagne;
+	// DMA_InitStruct.DMA_Dest_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Src_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Trans_Type=DMA_TT_FC_PtoM_DMA;
+	// DMA_InitStruct.DMA_Periph_Type=UARTB_DMA_RX;
+	// DMA_InitStruct.DMA_Block_Ts=0x1f;
+	// DMA_InitStruct.DMA_Priority=0;
+	// DMA_InitStruct.DMA_Dest_Addr=0x2a000;
+	// DMA_InitStruct.DMA_Src_Addr=0x5400;
+	// DMA_Init(&DMA_InitStruct);
+
+	//iram -> uarta -tx uarta rx - iram
+	// sysctl_iomux_uarta(0,0);
+	// serial_init(UARTA_CHANNEL, 115200);
+	// UARTA_IER=0;
+	// REG32(0x29000)=0xffffff41;//A
+	// REG32(0x29004)=0xffffff42;//B
+	// REG32(0x29008)=0xffffff43;//C
+	// DMA_InitStruct.DMA_Dest_Width=DMA_DST_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Src_Width=DMA_SRC_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Dest_Inc=DMA_DINC_No_chagne;
+	// DMA_InitStruct.DMA_Src_Inc=DMA_SINC_INC;
+	// DMA_InitStruct.DMA_Dest_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Src_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Trans_Type=DMA_TT_FC_MtoP_DMA;
+	// DMA_InitStruct.DMA_Periph_Type=UARTA_DMA_TX;
+	// DMA_InitStruct.DMA_Block_Ts=0x3;
+	// DMA_InitStruct.DMA_Priority=0;
+	// DMA_InitStruct.DMA_Dest_Addr=&UARTA_TX;
+	// DMA_InitStruct.DMA_Src_Addr=0x29000;
+	// DMA_Init(&DMA_InitStruct);
+	// vDelayXms(10);
+
+	// DMA_InitStruct.DMA_Dest_Width=DMA_DST_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Src_Width=DMA_SRC_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Dest_Inc=DMA_DINC_INC;
+	// DMA_InitStruct.DMA_Src_Inc=DMA_SINC_No_chagne;
+	// DMA_InitStruct.DMA_Dest_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Src_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Trans_Type=DMA_TT_FC_PtoM_DMA;
+	// DMA_InitStruct.DMA_Periph_Type=UARTA_DMA_RX;
+	// DMA_InitStruct.DMA_Block_Ts=0x1f;
+	// DMA_InitStruct.DMA_Priority=0;
+	// DMA_InitStruct.DMA_Dest_Addr=0x2a000;
+	// DMA_InitStruct.DMA_Src_Addr=&UARTA_TX;
+	// DMA_Init(&DMA_InitStruct);
+	
+	//uart0 -rx uarta tx 没通
+	// sysctl_iomux_uarta(0,0);
+	// serial_init(UARTA_CHANNEL, 115200);
+	// sysctl_iomux_uartb();
+	// serial_init(UARTB_CHANNEL, 115200);
+	// UART0_IER=0;
+	// DMA_InitStruct.DMA_Dest_Width=DMA_DST_TR_WIDTH_8bits;
+	// DMA_InitStruct.DMA_Src_Width=DMA_SRC_TR_WIDTH_8bits;
+	// DMA_InitStruct.DMA_Dest_Inc=DMA_DINC_No_chagne;
+	// DMA_InitStruct.DMA_Src_Inc=DMA_SINC_No_chagne;
+	// DMA_InitStruct.DMA_Dest_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Src_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Trans_Type=DMA_TT_FC_PtoP_DMA;
+	// DMA_InitStruct.DMA_Periph_Type=UART0_DMA_RX|UARTB_DMA_TX;
+	// DMA_InitStruct.DMA_Block_Ts=0x1;
+	// DMA_InitStruct.DMA_Priority=0;
+	// DMA_InitStruct.DMA_Dest_Addr=&UARTB_TX;
+	// DMA_InitStruct.DMA_Src_Addr=&UART0_RX;
+	// DMA_Init(&DMA_InitStruct);
+
+	//iram -> spim tx spim rx -> iram 
+	// printf("\n");
+	// printf("iram->spim tx test\n");
+	// VDWORD* source_parm_ptr = (VDWORDP)(0x28000);
+	// volatile uint8_t * read_buff = (volatile uint8_t *)0x29500;
+	// for (int i = 0; i < 40; i++)
+	// {
+	// 	*(source_parm_ptr + i) = 0xaa4055ff + ((0x0 + i) << 16);
+	// 	printf("%x:%x\n", (source_parm_ptr + i), *(source_parm_ptr + i));
+	// }
+	// sysctl_iomux_spim();
+	// sysctl_iomux_spim_cs();
+	// SPI_Init(0, SPIM_CPOL_LOW, SPIM_CPHA_FE, SPIM_MSB, 0x7, 1);
+	// SPIM_CTRL&=~(0x3<<6);
+	// SPIM_CTRL|=1<<7;
+	// //擦除FLASH
+	// SPI_Block_Erase(0x0, 0);
+	// SPI_Send_Cmd_Addr(read_buff, 0, 256, 0);
+	// for (int i = 0; i < 30; i++)
+	// {
+	// 	dprint("Erased data[%d]:0x%x\n",i,read_buff[i]);
+	// }
+
+	// //写
+	// SPI_Flash_CS_Low(0);
+	// SPI_Send_Byte(0x6);//写使能
+	// SPI_Flash_CS_High(0);
+
+	// SPI_Flash_CS_Low(0);      //这里拉低片选，等DMA搬运完之后还要把片选拉高，结束传输
+	// SPI_Send_Byte(0x02);           //页编程指令
+	// SPI_Send_Byte(0);
+	// SPI_Send_Byte(0);
+	// SPI_Send_Byte(0);           //只发送写使能和地址，数据通过DMA搬运
+	// //send data
+	// DMA_InitStruct.DMA_Dest_Width=DMA_DST_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Src_Width=DMA_SRC_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Dest_Inc=DMA_DINC_No_chagne;
+	// DMA_InitStruct.DMA_Src_Inc=DMA_SINC_INC;
+	// DMA_InitStruct.DMA_Dest_Msize=DMA_DEST_MSIZE_1;
+	// DMA_InitStruct.DMA_Src_Msize=DMA_DEST_MSIZE_1;
+	// DMA_InitStruct.DMA_Trans_Type=DMA_TT_FC_MtoP_DMA;
+	// DMA_InitStruct.DMA_Periph_Type=SPIM_DMA_TX;
+	// DMA_InitStruct.DMA_Block_Ts=0x1f;
+	// DMA_InitStruct.DMA_Priority=0;
+	// DMA_InitStruct.DMA_Dest_Addr=&SPIM_DA;
+	// DMA_InitStruct.DMA_Src_Addr=(VDWORD)source_parm_ptr;
+	// DMA_Init(&DMA_InitStruct);
+	// vDelayXms(20);
+	// SPI_Flash_CS_High(0);
+
+	// SPIM_CTRL&=~(0x3<<6);
+	// vDelayXms(10);
+	// SPI_Send_Cmd_Addr(read_buff, 0, 256, 0);
+	// vDelayXms(1);
+	// for (int i = 0; i < 64; i++)
+	// {
+	// 	dprint("dmatransfered data[%d]:0x%x\n",i,read_buff[i]);
+	// }
+	// printf("\n");
+	// printf("spim rx->iram test\n");
+	// SPI_Flash_CS_Low(0);
+	// SPI_Send_Byte(CMD_READ_DATA); // 读命令
+	// SPI_Send_Byte((0 & 0xFF0000) >> 16);//set addr:0
+	// SPI_Send_Byte((0 & 0xFF00) >> 8);
+	// SPI_Send_Byte(0 & 0xFF);
+	// SPIM_CTRL&=~(0x3<<6);
+	// SPIM_CTRL|=1<<6;		      //SPIM DMA接收使能
+	// DMA_InitStruct.DMA_Dest_Width=DMA_DST_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Src_Width=DMA_SRC_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Dest_Inc=DMA_DINC_INC;
+	// DMA_InitStruct.DMA_Src_Inc=DMA_SINC_No_chagne;
+	// DMA_InitStruct.DMA_Dest_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Src_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Trans_Type=DMA_TT_FC_PtoM_DMA;
+	// DMA_InitStruct.DMA_Periph_Type=SPIM_DMA_RX;
+	// DMA_InitStruct.DMA_Block_Ts=0x1f;
+	// DMA_InitStruct.DMA_Priority=0;
+	// DMA_InitStruct.DMA_Dest_Addr=0x2a000;
+	// DMA_InitStruct.DMA_Src_Addr=&SPIM_DA;
+	// DMA_Init(&DMA_InitStruct);
+	// #if 0
+	// vDelayXms(1);
+	// for(int j=0;j<31;j++)
+	// {
+	// 	SPI_Timeout = 100000;
+	// 	while (!((SPIM_SR)&SPI_TFE)) // 等待发送fifo空
+	// 	{
+	// 		SPI_Timeout--;
+	// 		if (SPI_Timeout == 0)
+	// 		{
+	// 		dprint("spi等待发送超时\n");
+	// 		return 0;
+	// 		}
+	// 	}
+	// 	SPIM_DA = 0xff; // 发送数据
+	// 	SPI_Timeout = 1000000;
+	// 	while (!((SPIM_SR)&SPI_RFNE)) // 等待接收fifo不空
+	// 	{
+	// 		SPI_Timeout--;
+	// 		if (SPI_Timeout == 0)
+	// 		{
+	// 		dprint("spi等待接收超时\n");
+	// 		return 0;
+	// 		}
+	// 	}
+	// }
+	// vDelayXms(20);   //防止片选过早拉高，导致最后一个数读不出来,正向
+	// SPI_Flash_CS_High(0);
+	// //DMA通道使能
+    // DMA_ChEnReg = (0x1 | 0x1 << 8);
+	// vDelayXms(20);
+	// for (int i = 0; i < 30; i++)
+	// {
+	// 	dprint("Read data[%d]:0x%x\n",i,REG32(0x2a000+i*4));
+	// }
+	// #else
+	// #define ADDRess 0x0
+	// #define CS_sel 0
+	// SPIM_CTRL = 0x6754;            //dma_wr_en:0,dma_rd_en=1   //反向是SPIM搬给IRAM，DMA是接收方，所以要打开接收FIFO使能
+	// SPIM_CPSR = 0x1;                                                // 时钟分频
+    // SPIM_IMSR = 0x1f;
+	// //SPIM往FLASH中提取数据
+	// unsigned char ad[3];
+	// ad[0] = (ADDRess >> 16) & 0xff;
+	// ad[1] = (ADDRess >> 8) & 0xff;
+	// ad[2] = (ADDRess) & 0xff;
+	// SPI_Flash_CS_Low(CS_sel);
+	// SPI_Send_Byte(0x03);    //读命令指令
+	// SPI_Send_Byte(ad[0]);
+	// SPI_Send_Byte(ad[1]);
+	// SPI_Send_Byte(ad[2]);
+	// //把FLASH中读取到的数据存放在SPIM的数据寄存器上，不提走，让DMA提走传给IRAM
+	// for (int i = 0; i < 40; i++)
+	// {
+	// 	while ((SPIM_SR & 0x1) == 0x0);//wait tx_fifo not full
+	// 	// 写入 SPI 数据寄存器
+	// 	REG16(0x6012) = 0xff;
+	// 	// 等待 RX FIFO 非空
+	// 	while ((SPIM_SR & 0x4) == 0x0);//wait rx_fifo not empty
+	// }
+	// vDelayXms(1);   //防止片选过早拉高，导致最后一个数读不出来,正向
+	// SPI_Flash_CS_High(CS_sel);
+	// vDelayXms(1);//反向
+	// //DMA通道使能
+	// DMA_ChEnReg = (0x1 | 0x1 << 8);
+	// vDelayXms(1);
+	// for (int i = 0; i < 30; i++)
+	// {
+	// 	dprint("Read data[%d]:0x%x\n",i,REG32(0x2a000+i*4));
+	// }
+	// #endif
+
+	// SPIM_CTRL&=~(0x3<<6);
+	// SPI_Send_Cmd_Addr(read_buff, 0, 256, 0);
+	// vDelayXms(1);
+	// for (int i = 0; i < 256; i++)
+	// {
+	// 	dprint("end flash data[%d]:0x%x\n",i,read_buff[i]);
+	// }
+
+	//iram -> i3c tx
+	// DMA_InitStruct.DMA_Dest_Width=DMA_DST_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Src_Width=DMA_SRC_TR_WIDTH_32bits;
+	// DMA_InitStruct.DMA_Dest_Inc=DMA_DINC_No_chagne;
+	// DMA_InitStruct.DMA_Src_Inc=DMA_SINC_INC;
+	// DMA_InitStruct.DMA_Dest_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Src_Msize=DMA_DEST_MSIZE_32;
+	// DMA_InitStruct.DMA_Trans_Type=DMA_TT_FC_MtoP_DMA;
+	// DMA_InitStruct.DMA_Periph_Type=I3C0_DMA_TX;          //改
+	// DMA_InitStruct.DMA_Block_Ts=0x2;
+	// DMA_InitStruct.DMA_Priority=0;
+	// DMA_InitStruct.DMA_Dest_Addr=&TX_DATA_PORT_0;		// 改
+	// DMA_InitStruct.DMA_Src_Addr=0x29000;
+	// DMA_Init(&DMA_InitStruct);
+
 	dprint("This is external flash\n");
 	Specific_Mem_init(); // memory init
 	test_loop();
