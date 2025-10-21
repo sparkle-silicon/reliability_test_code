@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-20 19:27:05
+ * @LastEditTime: 2025-10-21 17:02:06
  * @Description:
  *
  *
@@ -20,7 +20,7 @@ extern Task *task_head;
 #define printf_instructions_msg " \
 \n\
 ************************************************************************************\n\
-*                    Embedded Controller  SPK32 Series Firmware                    *\n\
+*                    Embedded Controller  GDMEC01 Series Firmware                  *\n\
 * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved. *\n\
 ************************************************************************************\n\
 \n\
@@ -251,60 +251,7 @@ void Service_MS_1(void)
 	}
 #endif
 }
-//----------------------------------------------------------------------------
-// FUNCTION: Service_Mailbox
-//----------------------------------------------------------------------------
-void Service_Mailbox(void)
-{
-#if (Service_Mailbox_START == 1)
-	if(F_Service_Mailbox == 1)
-	{
-		F_Service_Mailbox = 0;
-		Mailbox_C2E_Service();
-	}
-#endif
-}
-//----------------------------------------------------------------------------
-// FUNCTION: Service_PUTC
-// UART putchar support function
-//----------------------------------------------------------------------------
 
-//----------------------------------------------------------------------------
-// FUNCTION: Service_PUTC
-// UART putchar support function
-//----------------------------------------------------------------------------
-void Service_PROCESS_TASKS(void)
-{
-	Process_Tasks();
-}
-//----------------------------------------------------------------------------
-// FUNCTION: Service_LowPower
-// CPU Wake Up finction
-//----------------------------------------------------------------------------
-void Service_LowPower(void)
-{
-	if(F_Service_WakeUp)
-	{
-		F_Service_WakeUp = 0;
-		dprint("cpu wake service complete!\n");
-		Enter_LowPower_Mode();
-	}
-}
-//----------------------------------------------------------------------------
-// FUNCTION: Service_CMD
-// UART Command support function
-//----------------------------------------------------------------------------
-#if ENABLE_COMMAND_SUPPORT
-void Service_CMD(void)
-{
-	if(F_Service_CMD)
-	{
-		CMD_RUN((volatile char *)&CMD_UART_CNT, (char *)CMD_UART_BUFF);
-		CMD_UART_CNT = 0;
-		F_Service_CMD = 0;
-	}
-}
-#endif
 //-----------------------------------------------------------------------------
 //  Function Pointers
 //-----------------------------------------------------------------------------

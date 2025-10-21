@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-08 22:43:28
+ * @LastEditTime: 2025-10-21 16:23:35
  * @Description:
  *
  *
@@ -160,6 +160,19 @@
 #define PinE16_23_PullUp  0b00000000         // GPIO E[23:16] IO Pull Up control register init. And bit7, 0 is "Gph0 or Gph1 selects uartb function.", 1 is "Gph0 or Gph1 selects SMCLK3 function."
                           // 6 5 4 3 2 1 0
 #define PinE0_23_IoMux    0b01010101010101  // GPIO E[23:0] IO multiplex control register init. refer to 'pin_iocfg.xlsx'
+//------------------------------------------------------------------------------
+// EMB FLASH Registers define 
+//------------------------------------------------------------------------------
+#define PinEmbFLASH_MISO_InOut 0b0
+#define PinEmbFLASH_MOSI_InOut 0b0
+#define PinEmbFLASH_HOLD_InOut 0b0
+#define PinEmbFLASH_WP_InOut 0b0
+                         //76543210
+#define PinEFLASH_InOut (0b11000000 | \
+						(((PinEmbFLASH_MISO_InOut & 0b1) << 0) | \
+						 ((PinEmbFLASH_MOSI_InOut & 0b1) << 1) | \
+						 ((PinEmbFLASH_HOLD_InOut & 0b1) << 4) | \
+						 ((PinEmbFLASH_WP_InOut & 0b1) << 5)))
 /*-----------------------------------------------------------------------------
  * Special define
  *---------------------------------------------------------------------------*/

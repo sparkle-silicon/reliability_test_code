@@ -32,15 +32,12 @@ Task *Add_Task(TaskFunction function, TaskParams params, Task **head)
 // 处理任务队列中的任务
 void Process_Tasks(void)
 {
-    if(task_head != NULL)
-    {
-        if(command_processed == false)
-            return;
-        Task *task = task_head;
-        task_head = task_head->next;   // 移动到下一个任务
-        task->function(&task->params); // 执行任务函数，传递参数
-        free(task);                    // 处理完成，释放任务内存
-    }
+    if(command_processed == false)
+        return;
+    Task *task = task_head;
+    task_head = task_head->next;   // 移动到下一个任务
+    task->function(&task->params); // 执行任务函数，传递参数
+    free(task);                    // 处理完成，释放任务内存
 }
 
 void Mailbox_Init(void)
@@ -703,4 +700,28 @@ void Mailbox_C2E_Service(void)
     }
     command_processed = true;
     Mailbox_Int_Store = 0;
+}
+//----------------------------------------------------------------------------
+// FUNCTION: Service_Mailbox
+//----------------------------------------------------------------------------
+void Service_Mailbox(void)
+{
+#if (Service_Mailbox_START == 1)
+    if(F_Service_Mailbox == 1)
+    {
+        F_Service_Mailbox = 0;
+        Mailbox_C2E_Service();
+    }
+#endif
+}
+
+//----------------------------------------------------------------------------
+// FUNCTION: Process_Tasks
+//----------------------------------------------------------------------------
+void Service_PROCESS_TASKS(void)
+{
+    if(task_head != NULL)
+    {
+        Process_Tasks();
+    }
 }

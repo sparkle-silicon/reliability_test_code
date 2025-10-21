@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-20 19:25:48
+ * @LastEditTime: 2025-10-21 16:38:41
  * @Description:
  *
  *
@@ -247,6 +247,10 @@ BYTE Uart_Int_Status(BYTE channel, BYTE type)
     }
 }
 #if SUPPORT_REAL_OR_DELAY_PRINTF
+//----------------------------------------------------------------------------
+// FUNCTION: Service_PUTC
+// UART putchar support function
+//----------------------------------------------------------------------------
 void Service_PUTC(void)
 {
     if(F_Service_PUTC && (!print_number))
@@ -311,14 +315,14 @@ WEAK int putchar(int ch) /**/
         while(!(PRINTF_LSR & UART_LSR_TEMP))
             ;
         PRINTF_TX = '\r';
-    }
+        }
     while(!(PRINTF_LSR & UART_LSR_TEMP))
         ; /*当此位为空发送fifo写入数据*/
     PRINTF_TX = str;
 #endif
     return ch;
 #endif
-}
+    }
 void DEBUGER_putchar(char ch)
 {
 #if ENABLE_DEBUGGER_SUPPORT

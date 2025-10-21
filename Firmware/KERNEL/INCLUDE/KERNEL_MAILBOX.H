@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-02-08 18:58:06
+ * @LastEditTime: 2025-10-21 17:07:43
  * @Description:
  *
  *
@@ -208,4 +208,6 @@ extern void AwaitCrypSelfcheck(void);
 extern void Mailbox_SetClockFrequency(void *param);
 void Transfer_IntFlashToExtFlash(uint32_t destAddr, uint32_t srcAddr, size_t dataSize);
 void Transfer_ExtFlashToIntFlash(uint32_t destAddr, uint32_t srcAddr, size_t dataSize);
+extern void Service_PROCESS_TASKS(void);
+extern void Service_Mailbox(void);
 #endif

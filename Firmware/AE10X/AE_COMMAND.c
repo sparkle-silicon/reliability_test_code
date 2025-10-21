@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-06-04 16:20:34
+ * @LastEditTime: 2025-10-21 16:25:46
  * @Description:
  *
  *
@@ -179,6 +179,19 @@ void CMD_RUN(volatile char *cnt, char *buf)
     DO_CMD(cmd, flag, argc, (char **)cmd_argv); // 执行
     for(int i = 0; i < 9; i++)
         memset((void *)cmd_argv[i], 0, 16); // 清空缓存
+}
+//----------------------------------------------------------------------------
+// FUNCTION: Service_CMD
+// UART Command support function
+//----------------------------------------------------------------------------
+void Service_CMD(void)
+{
+    if(F_Service_CMD)
+    {
+        CMD_RUN((volatile char *)&CMD_UART_CNT, (char *)CMD_UART_BUFF);
+        CMD_UART_CNT = 0;
+        F_Service_CMD = 0;
+    }
 }
 int cmd_atoi(char *buf) // 字符串转数字
 {

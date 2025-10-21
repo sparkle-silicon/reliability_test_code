@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-06-04 17:56:42
+ * @LastEditTime: 2025-10-21 16:35:46
  * @Description:
  *
  *
@@ -56,4 +56,5 @@ extern void CHIP_Sleep(void);
 extern void CHIP_Deep_Sleep(void);
 extern void CHIP_Hibernation(void);
 extern void Test_OSC32K(void);
+extern void Service_LowPower(void);
 #endif

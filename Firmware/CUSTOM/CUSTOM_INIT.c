@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-20 16:26:28
+ * @LastEditTime: 2025-10-21 16:22:24
  * @Description:
  *
  *
@@ -262,16 +262,6 @@ void Default_GPIO_InputSet()
 	Default_PinIO_Set(PinE0_7_InOut, GPIOE, 0, 8);
 	Default_PinIO_Set(PinE8_15_InOut, GPIOE, 8, 8);
 	Default_PinIO_Set(PinE16_23_InOut, GPIOE, 16, 8);
-#define PinEmbFLASH_MISO_InOut 0b0
-#define PinEmbFLASH_MOSI_InOut 0b0
-#define PinEmbFLASH_HOLD_InOut 0b0
-#define PinEmbFLASH_WP_InOut 0b0
-						//76543210
-#define PinEFLASH_InOut (0b11000000 | \
-						(((PinEmbFLASH_MISO_InOut & 0b1) << 0) | \
-						 ((PinEmbFLASH_MOSI_InOut & 0b1) << 1) | \
-						 ((PinEmbFLASH_HOLD_InOut & 0b1) << 4) | \
-						 ((PinEmbFLASH_WP_InOut & 0b1) << 5)))
 	Default_PinIO_Set(PinEFLASH_InOut, GPIOE, 24, 6);//8
 
 }

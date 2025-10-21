@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2023-09-15 18:13:19
+ * @LastEditTime: 2025-10-21 16:26:01
  * @Description:
  *
  *
@@ -24,8 +24,7 @@ extern char CMD_UART_BUFF[CMD_BUFF_MAX + 1];
 #define NULL ((void *)0)
 #endif
 typedef BYTE uint8_t;
-typedef struct cmd_tbl
-{
+typedef struct cmd_tbl{
 	char *name;	 /* 命令名		*/
 	int maxargs; /* 参数的最大数量	*/
 	/* 功能函数	*/
@@ -35,4 +34,5 @@ typedef struct cmd_tbl
 	const char *help; /* 帮助信息	(long)	*/
 } cmd_tbl;
 extern void CMD_RUN(volatile char *cnt, char *buf);
+extern void Service_CMD(void);
 #endif

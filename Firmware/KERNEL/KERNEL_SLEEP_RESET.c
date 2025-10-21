@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-17 23:28:25
+ * @LastEditTime: 2025-10-21 16:37:36
  * @Description: This file applys for chip soft reset and chip sleep interface
  *
  *
@@ -471,4 +471,16 @@ void CHIP_Hibernation(void)
 	}
 	REG8(0x2780) = 0x1 | Hibernation_Wakeup_GPIO;
 }
-
+//----------------------------------------------------------------------------
+// FUNCTION: Service_LowPower
+// CPU Wake Up finction
+//----------------------------------------------------------------------------
+void Service_LowPower(void)
+{
+	if(F_Service_WakeUp)
+	{
+		F_Service_WakeUp = 0;
+		dprint("cpu Enter Goto LowPower Mode service!\n");
+		Enter_LowPower_Mode();
+	}
+}
