@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
- * @LastEditors: Iversu
- * @LastEditTime: 2023-04-02 21:26:41
+ * @LastEditors: daweslinyu daowes.ly@qq.com
+ * @LastEditTime: 2025-10-22 18:10:32
  * @Description:
  *
  *
@@ -37,7 +37,14 @@
 #define KBC_OBFMIE                0x01 //此位为 1 时 KBC 输出缓冲区满时产生鼠标 SERIRQ IRQ12
 #define KBC_OBEIE                 0x02 //数据输出寄存器空中断使能
 #define KBC_IBFIE                 0x03 //数据输入寄存器满中断使能
-
+/*-----------------------------------------------------------------------------
+ * PMC标志位
+ *---------------------------------------------------------------------------*/
+#define PM1_HOST_INT_ENABLE 0x10 // P143
+#define IBF_INT_ENABLE 0x1       // P157
+#define OBE_INT_ENABLE 0x2
+#define OBF_KEYBOARD_INT_ENABLE 0x1 // P143
+#define OBF_MOUSE_INT_ENABLE 0x2    // P143
 /*-----------------------------------------------------------------------------
  * External Calling Process
  *---------------------------------------------------------------------------*/

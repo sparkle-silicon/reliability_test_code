@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-18 20:57:16
+ * @LastEditTime: 2025-10-22 18:40:28
  * @Description:
  *
  *
@@ -41,7 +41,6 @@
 #define CMD_Quad_Input_Page_Program 0x32    //Quad页编程指令
 #define CMD_Fast_Read_Quad 0x6B             //Quad模式快速读取
 #define CMD_Fast_Read_Dual 0x3B             //Dual模式快速读取
-//add by lufei
 //#define CMD_READ_ID			0x15
 #define CMD_READ_ARRAY_SLOW		0x03
 #define CMD_READ_ARRAY_FAST		0x0b

@@ -29,5 +29,4 @@
 #define AE_UPDATE_NO_INIT_FUNCTION {if(SYSCTL_CFG & BIT3) {\
 set_csr(mstatus, MSTATUS_MIE); return; \
 }};
-extern void exit(int __status);
 #endif
