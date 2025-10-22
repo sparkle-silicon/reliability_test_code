@@ -42,7 +42,7 @@
 #define SUPPORT_OSC96MHZ_CHOPEN 0//时钟​斩波稳定使能​Chopper Stabilization Enable
 
  //I3C Interface control
-#define I3C_MASTER0_MODE I3C_MASTER_I2C_MODE //i3c master0接口模式选择 I3C_MASTER_I3C_MODE/I3C_MASTER_I3C_MODE
+#define I3C_MASTER0_MODE I3C_MASTER_I3C_MODE //i3c master0接口模式选择 I3C_MASTER_I3C_MODE/I3C_MASTER_I3C_MODE
 #define I3C_MASTER1_MODE I3C_MASTER_I3C_MODE //i3c master1接口模式选择 I3C_MASTER_I3C_MODE/I3C_MASTER_I3C_MODE
 
 // ACPI Function Setting

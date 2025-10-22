@@ -1138,6 +1138,20 @@ void i3c1_pull_up(void)
 	if ((I3C1_EXTERNAL_PULL_UP == 0) && (IS_GPIOB1(LOW) || I3C1_INTERNAL_PULL_UP))
 		PIO_Pullup_Config(GPIOB, 1);
 }
+void i3c2_pull_up(void)
+{
+	if ((I3C2_EXTERNAL_PULL_UP == 0) && (IS_GPIOB2(LOW) || I3C2_INTERNAL_PULL_UP))
+		PIO_Pullup_Config(GPIOB, 2);
+	if ((I3C2_EXTERNAL_PULL_UP == 0) && (IS_GPIOB3(LOW) || I3C2_INTERNAL_PULL_UP))
+		PIO_Pullup_Config(GPIOB, 3);
+}
+void i3c3_pull_up(void)
+{
+	if ((I3C3_EXTERNAL_PULL_UP == 0) && (IS_GPIOB8(LOW) || I3C3_INTERNAL_PULL_UP))
+		PIO_Pullup_Config(GPIOB, 8);
+	if ((I3C3_EXTERNAL_PULL_UP == 0) && (IS_GPIOB9(LOW) || I3C3_INTERNAL_PULL_UP))
+		PIO_Pullup_Config(GPIOB, 9);
+}
 //*****************************************************************************
 //
 //  To setup tach pull up

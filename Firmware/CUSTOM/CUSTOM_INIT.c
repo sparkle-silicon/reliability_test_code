@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-22 20:36:09
+ * @LastEditTime: 2025-10-22 20:50:48
  * @Description:
  *
  *
@@ -14,22 +14,22 @@
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
 #include "CUSTOM_INIT.H"
-/****************************************************************************
-* SPKAE10X Init FLOW :
-* 1. DoubleBoot (Custom Configuration Double Boot Addr，Function Is Get_DoubleBoot_ADDR() In File CUSTOM_INIT.c)
-* 2. Default  Config(Custom Configuration All ,Function Is Default_Config() In File CUSTOM_INIT.c)
-* 3. Modlue Init (Custom Configuration All ,Function Is Module_init() In File KERNEL_SOC_FUNC.c)
-* 4. Interrupt Configuration (Custom Configuration All , Function Is Irqc_init() In File KERNEL_IRQ.c)
-* 5. return start and goto main() function
-****************************************************************************/
-/*
- * @brief 提供初始化 boot的id（boot id），boot跳转地址
- * @id boot0 id: = NULL(不跳转,默认)
- * @id boot1 id: = 0xff0(直接跳转)
- * @id boot2 id: = 0xff1(看门狗复位则跳转)
- * @id boot3 id: = 0xff2(PWRSW 超时复位)
- * @return (id<<20)|(addr)
- */
+ /****************************************************************************
+ * SPKAE10X Init FLOW :
+ * 1. DoubleBoot (Custom Configuration Double Boot Addr，Function Is Get_DoubleBoot_ADDR() In File CUSTOM_INIT.c)
+ * 2. Default  Config(Custom Configuration All ,Function Is Default_Config() In File CUSTOM_INIT.c)
+ * 3. Modlue Init (Custom Configuration All ,Function Is Module_init() In File KERNEL_SOC_FUNC.c)
+ * 4. Interrupt Configuration (Custom Configuration All , Function Is Irqc_init() In File KERNEL_IRQ.c)
+ * 5. return start and goto main() function
+ ****************************************************************************/
+ /*
+  * @brief 提供初始化 boot的id（boot id），boot跳转地址
+  * @id boot0 id: = NULL(不跳转,默认)
+  * @id boot1 id: = 0xff0(直接跳转)
+  * @id boot2 id: = 0xff1(看门狗复位则跳转)
+  * @id boot3 id: = 0xff2(PWRSW 超时复位)
+  * @return (id<<20)|(addr)
+  */
 FUNCT_PTR_V_V Get_DoubleBoot_ADDR(void)
 {
 	register FUNCT_PTR_V_V db_ptr = NULL;
@@ -68,7 +68,7 @@ void Default_Module_Reset(void)
  */
 void Default_Mailbox_SetClockFrequency(BYTE ClockDiv)
 {
-//告知主系统更新行为
+	//告知主系统更新行为
 	MAILBOX_SELF_CMD = MAILBOX_CMD_FREQ_SYNC;
 	MAILBOX_SELF_INFO1 = ClockDiv; // 通知子系统设置多少分频
 	// 触发子系统中断
@@ -100,7 +100,7 @@ void Default_Freq(void)
 		}
 		if ((!SYSCTL_ESTAT_EFUSE_EC_DEBUG) && (!SYSCTL_ESTAT_EFUSE_CRYPTO_DEBUG))//如果是走ec_debug并且子系统没起来,此时iram0代码还没考虑,不考虑通知需求
 		{
-				//修改SPIF resume和下一次suspend之间的时间，要求最小100us
+			//修改SPIF resume和下一次suspend之间的时间，要求最小100us
 			uint32_t trsmax = ((CHIP_CLOCK_INT_HIGH / 10000) / (clock_div + 1));
 			if (trsmax >= (1 << 13))trsmax = ((1 << 13) - 1);
 			SYSCTL_TRSMAX = trsmax;//修改SPIF CLOCK中的100us间隔时间,需要再频率之前修改，修改完以后可能出问题，需要重新配置频率才能修复
@@ -162,7 +162,7 @@ void Default_Freq(void)
 			{//进行trim值填入
 				SYSCTL_OSCTRIM = (SYSCTL_OSCTRIM & (~(0x007FEFFF))) | \
 					((((LOW_32K_FTRIM_DVAL) & 0xFF) << 0) | (((LOW_32K_TTRIM_DVAL) & 0x0F) << 8) | \
-					(((HIGH_24M_FTRIM_DVAL) & 0x3F) << 13) | (((HIGH_24M_TTRIM_DVAL) & 0x0F) << 19));
+						(((HIGH_24M_FTRIM_DVAL) & 0x3F) << 13) | (((HIGH_24M_TTRIM_DVAL) & 0x0F) << 19));
 			}
 		}
 	#endif
@@ -299,7 +299,7 @@ void SECTION(".init.Default") Default_Config()
 //----------------------------------------------------------------------------
 void Device_init(void)
 {
-// 0.Devoce's Function Init Of Modules
+	// 0.Devoce's Function Init Of Modules
 #if (PWM_MODULE_EN)
 #if (SUPPORT_FAN1&&(FAN1_PWM_CHANNEL_SWITCH<=7))
 	FAN_Init(FAN1_PWM_CHANNEL_SWITCH, PWM_CLK0, PWM_CTR0);
@@ -318,20 +318,20 @@ void Device_init(void)
 	ShareMem_PNP_Config();
 #endif
 
-//3.Devoce's Driver Init
-	//MOUSE_Init();
-	//KEYBOARD_Init();
-	//TOUCH_Init();
-	//Temp_Init();//
-// #if SUPPORT_ANX7447//PD
-// 	u8 ret = ucsi_init();
-// 	if(ret != UCSI_COMMAND_SUCC)
-// 	{
-// 		assert_print("ucsi_init failed.\n");
-// 		// return UCSI_COMMAND_FAIL;
-// 	}
-// #endif
-//4.Service Timer 1ms Init
+	//3.Devoce's Driver Init
+		//MOUSE_Init();
+		//KEYBOARD_Init();
+		//TOUCH_Init();
+		//Temp_Init();//
+	// #if SUPPORT_ANX7447//PD
+	// 	u8 ret = ucsi_init();
+	// 	if(ret != UCSI_COMMAND_SUCC)
+	// 	{
+	// 		assert_print("ucsi_init failed.\n");
+	// 		// return UCSI_COMMAND_FAIL;
+	// 	}
+	// #endif
+	//4.Service Timer 1ms Init
 #if TIMER_MODULE_EN
 	TIMER_Init(TIMER2, TIMER2_1ms, 0x1, 0x0); // 1ms service计时函数
 #endif

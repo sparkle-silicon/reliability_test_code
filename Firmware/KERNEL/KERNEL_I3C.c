@@ -32,6 +32,8 @@ BYTE MASTER1_DEV_STATIC_ADDR_TABLE[] = { 0 };     //静态地址表是开发人�
 uint8_t get_status[2] = { 0 };  //ibi 请求读状态
 sDEV_CHAR_TABLE master0_dev_read_char_table[] = { 0 };  //读取master0 dct
 sDEV_CHAR_TABLE master1_dev_read_char_table[] = { 0 };  //读取master0 dct
+BYTE master0_dev_cnt = 0;
+BYTE master1_dev_cnt = 0;
 
 /**
 * @brief I3C地址转换函数
@@ -553,9 +555,8 @@ BYTE I3C_Legacy_Master_W2R_Stream(BYTE static_addr, BYTE* w_var, WORD w_cnt, BYT
     }
     return TRUE;
 }
-
 /**
-* @brief I3C MASTER接口初始化函数
+* @brief I3C MASTER i3cmode接口初始化函数
 *
 * @param speed 总线速度,最大8M
 * @param i3c_mux 配置选择，如I3C_MASTER0、I3C_MASTER1
@@ -586,7 +587,7 @@ BYTE I3C_SDR_Master_Init(uint32_t speed, BYTE i3c_mux)
     //Set I3C OD_TIMING
     I3C_WriteREG_DWORD((SCL_I3C_OD_TIMING_LCNT(0xff) | SCL_I3C_OD_TIMING_HCNT(0xff)), SCL_I3C_OD_TIMING_OFFSET, i3c_mux);
     //Set I3C PP_TIMING
-    I3C_WriteREG_DWORD((SCL_I3C_PP_TIMING_LCNT(0x5) | SCL_I3C_PP_TIMING_HCNT(0x5)), SCL_I3C_PP_TIMING_OFFSET, i3c_mux);
+    I3C_WriteREG_DWORD((SCL_I3C_PP_TIMING_LCNT(0x4) | SCL_I3C_PP_TIMING_HCNT(0x4)), SCL_I3C_PP_TIMING_OFFSET, i3c_mux);
     //set queue thld ctrl
     temp_data = 0;
     temp_data &= QUEUE_THLD_CTRL_RESP_BUF_THLD0 & QUEUE_THLD_CTRL_CMD_EMPTY_BUF_THLD0 & QUEUE_THLD_CTRL_IBI_STATUS_THLD0;
@@ -618,7 +619,7 @@ BYTE I3C_SDR_Master_Init(uint32_t speed, BYTE i3c_mux)
 BYTE I3C_MASTER_ENTDAA(sDEV_CHAR_TABLE* dct, BYTE* dynamic_addr, BYTE i3c_mux)
 {
     uint32_t temp_data = 0;
-    // BYTE dev_tmpcnt = 0;
+    BYTE dev_tmpcnt = 0;
     BYTE dev_num = 0;
     if ((i3c_mux != I3C_MASTER0) && (i3c_mux != I3C_MASTER1))
     {
@@ -627,11 +628,16 @@ BYTE I3C_MASTER_ENTDAA(sDEV_CHAR_TABLE* dct, BYTE* dynamic_addr, BYTE i3c_mux)
     }
 
     //DEV_ADDR_TABLE1_LOC1 is a fifo,can be written several times
-
     if (i3c_mux == I3C_MASTER0)
+    {
+        dev_tmpcnt = master0_dev_cnt;
         dev_num = sizeof(MASTER0_DEV_DYNAMIC_ADDR_TABLE);
+    }
     else if (i3c_mux == I3C_MASTER1)
+    {
+        dev_tmpcnt = master1_dev_cnt;
         dev_num = sizeof(MASTER1_DEV_DYNAMIC_ADDR_TABLE);
+    }
     while (dev_tmpcnt < dev_num) //循环发命令
     {
         //Set Device dynamic Address And Type of device I3C
@@ -655,7 +661,10 @@ BYTE I3C_MASTER_ENTDAA(sDEV_CHAR_TABLE* dct, BYTE* dynamic_addr, BYTE i3c_mux)
         }   //等CMD_QUEUE_READY_STS中断
         //config cmd port
         temp_data = 0;
-        temp_data &= (COMMAND_QUEUE_PORT_ADDRESS_ASSIGNMENT_DEV_INDX0);
+        if (dev_tmpcnt != 0)
+            temp_data |= COMMAND_QUEUE_PORT_TRANSFER_COMMAND_DEV_INDX(dev_tmpcnt);
+        else
+            temp_data &= COMMAND_QUEUE_PORT_TRANSFER_COMMAND_DEV_INDX0;
         temp_data |= COMMAND_QUEUE_PORT_COMMAND_ADDRESS_ASSIGNMENT | COMMAND_QUEUE_PORT_TRANSFER_COMMAND_CMD(ENTDAA_BC_CMD) | COMMAND_QUEUE_PORT_TRANSFER_COMMAND_TID(0x1000) | COMMAND_QUEUE_PORT_ADDRESS_ASSIGNMENT_DEV_COUNT(1) | COMMAND_QUEUE_PORT_ADDRESS_ASSIGNMENT_TOC | COMMAND_QUEUE_PORT_ADDRESS_ASSIGNMENT_ROC;
         I3C_WriteREG_DWORD(temp_data, COMMAND_QUEUE_PORT_OFFSET, i3c_mux);
         for (uint32_t timeout = I3C_TIMEOUT; (I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux) & INTR_STATUS_RESP_READY_STS) == 0; timeout--)
@@ -710,6 +719,7 @@ BYTE I3C_MASTER_ENTDAA(sDEV_CHAR_TABLE* dct, BYTE* dynamic_addr, BYTE i3c_mux)
 // BYTE I3C_MASTER_SETDASA(BYTE static_addr, BYTE dynamic_addr, BYTE i3c_mux)
 // {
 //     uint32_t temp_data = 0;
+//     uint8_t match_cnt = 0;
 //     if ((i3c_mux != I3C_MASTER0) && (i3c_mux != I3C_MASTER1))
 //     {
 //         i3c_dprint("controller select fault\n");
@@ -737,7 +747,11 @@ BYTE I3C_MASTER_ENTDAA(sDEV_CHAR_TABLE* dct, BYTE* dynamic_addr, BYTE i3c_mux)
 //     }   //等CMD_QUEUE_READY_STS中断
 //     //config CMD port
 //     temp_data = 0;
-//     temp_data &= (COMMAND_QUEUE_PORT_ADDRESS_ASSIGNMENT_DEV_INDX0);
+//     match_cnt = serach_current_dynamic_cnt(dynamic_addr, i3c_mux);
+//     if (match_cnt != 0)
+//     temp_data |= COMMAND_QUEUE_PORT_TRANSFER_COMMAND_DEV_INDX(match_cnt);
+//     else
+//     temp_data &= COMMAND_QUEUE_PORT_TRANSFER_COMMAND_DEV_INDX0;
 //     temp_data |= COMMAND_QUEUE_PORT_COMMAND_ADDRESS_ASSIGNMENT | COMMAND_QUEUE_PORT_TRANSFER_COMMAND_CMD(SETDASA_DR_CMD) | COMMAND_QUEUE_PORT_ADDRESS_ASSIGNMENT_DEV_COUNT(0x1) | COMMAND_QUEUE_PORT_ADDRESS_ASSIGNMENT_ROC | COMMAND_QUEUE_PORT_ADDRESS_ASSIGNMENT_TOC;
 //     I3C_WriteREG_DWORD(temp_data, COMMAND_QUEUE_PORT_OFFSET, i3c_mux);
 //     for (uint32_t timeout = I3C_TIMEOUT; (I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux) & INTR_STATUS_RESP_READY_STS) == 0; timeout--)
@@ -1030,7 +1044,6 @@ BYTE I3C_MASTER_DR_CCC_READ(uint8_t dynamic_addr, uint8_t* data, uint16_t bytele
                 i3c_error = 0;
                 return FALSE;
             }
-
         }
         uDword data_temp;
         data_temp.dword = I3C_ReadREG_DWORD(RX_DATA_PORT_OFFSET, i3c_mux);
@@ -1192,7 +1205,6 @@ BYTE I3C_MASTER_PV_READ_WITH7E(uint8_t dynamic_addr, uint8_t* data, uint16_t byt
                 i3c_error = 0;
                 return FALSE;
             }
-
         }
         uDword data_temp;
         data_temp.dword = I3C_ReadREG_DWORD(RX_DATA_PORT_OFFSET, i3c_mux);
@@ -1201,6 +1213,8 @@ BYTE I3C_MASTER_PV_READ_WITH7E(uint8_t dynamic_addr, uint8_t* data, uint16_t byt
             *data_ptr++ = data_temp.byte[i];
         }
     }//读取数据
+    I3C_Master_IntrStatus(i3c_mux); //清除response_ready中断状态
+    i3c_error = 0;
     return TRUE;
 }
 
@@ -1225,7 +1239,7 @@ BYTE I3C_MASTER_PV_WRITE_THEN_READ_WITH7E(uint8_t dynamic_addr, uint8_t* wdata, 
     uint32_t rdata_len = rbytelen;
     uint32_t temp_data = 0;
 
-    if ((i3c_mux != I3C_MASTER0) && (i3c_mux != I3C_MASTER1))
+    if (((i3c_mux != I3C_MASTER0) && (i3c_mux != I3C_MASTER1)) || wdata_ptr == NULL || wdata_len == 0 || rdata_ptr == NULL || rdata_len == 0)
     {
         i3c_dprint("argument error\n");
         return FALSE;
@@ -1234,12 +1248,6 @@ BYTE I3C_MASTER_PV_WRITE_THEN_READ_WITH7E(uint8_t dynamic_addr, uint8_t* wdata, 
     //需要提前禁掉INTR_STATUS_RX_THLD_STS中断，采取在函数等状态位的方式来读
     temp_data = I3C_ReadREG_DWORD(INTR_SIGNAL_EN_OFFSET, i3c_mux) & (~INTR_SIGNAL_EN_RX_THLD_SIGNAL_EN);
     I3C_WriteREG_DWORD(temp_data, INTR_SIGNAL_EN_OFFSET, i3c_mux);
-
-    if (wdata_ptr == NULL || wdata_len == 0 || rdata_ptr == NULL || rdata_len == 0)
-    {
-        i3c_dprint("argument error\n");
-        return FALSE;
-    }
 
     if (wbytelen != 0)
     {
@@ -1290,19 +1298,20 @@ void I3C_MASTER_IBI_Handler(BYTE i3c_mux)
 repeat_ibi:
     ibi_queue_status = I3C_ReadREG_DWORD(IBI_QUEUE_STATUS_OFFSET, i3c_mux);
     data_length = ibi_queue_status & IBI_QUEUE_STATUS_DATA_LENGTH;
-    printf("ibi_queue_status:%x,data_length:%x\n", ibi_queue_status, data_length);
-    printf("ibi queue data:%x\n", I3C_ReadREG_DWORD(IBI_QUEUE_DATA_OFFSET, i3c_mux));
     if (((ibi_queue_status & IBI_QUEUE_STATUS_IBI_STATUS) == 0) && (data_length > 0))
     {
-        printf("read ibi data\n");
-        uint8_t times = ceil(data_length / 4);
-        uint8_t read_times = times;
-        while (read_times--)
+        uint8_t* ibi_ptr = (uint8_t*)malloc(data_length);
+        while (data_length)
         {
-            uint32_t* ibi_ptr = (uint32_t*)malloc(data_length);
-            i3c_dprint("ibi_ptr:%x\n", ibi_ptr);
-            *(ibi_ptr + times - read_times - 1) = I3C_ReadREG_DWORD(IBI_QUEUE_DATA_OFFSET, i3c_mux);    //read ibi data to memory
-        }
+            register uint32_t len = (data_length <= 4 ? data_length : 4);
+            data_length -= len;
+            uDword data_temp;
+            data_temp.dword = I3C_ReadREG_DWORD(IBI_QUEUE_DATA_OFFSET, i3c_mux);
+            for (register uint32_t i = 0; i < len; i++)
+            {
+                *ibi_ptr++ = data_temp.byte[i];
+            }
+        }//读取数据
     }
     else
     {
