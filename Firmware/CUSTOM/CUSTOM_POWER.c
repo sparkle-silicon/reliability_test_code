@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-20 16:43:22
+ * @LastEditTime: 2025-10-21 17:40:12
  * @Description: Power sequnce control function example
  *
  *
@@ -1562,12 +1562,24 @@ void SB_PowerButton_Monitor(void)
  *
  * @return   无
  */
-#define PWRSW_EN BIT0 /*enalbe pwrsw*/
 #define PWRSW_WDTIME(timeout) ((timeout&0b111)<<1)/*102:1/4/5/6/7/8/10/12sec,103:TBT*2/8/10/12/14/16/20/24*/
-#define PWRSW_RSTMODE BIT4//1:reset 0:IRQ
 #define PWRSW_INT BIT5//WDT Timeout IRQ status
 #define PWRSW_DBTIMEL(dbtime) ((dbtime&0b11)<<6)/*102:disable/64/96/1000ms,103:disable/DBBT*4/6/64*/
-#define PWRSW_RSTOEN BIT(8)/*GPIOC5(pin71) 500ms low value*/
+#define PWRSW_RSTOEN 0x100/*GPIOC5(pin71) 500ms low value*/
+#define PWRSW_DBTIMEL_64ms 0x40
+#define PWRSW_DBTIMEL_96ms 0x80
+#define PWRSW_DBTIMEL_1000ms 0xC0
+#define PWRSW_INT_WDT 0x20
+#define PWRSW_RSTMODE 0x10
+#define PWRSW_WDTIME_12000ms 0x0E
+#define PWRSW_WDTIME_10000ms 0x0C
+#define PWRSW_WDTIME_8000ms 0x0A
+#define PWRSW_WDTIME_7000ms 0x08
+#define PWRSW_WDTIME_6000ms 0x06
+#define PWRSW_WDTIME_5000ms 0x04
+#define PWRSW_WDTIME_4000ms 0x02
+#define PWRSW_WDTIME_1000ms 0x0
+#define PWRSW_EN 0x1
 #define PWRSW_TBT(tbt) ((tbt&0x3fff)<<9)/*Ttbt = ref_clock * (PWRSW_TBT + 1)*/
 #define PWRSW_DBBT(dbbt) ((dbbt&0x1ff)<<23)/*Tdbbt = ref_clock * (PWRSW_DBBT + 1)*/
 #define PWRSW_PIN_SEL 2

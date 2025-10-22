@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-18 20:57:37
+ * @LastEditTime: 2025-10-21 17:37:47
  * @Description:
  *
  *
@@ -129,6 +129,7 @@ extern VBYTE *KBDataPending;
 extern VBYTE *MSDataPending;
 extern BYTE Handle_Kbd_Event(BYTE channel);
 extern BYTE Handle_Mouse_Event(BYTE channel);
+extern void Handle_Mouse(BYTE channel);
 extern BYTE PS2_DevScan(void);
 
 extern void MS_Data_Suspend(BYTE nPending);  // zb 11.8 add

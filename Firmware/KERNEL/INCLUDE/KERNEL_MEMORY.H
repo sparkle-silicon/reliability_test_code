@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-06-04 17:00:35
+ * @LastEditTime: 2025-10-21 17:34:54
  * @Description: Memory Definition for extern all code base reference
  *
  *
@@ -588,6 +588,9 @@
 #define DEFAULT_BASE_ADDR2 (Mailbox_MemBase + MEMORY_064SIZE) // 0x203C0
 #define DEFAULT_BASE_SIZE 0x2A8
 
+
 /*--------------------------------------ALL DEFINITION END----------------------------------------------*/
+extern void Specific_Mem_init(void);
+
 #include "CUSTOM_MEMORY.H"
 #endif

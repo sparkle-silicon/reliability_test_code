@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-04 16:24:38
+ * @LastEditTime: 2025-10-21 17:38:48
  * @Description:
  *
  *
@@ -22,21 +22,6 @@
 #include "KERNEL_MEMORY.H"
 #include "CUSTOM_FAN.H"
 #include "AE_FLASHINFO.H"
-#define PWRSW_RSTOEN 0x100
-#define PWRSW_DBTIMEL_64ms 0x40
-#define PWRSW_DBTIMEL_96ms 0x80
-#define PWRSW_DBTIMEL_1000ms 0xC0
-#define PWRSW_INT_WDT 0x20
-#define PWRSW_RSTMODE 0x10
-#define PWRSW_WDTIME_12000ms 0x0E
-#define PWRSW_WDTIME_10000ms 0x0C
-#define PWRSW_WDTIME_8000ms 0x0A
-#define PWRSW_WDTIME_7000ms 0x08
-#define PWRSW_WDTIME_6000ms 0x06
-#define PWRSW_WDTIME_5000ms 0x04
-#define PWRSW_WDTIME_4000ms 0x02
-#define PWRSW_WDTIME_1000ms 0x0
-#define PWRSW_EN 0x1
 extern FUNCT_PTR_V_V Get_DoubleBoot_ADDR(void);
 extern void Default_Config();
 extern void Device_init(void);

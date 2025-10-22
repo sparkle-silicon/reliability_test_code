@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-20 20:32:18
+ * @LastEditTime: 2025-10-22 16:13:33
  * @Description:
  *              define base reg addr
  *              define reg size
@@ -6307,7 +6307,7 @@
 #define DATA_RAM16(offset) REG16(DATA_RAM_ADDR((offset)&(~0b1)))
 #define DATA_RAM8(offset) REG8(DATA_RAM_ADDR((offset)))
 #endif
-/***********************************SPI External Flash Control  Register Set**********************************/
+/***********************************SPI External Flash Control Register Set**********************************/
 #ifndef SPIFE_BASE_ADDR_DEFINE
 #define SPIFE_BASE_ADDR_DEFINE
 
@@ -6469,7 +6469,7 @@
 #define SYSCTL_CFG SYSCTL_REG(SYSCTL_CFG_OFFSET)
 #define SYSCTL_DBG_STATE SYSCTL_REG(SYSCTL_DBG_STATE_OFFSET)
 #define SYSCTL_SERIRQ_PS SYSCTL_REG(SYSCTL_SERIRQ_PS_OFFSET)
-#define SYSCTL_CLKDIV_OSC96M SYSCTL_REG(SYSCTL_CLKDIV_OSC96M_ADC_OFFSET)
+#define SYSCTL_CLKDIV_OSC96M SYSCTL_REG(SYSCTL_CLKDIV_OSC96M_OFFSET)
 #define SYSCTL_CLKDIV_OSC96M_ADC SYSCTL_REG(SYSCTL_CLKDIV_OSC96M_ADC_OFFSET)
 #define SYSCTL_SLEEPCFG SYSCTL_REG(SYSCTL_SLEEPCFG_OFFSET)
 #define SYSCTL_OSCTRIM SYSCTL_REG(SYSCTL_OSCTRIM_OFFSET)

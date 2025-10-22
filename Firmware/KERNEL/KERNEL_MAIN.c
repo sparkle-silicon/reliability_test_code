@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-21 17:02:06
+ * @LastEditTime: 2025-10-22 00:24:31
  * @Description:
  *
  *
@@ -13,10 +13,7 @@
  * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
-#include "AE_INCLUDE.H"
-#include "KERNEL_INCLUDE.H"
-#include "CUSTOM_INCLUDE.H"
-extern Task *task_head;
+#include "KERNEL_MAIN.H"
 #define printf_instructions_msg " \
 \n\
 ************************************************************************************\n\
@@ -265,6 +262,7 @@ const FUNCT_PTR_V_V service_table[] =
 	Service_PCI,              // Host send to ec 60/64 Command/Data service
 	Service_Send,             // Send byte from KBC to host service
 	Service_Send_PS2,		  // Send PS2 interface pending data to host service
+
 	// Mi-Level Service
 	//中优先级
 	Service_MS_1,             // 1 millisecond Service
@@ -305,9 +303,20 @@ void main_service(void)
 	if(_R1 >= (sizeof(service_table) / sizeof(FUNCT_PTR_V_V)))
 		_R1 = 0;
 	(service_table[_R1])();
-// #define HIGH_LEVEL_SERVICE_NUM 8/*((sizeof(service_table) / sizeof(FUNCT_PTR_V_V)) >> 1)*/
-// 	if(_R1 >= HIGH_LEVEL_SERVICE_NUM)
-// 		(service_table[(_R1 % HIGH_LEVEL_SERVICE_NUM)])();
+#if SUPPORT_MAIN_SERVICE_LEVEL_POLL
+#if (HIGH_LEVEL_SERVICE_NUM > 0)
+	if(_R1 >= HIGH_LEVEL_SERVICE_NUM)//开启高等级穿插式执行服务
+	{
+		(service_table[(_R1 % HIGH_LEVEL_SERVICE_NUM)])();
+	#if (MIDDLE_LEVEL_SERVICE_NUM > 0)
+		if(_R1 >= (HIGH_LEVEL_SERVICE_NUM + MIDDLE_LEVEL_SERVICE_NUM))//开启中等级穿插式执行服务
+		{
+			(service_table[HIGH_LEVEL_SERVICE_NUM + (_R1 % (MIDDLE_LEVEL_SERVICE_NUM))])();
+		}
+	#endif
+	}
+#endif
+#endif
 	_R1++;
 }
 //----------------------------------------------------------------------------

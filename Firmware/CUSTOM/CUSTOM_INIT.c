@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-21 16:22:24
+ * @LastEditTime: 2025-10-22 16:22:19
  * @Description:
  *
  *
@@ -327,5 +327,5 @@ void Device_init(void)
 #if TIMER_MODULE_EN
 	TIMER_Init(TIMER2, TIMER2_1ms, 0x1, 0x0); // 1ms service计时函数
 #endif
-	dprint(" Devie init End.\n");
+	dprint("Devie init End.\n");
 } // 初始化配置

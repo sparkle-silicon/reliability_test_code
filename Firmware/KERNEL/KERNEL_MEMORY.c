@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-18 22:03:39
+ * @LastEditTime: 2025-10-22 16:22:12
  * @Description:
  *
  *
@@ -59,5 +59,5 @@ void SECTION(".init.mem") Specific_Mem_init(void)
         {
                 *((VBYTEP)(SRAM_BASE_ADDR + i)) = 0x0;
         }
-        dprint(" Specific Memory init End.\n");
+        dprint("Specific Memory init End.\n");
 }

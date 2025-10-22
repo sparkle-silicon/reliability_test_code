@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-20 16:25:52
+ * @LastEditTime: 2025-10-22 16:22:36
  * @Description: This is about the  national crypto algorithm implementation
  *
  *
@@ -469,7 +469,7 @@ void time_init(void)
 void __weak SECTION(".init.module") Module_init(void)
 {
 	// 1.Initialize The GPIO
-	gpio_init();
+	// gpio_init();
 	// 2.Initialize The Mailbox	(crypto cpu and mailbox)
 	mailbox_init();
 	// 3.Switch Default SMBUS3 or UARTB 
@@ -477,6 +477,8 @@ void __weak SECTION(".init.module") Module_init(void)
 	// 4.Initialize The Serial Port
 	uart_init();
 	// 5.Initialize The SMBUS
+	PRINTF_TX = 'e';
+	while(!(PRINTF_LSR & UART_LSR_TEMP));
 	smbus_init();
 	// 6.Initialize The I3C
 	i3c_init();
@@ -495,7 +497,7 @@ void __weak SECTION(".init.module") Module_init(void)
 	adc_init();
 	// 13 Initialize The timer and The watch dog and The RTC
 	time_init();
-	dprint(" Module init End.\n");
+	dprint("Module init End.\n");
 	return;
 }
 #if defined(USER_AE10X_LIBC_A)

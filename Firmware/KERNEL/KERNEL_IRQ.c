@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-20 16:27:21
+ * @LastEditTime: 2025-10-22 16:22:29
  * @Description:
  *
  *
@@ -161,10 +161,10 @@ void SECTION(".init.irq") Irqc_init(void)
 	// dprint("INTC init done.\n");
 	//2. Set CPU CSR IRQ
 	cpu_irq_en();
-	// dprint(" IRQ init done.\n");
+	// dprint("IRQ init done.\n");
 	//3. Enable interrupts in general.
 	set_csr(mstatus, MSTATUS_MIE);
-	dprint(" Irqc init End.\n");
+	dprint("Irqc init End.\n");
 #endif
 }
 #if IRQC_DEBUG
