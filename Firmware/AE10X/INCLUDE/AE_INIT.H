@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-22 17:42:24
+ * @LastEditTime: 2025-10-22 19:15:12
  * @Description:
  *
  *
@@ -18,7 +18,6 @@
 #include "AE_GLOBAL.H"
 #include "AE_REG.H"
 #include "AE_CONFIG.H"
-// #include "AE_FUNC.H"
 #if TEST
 #include "TEST_SOC_FUNC.H"
 #else
