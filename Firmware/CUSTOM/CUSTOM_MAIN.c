@@ -81,7 +81,7 @@ void __weak Hook_50msEventA(void)
 {
 #if 0
     //MAILBOX SMSha256 updata 测试用例
-    if(REG8((SRAM_BASE_ADDR + 0x100)) == 0xAB)
+    if (REG8((SRAM_BASE_ADDR + 0x100)) == 0xAB)
     {
         printf("准备更新固件\n");
         TaskParams Params;
@@ -90,12 +90,12 @@ void __weak Hook_50msEventA(void)
 #endif
     //子系统dram更新测试用例
 #if 1
-    if(update_crypram_flag == 1)
+    if (update_crypram_flag == 1)
     {
         Cryp_Update_Function();
         update_crypram_flag = 0;
     }
-    if(update_intflash_flag == 1)
+    if (update_intflash_flag == 1)
     {
         ExtFlash_Update_Function();
         update_intflash_flag = 0;
@@ -104,34 +104,38 @@ void __weak Hook_50msEventA(void)
 }
 //-----------------------------------------------------------------------------
 void __weak Hook_50msEventB(void)
-{}
+{
+}
 //-----------------------------------------------------------------------------
 void __weak Hook_50msEventC(void)
-{}
+{
+}
 //-----------------------------------------------------------------------------
 // Oem 100ms Events/Hook Here
 //-----------------------------------------------------------------------------
 void __weak Hook_100msEventA(void)
-{}
+{
+}
 //-----------------------------------------------------------------------------
 void __weak Hook_100msEventB(void)
-{}
+{
+}
 //-----------------------------------------------------------------------------
 void __weak Hook_100msEventC(void)
 {
     Service_LED_Indicator();
 
 #if SUPPORT_PECI
-    if(System_PowerState == SYSTEM_S0)
+    if (System_PowerState == SYSTEM_S0)
     {
         Service_PECI();
-    #if 0
+#if 0
         Service_PECI_Command();
-        while(PECI_FLAG & F_PECI_BUSY)
+        while (PECI_FLAG & F_PECI_BUSY)
         {
             Service_PECI_Data();
         }
-    #endif
+#endif
     }
     else
     {
@@ -144,10 +148,12 @@ void __weak Hook_100msEventC(void)
 // Oem 500ms Events/Hook Here
 //-----------------------------------------------------------------------------
 void __weak Hook_500msEventA(void)
-{}
+{
+}
 //-----------------------------------------------------------------------------
 void __weak Hook_500msEventB(void)
-{}
+{
+}
 //-----------------------------------------------------------------------------
 void __weak Hook_500msEventC(void)
 {
@@ -167,10 +173,36 @@ void __weak Hook_1secEventA(void) // get all temp
 #endif
     // printf("MAILBOX_C2EINT:%x,MAILBOX_C2EINFO0:%x,MAILBOX_C2EINFO1:%x\n", MAILBOX_C2EINT, MAILBOX_C2EINFO0, MAILBOX_C2EINFO1);
 
-    if(*((VBYTE *)(0x203B9)) == 1)
+    /* Channel 1 of I2C is used to get the temperature */
+    // char temperature[3];
+    // uint8_t a0 = 0x00;
+    // uint8_t a1 = 0x01;
+    // uint8_t a2 = 0x10;
+    // {
+    //     /* read temperature */
+    //     // temperature[0] = I2c_Master_Read_Byte(0x4c, 0x0, i2c_channel);
+    //     I3C_Legacy_Master_Write(0x4c, &a0, 1, I3C_MASTER0);
+    //     I3C_Legacy_Master_Read(0x4c, (uint8_t*)temperature, 1, I3C_MASTER0);
+    //     printf("t0:%x\n", temperature[0]);
+    //     // temperature[1] = I2c_Master_Read_Byte(0x4c,0x1, i2c_channel);
+    //     I3C_Legacy_Master_Write(0x4c, &a1, 1, I3C_MASTER0);
+    //     I3C_Legacy_Master_Read(0x4c, ((uint8_t*)temperature + 1), 1, I3C_MASTER0);
+    //     printf("t1:%x\n", temperature[1]);
+    //     // temperature[2] = I2c_Master_Read_Byte(0x4c,0x10, i2c_channel);
+    //     I3C_Legacy_Master_Write(0x4c, &a2, 1, I3C_MASTER0);
+    //     I3C_Legacy_Master_Read(0x4c, (uint8_t*)(temperature + 2), 1, I3C_MASTER0);
+    //     printf("t2:%x\n", temperature[2]);
+    //     /* Write temp into ECSPACE_BASE_ADDR */
+    //     CPU_TEMP = temperature[0];
+    //     SYSTEM_TEMP = temperature[1];
+    //     Req_flag = 0;
+    //     dprint("I3C temperature=%d temp[1]=%d.%d\n", temperature[0], temperature[1], ((((BYTE)temperature[2]) >> 5) & 0x7) * 125);
+    // }
+
+    if (*((VBYTE*)(0x203B9)) == 1)
     {
         // printf("0x203B9:%x\n", *((VBYTE *)(0x203B9)));
-        *((VBYTE *)(0x203B9)) = 0;
+        *((VBYTE*)(0x203B9)) = 0;
 
         // Mailbox_Test();
         // Mailbox_FW_Extension_Trigger();
@@ -180,33 +212,33 @@ void __weak Hook_1secEventA(void) // get all temp
         //  Mailbox_Read_EFUSE_Trigger();
         Mailbox_WriteRootKey_Trigger();
     }
-    if(*((VBYTE *)(0x203B9)) == 2)
+    if (*((VBYTE*)(0x203B9)) == 2)
     {
-        *((VBYTE *)(0x203B9)) = 0;
+        *((VBYTE*)(0x203B9)) = 0;
         Mailbox_UpdateHMACKey_Trigger();
     }
 
-    if(*((VBYTE *)(0x203B9)) == 3)
+    if (*((VBYTE*)(0x203B9)) == 3)
     {
-        *((VBYTE *)(0x203B9)) = 0;
+        *((VBYTE*)(0x203B9)) = 0;
         //Mailbox_IncrementCounter_Trigger(0x3FFE);
     }
 
-    if(*((VBYTE *)(0x203B9)) == 4)
+    if (*((VBYTE*)(0x203B9)) == 4)
     {
-        *((VBYTE *)(0x203B9)) = 0;
+        *((VBYTE*)(0x203B9)) = 0;
         Mailbox_RequestCounter_Trigger();
     }
 
-    if(*((VBYTE *)(0x203B9)) == 5)
+    if (*((VBYTE*)(0x203B9)) == 5)
     {
-        *((VBYTE *)(0x203B9)) = 0;
+        *((VBYTE*)(0x203B9)) = 0;
         Mailbox_ReadParameter_Trigger();
     }
 
-    if(*((VBYTE *)(0x203B9)) == 6)
+    if (*((VBYTE*)(0x203B9)) == 6)
     {
-        *((VBYTE *)(0x203B9)) = 0;
+        *((VBYTE*)(0x203B9)) = 0;
         SYSCTL_RST0 |= 0x40;
         SYSCTL_RST0 &= (~0x40);
         vDelayXms(1);
@@ -224,7 +256,7 @@ void __weak Hook_1secEventB(void) // get fan rpm
 {
 #if SUPPORT_FAN1 || SUPPORT_FAN2
     DWORD Polling0 = TACH_Get_Polling(0);
-    if(Polling0 != -1)
+    if (Polling0 != -1)
     {
         TACH0_Speed = (DWORD)TACH_RPM(Polling0);
         dprint("FAN2 RPM is %u\n", TACH0_Speed);
@@ -252,7 +284,7 @@ void __weak Hook_1secEventC(void) // update new rpm
 {
     RunTimeStamp++;
     //printf("RunTimeStamp:%d\n", RunTimeStamp);
-    if(RunTimeStamp % 5 == 0)
+    if (RunTimeStamp % 5 == 0)
     {
         //Enter_LowPower_Mode();
     }
@@ -277,10 +309,10 @@ void __weak Hook_1minEvent(void)
 
 #if SUPPORT_8042DEBUG_OUTPUT
     MinuteCnt++;
-    if(MinuteCnt >= 2)
+    if (MinuteCnt >= 2)
     {
         MinuteCnt = 0;
-        for(int i = 0; i <= Debug_Num; i++)
+        for (int i = 0; i <= Debug_Num; i++)
         {
             dprint("Cnt:%d,Data:%x\n", i, Debug_8042[Debug_Num]);
             Debug_8042[Debug_Num] = 0;
@@ -297,14 +329,15 @@ void __weak Hook_1minEvent(void)
 //
 //-----------------------------------------------------------------------------
 void Service_WaitPS2_Handle(void)
-{}
+{
+}
 /* ----------------------------------------------------------------------------
  * FUNCTION: Service_HOST_RST
  * LPC RESET
  * ------------------------------------------------------------------------- */
 void Service_HOST_RST(void)
 {
-    if(F_Service_HOST_RST == 1)
+    if (F_Service_HOST_RST == 1)
     {
         F_Service_HOST_RST = 0;
         A20GATE_ON(); // FIXME xia

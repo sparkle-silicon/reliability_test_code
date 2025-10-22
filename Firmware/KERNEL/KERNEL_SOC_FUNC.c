@@ -69,9 +69,9 @@ void uart_init(void)
 	flag |= BIT3;
 	baud[3] = serial_init(UARTB_CHANNEL, UARTB_BAUD);
 #endif
-	for(int cnt = 0; cnt < 4; cnt++)
+	for (int cnt = 0; cnt < 4; cnt++)
 	{
-		if(flag & BIT(cnt))
+		if (flag & BIT(cnt))
 		{
 			dprint("Actual baud rate of the serial port %X == %d.\n", ((cnt < 2) ? cnt : (cnt + 8)), baud[cnt]);
 		}
@@ -152,14 +152,12 @@ void i3c_init(void)
 #if I3C2_EN_Init
 	i3c2_MoudleClock_EN;
 	sysctl_iomux_slave0();
-	i3c2_pull_up();
-	I3C_Slave_Init(I3C_SLAVE0_DEFAULT_ADDR, I3C_SLAVE0_DEFAULT_IDPARTNO, I3C_SLAVE0_DEFAULT_DCR, I3C_SLAVE0_DEFAULT_BCR, I3C_SLAVE0);
+	I3C_Slave_Init(I3C_SLAVE0_STATIC_ADDR, I3C_SLAVE0_DEFAULT_IDPARTNO, I3C_SLAVE0_DEFAULT_DCR, I3C_SLAVE0_DEFAULT_BCR, I3C_SLAVE0);
 #endif
 #if I2C3_EN_Init
 	i3c3_MoudleClock_EN;
 	sysctl_iomux_slave1();
-	i3c3_pull_up();
-	I3C_Slave_Init(I3C_SLAVE1_DEFAULT_ADDR, I3C_SLAVE1_DEFAULT_IDPARTNO, I3C_SLAVE1_DEFAULT_DCR, I3C_SLAVE1_DEFAULT_BCR, I3C_SLAVE1);
+	I3C_Slave_Init(I3C_SLAVE1_STATIC_ADDR, I3C_SLAVE1_DEFAULT_IDPARTNO, I3C_SLAVE1_DEFAULT_DCR, I3C_SLAVE1_DEFAULT_BCR, I3C_SLAVE1);
 #endif
 	dprint("I3C slave init done.\n");
 	/****************** master init(only I3C0 and I3C1) ******************/
@@ -167,14 +165,35 @@ void i3c_init(void)
 	i3c0_MoudleClock_EN;
 	sysctl_iomux_master0();
 	i3c0_pull_up();
-	I3C_Master_Init(I3C_MASTER0_DEFAULT_ROLE, I3C_MASTER0_SPEED, I3C_MASTER0_DEFAULT_ADDR, I3C_MASTER0_DEFAULT_DCT, I3C_MASTER0_DEFAULT_DYNAMICADDR, I3C_MASTER0);
+	I3C_WAIT_SDA_PU(I3C_MASTER0);	//需要等SCL/SDA都拉高后才能进行初始化，否则会误触发IBI中断
+	if (I3C_MASTER0_MODE == I3C_MASTER_I3C_MODE)
+	{
+		printf("master0 i3c init\n");
+		I3C_SDR_Master_Init(SDR_DEFAULT_SPEED, I3C_MASTER0);
+		I3C_MASTER_ENTDAA(I3C_MASTER0_DEFAULT_DCT, I3C_MASTER0_DEFAULT_DYNAMICADDR, I3C_MASTER0);//specify a dynamic addr
+	}
+	else if (I3C_MASTER0_MODE == I3C_MASTER_I2C_MODE)
+	{
+		printf("master0 i2c init\n");
+		I3C_Legacy_Master_Init(I3C_LEGACY_SPEED, I3C_MASTER0);
+	}
 #endif
-
 #if I3C1_EN_Init
 	i3c1_MoudleClock_EN;
 	sysctl_iomux_master1();
 	i3c1_pull_up();
-	I3C_Master_Init(I3C_MASTER1_DEFAULT_ROLE, I3C_MASTER1_SPEED, I3C_MASTER1_DEFAULT_ADDR, I3C_MASTER1_DEFAULT_DCT, I3C_MASTER1_DEFAULT_DYNAMICADDR, I3C_MASTER1);
+	I3C_WAIT_SDA_PU(I3C_MASTER1);	//需要等SCL/SDA都拉高后才能进行初始化，否则会误触发IBI中断
+	if (I3C_MASTER1_MODE == I3C_MASTER_I3C_MODE)
+	{
+		printf("master1 i3c init\n");
+		I3C_SDR_Master_Init(SDR_DEFAULT_SPEED, I3C_MASTER1);
+		I3C_MASTER_ENTDAA(I3C_MASTER1_DEFAULT_DCT, I3C_MASTER1_DEFAULT_DYNAMICADDR, I3C_MASTER1);//specify a dynamic addr
+	}
+	else if (I3C_MASTER0_MODE == I3C_MASTER_I2C_MODE)
+	{
+		printf("master1 i3c init\n");
+		I3C_Legacy_Master_Init(I3C_LEGACY_SPEED, I3C_MASTER1);
+	}
 #endif
 	dprint("I3C master init done.\n");
 	dprint("I3C init done.\n");
@@ -199,7 +218,7 @@ void spi_init(void)
 	dprint("SPI Master init done.\n");
 #if SPIFE_EN_Init
 	spif_MoudleClock_EN;
-	if(SYSCTL_PIO_CFG & BIT1)//使用外部FLASH
+	if (SYSCTL_PIO_CFG & BIT1)//使用外部FLASH
 	{
 		SPIFI_Init();//内部SPIF无法控制,因此主要是内部引脚开关,内部FLASH运行状态之类的控制
 		dprint("INTERNAL FLASH init done.\n");
@@ -447,7 +466,7 @@ void time_init(void)
 	timer3_MoudleClock_EN;			 // us delay
 	TIMER_Init(TIMER3, 1, 0x0, 0x1); // 24Mdelay~= 0.083us,96Mdelay~=0.041us
 
-	while((TIMER_TRIS & 0xf) != 0xf)
+	while ((TIMER_TRIS & 0xf) != 0xf)
 		;
 	TIMER_TEOI; // clear all interrupt
 	dprint("TIMER init done\n");
@@ -506,7 +525,7 @@ void exit(int __status)
 NORETURN USED void _exit(int __status)
 {
 	dprint("exit status doc %d\n", __status);
-	while(1)
+	while (1)
 		;
 }
 #endif
