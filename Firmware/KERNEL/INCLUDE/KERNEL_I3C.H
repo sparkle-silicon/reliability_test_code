@@ -118,7 +118,8 @@
 #define COMMAND_QUEUE_PORT_TRANSFER_COMMAND_CP 0x00008000UL
 #define COMMAND_QUEUE_PORT_TRANSFER_COMMAND_DEV_INDX0 (~0x001F0000UL) 
 #define COMMAND_QUEUE_PORT_TRANSFER_COMMAND_DEV_INDX(indx) (((indx)<<16)&0x001F0000UL)
-#define COMMAND_QUEUE_PORT_TRANSFER_COMMAND_SPEED_SDR0 (~0x00E00000UL) 
+#define COMMAND_QUEUE_PORT_TRANSFER_COMMAND_SPEED_SDR0 (~0x00E00000UL)
+#define COMMAND_QUEUE_PORT_TRANSFER_COMMAND_SPEED_FM (~0x00E00000UL)
 #define COMMAND_QUEUE_PORT_TRANSFER_COMMAND_SPEED(speed) (((speed)<<21)&0x00E00000UL) 
  // #define COMMAND_QUEUE_PORT_TRANSFER_COMMAND_RESV 0x01000000UL
 #define COMMAND_QUEUE_PORT_TRANSFER_COMMAND_DBP 0x02000000UL
@@ -289,10 +290,15 @@
 #define RX_BUF_THLD_32 0b100
 #define RX_BUF_THLD_64 0b101
 
+//i3c timing limit
 #define PP_TIMING_HCNT_MAX 0xff
 #define PP_TIMING_LCNT_MAX 0xff
-#define PP_TIMING_HCNT_MIN 0x0e
-#define PP_TIMING_LCNT_MIN 0x0e
+#define PP_TIMING_HCNT_MIN 0x05
+#define PP_TIMING_LCNT_MIN 0x05
+#define OD_TIMING_HCNT_MAX 0xff
+#define OD_TIMING_LCNT_MAX 0xff
+#define OD_TIMING_HCNT_MIN 0x0E
+#define OD_TIMING_LCNT_MIN 0x05
 
 //I3C mode
 #define SDR0_SPEED 0x0  //0~fSCL max
@@ -307,6 +313,7 @@
 
 //SDR SPEED
 #define SDR_DEFAULT_SPEED 9600000
+#define I3C_LEGACY_SPEED 100000
 //write/read
 #define I3C_MASTER_WRITE 0
 #define I3C_MASTER_READ 1
@@ -315,12 +322,12 @@
 #define SLAVE0_SET_STATICADDR 0x5A
 #define SLAVE0_SET_IDPARTNO 0x12345678
 #define SLAVE0_SET_DCR 0x9A
-#define SLAVE0_SET_BCR 0xBC
+#define SLAVE0_SET_BCR 0x0F
 
 #define SLAVE1_SET_STATICADDR 0x6A
 #define SLAVE1_SET_IDPARTNO 0x87654321
 #define SLAVE1_SET_DCR 0xAA
-#define SLAVE1_SET_BCR 0xCC
+#define SLAVE1_SET_BCR 0x0F
 
 #define RXPEND_ENABLE 0x800     //第11位-接收FIFO满中断
 #define TXSEND_ENABLE 0x1000     //第12位-发送FIFO空中断
@@ -399,15 +406,16 @@ extern sDEV_CHAR_TABLE master0_dev_read_char_table[];
 extern sDEV_CHAR_TABLE master1_dev_read_char_table[];
 
 extern DWORD I3C_Channel_Baseaddr(BYTE i3c_mux);
+BYTE I3C_SDR_Master_Init(uint32_t speed, BYTE i3c_mux);
 extern void I3C_WriteREG_DWORD(DWORD value, WORD regoffset, BYTE i3c_mux);
 extern DWORD I3C_ReadREG_DWORD(WORD regoffset, BYTE i3c_mux);
 extern BYTE I3C_WAIT_SDA_PU(BYTE i3c_mux);
 extern uint32_t I3C_Master_RespData_ERRSTS(BYTE i3c_mux);
 extern uint32_t I3C_Master_IntrStatus(BYTE i3c_mux);
-extern BYTE I3C_Legacy_Master_Init(BYTE addr, uint32_t speed, BYTE i3c_mux);
-extern BYTE I3C_Legacy_Master_Write(uint8_t* data, uint16_t bytelen, BYTE i3c_mux);
-extern uint8_t I3C_Legacy_Master_Read(uint8_t* data, uint16_t bytelen, BYTE i3c_mux);
-extern BYTE I3C_Legacy_Master_W2R_Stream(BYTE i3c_addr, BYTE* w_var, WORD w_cnt, BYTE* r_var, WORD r_cnt, BYTE i3c_mux);
+extern BYTE I3C_Legacy_Master_Init(uint32_t speed, BYTE i3c_mux);
+extern BYTE I3C_Legacy_Master_Write(uint8_t static_addr, uint8_t* data, uint16_t bytelen, BYTE i3c_mux);
+extern uint8_t I3C_Legacy_Master_Read(uint8_t static_addr, uint8_t* data, uint16_t bytelen, BYTE i3c_mux);
+extern BYTE I3C_Legacy_Master_W2R_Stream(BYTE static_addr, BYTE* w_var, WORD w_cnt, BYTE* r_var, WORD r_cnt, BYTE i3c_mux);
 extern BYTE I3C_MASTER_ENTDAA(sDEV_CHAR_TABLE* dct, BYTE* dynamic_addr, BYTE i3c_mux);
 extern BYTE I3C_MASTER_SETDASA(BYTE static_addr, BYTE dynamic_addr, BYTE i3c_mux);
 extern BYTE I3C_MASTER_BC_CCC_WRITE(uint8_t* data, uint16_t bytelen, BYTE cmd, uint8_t dbp, uint8_t db, BYTE i3c_mux);
@@ -417,12 +425,11 @@ extern BYTE I3C_MASTER_PV_WRITE_WITH7E(uint8_t dynamic_addr, uint8_t* data, uint
 extern BYTE I3C_MASTER_PV_READ_WITH7E(uint8_t dynamic_addr, uint8_t* data, uint16_t bytelen, BYTE i3c_mux);
 extern BYTE I3C_MASTER_PV_WRITE_THEN_READ_WITH7E(uint8_t dynamic_addr, uint8_t* wdata, uint16_t wbytelen, uint8_t* rdata, uint16_t rbytelen, BYTE i3c_mux);
 extern void I3C_MASTER_IBI_Handler(BYTE i3c_mux);
-extern void I3C_Master_Init(uint32_t initmode, uint32_t speed, BYTE addr, sDEV_CHAR_TABLE* dct, BYTE* dynamic_addr, uint8_t i3c_mux);
 extern void I3C_Slave_Init(BYTE static_addr, uint32_t idpartno, uint8_t dcr, uint8_t bcr, uint8_t i3c_mux);
 extern BYTE I3C_SLAVE_INT_ENABLE(DWORD tpye, BYTE i3c_mux);
 extern BYTE I3C_SLAVE_INT_DISABLE(DWORD tpye, BYTE i3c_mux);
 extern BYTE I3C_SLAVE_IBI_HOTJOIN(uint8_t addr, uint32_t idpartno, uint8_t dcr, uint8_t bcr, BYTE i3c_mux);
-extern BYTE I3C_SLAVE_IBI_DATA(uint8_t addr, uint8_t ibi_data, uint32_t idpartno, uint8_t dcr, uint8_t bcr, BYTE i3c_mux);
+extern BYTE I3C_SLAVE_IBI_DATA(uint8_t ibi_data, uint32_t idpartno, uint8_t dcr, uint8_t bcr, BYTE i3c_mux);
 extern BYTE I3C_SLAVE_WRITE(uint8_t* data, uint8_t bytelen, BYTE i3c_mux);
 extern BYTE I3C_SLAVE_READ(uint8_t* data, uint8_t bytelen, BYTE i3c_mux);
 // extern void I3C_LOOP_Test(void);

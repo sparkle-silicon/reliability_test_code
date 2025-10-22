@@ -131,7 +131,37 @@ BYTE I3C_WAIT_SDA_PU(BYTE i3c_mux)
     }
     return TRUE;
 }
+/**
+* @brief 查找当前动态地址对应DAT寄存器的offset
+*
+* @param i3c_mux 配置选择，如I3C_MASTER0、I3C_MASTER1
+* @return 无
+*
+* @note 无
+*/
+BYTE serach_current_dynamic_cnt(uint8_t dynamic_addr, BYTE i3c_mux)
+{
+    uint32_t temp_data = 0;
+    BYTE match_cnt = 0;
+    uint8_t cnt = 0;
 
+    if (i3c_mux == I3C_MASTER0)
+        cnt = sizeof(MASTER0_DEV_DYNAMIC_ADDR_TABLE);
+    else if (i3c_mux == I3C_MASTER1)
+        cnt = sizeof(MASTER1_DEV_DYNAMIC_ADDR_TABLE);
+    for (int i = 0;i < cnt;i++)
+    {
+        temp_data = I3C_ReadREG_DWORD(DEV_ADDR_TABLE1_LOC1_OFFSET + i * 4, i3c_mux);
+        if (((temp_data >> 16) & 0x7F) == dynamic_addr)
+        {
+            match_cnt = i;
+            return match_cnt;
+        }
+        else
+            match_cnt = 0;
+    }
+    return match_cnt;
+}
 /**
 * @brief MASTER读取及清除错误状态函数
 *
@@ -241,6 +271,7 @@ uint32_t I3C_Master_IntrStatus(BYTE i3c_mux)
     if (int_status & INTR_STATUS_IBI_THLD_STS)
     {
         i3c_dprint("I3C_MASTER%d_INTR_STATUS_IBI_THLD_STS\n", i3c_mux);
+        I3C_MASTER_IBI_Handler(i3c_mux);
     }
     if (int_status & INTR_STATUS_RX_THLD_STS)
     {
@@ -257,13 +288,13 @@ uint32_t I3C_Master_IntrStatus(BYTE i3c_mux)
 /**
 * @brief Legacy I2C MASTER接口初始化函数
 *
-* @param regoffset 寄存器地址偏移
+* @param speed 总线速度
 * @param i3c_mux 配置选择，如I3C_MASTER0、I3C_MASTER1
 * @return true/false
 *
 * @note 配置接口为MASTER功能
 */
-BYTE I3C_Legacy_Master_Init(BYTE addr, uint32_t speed, BYTE i3c_mux)
+BYTE I3C_Legacy_Master_Init(uint32_t speed, BYTE i3c_mux)
 {
     if ((i3c_mux != I3C_MASTER0) && (i3c_mux != I3C_MASTER1))
     {
@@ -273,6 +304,7 @@ BYTE I3C_Legacy_Master_Init(BYTE addr, uint32_t speed, BYTE i3c_mux)
     uint32_t cnt = (CHIP_CLOCK_INT_HIGH / speed);
     uint32_t hcnt = ((cnt * 1) / 2);    //50%占空比
     uint32_t lcnt = (cnt - hcnt);
+    uint32_t temp_data = 0;
     if (hcnt >= 0x7fff)hcnt = 0x7fff;
     if (lcnt >= 0x7fff)lcnt = 0x7fff;
     cnt = hcnt + lcnt;
@@ -282,58 +314,51 @@ BYTE I3C_Legacy_Master_Init(BYTE addr, uint32_t speed, BYTE i3c_mux)
     //Controls whether or not I3C_master is enabled And I2C Slave Present
     I3C_WriteREG_DWORD((DEVICE_CTRL_ENABLE | DEVICE_CTRL_I2C_SLAVE_PRESENT), DEVICE_CTRL_OFFSET, i3c_mux);
     //Set Device Static Address And Type of device I2C
-    I3C_WriteREG_DWORD((DEV_ADDR_TABLE_LOC1_DEVICE_I2C | DEV_ADDR_TABLE_LOC1_STATIC_ADDRESS(addr)), DEV_ADDR_TABLE1_LOC1_OFFSET, i3c_mux);
+    I3C_WriteREG_DWORD(DEV_ADDR_TABLE_LOC1_DEVICE_I2C, DEV_ADDR_TABLE1_LOC1_OFFSET, i3c_mux);
     //Set I3C fm/fmp Count. 
     if (i2c_legacy_fm_plus_flag)
         I3C_WriteREG_DWORD((SCL_I2C_FMP_TIMING_LCNT(lcnt) | SCL_I2C_FMP_TIMING_HCNT(hcnt)), SCL_I2C_FMP_TIMING_OFFSET, i3c_mux);
     else
         I3C_WriteREG_DWORD((SCL_I2C_FM_TIMING_LCNT(lcnt) | SCL_I2C_FM_TIMING_HCNT(hcnt)), SCL_I2C_FM_TIMING_OFFSET, i3c_mux);
-    //Set IBI SIR Request Rejection Control of Command Queue Ready,Transmit And Receive And IBI  Buffer Threshold
-    I3C_WriteREG_DWORD((INTR_STATUS_EN_BUS_RESET_DONE_STS_EN | INTR_STATUS_EN_TRANSFER_ERR_STS_EN | INTR_STATUS_EN_TRANSFER_ABORT_STS_EN | INTR_STATUS_EN_RESP_READY_STS_EN | INTR_STATUS_EN_CMD_QUEUE_READY_STS_EN | INTR_STATUS_EN_TX_THLD_STS_EN | INTR_STATUS_EN_RX_THLD_STS_EN), INTR_STATUS_EN_OFFSET, i3c_mux);
-    //DMA  master resp thld
+    //set queue thld ctrl
     I3C_WriteREG_DWORD((QUEUE_THLD_CTRL_RESP_BUF_THLD(RESP_BUF_THLD_1) | QUEUE_THLD_CTRL_CMD_EMPTY_BUF_THLD(CMD_EMPTY_BUF_THLD_ALLEMPTY)), QUEUE_THLD_CTRL_OFFSET, i3c_mux);
     //Set data buff thld
-    I3C_WriteREG_DWORD((DATA_BUFFER_THLD_CTRL_TX_START_THLD(TX_START_THLD_1) | DATA_BUFFER_THLD_CTRL_RX_START_THLD(RX_START_THLD_1)) | (DATA_BUFFER_THLD_CTRL_RX_BUF_THLD(RX_BUF_THLD_1) | DATA_BUFFER_THLD_CTRL_TX_EMPTY_BUF_THLD(TX_EMPTY_BUF_THLD_1)), DATA_BUFFER_THLD_CTRL_OFFSET, i3c_mux);
+    temp_data = I3C_ReadREG_DWORD(DATA_BUFFER_THLD_CTRL_OFFSET, i3c_mux);
+    temp_data &= DATA_BUFFER_THLD_CTRL_RX_START_THLD0 & DATA_BUFFER_THLD_CTRL_TX_EMPTY_BUF_THLD0 & DATA_BUFFER_THLD_CTRL_RX_BUF_THLD0;
+    temp_data |= DATA_BUFFER_THLD_CTRL_TX_START_THLD(TX_EMPTY_BUF_THLD_64);
+    I3C_WriteREG_DWORD(temp_data, DATA_BUFFER_THLD_CTRL_OFFSET, i3c_mux);
+    //Set intr status en
+    I3C_WriteREG_DWORD((INTR_STATUS_EN_BUS_RESET_DONE_STS_EN | INTR_STATUS_EN_TRANSFER_ERR_STS_EN | INTR_STATUS_EN_TRANSFER_ABORT_STS_EN | INTR_STATUS_EN_RESP_READY_STS_EN | INTR_STATUS_EN_CMD_QUEUE_READY_STS_EN | INTR_STATUS_EN_TX_THLD_STS_EN | INTR_STATUS_EN_RX_THLD_STS_EN), INTR_STATUS_EN_OFFSET, i3c_mux);
+    //Set intr signal en
+    I3C_WriteREG_DWORD(INTR_SIGNAL_EN_TRANSFER_ABORT_SIGNAL_EN | INTR_SIGNAL_EN_TRANSFER_ERR_SIGNAL_EN | INTR_SIGNAL_EN_BUS_RESET_DONE_SIGNAL_EN, INTR_SIGNAL_EN_OFFSET, i3c_mux);
     return TRUE;
 }
 
 /**
 * @brief legacy i2c MASTER写操作函数
 *
-* @param data 写入值
-* @param regoffset 寄存器地址偏移
+* @param static_addr 要通信的目标SLAVE的静态地址
+* @param data 写入值的指针
+* @param bytelen 读数据的个数
 * @param i3c_mux 配置选择，如I3C_MASTER0、I3C_MASTER1
 * @return 操作结果
 *
 * @note 无
 */
-BYTE I3C_Legacy_Master_Write(uint8_t* data, uint16_t bytelen, BYTE i3c_mux)
+BYTE I3C_Legacy_Master_Write(uint8_t static_addr, uint8_t* data, uint16_t bytelen, BYTE i3c_mux)
 {
     uint8_t* data_ptr = data;
     uint32_t data_len = bytelen;
-    if ((i3c_mux != I3C_MASTER0) && (i3c_mux != I3C_MASTER1))
-    {
-        i3c_dprint("controller select fault\n");
-        return FALSE;
-    }
-    if (data_ptr == NULL || data_len == 0)
+    uint32_t temp_data = 0;
+    if (((i3c_mux != I3C_MASTER0) && (i3c_mux != I3C_MASTER1)) || (data_ptr == NULL) || (data_len == 0))
     {
         i3c_dprint("argument error\n");
         return FALSE;
     }
-    //等CMD_QUEUE_READY_STS中断状态
-    for (uint32_t timeout = I3C_TIMEOUT; (I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux) & INTR_STATUS_TX_THLD_STS) == 0; timeout--)
-    {
-        if (timeout == 0 || i3c_error)
-        {
-            I3C_Master_IntrStatus(i3c_mux);
-            i3c_error = 0;
-            return FALSE;
-        }
-        nop;
-    }
-    //配置传输长度
-    I3C_WriteREG_DWORD(COMMAND_QUEUE_PORT_COMMAND_TRANSFER_ARGUMENT | COMMAND_QUEUE_PORT_TRANSFER_ARGUMENT_DATA_LENGTH(bytelen), COMMAND_QUEUE_PORT_OFFSET, i3c_mux);
+
+    //Set Device Static Address And Type of device I2C
+    I3C_WriteREG_DWORD((DEV_ADDR_TABLE_LOC1_DEVICE_I2C | DEV_ADDR_TABLE_LOC1_STATIC_ADDRESS(static_addr)), DEV_ADDR_TABLE1_LOC1_OFFSET, i3c_mux);
+
     for (uint32_t timeout = I3C_TIMEOUT; (I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux) & INTR_STATUS_CMD_QUEUE_READY_STS) == 0; timeout--)
     {
         if (timeout == 0 || i3c_error)
@@ -343,8 +368,28 @@ BYTE I3C_Legacy_Master_Write(uint8_t* data, uint16_t bytelen, BYTE i3c_mux)
             return FALSE;
         }
         nop;
-    }//等待命令队列就绪
-    I3C_WriteREG_DWORD(COMMAND_QUEUE_PORT_COMMAND_TRANSFER_COMMAND | COMMAND_QUEUE_PORT_TRANSFER_COMMAND_WRITE | COMMAND_QUEUE_PORT_TRANSFER_COMMAND_STOP | COMMAND_QUEUE_PORT_TRANSFER_COMMAND_SPEED(i2c_legacy_fm_plus_flag), COMMAND_QUEUE_PORT_OFFSET, i3c_mux);
+    } // 等待INTR_STATUS_CMD_QUEUE_READY_STS中断
+    //配置传输长度
+    temp_data |= COMMAND_QUEUE_PORT_COMMAND_TRANSFER_ARGUMENT | COMMAND_QUEUE_PORT_TRANSFER_ARGUMENT_DATA_LENGTH(bytelen);
+    I3C_WriteREG_DWORD(temp_data, COMMAND_QUEUE_PORT_OFFSET, i3c_mux);
+    for (uint32_t timeout = I3C_TIMEOUT; (I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux) & INTR_STATUS_CMD_QUEUE_READY_STS) == 0; timeout--)
+    {
+        if (timeout == 0 || i3c_error)
+        {
+            I3C_Master_IntrStatus(i3c_mux);
+            i3c_error = 0;
+            return FALSE;
+        }
+        nop;
+    } // 等待配置完成
+    temp_data = 0;
+    temp_data &= (COMMAND_QUEUE_PORT_COMMAND_TRANSFER_COMMAND & COMMAND_QUEUE_PORT_TRANSFER_COMMAND_CP0 & COMMAND_QUEUE_PORT_TRANSFER_COMMAND_DEV_INDX0 & COMMAND_QUEUE_PORT_TRANSFER_COMMAND_WRITE);
+    temp_data |= COMMAND_QUEUE_PORT_TRANSFER_COMMAND_TOC;
+    if (i2c_legacy_fm_plus_flag)
+        temp_data |= COMMAND_QUEUE_PORT_TRANSFER_COMMAND_SPEED(i2c_legacy_fm_plus_flag);
+    else
+        temp_data &= COMMAND_QUEUE_PORT_TRANSFER_COMMAND_SPEED_FM;
+    I3C_WriteREG_DWORD(temp_data, COMMAND_QUEUE_PORT_OFFSET, i3c_mux);
     for (uint32_t timeout = I3C_TIMEOUT; (I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux) & INTR_STATUS_CMD_QUEUE_READY_STS) == 0; timeout--)
     {
         if (timeout == 0 || i3c_error)
@@ -373,8 +418,8 @@ BYTE I3C_Legacy_Master_Write(uint8_t* data, uint16_t bytelen, BYTE i3c_mux)
                 i3c_error = 0;
                 return FALSE;
             }
-
-        }   //等CMD_QUEUE_READY_STS中断
+            nop;
+        }   //等INTR_STATUS_TX_THLD_STS
         I3C_WriteREG_DWORD(data_temp.dword, TX_DATA_PORT_OFFSET, i3c_mux);//发送数据
     }
     return TRUE;
@@ -383,28 +428,28 @@ BYTE I3C_Legacy_Master_Write(uint8_t* data, uint16_t bytelen, BYTE i3c_mux)
 /**
 * @brief legacy i2c MASTER读操作函数
 *
-* @param regoffset 寄存器地址偏移
+* @param static_addr 要通信的目标SLAVE的静态地址
+* @param data 存放数据的指针
+* @param bytelen 读数据的个数
 * @param i3c_mux 配置选择，如I3C_MASTER0、I3C_MASTER1
 * @return 操作结果
 *
 * @note 无
 */
-uint8_t I3C_Legacy_Master_Read(uint8_t* data, uint16_t bytelen, BYTE i3c_mux)
+uint8_t I3C_Legacy_Master_Read(uint8_t static_addr, uint8_t* data, uint16_t bytelen, BYTE i3c_mux)
 {
     uint8_t* data_ptr = data;
     uint32_t data_len = bytelen;
-    if ((i3c_mux != I3C_MASTER0) && (i3c_mux != I3C_MASTER1))
-    {
-        i3c_dprint("controller select fault\n");
-        return FALSE;
-    }
-    if (data_ptr == NULL || data_len == 0)
+    uint32_t temp_data = 0;
+    if (((i3c_mux != I3C_MASTER0) && (i3c_mux != I3C_MASTER1)) || (data_ptr == NULL) || (data_len == 0))
     {
         i3c_dprint("argument error\n");
         return FALSE;
     }
-    //配置传输长度
-    I3C_WriteREG_DWORD(COMMAND_QUEUE_PORT_COMMAND_TRANSFER_ARGUMENT | COMMAND_QUEUE_PORT_TRANSFER_ARGUMENT_DATA_LENGTH(bytelen), COMMAND_QUEUE_PORT_OFFSET, i3c_mux);
+
+    //Set Device Static Address And Type of device I2C
+    I3C_WriteREG_DWORD((DEV_ADDR_TABLE_LOC1_DEVICE_I2C | DEV_ADDR_TABLE_LOC1_STATIC_ADDRESS(static_addr)), DEV_ADDR_TABLE1_LOC1_OFFSET, i3c_mux);
+
     for (uint32_t timeout = I3C_TIMEOUT; (I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux) & INTR_STATUS_CMD_QUEUE_READY_STS) == 0; timeout--)
     {
         if (timeout == 0 || i3c_error)
@@ -414,8 +459,28 @@ uint8_t I3C_Legacy_Master_Read(uint8_t* data, uint16_t bytelen, BYTE i3c_mux)
             return FALSE;
         }
         nop;
-    } // 等待CMD_COMPLETE中断
-    I3C_WriteREG_DWORD(COMMAND_QUEUE_PORT_COMMAND_TRANSFER_COMMAND | COMMAND_QUEUE_PORT_TRANSFER_COMMAND_READ | COMMAND_QUEUE_PORT_TRANSFER_COMMAND_STOP | COMMAND_QUEUE_PORT_TRANSFER_COMMAND_SPEED(i2c_legacy_fm_plus_flag), COMMAND_QUEUE_PORT_OFFSET, i3c_mux);
+    } // 等待INTR_STATUS_CMD_QUEUE_READY_STS中断
+    //配置传输长度
+    temp_data |= COMMAND_QUEUE_PORT_COMMAND_TRANSFER_ARGUMENT | COMMAND_QUEUE_PORT_TRANSFER_ARGUMENT_DATA_LENGTH(bytelen);
+    I3C_WriteREG_DWORD(temp_data, COMMAND_QUEUE_PORT_OFFSET, i3c_mux);
+    for (uint32_t timeout = I3C_TIMEOUT; (I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux) & INTR_STATUS_CMD_QUEUE_READY_STS) == 0; timeout--)
+    {
+        if (timeout == 0 || i3c_error)
+        {
+            I3C_Master_IntrStatus(i3c_mux);
+            i3c_error = 0;
+            return FALSE;
+        }
+        nop;
+    } // 等待INTR_STATUS_CMD_QUEUE_READY_STS中断
+    temp_data = 0;
+    temp_data &= COMMAND_QUEUE_PORT_COMMAND_TRANSFER_COMMAND;
+    temp_data |= COMMAND_QUEUE_PORT_TRANSFER_COMMAND_READ | COMMAND_QUEUE_PORT_TRANSFER_COMMAND_STOP;
+    if (i2c_legacy_fm_plus_flag)
+        temp_data |= COMMAND_QUEUE_PORT_TRANSFER_COMMAND_SPEED(i2c_legacy_fm_plus_flag);
+    else
+        temp_data &= COMMAND_QUEUE_PORT_TRANSFER_COMMAND_SPEED_FM;
+    I3C_WriteREG_DWORD(temp_data, COMMAND_QUEUE_PORT_OFFSET, i3c_mux);
     for (uint32_t timeout = I3C_TIMEOUT; (I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux) & INTR_STATUS_CMD_QUEUE_READY_STS) == 0; timeout--)
     {
         if (timeout == 0 || i3c_error)
@@ -438,7 +503,7 @@ uint8_t I3C_Legacy_Master_Read(uint8_t* data, uint16_t bytelen, BYTE i3c_mux)
                 i3c_error = 0;
                 return FALSE;
             }
-
+            vDelayXus(10);
         }
         uDword data_temp;
         data_temp.dword = I3C_ReadREG_DWORD(RX_DATA_PORT_OFFSET, i3c_mux);
@@ -455,7 +520,7 @@ uint8_t I3C_Legacy_Master_Read(uint8_t* data, uint16_t bytelen, BYTE i3c_mux)
 /**
 * @brief Legacy i2c MASTER读写流操作函数
 *
-* @param i3c_addr 设备地址
+* @param static_addr 要通信的目标SLAVE的静态地址
 * @param Var 写入数据指针
 * @param Count 写入数据个数
 * @param Var2 读出数据指针
@@ -465,27 +530,23 @@ uint8_t I3C_Legacy_Master_Read(uint8_t* data, uint16_t bytelen, BYTE i3c_mux)
 *
 * @note 无
 */
-BYTE I3C_Legacy_Master_W2R_Stream(BYTE i3c_addr, BYTE* w_var, WORD w_cnt, BYTE* r_var, WORD r_cnt, BYTE i3c_mux)
+BYTE I3C_Legacy_Master_W2R_Stream(BYTE static_addr, BYTE* w_var, WORD w_cnt, BYTE* r_var, WORD r_cnt, BYTE i3c_mux)
 {
     if ((i3c_mux != I3C_MASTER0) && (i3c_mux != I3C_MASTER1))
     {
         i3c_dprint("controller select fault\n");
         return FALSE;
     }
-    if (I3C_Legacy_Master_Init(i3c_addr, SDR_DEFAULT_SPEED, i3c_mux) == FALSE)
-    {
-        return FALSE;
-    }
     if (w_cnt != 0)
     {
-        if (I3C_Legacy_Master_Write(w_var, w_cnt, i3c_mux) == FALSE)
+        if (I3C_Legacy_Master_Write(static_addr, w_var, w_cnt, i3c_mux) == FALSE)
         {
             return FALSE;
         }
     }
     if (r_cnt != 0)
     {
-        if (I3C_Legacy_Master_Read(r_var, r_cnt, i3c_mux) == FALSE)
+        if (I3C_Legacy_Master_Read(static_addr, r_var, r_cnt, i3c_mux) == FALSE)
         {
             return FALSE;
         }
@@ -502,7 +563,7 @@ BYTE I3C_Legacy_Master_W2R_Stream(BYTE i3c_addr, BYTE* w_var, WORD w_cnt, BYTE* 
 *
 * @note 配置接口为MASTER功能
 */
-BYTE I3C_Current_Master_Init(uint32_t speed, BYTE i3c_mux)
+BYTE I3C_SDR_Master_Init(uint32_t speed, BYTE i3c_mux)
 {
     if ((i3c_mux != I3C_MASTER0) && (i3c_mux != I3C_MASTER1))
         return FALSE;
@@ -514,6 +575,11 @@ BYTE I3C_Current_Master_Init(uint32_t speed, BYTE i3c_mux)
     if (lcnt >= PP_TIMING_HCNT_MAX)lcnt = PP_TIMING_LCNT_MAX;
     if (hcnt <= PP_TIMING_HCNT_MIN)hcnt = PP_TIMING_HCNT_MIN;
     if (lcnt <= PP_TIMING_LCNT_MIN)lcnt = PP_TIMING_LCNT_MIN;
+
+    if (hcnt >= OD_TIMING_HCNT_MAX)hcnt = OD_TIMING_HCNT_MAX;
+    if (lcnt >= OD_TIMING_HCNT_MAX)lcnt = OD_TIMING_LCNT_MAX;
+    if (hcnt <= OD_TIMING_HCNT_MIN)hcnt = OD_TIMING_HCNT_MIN;
+    if (lcnt <= OD_TIMING_LCNT_MIN)lcnt = OD_TIMING_LCNT_MIN;
 
     //Controls whether or not I3C_master is enabled And I2C Slave Present 
     I3C_WriteREG_DWORD(DEVICE_CTRL_ENABLE | DEVICE_CTRL_IBA_INCLUDE, DEVICE_CTRL_OFFSET, i3c_mux);
@@ -552,6 +618,8 @@ BYTE I3C_Current_Master_Init(uint32_t speed, BYTE i3c_mux)
 BYTE I3C_MASTER_ENTDAA(sDEV_CHAR_TABLE* dct, BYTE* dynamic_addr, BYTE i3c_mux)
 {
     uint32_t temp_data = 0;
+    // BYTE dev_tmpcnt = 0;
+    BYTE dev_num = 0;
     if ((i3c_mux != I3C_MASTER0) && (i3c_mux != I3C_MASTER1))
     {
         i3c_dprint("controller select fault\n");
@@ -559,23 +627,22 @@ BYTE I3C_MASTER_ENTDAA(sDEV_CHAR_TABLE* dct, BYTE* dynamic_addr, BYTE i3c_mux)
     }
 
     //DEV_ADDR_TABLE1_LOC1 is a fifo,can be written several times
-    BYTE dev_num = 0;
-    BYTE dev_tmpcnt = 0;
+
     if (i3c_mux == I3C_MASTER0)
         dev_num = sizeof(MASTER0_DEV_DYNAMIC_ADDR_TABLE);
-    else if (i3c_mux == I3C_MASTER0)
+    else if (i3c_mux == I3C_MASTER1)
         dev_num = sizeof(MASTER1_DEV_DYNAMIC_ADDR_TABLE);
     while (dev_tmpcnt < dev_num) //循环发命令
     {
         //Set Device dynamic Address And Type of device I3C
         temp_data = 0;
         temp_data &= (DEV_ADDR_TABLE_LOC1_DEVICE_I3C);
-        temp_data |= DEV_ADDR_TABLE_LOC1_DEV_DYNAMIC_ADDR(*(dynamic_addr + dev_tmpcnt));
+        temp_data |= DEV_ADDR_TABLE_LOC1_DEV_DYNAMIC_ADDR(*(dynamic_addr + dev_tmpcnt)) | DEV_ADDR_TABLE_LOC1_IBI_WITH_DATA;
         if (DEV_ADDR_TABLE_LOC1_DEV_DYNAMIC_ADDR_PARITY(*(dynamic_addr + dev_tmpcnt)) != 0)
             temp_data |= DEV_ADDR_TABLE_LOC1_DEV_DYNAMIC_ADDR_PARITY(*(dynamic_addr + dev_tmpcnt));
         else
             temp_data &= DEV_ADDR_TABLE_LOC1_DEV_DYNAMIC_ADDR_PARITY0;
-        I3C_WriteREG_DWORD(temp_data, DEV_ADDR_TABLE1_LOC1_OFFSET, i3c_mux);
+        I3C_WriteREG_DWORD(temp_data, (DEV_ADDR_TABLE1_LOC1_OFFSET + dev_tmpcnt * 4), i3c_mux);
 
         for (uint32_t timeout = I3C_TIMEOUT; (I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux) & INTR_STATUS_CMD_QUEUE_READY_STS) == 0; timeout--)
         {
@@ -605,6 +672,7 @@ BYTE I3C_MASTER_ENTDAA(sDEV_CHAR_TABLE* dct, BYTE* dynamic_addr, BYTE i3c_mux)
         Response_error_status = I3C_ReadREG_DWORD(RESPONSE_QUEUE_PORT_OFFSET, i3c_mux) & RESPONSE_QUEUE_PORT_ERR_STS_MASK;
         if (RESPONSE_QUEUE_PORT_ERR_STS_NO_ERROR == Response_error_status)
         {
+            //将DCT pointer指向最后一个成功分配动态地址的SLAVE设备
             temp_data = I3C_ReadREG_DWORD(DEV_CHAR_TABLE_POINTER_OFFSET, i3c_mux) & (~0xFFF80000);
             temp_data |= (dev_tmpcnt >> 19);
             I3C_WriteREG_DWORD(temp_data, DEV_CHAR_TABLE_POINTER_OFFSET, i3c_mux);
@@ -639,61 +707,71 @@ BYTE I3C_MASTER_ENTDAA(sDEV_CHAR_TABLE* dct, BYTE* dynamic_addr, BYTE i3c_mux)
 *
 * @note 单独分配设备动态地址
 */
-BYTE I3C_MASTER_SETDASA(BYTE static_addr, BYTE dynamic_addr, BYTE i3c_mux)
-{
-    uint32_t temp_data = 0;
-    if ((i3c_mux != I3C_MASTER0) && (i3c_mux != I3C_MASTER1))
-    {
-        i3c_dprint("controller select fault\n");
-        return FALSE;
-    }
+// BYTE I3C_MASTER_SETDASA(BYTE static_addr, BYTE dynamic_addr, BYTE i3c_mux)
+// {
+//     uint32_t temp_data = 0;
+//     if ((i3c_mux != I3C_MASTER0) && (i3c_mux != I3C_MASTER1))
+//     {
+//         i3c_dprint("controller select fault\n");
+//         return FALSE;
+//     }
 
-    //Set Device Static Address And Type of device I3C
-    temp_data &= (DEV_ADDR_TABLE_LOC1_DEVICE_I3C);
-    temp_data |= DEV_ADDR_TABLE_LOC1_DEV_DYNAMIC_ADDR(dynamic_addr) | DEV_ADDR_TABLE_LOC1_STATIC_ADDRESS(static_addr);
-    if (DEV_ADDR_TABLE_LOC1_DEV_DYNAMIC_ADDR_PARITY(dynamic_addr) != 0)
-        temp_data |= DEV_ADDR_TABLE_LOC1_DEV_DYNAMIC_ADDR_PARITY(dynamic_addr);
-    else
-        temp_data &= DEV_ADDR_TABLE_LOC1_DEV_DYNAMIC_ADDR_PARITY0;
-    I3C_WriteREG_DWORD(temp_data, DEV_ADDR_TABLE1_LOC1_OFFSET, i3c_mux);
+//     //Set Device Static Address And Type of device I3C
+//     temp_data &= (DEV_ADDR_TABLE_LOC1_DEVICE_I3C);
+//     temp_data |= DEV_ADDR_TABLE_LOC1_DEV_DYNAMIC_ADDR(dynamic_addr) | DEV_ADDR_TABLE_LOC1_STATIC_ADDRESS(static_addr);
+//     if (DEV_ADDR_TABLE_LOC1_DEV_DYNAMIC_ADDR_PARITY(dynamic_addr) != 0)
+//         temp_data |= DEV_ADDR_TABLE_LOC1_DEV_DYNAMIC_ADDR_PARITY(dynamic_addr);
+//     else
+//         temp_data &= DEV_ADDR_TABLE_LOC1_DEV_DYNAMIC_ADDR_PARITY0;
+//     I3C_WriteREG_DWORD(temp_data, DEV_ADDR_TABLE1_LOC1_OFFSET + dev_tmpcnt * 4, i3c_mux);
 
-    for (uint32_t timeout = I3C_TIMEOUT; (I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux) & INTR_STATUS_CMD_QUEUE_READY_STS) == 0; timeout--)
-    {
-        if (timeout == 0 || i3c_error)
-        {
-            I3C_Master_IntrStatus(i3c_mux);
-            i3c_error = 0;
-            return FALSE;
-        }
+//     for (uint32_t timeout = I3C_TIMEOUT; (I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux) & INTR_STATUS_CMD_QUEUE_READY_STS) == 0; timeout--)
+//     {
+//         if (timeout == 0 || i3c_error)
+//         {
+//             I3C_Master_IntrStatus(i3c_mux);
+//             i3c_error = 0;
+//             return FALSE;
+//         }
 
-    }   //等CMD_QUEUE_READY_STS中断
-    //config CMD port
-    temp_data = 0;
-    temp_data &= (COMMAND_QUEUE_PORT_ADDRESS_ASSIGNMENT_DEV_INDX0);
-    temp_data |= COMMAND_QUEUE_PORT_COMMAND_ADDRESS_ASSIGNMENT | COMMAND_QUEUE_PORT_TRANSFER_COMMAND_CMD(SETDASA_DR_CMD) | COMMAND_QUEUE_PORT_ADDRESS_ASSIGNMENT_DEV_COUNT(0x1) | COMMAND_QUEUE_PORT_ADDRESS_ASSIGNMENT_ROC | COMMAND_QUEUE_PORT_ADDRESS_ASSIGNMENT_TOC;
-    I3C_WriteREG_DWORD(temp_data, COMMAND_QUEUE_PORT_OFFSET, i3c_mux);
-    for (uint32_t timeout = I3C_TIMEOUT; (I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux) & INTR_STATUS_RESP_READY_STS) == 0; timeout--)
-    {
-        if (timeout == 0 || i3c_error)
-        {
-            I3C_Master_IntrStatus(i3c_mux);
-            i3c_error = 0;
-            return FALSE;
-        }
-        nop;
-    }//等待回复
-    DWORD Response_error_status = 0;
-    Response_error_status = I3C_ReadREG_DWORD(RESPONSE_QUEUE_PORT_OFFSET, i3c_mux) & RESPONSE_QUEUE_PORT_ERR_STS_MASK;
-    if (RESPONSE_QUEUE_PORT_ERR_STS_NO_ERROR == Response_error_status)
-    {
-        return TRUE;
-    }
-    else
-    {
-        I3C_Master_IntrStatus(i3c_mux);
-        return FALSE;
-    }
-}
+//     }   //等CMD_QUEUE_READY_STS中断
+//     //config CMD port
+//     temp_data = 0;
+//     temp_data &= (COMMAND_QUEUE_PORT_ADDRESS_ASSIGNMENT_DEV_INDX0);
+//     temp_data |= COMMAND_QUEUE_PORT_COMMAND_ADDRESS_ASSIGNMENT | COMMAND_QUEUE_PORT_TRANSFER_COMMAND_CMD(SETDASA_DR_CMD) | COMMAND_QUEUE_PORT_ADDRESS_ASSIGNMENT_DEV_COUNT(0x1) | COMMAND_QUEUE_PORT_ADDRESS_ASSIGNMENT_ROC | COMMAND_QUEUE_PORT_ADDRESS_ASSIGNMENT_TOC;
+//     I3C_WriteREG_DWORD(temp_data, COMMAND_QUEUE_PORT_OFFSET, i3c_mux);
+//     for (uint32_t timeout = I3C_TIMEOUT; (I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux) & INTR_STATUS_RESP_READY_STS) == 0; timeout--)
+//     {
+//         if (timeout == 0 || i3c_error)
+//         {
+//             I3C_Master_IntrStatus(i3c_mux);
+//             i3c_error = 0;
+//             return FALSE;
+//         }
+//         nop;
+//     }//等待回复
+//     DWORD Response_error_status = 0;
+//     Response_error_status = I3C_ReadREG_DWORD(RESPONSE_QUEUE_PORT_OFFSET, i3c_mux) & RESPONSE_QUEUE_PORT_ERR_STS_MASK;
+//     if (RESPONSE_QUEUE_PORT_ERR_STS_NO_ERROR == Response_error_status)
+//     {
+//         // 将DCT pointer指向最后一个成功分配动态地址的SLAVE设备
+//         temp_data = I3C_ReadREG_DWORD(DEV_CHAR_TABLE_POINTER_OFFSET, i3c_mux) & (~0xFFF80000);
+//         temp_data |= (dev_tmpcnt >> 19);
+//         I3C_WriteREG_DWORD(temp_data, DEV_CHAR_TABLE_POINTER_OFFSET, i3c_mux);
+//         //依次将所有设备的DCT属性读出并存入数组
+//         for (int i = 0; i < 4; i++)
+//         {
+//             (dct + dev_tmpcnt)->dev_char_table1_loc[i] = I3C_ReadREG_DWORD(DEV_CHAR_TABLE1_LOC1_OFFSET + i * 4, i3c_mux);
+//         }
+//         dev_tmpcnt++;
+//         return TRUE;
+//     }
+//     else
+//     {
+//         I3C_Master_IntrStatus(i3c_mux);
+//         return FALSE;
+//     }
+// }
 
 /**
 * @brief I3C MASTER broadcast ccc write函数
@@ -796,6 +874,7 @@ BYTE I3C_MASTER_DR_CCC_WRITE(uint8_t dynamic_addr, uint8_t* data, uint16_t bytel
     uint8_t* data_ptr = data;
     uint32_t data_len = bytelen;
     uint32_t temp_data = 0;
+    uint8_t match_cnt = 0;
 
     if (((i3c_mux != I3C_MASTER0) && (i3c_mux != I3C_MASTER1)) || (data_ptr == NULL) || (cmd < DIRECTED_CMD_MIN))
     {
@@ -833,8 +912,8 @@ BYTE I3C_MASTER_DR_CCC_WRITE(uint8_t dynamic_addr, uint8_t* data, uint16_t bytel
             I3C_WriteREG_DWORD(data_temp.dword, TX_DATA_PORT_OFFSET, i3c_mux);//发送数据
         }
     }
-    //config static addr
-    temp_data = 0;
+    //config dynamic addr
+    temp_data = I3C_ReadREG_DWORD(DEV_ADDR_TABLE1_LOC1_OFFSET, i3c_mux);
     temp_data &= (DEV_ADDR_TABLE_LOC1_DEVICE_I3C);
     temp_data |= DEV_ADDR_TABLE_LOC1_DEV_DYNAMIC_ADDR(dynamic_addr);
     if (DEV_ADDR_TABLE_LOC1_DEV_DYNAMIC_ADDR_PARITY(dynamic_addr) != 0)
@@ -844,8 +923,13 @@ BYTE I3C_MASTER_DR_CCC_WRITE(uint8_t dynamic_addr, uint8_t* data, uint16_t bytel
     I3C_WriteREG_DWORD(temp_data, DEV_ADDR_TABLE1_LOC1_OFFSET, i3c_mux);
     //issue directed ccc cmd
     temp_data = 0;
-    temp_data &= COMMAND_QUEUE_PORT_COMMAND_TRANSFER_COMMAND & COMMAND_QUEUE_PORT_TRANSFER_COMMAND_DEV_INDX0 & COMMAND_QUEUE_PORT_TRANSFER_COMMAND_WRITE & COMMAND_QUEUE_PORT_TRANSFER_COMMAND_SPEED_SDR0;
+    temp_data &= COMMAND_QUEUE_PORT_COMMAND_TRANSFER_COMMAND & COMMAND_QUEUE_PORT_TRANSFER_COMMAND_WRITE & COMMAND_QUEUE_PORT_TRANSFER_COMMAND_SPEED_SDR0;
     temp_data |= COMMAND_QUEUE_PORT_TRANSFER_COMMAND_DR_TRANSFER | COMMAND_QUEUE_PORT_TRANSFER_COMMAND_CMD(cmd) | COMMAND_QUEUE_PORT_TRANSFER_COMMAND_CP | COMMAND_QUEUE_PORT_TRANSFER_COMMAND_ROC | COMMAND_QUEUE_PORT_TRANSFER_COMMAND_TOC;
+    match_cnt = serach_current_dynamic_cnt(dynamic_addr, i3c_mux);
+    if (match_cnt != 0)
+        temp_data |= COMMAND_QUEUE_PORT_TRANSFER_COMMAND_DEV_INDX(match_cnt);
+    else
+        temp_data &= COMMAND_QUEUE_PORT_TRANSFER_COMMAND_DEV_INDX0;
     if (dbp != 0)
         temp_data |= COMMAND_QUEUE_PORT_TRANSFER_COMMAND_DBP;
     I3C_WriteREG_DWORD(temp_data, COMMAND_QUEUE_PORT_OFFSET, i3c_mux);
@@ -888,6 +972,7 @@ BYTE I3C_MASTER_DR_CCC_READ(uint8_t dynamic_addr, uint8_t* data, uint16_t bytele
     uint8_t* data_ptr = data;
     uint32_t data_len = bytelen;
     uint32_t temp_data = 0;
+    uint8_t match_cnt = 0;
 
     if (((i3c_mux != I3C_MASTER0) && (i3c_mux != I3C_MASTER1)) || (data_ptr == NULL) || (data_len == 0) || (cmd < DIRECTED_CMD_MIN))
     {
@@ -901,8 +986,8 @@ BYTE I3C_MASTER_DR_CCC_READ(uint8_t dynamic_addr, uint8_t* data, uint16_t bytele
     else
         temp_data |= COMMAND_QUEUE_PORT_COMMAND_TRANSFER_ARGUMENT | COMMAND_QUEUE_PORT_TRANSFER_ARGUMENT_DATA_LENGTH(bytelen);
     I3C_WriteREG_DWORD(temp_data, COMMAND_QUEUE_PORT_OFFSET, i3c_mux);
-    //config static addr
-    temp_data = 0;
+    //config dynamic addr
+    temp_data = I3C_ReadREG_DWORD(DEV_ADDR_TABLE1_LOC1_OFFSET, i3c_mux);
     temp_data &= (DEV_ADDR_TABLE_LOC1_DEVICE_I3C);
     temp_data |= DEV_ADDR_TABLE_LOC1_DEV_DYNAMIC_ADDR(dynamic_addr);
     if (DEV_ADDR_TABLE_LOC1_DEV_DYNAMIC_ADDR_PARITY(dynamic_addr) != 0)
@@ -912,8 +997,13 @@ BYTE I3C_MASTER_DR_CCC_READ(uint8_t dynamic_addr, uint8_t* data, uint16_t bytele
     I3C_WriteREG_DWORD(temp_data, DEV_ADDR_TABLE1_LOC1_OFFSET, i3c_mux);
     //issue directed ccc cmd
     temp_data = 0;
-    temp_data &= COMMAND_QUEUE_PORT_COMMAND_TRANSFER_COMMAND & COMMAND_QUEUE_PORT_TRANSFER_COMMAND_DEV_INDX0 & COMMAND_QUEUE_PORT_TRANSFER_COMMAND_SPEED_SDR0;
+    temp_data &= COMMAND_QUEUE_PORT_COMMAND_TRANSFER_COMMAND & COMMAND_QUEUE_PORT_TRANSFER_COMMAND_SPEED_SDR0;
     temp_data |= COMMAND_QUEUE_PORT_TRANSFER_COMMAND_DR_TRANSFER | COMMAND_QUEUE_PORT_TRANSFER_COMMAND_CMD(cmd) | COMMAND_QUEUE_PORT_TRANSFER_COMMAND_CP | COMMAND_QUEUE_PORT_TRANSFER_COMMAND_ROC | COMMAND_QUEUE_PORT_TRANSFER_COMMAND_TOC | COMMAND_QUEUE_PORT_TRANSFER_COMMAND_READ;
+    match_cnt = serach_current_dynamic_cnt(dynamic_addr, i3c_mux);
+    if (match_cnt != 0)
+        temp_data |= COMMAND_QUEUE_PORT_TRANSFER_COMMAND_DEV_INDX(match_cnt);
+    else
+        temp_data &= COMMAND_QUEUE_PORT_TRANSFER_COMMAND_DEV_INDX0;
     if (dbp != 0)
         temp_data |= COMMAND_QUEUE_PORT_TRANSFER_COMMAND_DBP;
     I3C_WriteREG_DWORD(temp_data, COMMAND_QUEUE_PORT_OFFSET, i3c_mux);
@@ -968,6 +1058,7 @@ BYTE I3C_MASTER_PV_WRITE_WITH7E(uint8_t dynamic_addr, uint8_t* data, uint16_t by
     uint8_t* data_ptr = data;
     uint32_t data_len = bytelen;
     uint32_t temp_data = 0;
+    uint8_t match_cnt = 0;
 
     if (((i3c_mux != I3C_MASTER0) && (i3c_mux != I3C_MASTER1)) || (data_ptr == NULL) || (data_len == 0))
     {
@@ -1003,7 +1094,7 @@ BYTE I3C_MASTER_PV_WRITE_WITH7E(uint8_t dynamic_addr, uint8_t* data, uint16_t by
         }
     }
     //config dynamic addr
-    temp_data = 0;
+    temp_data = I3C_ReadREG_DWORD(DEV_ADDR_TABLE1_LOC1_OFFSET, i3c_mux);
     temp_data &= (DEV_ADDR_TABLE_LOC1_DEVICE_I3C);
     temp_data |= DEV_ADDR_TABLE_LOC1_DEV_DYNAMIC_ADDR(dynamic_addr);
     if (DEV_ADDR_TABLE_LOC1_DEV_DYNAMIC_ADDR_PARITY(dynamic_addr) != 0)
@@ -1013,8 +1104,13 @@ BYTE I3C_MASTER_PV_WRITE_WITH7E(uint8_t dynamic_addr, uint8_t* data, uint16_t by
     I3C_WriteREG_DWORD(temp_data, DEV_ADDR_TABLE1_LOC1_OFFSET, i3c_mux);
     //issue private transfer
     temp_data = 0;
-    temp_data &= (COMMAND_QUEUE_PORT_COMMAND_TRANSFER_COMMAND & COMMAND_QUEUE_PORT_TRANSFER_COMMAND_CP0 & COMMAND_QUEUE_PORT_TRANSFER_COMMAND_DEV_INDX0 & COMMAND_QUEUE_PORT_TRANSFER_COMMAND_SPEED_SDR0 & COMMAND_QUEUE_PORT_TRANSFER_COMMAND_WRITE);
+    temp_data &= (COMMAND_QUEUE_PORT_COMMAND_TRANSFER_COMMAND & COMMAND_QUEUE_PORT_TRANSFER_COMMAND_CP0 & COMMAND_QUEUE_PORT_TRANSFER_COMMAND_SPEED_SDR0 & COMMAND_QUEUE_PORT_TRANSFER_COMMAND_WRITE);
     temp_data |= COMMAND_QUEUE_PORT_TRANSFER_COMMAND_ROC | COMMAND_QUEUE_PORT_TRANSFER_COMMAND_TOC;
+    match_cnt = serach_current_dynamic_cnt(dynamic_addr, i3c_mux);
+    if (match_cnt != 0)
+        temp_data |= COMMAND_QUEUE_PORT_TRANSFER_COMMAND_DEV_INDX(match_cnt);
+    else
+        temp_data &= COMMAND_QUEUE_PORT_TRANSFER_COMMAND_DEV_INDX0;
     I3C_WriteREG_DWORD(temp_data, COMMAND_QUEUE_PORT_OFFSET, i3c_mux);
     for (uint32_t timeout = I3C_TIMEOUT; (I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux) & INTR_STATUS_RESP_READY_STS) == 0; timeout--)
     {
@@ -1045,6 +1141,7 @@ BYTE I3C_MASTER_PV_READ_WITH7E(uint8_t dynamic_addr, uint8_t* data, uint16_t byt
     uint8_t* data_ptr = data;
     uint32_t data_len = bytelen;
     uint32_t temp_data = 0;
+    uint8_t match_cnt = 0;
 
     if (((i3c_mux != I3C_MASTER0) && (i3c_mux != I3C_MASTER1)) || (data_ptr == NULL) || (data_len == 0))
     {
@@ -1056,7 +1153,7 @@ BYTE I3C_MASTER_PV_READ_WITH7E(uint8_t dynamic_addr, uint8_t* data, uint16_t byt
     temp_data |= COMMAND_QUEUE_PORT_COMMAND_TRANSFER_ARGUMENT | COMMAND_QUEUE_PORT_TRANSFER_ARGUMENT_DATA_LENGTH(bytelen);
     I3C_WriteREG_DWORD(temp_data, COMMAND_QUEUE_PORT_OFFSET, i3c_mux);
     //config dynamic addr
-    temp_data = 0;
+    temp_data = I3C_ReadREG_DWORD(DEV_ADDR_TABLE1_LOC1_OFFSET, i3c_mux);
     temp_data &= (DEV_ADDR_TABLE_LOC1_DEVICE_I3C);
     temp_data |= DEV_ADDR_TABLE_LOC1_DEV_DYNAMIC_ADDR(dynamic_addr);
     if (DEV_ADDR_TABLE_LOC1_DEV_DYNAMIC_ADDR_PARITY(dynamic_addr) != 0)
@@ -1066,8 +1163,13 @@ BYTE I3C_MASTER_PV_READ_WITH7E(uint8_t dynamic_addr, uint8_t* data, uint16_t byt
     I3C_WriteREG_DWORD(temp_data, DEV_ADDR_TABLE1_LOC1_OFFSET, i3c_mux);
     //issue private transfer
     temp_data = 0;
-    temp_data &= (COMMAND_QUEUE_PORT_COMMAND_TRANSFER_COMMAND & COMMAND_QUEUE_PORT_TRANSFER_COMMAND_CP0 & COMMAND_QUEUE_PORT_TRANSFER_COMMAND_DEV_INDX0 & COMMAND_QUEUE_PORT_TRANSFER_COMMAND_SPEED_SDR0);
+    temp_data &= (COMMAND_QUEUE_PORT_COMMAND_TRANSFER_COMMAND & COMMAND_QUEUE_PORT_TRANSFER_COMMAND_CP0 & COMMAND_QUEUE_PORT_TRANSFER_COMMAND_SPEED_SDR0);
     temp_data |= COMMAND_QUEUE_PORT_TRANSFER_COMMAND_ROC | COMMAND_QUEUE_PORT_TRANSFER_COMMAND_TOC | COMMAND_QUEUE_PORT_TRANSFER_COMMAND_READ;
+    match_cnt = serach_current_dynamic_cnt(dynamic_addr, i3c_mux);
+    if (match_cnt != 0)
+        temp_data |= COMMAND_QUEUE_PORT_TRANSFER_COMMAND_DEV_INDX(match_cnt);
+    else
+        temp_data &= COMMAND_QUEUE_PORT_TRANSFER_COMMAND_DEV_INDX0;
     I3C_WriteREG_DWORD(temp_data, COMMAND_QUEUE_PORT_OFFSET, i3c_mux);
     for (uint32_t timeout = I3C_TIMEOUT; (I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux) & INTR_STATUS_RESP_READY_STS) == 0; timeout--)
     {
@@ -1188,8 +1290,11 @@ void I3C_MASTER_IBI_Handler(BYTE i3c_mux)
 repeat_ibi:
     ibi_queue_status = I3C_ReadREG_DWORD(IBI_QUEUE_STATUS_OFFSET, i3c_mux);
     data_length = ibi_queue_status & IBI_QUEUE_STATUS_DATA_LENGTH;
+    printf("ibi_queue_status:%x,data_length:%x\n", ibi_queue_status, data_length);
+    printf("ibi queue data:%x\n", I3C_ReadREG_DWORD(IBI_QUEUE_DATA_OFFSET, i3c_mux));
     if (((ibi_queue_status & IBI_QUEUE_STATUS_IBI_STATUS) == 0) && (data_length > 0))
     {
+        printf("read ibi data\n");
         uint8_t times = ceil(data_length / 4);
         uint8_t read_times = times;
         while (read_times--)
@@ -1206,6 +1311,7 @@ repeat_ibi:
         uint8_t new_static_addr = (uint8_t)((ibi_id >> 1) & 0x7F);
         if ((ibi_id & 0x00000001UL) == 0)//hot-join
         {
+            printf("hot join\n");
             if (i3c_mux == I3C_MASTER0)
             {
                 MASTER0_DEV_STATIC_ADDR_TABLE[(sizeof(MASTER0_DEV_STATIC_ADDR_TABLE) + 1)] = new_static_addr;    //store new dynamic addr to DEV_STATIC_ADDR_TABLE
@@ -1230,41 +1336,7 @@ repeat_ibi:
         //enable intr signal en
         I3C_WriteREG_DWORD(((I3C_ReadREG_DWORD(INTR_SIGNAL_EN_OFFSET, i3c_mux)) | INTR_SIGNAL_EN_IBI_THLD_SIGNAL_EN), INTR_SIGNAL_EN_OFFSET, i3c_mux);
 }
-/**
-* @brief MASTER初始化函数
-*
-* @param initmode 选择I3C初始化类型
-* @param speed 总线速度,最大8M
-* @param addr 寄存器地址偏移
-* @param dct DCT动态地址表指针,用于动态地址分配后存放DCT
-* @param dynamic_addr DAT动态地址表指针,必须填DEV_DYNAMIC_ADDR_TABLE
-* @param i3c_mux 配置选择，如I3C_MASTER0、I3C_MASTER1
-* @return 无
-*
-* @note 无
-*/
-void I3C_Master_Init(uint32_t initmode, uint32_t speed, BYTE addr, sDEV_CHAR_TABLE* dct, BYTE* dynamic_addr, uint8_t i3c_mux)
-{
-    if ((i3c_mux != I3C_MASTER0) && (i3c_mux != I3C_MASTER1))
-    {
-        i3c_dprint("I3C Master Init Unknow Mux\n");
-        return;
-    }
-    I3C_WAIT_SDA_PU(i3c_mux);//需要等SCL/SDA都拉高后才能进行初始化，否则会误触发IBI中断
-    if (initmode == I3C_MASTER_I3C_MODE)
-    {
-        I3C_Current_Master_Init(speed, i3c_mux);
-        I3C_MASTER_ENTDAA(dct, dynamic_addr, i3c_mux);//specify a dynamic addr
-    }
-    else if (initmode == I3C_MASTER_I2C_MODE)
-    {
-        I3C_Legacy_Master_Init(addr, speed, i3c_mux);
-    }
-    else
-    {
-        i3c_dprint("I3C Master Init Unknow Intfmode\n");
-    }
-}
+
 /**
 * @brief SLAVE初始化函数
 *
@@ -1298,7 +1370,6 @@ void I3C_Slave_Init(BYTE static_addr, uint32_t idpartno, uint8_t dcr, uint8_t bc
     temp_data |= IDEXT_DCR(dcr) | IDEXT_BCR(bcr);
     I3C_WriteREG_DWORD(temp_data, IDEXT_OFFSET, i3c_mux);   //set dcr&bcr
 
-    I3C_WriteREG_DWORD(temp_data, IDEXT_OFFSET, i3c_mux);   //set dcr&bcr
     I3C_WriteREG_DWORD(((I3C_ReadREG_DWORD(TCCLOCK_OFFSET, i3c_mux) & 0x000000FF) | ((((uint32_t)(HIGHT_CHIP_CLOCK * 2 / 1000000)) << 8) & 0x0000FF00)), TCCLOCK_OFFSET, i3c_mux);   //设置TCCLOCK
     I3C_WriteREG_DWORD(0x0, INTSET_OFFSET, i3c_mux);   //中断全部失能
     I3C_WriteREG_DWORD(0x0, DMACTRL_OFFSET, i3c_mux);   //DMA失能
@@ -1392,7 +1463,7 @@ BYTE I3C_SLAVE_IBI_HOTJOIN(uint8_t addr, uint32_t idpartno, uint8_t dcr, uint8_t
 *
 * @note 调用此接口发起ibi 发送data
 */
-BYTE I3C_SLAVE_IBI_DATA(uint8_t addr, uint8_t ibi_data, uint32_t idpartno, uint8_t dcr, uint8_t bcr, BYTE i3c_mux)
+BYTE I3C_SLAVE_IBI_DATA(uint8_t ibi_data, uint32_t idpartno, uint8_t dcr, uint8_t bcr, BYTE i3c_mux)
 {
     uint32_t temp_data = 0;
     if ((i3c_mux != I3C_SLAVE0) && (i3c_mux != I3C_SLAVE1))
@@ -1400,17 +1471,21 @@ BYTE I3C_SLAVE_IBI_DATA(uint8_t addr, uint8_t ibi_data, uint32_t idpartno, uint8
         i3c_dprint("controller select fault\n");
         return FALSE;
     }
+
     temp_data |= idpartno;
     I3C_WriteREG_DWORD(temp_data, IDPARTNO_OFFSET, i3c_mux);    //set idpartno
     temp_data = 0;
     temp_data |= IDEXT_DCR(dcr) | IDEXT_BCR(bcr);
     I3C_WriteREG_DWORD(temp_data, IDEXT_OFFSET, i3c_mux);      //set dcr&bcr
-    temp_data = 0;
-    temp_data |= CONFIG_ADDR(addr) | CONFIG_SLVENA;
-    I3C_WriteREG_DWORD(temp_data, CONFIG_OFFSET, i3c_mux);   //config 7bit static addr & slvena
+
     temp_data = 0;
     temp_data |= START_IBI | IBI_DATA(ibi_data);
     I3C_WriteREG_DWORD(temp_data, CTRL_OFFSET, i3c_mux);   //set event
+
+    temp_data = 0;
+    temp_data |= CONFIG_SLVENA;
+    I3C_WriteREG_DWORD(temp_data, CONFIG_OFFSET, i3c_mux);   //config 7bit static addr & slvena
+
     return TRUE;
 }
 
@@ -1485,35 +1560,3 @@ BYTE I3C_SLAVE_READ(uint8_t* data, uint8_t bytelen, BYTE i3c_mux)
     }
     return TRUE;
 }
-
-// //以下是I3C的回环测试代码，还需结合SLAVE的中断代码一起使用，具体如何使用，请查阅I3C_loop测试文档说明
-// void I3C_LOOP_Test(void)
-// {
-//     printf("test I3C\n");
-//     //引脚复用
-//     sysctl_iomux_master0();
-//     sysctl_iomux_slave0();
-//     sysctl_iomux_master1();
-//     sysctl_iomux_slave1();
-
-//     //master初始化
-//     I3C_Current_Master_Init(0x5a, I3C_MASTER1);
-
-//     //初始话slave
-//     I3C_Slave_Init(0x5a, I3C_SLAVE1);
-//     I3C_SLAVE_INT_ENABLE(RXPEND_ENABLE, I3C_SLAVE1);  //使能接收FIFO满中断
-
-//     for (int i = 0; i < 0xf; i++)
-//     {
-//         BYTE tx_data = 0x1+i;
-
-//         I3C_Master_write(tx_data, I3C_MASTER1);
-
-//         vDelayXus(20);
-
-//         // BYTE rx_data = I3C_Legacy_Master_Read(I3C_MASTER1);
-//         I3C_Legacy_Master_Read(I3C_MASTER1);
-//     }
-
-// }
-

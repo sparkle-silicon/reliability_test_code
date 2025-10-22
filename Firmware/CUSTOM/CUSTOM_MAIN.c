@@ -173,6 +173,32 @@ void __weak Hook_1secEventA(void) // get all temp
 #endif
     // printf("C2EINT:%x,C2EINFO0:%x,C2EINFO1:%x\n", C2EINT, C2EINFO0, C2EINFO1);
 
+    /* Channel 1 of I2C is used to get the temperature */
+    // char temperature[3];
+    // uint8_t a0 = 0x00;
+    // uint8_t a1 = 0x01;
+    // uint8_t a2 = 0x10;
+    // {
+    //     /* read temperature */
+    //     // temperature[0] = I2c_Master_Read_Byte(0x4c, 0x0, i2c_channel);
+    //     I3C_Legacy_Master_Write(0x4c, &a0, 1, I3C_MASTER0);
+    //     I3C_Legacy_Master_Read(0x4c, (uint8_t*)temperature, 1, I3C_MASTER0);
+    //     printf("t0:%x\n", temperature[0]);
+    //     // temperature[1] = I2c_Master_Read_Byte(0x4c,0x1, i2c_channel);
+    //     I3C_Legacy_Master_Write(0x4c, &a1, 1, I3C_MASTER0);
+    //     I3C_Legacy_Master_Read(0x4c, ((uint8_t*)temperature + 1), 1, I3C_MASTER0);
+    //     printf("t1:%x\n", temperature[1]);
+    //     // temperature[2] = I2c_Master_Read_Byte(0x4c,0x10, i2c_channel);
+    //     I3C_Legacy_Master_Write(0x4c, &a2, 1, I3C_MASTER0);
+    //     I3C_Legacy_Master_Read(0x4c, (uint8_t*)(temperature + 2), 1, I3C_MASTER0);
+    //     printf("t2:%x\n", temperature[2]);
+    //     /* Write temp into ECSPACE_BASE_ADDR */
+    //     CPU_TEMP = temperature[0];
+    //     SYSTEM_TEMP = temperature[1];
+    //     Req_flag = 0;
+    //     dprint("I3C temperature=%d temp[1]=%d.%d\n", temperature[0], temperature[1], ((((BYTE)temperature[2]) >> 5) & 0x7) * 125);
+    // }
+
     if (*((VBYTE*)(0x203B9)) == 1)
     {
         // printf("0x203B9:%x\n", *((VBYTE *)(0x203B9)));
