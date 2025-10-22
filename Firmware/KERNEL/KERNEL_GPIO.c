@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-17 22:49:16
+ * @LastEditTime: 2025-10-22 19:51:50
  * @Description:
  *
  *
@@ -208,7 +208,7 @@ void enable_necessary_input(DWORD port, DWORD io, unsigned port_type)
  *
  * @return   无
  */
-const char* IOMUX_NUM_ERROR = "GPIO%X[%d] iomux config error\n";
+const char *IOMUX_NUM_ERROR = "GPIO%X[%d] iomux config error\n";
 void sysctl_iomux_config(DWORD port, DWORD io, unsigned port_type)
 {
 	if (port == GPIOA)
@@ -977,24 +977,24 @@ BYTE PIO_Pullup_Config(BYTE GPIO, BYTE Num)
 {
 	switch (GPIO)
 	{
-	case GPIOA:
-		SYSCTL_PIOA_UPCFG |= (0x1 << Num);
-		break;
-	case GPIOB:
-		SYSCTL_PIOB_UPCFG |= (0x1 << Num);
-		break;
-	case GPIOC:
-		SYSCTL_PIOCD_UPCFG |= (0x1 << Num);
-		break;
-	case GPIOD:
-		SYSCTL_PIOCD_UPCFG |= (0x1 << (Num + 16));
-		break;
-	case GPIOE:
-		SYSCTL_PIOE_UPCFG |= (0x1 << Num);
-		break;
-	default:
-		dprint("参数选择错误\n");
-		break;
+		case GPIOA:
+			SYSCTL_PIOA_UPCFG |= (0x1 << Num);
+			break;
+		case GPIOB:
+			SYSCTL_PIOB_UPCFG |= (0x1 << Num);
+			break;
+		case GPIOC:
+			SYSCTL_PIOCD_UPCFG |= (0x1 << Num);
+			break;
+		case GPIOD:
+			SYSCTL_PIOCD_UPCFG |= (0x1 << (Num + 16));
+			break;
+		case GPIOE:
+			SYSCTL_PIOE_UPCFG |= (0x1 << Num);
+			break;
+		default:
+			dprint("参数选择错误\n");
+			break;
 	}
 
 	return 0;
@@ -1557,50 +1557,50 @@ void GPIO_Input_EN(int GPIO, int gpio_no, char sw)
 {
 	switch (GPIO)
 	{
-	case GPIOA:
-		if (sw == ENABLE)
-		{
-			SYSCTL_PIOA_IECFG |= (0x1 << gpio_no);
+		case GPIOA:
+			if (sw == ENABLE)
+			{
+				SYSCTL_PIOA_IECFG |= (0x1 << gpio_no);
 
-		}
-		else
-		{
-			SYSCTL_PIOA_IECFG &= ~(0x1 << gpio_no);
-		}
-		break;
-	case GPIOB:
-		if (sw == ENABLE)
-		{
-			SYSCTL_PIOB_IECFG |= (0x1 << gpio_no);
-		}
-		else
-		{
-			SYSCTL_PIOB_IECFG &= ~(0x1 << gpio_no);
-		}
-		break;
-	case GPIOC:
-	case GPIOD:
-		if (sw == ENABLE)
-		{
-			SYSCTL_PIOCD_IECFG |= (0x1 << gpio_no);
-		}
-		else
-		{
-			SYSCTL_PIOCD_IECFG &= ~(0x1 << gpio_no);
-		}
-		break;
-	case GPIOE:
-		if (sw == ENABLE)
-		{
-			SYSCTL_PIOE_IECFG |= (0x1 << gpio_no);
-		}
-		else
-		{
-			SYSCTL_PIOE_IECFG &= ~(0x1 << gpio_no);
-		}
-		break;
-	default:
-		break;
+			}
+			else
+			{
+				SYSCTL_PIOA_IECFG &= ~(0x1 << gpio_no);
+			}
+			break;
+		case GPIOB:
+			if (sw == ENABLE)
+			{
+				SYSCTL_PIOB_IECFG |= (0x1 << gpio_no);
+			}
+			else
+			{
+				SYSCTL_PIOB_IECFG &= ~(0x1 << gpio_no);
+			}
+			break;
+		case GPIOC:
+		case GPIOD:
+			if (sw == ENABLE)
+			{
+				SYSCTL_PIOCD_IECFG |= (0x1 << gpio_no);
+			}
+			else
+			{
+				SYSCTL_PIOCD_IECFG &= ~(0x1 << gpio_no);
+			}
+			break;
+		case GPIOE:
+			if (sw == ENABLE)
+			{
+				SYSCTL_PIOE_IECFG |= (0x1 << gpio_no);
+			}
+			else
+			{
+				SYSCTL_PIOE_IECFG &= ~(0x1 << gpio_no);
+			}
+			break;
+		default:
+			break;
 	}
 
 }
@@ -1621,93 +1621,93 @@ void GPIO_1V8(int GPIO, int gpio_no, char sw)
 	{
 		switch (gpio_no)
 		{
-		case 14:
-			offset = 0;
-			break;
-		case 28:
-			offset = 1;
-			break;
-			// case 23:
-			// 	offset = 2;
-			// 	break;
-		case 24:
-			offset = 4;
-			break;
-		case 25:
-			offset = 7;
-			break;
-		case 26:
-			offset = 8;
-			break;
-		case 27:
-			offset = 9;
-			break;
-		case 4:
-			offset = 10;
-			break;
-		case 5:
-			offset = 11;
-			break;
-		case 17:
-			offset = 19;
-			break;
-		case 18:
-			offset = 20;
-			break;
-		case 16:
-			offset = 23;
-			break;
-		case 13:
-			offset = 25;
-			break;
+			case 14:
+				offset = 0;
+				break;
+			case 28:
+				offset = 1;
+				break;
+				// case 23:
+				// 	offset = 2;
+				// 	break;
+			case 24:
+				offset = 4;
+				break;
+			case 25:
+				offset = 7;
+				break;
+			case 26:
+				offset = 8;
+				break;
+			case 27:
+				offset = 9;
+				break;
+			case 4:
+				offset = 10;
+				break;
+			case 5:
+				offset = 11;
+				break;
+			case 17:
+				offset = 19;
+				break;
+			case 18:
+				offset = 20;
+				break;
+			case 16:
+				offset = 23;
+				break;
+			case 13:
+				offset = 25;
+				break;
 
-		default:
-			break;
+			default:
+				break;
 		}
 	}
 	else if (GPIO == GPIOB)
 	{
 		switch (gpio_no)
 		{
-		case 6:
-			offset = 3;
-			break;
-			// case 0:
-			// 	offset = 5;
-			// 	break;
-			// case 7:
-			// 	offset = 6;
-			// 	break;
-		case 10:
-			offset = 12;
-			break;
-		case 11:
-			offset = 13;
-			break;
-		case 12:
-			offset = 14;
-			break;
-		case 13:
-			offset = 15;
-			break;
-		case 20:
-			offset = 16;
-			break;
-		case 21:
-			offset = 17;
-			break;
-		case 22:
-			offset = 18;
-			break;
-		case 14:
-			offset = 21;
-			break;
-		case 15:
-			offset = 22;
-			break;
+			case 6:
+				offset = 3;
+				break;
+				// case 0:
+				// 	offset = 5;
+				// 	break;
+				// case 7:
+				// 	offset = 6;
+				// 	break;
+			case 10:
+				offset = 12;
+				break;
+			case 11:
+				offset = 13;
+				break;
+			case 12:
+				offset = 14;
+				break;
+			case 13:
+				offset = 15;
+				break;
+			case 20:
+				offset = 16;
+				break;
+			case 21:
+				offset = 17;
+				break;
+			case 22:
+				offset = 18;
+				break;
+			case 14:
+				offset = 21;
+				break;
+			case 15:
+				offset = 22;
+				break;
 
-		default:
-			break;
+			default:
+				break;
 		}
 	}
 	else if ((GPIO == GPIOD) && (gpio_no == 8))
@@ -2059,11 +2059,11 @@ char IsGpioOut(DWORD port, DWORD io)
  */
 char ReadGPIOLevel(BYTE port, BYTE pin)
 {
-	volatile unsigned char* portBase;
+	volatile unsigned char *portBase;
 	unsigned char pinValue = 0;
 	if (port < 3)
 	{
-		portBase = (volatile unsigned char*)(GPIO0_BASE_ADDR + 0x50 + (port - 1) * 0x400 + (pin / 8));
+		portBase = (volatile unsigned char *)(GPIO0_BASE_ADDR + 0x50 + (port - 1) * 0x400 + (pin / 8));
 		// 读取引脚的电平值
 		pinValue = *portBase & (0x1 << (pin % 8));
 		// 返回引脚电平值（0或1）
@@ -2071,7 +2071,7 @@ char ReadGPIOLevel(BYTE port, BYTE pin)
 	}
 	else if (port == 3)
 	{
-		portBase = (volatile unsigned char*)(GPIO0_BASE_ADDR + 0x50 + (port - 1) * 0x400 + (pin / 8));
+		portBase = (volatile unsigned char *)(GPIO0_BASE_ADDR + 0x50 + (port - 1) * 0x400 + (pin / 8));
 		// 读取引脚的电平值
 		pinValue = *portBase & (0x1 << (pin % 8));
 		// 返回引脚电平值（0或1）
@@ -2079,7 +2079,7 @@ char ReadGPIOLevel(BYTE port, BYTE pin)
 	}
 	else if (port == 4)
 	{
-		portBase = (volatile unsigned char*)(GPIO2_BASE_ADDR + 0x54);
+		portBase = (volatile unsigned char *)(GPIO2_BASE_ADDR + 0x54);
 		// 读取引脚的电平值
 		pinValue = *portBase & (0x1 << (pin % 8));
 		// 返回引脚电平值（0或1）
@@ -2088,7 +2088,7 @@ char ReadGPIOLevel(BYTE port, BYTE pin)
 	}
 	else if (port == 5)
 	{
-		portBase = (volatile unsigned char*)(GPIO3_BASE_ADDR + 0x50 + (pin / 8));
+		portBase = (volatile unsigned char *)(GPIO3_BASE_ADDR + 0x50 + (pin / 8));
 		// 读取引脚的电平值
 		pinValue = *portBase & (0x1 << (pin % 8));
 		// 返回引脚电平值（0或1）

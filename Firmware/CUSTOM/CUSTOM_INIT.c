@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-22 16:22:19
+ * @LastEditTime: 2025-10-22 20:36:09
  * @Description:
  *
  *
@@ -77,7 +77,7 @@ void Default_Mailbox_SetClockFrequency(BYTE ClockDiv)
 	MAILBOX_CLEAR_IRQ(MAILBOX_Control_IRQ_NUMBER); // 清除中断状态
 	//修改SPIF resume和下一次suspend之间的时间，要求最小100us
 	uint32_t trsmax = ((CHIP_CLOCK_INT_HIGH / 10000) / (ClockDiv + 1));
-	if(trsmax >= (1 << 13))trsmax = ((1 << 13) - 1);
+	if (trsmax >= (1 << 13))trsmax = ((1 << 13) - 1);
 	SYSCTL_TRSMAX = trsmax;//修改SPIF CLOCK中的100us间隔时间,需要再频率之前修改，修改完以后可能出问题，需要重新配置频率才能修复
 	//配置时钟
 	SYSCTL_CLKDIV_OSC96M = ClockDiv;
@@ -91,18 +91,18 @@ void Default_Mailbox_SetClockFrequency(BYTE ClockDiv)
 void Default_Freq(void)
 {
 	//时钟初始化
-	if(SYSCTL_PIO_CFG & BIT1)//使用外部FLASH
+	if (SYSCTL_PIO_CFG & BIT1)//使用外部FLASH
 	{
 		uint32_t clock_div = (4 - 1);//使用默认的24MHz
-		if(CHIP_CLOCK_SWITCH > 1)//外部FLASH不能使用96MHz,SPIF不支持
+		if (CHIP_CLOCK_SWITCH > 1)//外部FLASH不能使用96MHz,SPIF不支持
 		{
 			clock_div = (CHIP_CLOCK_SWITCH - 1); //配置主时钟分频
 		}
-		if((!SYSCTL_ESTAT_EFUSE_EC_DEBUG) && (!SYSCTL_ESTAT_EFUSE_CRYPTO_DEBUG))//如果是走ec_debug并且子系统没起来,此时iram0代码还没考虑,不考虑通知需求
+		if ((!SYSCTL_ESTAT_EFUSE_EC_DEBUG) && (!SYSCTL_ESTAT_EFUSE_CRYPTO_DEBUG))//如果是走ec_debug并且子系统没起来,此时iram0代码还没考虑,不考虑通知需求
 		{
 				//修改SPIF resume和下一次suspend之间的时间，要求最小100us
 			uint32_t trsmax = ((CHIP_CLOCK_INT_HIGH / 10000) / (clock_div + 1));
-			if(trsmax >= (1 << 13))trsmax = ((1 << 13) - 1);
+			if (trsmax >= (1 << 13))trsmax = ((1 << 13) - 1);
 			SYSCTL_TRSMAX = trsmax;//修改SPIF CLOCK中的100us间隔时间,需要再频率之前修改，修改完以后可能出问题，需要重新配置频率才能修复
 			SYSCTL_CLKDIV_OSC96M = clock_div;
 			nop; nop;
@@ -130,7 +130,7 @@ void Default_Freq(void)
 		// }
 	}
 	//Oscillator Calibration时钟校准
-	if((SYSCTL_OSCTRIM & 0x007FEFFF) == 0x00338880)
+	if ((SYSCTL_OSCTRIM & 0x007FEFFF) == 0x00338880)
 	{
 	#if SOFTWARE_TRIM_CONTROL
 	#define TEST_CHIPNUMBER 0
@@ -185,11 +185,11 @@ void Default_Freq(void)
  */
 void Default_Vector(void)
 {
-	if(SYSCTL_PIO_CFG & BIT1)//使用外部FLASH
+	if (SYSCTL_PIO_CFG & BIT1)//使用外部FLASH
 	{
 		uint32_t *vector = (uint32_t *)&vector_base;
 		uint32_t *ivt = (uint32_t *)IVT_BASE_ADDR;
-		for(size_t i = 0; i < 33; i++)//32个中断向量表+1个异常中断跳转指令
+		for (size_t i = 0; i < 33; i++)//32个中断向量表+1个异常中断跳转指令
 		{
 			ivt[i] = vector[i];
 		}
@@ -203,18 +203,18 @@ void Default_Vector(void)
  */
 void Default_Iram0(void)
 {
-	if(SYSCTL_PIO_CFG & BIT1)//使用外部FLASH
+	if (SYSCTL_PIO_CFG & BIT1)//使用外部FLASH
 	{
 		uint32_t *iram_cache = (uint32_t *)NULL;//0xC0000
 		uint32_t *iram0 = (uint32_t *)IRAM0_BASE_ADDR;
 		{//数据搬运
-			if(iram_cache != NULL)
+			if (iram_cache != NULL)
 			{
-				for(size_t i = 0; i < (32 * 1024 / 4); i++)//32个中断向量表+1个异常中断跳转指令
+				for (size_t i = 0; i < (32 * 1024 / 4); i++)//32个中断向量表+1个异常中断跳转指令
 				{
 					iram0[i] = iram_cache[i];
 				}
-				if((!SYSCTL_ESTAT_EFUSE_EC_DEBUG) && (!SYSCTL_ESTAT_EFUSE_CRYPTO_DEBUG))//确认子系统处于等待置位的状态
+				if ((!SYSCTL_ESTAT_EFUSE_EC_DEBUG) && (!SYSCTL_ESTAT_EFUSE_CRYPTO_DEBUG))//确认子系统处于等待置位的状态
 				{
 					SYSCTL_CRYPTODBG_FLAG |= BIT(0);//子系统开始运行
 				}
@@ -230,8 +230,11 @@ void Default_Iram0(void)
  */
 void Default_Module_Disable(void)//Module Clock Disabled
 {
+#if SUPPORT_LOWPOWER
+	//关闭模块时钟
 	SYSCTL_MODEN0 &= ~(0);
 	SYSCTL_MODEN1 &= ~(0);
+#endif
 }
 /*
  * @brief 如果开启启动低功耗，可通过以下两个函数配置引脚默认状态
@@ -240,13 +243,15 @@ void Default_Module_Disable(void)//Module Clock Disabled
  */
 void Default_PinIO_Set(int val, int GPIO, int idx, int lens)
 {
-	for(register int i = 0; i < lens; i++)
+	for (register int i = 0; i < lens; i++)
 	{
 		GPIO_Input_EN(GPIO, idx + i, (!((val & BIT(i)) >> i)));
 	}
 }
 void Default_GPIO_InputSet()
 {
+#if SUPPORT_LOWPOWER
+	//关闭输入使能
 	Default_PinIO_Set(PinA0_7_InOut, GPIOA, 0, 8);
 	Default_PinIO_Set(PinA8_15_InOut, GPIOA, 8, 8);
 	Default_PinIO_Set(PinA16_23_InOut, GPIOA, 16, 8);
@@ -263,6 +268,9 @@ void Default_GPIO_InputSet()
 	Default_PinIO_Set(PinE8_15_InOut, GPIOE, 8, 8);
 	Default_PinIO_Set(PinE16_23_InOut, GPIOE, 16, 8);
 	Default_PinIO_Set(PinEFLASH_InOut, GPIOE, 24, 6);//8
+	//打开PWRSW复位功能
+	SYSCTL_PWRSWCSR = PWRSW_EN | PWRSW_WDTIME_1000ms | PWRSW_INT_WDT | PWRSW_DBTIMEL_64ms; // 使能PWR超时计时，1000ms，有wdt中断，
+#endif
 
 }
 /*
