@@ -14,22 +14,22 @@
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
 #include "CUSTOM_INIT.H"
-/****************************************************************************
-* SPKAE10X Init FLOW :
-* 1. DoubleBoot (Custom Configuration Double Boot Addr，Function Is Get_DoubleBoot_ADDR() In File CUSTOM_INIT.c)
-* 2. Default  Config(Custom Configuration All ,Function Is Default_Config() In File CUSTOM_INIT.c)
-* 3. Modlue Init (Custom Configuration All ,Function Is Module_init() In File KERNEL_SOC_FUNC.c)
-* 4. Interrupt Configuration (Custom Configuration All , Function Is Irqc_init() In File KERNEL_IRQ.c)
-* 5. return start and goto main() function
-****************************************************************************/
-/*
- * @brief 提供初始化 boot的id（boot id），boot跳转地址
- * @id boot0 id: = NULL(不跳转,默认)
- * @id boot1 id: = 0xff0(直接跳转)
- * @id boot2 id: = 0xff1(看门狗复位则跳转)
- * @id boot3 id: = 0xff2(PWRSW 超时复位)
- * @return (id<<20)|(addr)
- */
+ /****************************************************************************
+ * SPKAE10X Init FLOW :
+ * 1. DoubleBoot (Custom Configuration Double Boot Addr，Function Is Get_DoubleBoot_ADDR() In File CUSTOM_INIT.c)
+ * 2. Default  Config(Custom Configuration All ,Function Is Default_Config() In File CUSTOM_INIT.c)
+ * 3. Modlue Init (Custom Configuration All ,Function Is Module_init() In File KERNEL_SOC_FUNC.c)
+ * 4. Interrupt Configuration (Custom Configuration All , Function Is Irqc_init() In File KERNEL_IRQ.c)
+ * 5. return start and goto main() function
+ ****************************************************************************/
+ /*
+  * @brief 提供初始化 boot的id（boot id），boot跳转地址
+  * @id boot0 id: = NULL(不跳转,默认)
+  * @id boot1 id: = 0xff0(直接跳转)
+  * @id boot2 id: = 0xff1(看门狗复位则跳转)
+  * @id boot3 id: = 0xff2(PWRSW 超时复位)
+  * @return (id<<20)|(addr)
+  */
 FUNCT_PTR_V_V Get_DoubleBoot_ADDR(void)
 {
 	register FUNCT_PTR_V_V db_ptr = NULL;
@@ -68,7 +68,7 @@ void Default_Module_Reset(void)
  */
 void Default_Mailbox_SetClockFrequency(BYTE ClockDiv)
 {
-//告知主系统更新行为
+	//告知主系统更新行为
 	MAILBOX_SELF_CMD = MAILBOX_CMD_FREQ_SYNC;
 	MAILBOX_SELF_INFO1 = ClockDiv; // 通知子系统设置多少分频
 	// 触发子系统中断
@@ -77,7 +77,7 @@ void Default_Mailbox_SetClockFrequency(BYTE ClockDiv)
 	MAILBOX_CLEAR_IRQ(MAILBOX_Control_IRQ_NUMBER); // 清除中断状态
 	//修改SPIF resume和下一次suspend之间的时间，要求最小100us
 	uint32_t trsmax = ((CHIP_CLOCK_INT_HIGH / 10000) / (ClockDiv + 1));
-	if(trsmax >= (1 << 13))trsmax = ((1 << 13) - 1);
+	if (trsmax >= (1 << 13))trsmax = ((1 << 13) - 1);
 	SYSCTL_TRSMAX = trsmax;//修改SPIF CLOCK中的100us间隔时间,需要再频率之前修改，修改完以后可能出问题，需要重新配置频率才能修复
 	//配置时钟
 	SYSCTL_CLKDIV_OSC96M = ClockDiv;
@@ -91,18 +91,18 @@ void Default_Mailbox_SetClockFrequency(BYTE ClockDiv)
 void Default_Freq(void)
 {
 	//时钟初始化
-	if(SYSCTL_PIO_CFG & BIT1)//使用外部FLASH
+	if (SYSCTL_PIO_CFG & BIT1)//使用外部FLASH
 	{
 		uint32_t clock_div = (4 - 1);//使用默认的24MHz
-		if(CHIP_CLOCK_SWITCH > 1)//外部FLASH不能使用96MHz,SPIF不支持
+		if (CHIP_CLOCK_SWITCH > 1)//外部FLASH不能使用96MHz,SPIF不支持
 		{
 			clock_div = (CHIP_CLOCK_SWITCH - 1); //配置主时钟分频
 		}
-		if((!SYSCTL_ESTAT_EFUSE_EC_DEBUG) && (!SYSCTL_ESTAT_EFUSE_CRYPTO_DEBUG))//如果是走ec_debug并且子系统没起来,此时iram0代码还没考虑,不考虑通知需求
+		if ((!SYSCTL_ESTAT_EFUSE_EC_DEBUG) && (!SYSCTL_ESTAT_EFUSE_CRYPTO_DEBUG))//如果是走ec_debug并且子系统没起来,此时iram0代码还没考虑,不考虑通知需求
 		{
-				//修改SPIF resume和下一次suspend之间的时间，要求最小100us
+			//修改SPIF resume和下一次suspend之间的时间，要求最小100us
 			uint32_t trsmax = ((CHIP_CLOCK_INT_HIGH / 10000) / (clock_div + 1));
-			if(trsmax >= (1 << 13))trsmax = ((1 << 13) - 1);
+			if (trsmax >= (1 << 13))trsmax = ((1 << 13) - 1);
 			SYSCTL_TRSMAX = trsmax;//修改SPIF CLOCK中的100us间隔时间,需要再频率之前修改，修改完以后可能出问题，需要重新配置频率才能修复
 			SYSCTL_CLKDIV_OSC96M = clock_div;
 			nop; nop;
@@ -130,42 +130,42 @@ void Default_Freq(void)
 		// }
 	}
 	//Oscillator Calibration时钟校准
-	if((SYSCTL_OSCTRIM & 0x007FEFFF) == 0x00338880)
+	if ((SYSCTL_OSCTRIM & 0x007FEFFF) == 0x00338880)
 	{
-	#if SOFTWARE_TRIM_CONTROL
-	#define TEST_CHIPNUMBER 0
-	#if (TEST_CHIPNUMBER!=0)&&0
+#if SOFTWARE_TRIM_CONTROL
+#define TEST_CHIPNUMBER 0
+#if (TEST_CHIPNUMBER!=0)&&0
 		{//Bypass OSC Output	
 			sysctl_iomux_config(GPIOB, 31, 0x0);//将GPH7设置为GPIO，即设置为默认不输出
 			GPIO_Input_EN(GPIOB, 31, DISABLE);  //GPH[7]的IE配为0
 			SYSCTL_PMU_CFG |= ((1 << 0) | (1 << 9)); //寄存器0x3_0518(PMU test enable )的bit0和bit9(PMU BUF enable)均置1 
 			sysctl_iomux_config(GPIOA, 15, 0x3);//将GPB7设置为BYPASS OSC32K
 		}
-	#endif
+#endif
 		{
-		#if (TEST_CHIPNUMBER==1)	//1号片
-		#define LOW_32K_FTRIM_DVAL 0x69
-		#define LOW_32K_TTRIM_DVAL 0x8
-		#define HIGH_24M_FTRIM_DVAL 0x1d
-		#define HIGH_24M_TTRIM_DVAL 0x8
-		#elif TEST_CHIPNUMBER==2	//2号片
-		#define LOW_32K_FTRIM_DVAL 0x6A
-		#define LOW_32K_TTRIM_DVAL 0x8
-		#define HIGH_24M_FTRIM_DVAL 0x1d
-		#define HIGH_24M_TTRIM_DVAL 0x9
-		#else//默认值(不推荐改变该值)
-		#define LOW_32K_FTRIM_DVAL 0x80
-		#define LOW_32K_TTRIM_DVAL 0x8
-		#define HIGH_24M_FTRIM_DVAL 0x1C
-		#define HIGH_24M_TTRIM_DVAL 0x6
-		#endif
+#if (TEST_CHIPNUMBER==1)	//1号片
+#define LOW_32K_FTRIM_DVAL 0x69
+#define LOW_32K_TTRIM_DVAL 0x8
+#define HIGH_24M_FTRIM_DVAL 0x1d
+#define HIGH_24M_TTRIM_DVAL 0x8
+#elif TEST_CHIPNUMBER==2	//2号片
+#define LOW_32K_FTRIM_DVAL 0x6A
+#define LOW_32K_TTRIM_DVAL 0x8
+#define HIGH_24M_FTRIM_DVAL 0x1d
+#define HIGH_24M_TTRIM_DVAL 0x9
+#else//默认值(不推荐改变该值)
+#define LOW_32K_FTRIM_DVAL 0x80
+#define LOW_32K_TTRIM_DVAL 0x8
+#define HIGH_24M_FTRIM_DVAL 0x1C
+#define HIGH_24M_TTRIM_DVAL 0x6
+#endif
 			{//进行trim值填入
 				SYSCTL_OSCTRIM = (SYSCTL_OSCTRIM & (~(0x007FEFFF))) | \
 					((((LOW_32K_FTRIM_DVAL) & 0xFF) << 0) | (((LOW_32K_TTRIM_DVAL) & 0x0F) << 8) | \
-					(((HIGH_24M_FTRIM_DVAL) & 0x3F) << 13) | (((HIGH_24M_TTRIM_DVAL) & 0x0F) << 19));
+						(((HIGH_24M_FTRIM_DVAL) & 0x3F) << 13) | (((HIGH_24M_TTRIM_DVAL) & 0x0F) << 19));
 			}
 		}
-	#endif
+#endif
 	}
 	else
 	{
@@ -185,11 +185,11 @@ void Default_Freq(void)
  */
 void Default_Vector(void)
 {
-	if(SYSCTL_PIO_CFG & BIT1)//使用外部FLASH
+	if (SYSCTL_PIO_CFG & BIT1)//使用外部FLASH
 	{
-		uint32_t *vector = (uint32_t *)&vector_base;
-		uint32_t *ivt = (uint32_t *)IVT_BASE_ADDR;
-		for(size_t i = 0; i < 33; i++)//32个中断向量表+1个异常中断跳转指令
+		uint32_t* vector = (uint32_t*)&vector_base;
+		uint32_t* ivt = (uint32_t*)IVT_BASE_ADDR;
+		for (size_t i = 0; i < 33; i++)//32个中断向量表+1个异常中断跳转指令
 		{
 			ivt[i] = vector[i];
 		}
@@ -203,18 +203,18 @@ void Default_Vector(void)
  */
 void Default_Iram0(void)
 {
-	if(SYSCTL_PIO_CFG & BIT1)//使用外部FLASH
+	if (SYSCTL_PIO_CFG & BIT1)//使用外部FLASH
 	{
-		uint32_t *iram_cache = (uint32_t *)NULL;//0xC0000
-		uint32_t *iram0 = (uint32_t *)IRAM0_BASE_ADDR;
+		uint32_t* iram_cache = (uint32_t*)NULL;//0xC0000
+		uint32_t* iram0 = (uint32_t*)IRAM0_BASE_ADDR;
 		{//数据搬运
-			if(iram_cache != NULL)
+			if (iram_cache != NULL)
 			{
-				for(size_t i = 0; i < (32 * 1024 / 4); i++)//32个中断向量表+1个异常中断跳转指令
+				for (size_t i = 0; i < (32 * 1024 / 4); i++)//32个中断向量表+1个异常中断跳转指令
 				{
 					iram0[i] = iram_cache[i];
 				}
-				if((!SYSCTL_ESTAT_EFUSE_EC_DEBUG) && (!SYSCTL_ESTAT_EFUSE_CRYPTO_DEBUG))//确认子系统处于等待置位的状态
+				if ((!SYSCTL_ESTAT_EFUSE_EC_DEBUG) && (!SYSCTL_ESTAT_EFUSE_CRYPTO_DEBUG))//确认子系统处于等待置位的状态
 				{
 					SYSCTL_CRYPTODBG_FLAG |= BIT(0);//子系统开始运行
 				}
@@ -240,7 +240,7 @@ void Default_Module_Disable(void)//Module Clock Disabled
  */
 void Default_PinIO_Set(int val, int GPIO, int idx, int lens)
 {
-	for(register int i = 0; i < lens; i++)
+	for (register int i = 0; i < lens; i++)
 	{
 		GPIO_Input_EN(GPIO, idx + i, (!((val & BIT(i)) >> i)));
 	}
@@ -291,7 +291,7 @@ void SECTION(".init.Default") Default_Config()
 //----------------------------------------------------------------------------
 void Device_init(void)
 {
-// 0.Devoce's Function Init Of Modules
+	// 0.Devoce's Function Init Of Modules
 #if (PWM_MODULE_EN)
 #if (SUPPORT_FAN1&&(FAN1_PWM_CHANNEL_SWITCH<=7))
 	FAN_Init(FAN1_PWM_CHANNEL_SWITCH, PWM_CLK0, PWM_CTR0);
@@ -310,20 +310,20 @@ void Device_init(void)
 	ShareMem_PNP_Config();
 #endif
 
-//3.Devoce's Driver Init
-	//MOUSE_Init();
-	//KEYBOARD_Init();
-	//TOUCH_Init();
-	//Temp_Init();//
-// #if SUPPORT_ANX7447//PD
-// 	u8 ret = ucsi_init();
-// 	if(ret != UCSI_COMMAND_SUCC)
-// 	{
-// 		assert_print("ucsi_init failed.\n");
-// 		// return UCSI_COMMAND_FAIL;
-// 	}
-// #endif
-//4.Service Timer 1ms Init
+	//3.Devoce's Driver Init
+		//MOUSE_Init();
+		//KEYBOARD_Init();
+		//TOUCH_Init();
+		//Temp_Init();//
+	// #if SUPPORT_ANX7447//PD
+	// 	u8 ret = ucsi_init();
+	// 	if(ret != UCSI_COMMAND_SUCC)
+	// 	{
+	// 		assert_print("ucsi_init failed.\n");
+	// 		// return UCSI_COMMAND_FAIL;
+	// 	}
+	// #endif
+	//4.Service Timer 1ms Init
 #if TIMER_MODULE_EN
 	TIMER_Init(TIMER2, TIMER2_1ms, 0x1, 0x0); // 1ms service计时函数
 #endif
