@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-21 17:38:48
+ * @LastEditTime: 2025-10-22 17:42:44
  * @Description:
  *
  *
@@ -22,6 +22,7 @@
 #include "KERNEL_MEMORY.H"
 #include "CUSTOM_FAN.H"
 #include "AE_FLASHINFO.H"
+#define DoubleBoot_DEF_ADDR 0xA0084
 extern FUNCT_PTR_V_V Get_DoubleBoot_ADDR(void);
 extern void Default_Config();
 extern void Device_init(void);

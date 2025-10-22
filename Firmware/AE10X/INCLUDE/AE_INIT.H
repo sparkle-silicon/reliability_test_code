@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-20 16:46:47
+ * @LastEditTime: 2025-10-22 17:42:24
  * @Description:
  *
  *
@@ -18,14 +18,13 @@
 #include "AE_GLOBAL.H"
 #include "AE_REG.H"
 #include "AE_CONFIG.H"
-#include "AE_FUNC.H"
+// #include "AE_FUNC.H"
 #if TEST
 #include "TEST_SOC_FUNC.H"
 #else
 #include "KERNEL_SOC_FUNC.H"
 #endif
 #include "CUSTOM_INIT.H"
-#define DoubleBoot_DEF_ADDR 0xA0084
 
 #define AE_UPDATE_NO_INIT_FUNCTION {if(SYSCTL_CFG & BIT3) {\
 set_csr(mstatus, MSTATUS_MIE); return; \

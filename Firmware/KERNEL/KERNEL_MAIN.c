@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-22 16:25:24
+ * @LastEditTime: 2025-10-22 17:42:57
  * @Description:
  *
  *
@@ -13,14 +13,7 @@
  * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
-<<<<<< < HEAD
 #include "KERNEL_MAIN.H"
-	====== =
-#include "AE_INCLUDE.H"
-#include "KERNEL_INCLUDE.H"
-#include "CUSTOM_INCLUDE.H"
-	extern Task * task_head;
->>>>>> > 27b129e791b47953f7f5dd3795f6d9bf7560ddc4
 #define printf_instructions_msg " \
 \n\
 ************************************************************************************\n\
