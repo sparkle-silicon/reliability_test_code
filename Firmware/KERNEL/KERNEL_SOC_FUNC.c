@@ -168,14 +168,14 @@ void i3c_init(void)
 	I3C_WAIT_SDA_PU(I3C_MASTER0);	//需要等SCL/SDA都拉高后才能进行初始化，否则会误触发IBI中断
 	if (I3C_MASTER0_MODE == I3C_MASTER_I3C_MODE)
 	{
-		dprint("i3c master0 as i3c mode init\n");
 		I3C_SDR_Master_Init(SDR_DEFAULT_SPEED, I3C_MASTER0);
 		I3C_MASTER_ENTDAA(I3C_MASTER0_DEFAULT_DCT, I3C_MASTER0_DEFAULT_DYNAMICADDR, I3C_MASTER0);//specify a dynamic addr
+		dprint("i3c master0 as i3c mode init\n");
 	}
 	else if (I3C_MASTER0_MODE == I3C_MASTER_I2C_MODE)
 	{
-		dprint("i3c master0 as i2c mode init\n");
 		I3C_Legacy_Master_Init(I3C_LEGACY_SPEED, I3C_MASTER0);
+		dprint("i3c master0 as i2c mode init\n");
 	}
 #endif
 #if I3C1_EN_Init
@@ -185,14 +185,14 @@ void i3c_init(void)
 	I3C_WAIT_SDA_PU(I3C_MASTER1);	//需要等SCL/SDA都拉高后才能进行初始化，否则会误触发IBI中断
 	if (I3C_MASTER1_MODE == I3C_MASTER_I3C_MODE)
 	{
-		dprint("i3c master1 as i3c mode init\n");
 		I3C_SDR_Master_Init(SDR_DEFAULT_SPEED, I3C_MASTER1);
 		I3C_MASTER_ENTDAA(I3C_MASTER1_DEFAULT_DCT, I3C_MASTER1_DEFAULT_DYNAMICADDR, I3C_MASTER1);//specify a dynamic addr
+		dprint("i3c master1 as i3c mode init\n");
 	}
 	else if (I3C_MASTER0_MODE == I3C_MASTER_I2C_MODE)
 	{
-		dprint("i3c master1 as i2c mode init\n");
 		I3C_Legacy_Master_Init(I3C_LEGACY_SPEED, I3C_MASTER1);
+		dprint("i3c master1 as i2c mode init\n");
 	}
 #endif
 	dprint("I3C master init done.\n");

@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-24 11:08:35
+ * @LastEditTime: 2025-10-24 11:11:24
  * @Description:
  *
  *
@@ -330,14 +330,7 @@ void main_loop(void)
 		main_service();
 	}
 }
-#define I3C_TEST 0
-#if I3C_TEST//收到,已确认暂时不管这一段代码
-uint8_t ccc_wdata[10] = { 0x1,0x2,0x3,0x4,0x5,0x6,0x7,0x8,0x9,0xa };
-uint8_t ccc_rdata[10] = { 0,0,0,0,0,0,0,0,0,0 };
-uint8_t ccc_rdata1[10] = { 0,0,0,0,0,0,0,0,0,0 };
-uint8_t ccc_dr_rdata[10] = { 0,0,0,0,0,0,0,0,0,0 };
-uint8_t ccc_dr_rdata1[10] = { 0,0,0,0,0,0,0,0,0,0 };
-#endif
+
 //----------------------------------------------------------------------------
 // FUNCTION: main
 // main entry
@@ -355,101 +348,6 @@ int __weak main(void)
 	// 2. print Operational information
 	dprint("This is %s flash main\n", (SYSCTL_PIO_CFG & BIT1) ? "external" : "internal");
 	dprint("CPU freq at %d Hz\n", CPU_FREQ);
-#if I3C_TEST//收到,已确认暂时不管这一段代码
-	/******仅供i3c测试,泽宇先别删这段测试代码start */
-	// printf("master0/slave0测试\n");
-	// I3C_MASTER_BC_CCC_WRITE(ccc_wdata, 2, SETMWL_BC_CMD, 0, 0, I3C_MASTER0);
-	// printf("slave0 maxlength:%x\n", SLAVE0_MAXLIMITS);
-	// I3C_MASTER_PV_WRITE_WITH7E(0x3a, ccc_wdata, 5, I3C_MASTER0);
-	// I3C_SLAVE_READ(ccc_rdata, 5, I3C_SLAVE0);
-	// for (int i = 0; i < 5; i++)
-	// {
-	// 	printf("private read data%x:%x\n", i, ccc_rdata[i]);
-	// }
-	// I3C_SLAVE_WRITE(ccc_wdata, 5, I3C_SLAVE0);
-	// I3C_MASTER_PV_READ_WITH7E(0x3a, ccc_rdata1, 5, I3C_MASTER0);
-	// for (int i = 0; i < 5; i++)
-	// {
-	// 	printf("private read data%x:%x\n", i, ccc_rdata1[i]);
-	// }
-	// I3C_MASTER_DR_CCC_WRITE(0x3a, ccc_wdata, 2, SETMWL_DR_CMD, 0, 0, I3C_MASTER0);
-	// printf("slave0 maxlength:%x\n", SLAVE0_MAXLIMITS);
-	// I3C_MASTER_DR_CCC_READ(0x3a, ccc_dr_rdata, 1, GETDCR_DR_CMD, 0, 0, I3C_MASTER0);
-	// printf("direct read dcr:%x\n", ccc_dr_rdata[0]);
-
-	// // I3C_SLAVE_IBI_HOTJOIN(I3C_SLAVE0_STATIC_ADDR, I3C_SLAVE0_DEFAULT_IDPARTNO, I3C_SLAVE0_DEFAULT_DCR, I3C_SLAVE0_DEFAULT_BCR, I3C_SLAVE0);
-	// I3C_SLAVE_IBI_DATA(0x55, I3C_SLAVE0_DEFAULT_IDPARTNO, I3C_SLAVE0_DEFAULT_DCR, I3C_SLAVE0_DEFAULT_BCR, I3C_SLAVE0);
-
-	// printf("master0/slave1测试\n");
-	// I3C_MASTER_BC_CCC_WRITE(ccc_wdata, 2, SETMWL_BC_CMD, 0, 0, I3C_MASTER0);
-	// printf("slave1 maxlength:%x\n", SLAVE1_MAXLIMITS);
-	// I3C_MASTER_PV_WRITE_WITH7E(0x3b, ccc_wdata, 5, I3C_MASTER0);
-	// I3C_SLAVE_READ(ccc_rdata, 5, I3C_SLAVE1);
-	// for (int i = 0; i < 5; i++)
-	// {
-	// 	printf("private read data%x:%x\n", i, ccc_rdata[i]);
-	// }
-	// I3C_SLAVE_WRITE(ccc_wdata, 5, I3C_SLAVE1);
-	// I3C_MASTER_PV_READ_WITH7E(0x3b, ccc_rdata1, 5, I3C_MASTER0);
-	// for (int i = 0; i < 5; i++)
-	// {
-	// 	printf("private read data%x:%x\n", i, ccc_rdata1[i]);
-	// }
-	// I3C_MASTER_DR_CCC_WRITE(0x3b, ccc_wdata, 2, SETMWL_DR_CMD, 0, 0, I3C_MASTER0);
-	// printf("slave1 maxlength:%x\n", SLAVE1_MAXLIMITS);
-	// I3C_MASTER_DR_CCC_READ(0x3b, ccc_dr_rdata, 1, GETDCR_DR_CMD, 0, 0, I3C_MASTER0);
-	// printf("direct read dcr:%x\n", ccc_dr_rdata[0]);
-
-	// // I3C_SLAVE_IBI_HOTJOIN(I3C_SLAVE0_STATIC_ADDR, I3C_SLAVE0_DEFAULT_IDPARTNO, I3C_SLAVE0_DEFAULT_DCR, I3C_SLAVE1_DEFAULT_BCR, I3C_SLAVE0);
-	// I3C_SLAVE_IBI_DATA(0x77, I3C_SLAVE0_DEFAULT_IDPARTNO, I3C_SLAVE0_DEFAULT_DCR, I3C_SLAVE0_DEFAULT_BCR, I3C_SLAVE1);
-
-	// printf("master1/slave0测试\n");
-	// I3C_MASTER_BC_CCC_WRITE(ccc_wdata, 2, SETMWL_BC_CMD, 0, 0, I3C_MASTER1);
-	// printf("slave0 maxlength:%x\n", SLAVE0_MAXLIMITS);
-	// I3C_MASTER_PV_WRITE_WITH7E(0x3a, ccc_wdata, 5, I3C_MASTER1);
-	// I3C_SLAVE_READ(ccc_rdata, 5, I3C_SLAVE0);
-	// for (int i = 0; i < 5; i++)
-	// {
-	// 	printf("private read data%x:%x\n", i, ccc_rdata[i]);
-	// }
-	// I3C_SLAVE_WRITE(ccc_wdata, 5, I3C_SLAVE0);
-	// I3C_MASTER_PV_READ_WITH7E(0x3a, ccc_rdata1, 5, I3C_MASTER1);
-	// for (int i = 0; i < 5; i++)
-	// {
-	// 	printf("private read data%x:%x\n", i, ccc_rdata1[i]);
-	// }
-	// I3C_MASTER_DR_CCC_WRITE(0x3a, ccc_wdata, 2, SETMWL_DR_CMD, 0, 0, I3C_MASTER1);
-	// printf("slave0 maxlength:%x\n", SLAVE0_MAXLIMITS);
-	// I3C_MASTER_DR_CCC_READ(0x3a, ccc_dr_rdata, 1, GETDCR_DR_CMD, 0, 0, I3C_MASTER1);
-	// printf("direct read dcr:%x\n", ccc_dr_rdata[0]);
-
-	// // I3C_SLAVE_IBI_HOTJOIN(I3C_SLAVE0_STATIC_ADDR, I3C_SLAVE0_DEFAULT_IDPARTNO, I3C_SLAVE0_DEFAULT_DCR, I3C_SLAVE0_DEFAULT_BCR, I3C_SLAVE0);
-	// I3C_SLAVE_IBI_DATA(0x55, I3C_SLAVE0_DEFAULT_IDPARTNO, I3C_SLAVE0_DEFAULT_DCR, I3C_SLAVE0_DEFAULT_BCR, I3C_SLAVE0);
-
-	// printf("master1/slave1测试\n");
-	// I3C_MASTER_BC_CCC_WRITE(ccc_wdata, 2, SETMWL_BC_CMD, 0, 0, I3C_MASTER1);
-	// printf("slave1 maxlength:%x\n", SLAVE1_MAXLIMITS);
-	// I3C_MASTER_PV_WRITE_WITH7E(0x3b, ccc_wdata, 5, I3C_MASTER1);
-	// I3C_SLAVE_READ(ccc_rdata, 5, I3C_SLAVE1);
-	// for (int i = 0; i < 5; i++)
-	// {
-	// 	printf("private read data%x:%x\n", i, ccc_rdata[i]);
-	// }
-	// I3C_SLAVE_WRITE(ccc_wdata, 5, I3C_SLAVE1);
-	// I3C_MASTER_PV_READ_WITH7E(0x3b, ccc_rdata1, 5, I3C_MASTER1);
-	// for (int i = 0; i < 5; i++)
-	// {
-	// 	printf("private read data%x:%x\n", i, ccc_rdata1[i]);
-	// }
-	// I3C_MASTER_DR_CCC_WRITE(0x3b, ccc_wdata, 2, SETMWL_DR_CMD, 0, 0, I3C_MASTER1);
-	// printf("slave1 maxlength:%x\n", SLAVE1_MAXLIMITS);
-	// I3C_MASTER_DR_CCC_READ(0x3b, ccc_dr_rdata, 1, GETDCR_DR_CMD, 0, 0, I3C_MASTER1);
-	// printf("direct read dcr:%x\n", ccc_dr_rdata[0]);
-
-	// // I3C_SLAVE_IBI_HOTJOIN(I3C_SLAVE0_STATIC_ADDR, I3C_SLAVE0_DEFAULT_IDPARTNO, I3C_SLAVE0_DEFAULT_DCR, I3C_SLAVE1_DEFAULT_BCR, I3C_SLAVE0);
-	// I3C_SLAVE_IBI_DATA(0x77, I3C_SLAVE0_DEFAULT_IDPARTNO, I3C_SLAVE0_DEFAULT_DCR, I3C_SLAVE0_DEFAULT_BCR, I3C_SLAVE1);
-	/*******end */
-#endif
 	main_loop();
 	return 0;
 }

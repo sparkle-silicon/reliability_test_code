@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-22 12:19:10
+ * @LastEditTime: 2025-10-24 11:12:22
  * @Description:
  *
  *
@@ -25,7 +25,7 @@
 // #define LOW_LEVEL_SERVICE_NUM_DIV  2//
 #define LOW_LEVEL_SERVICE_NUM (7)/*((sizeof(service_table) / sizeof(FUNCT_PTR_V_V))*LOW_LEVEL_SERVICE_NUM_MUL /LOW_LEVEL_SERVICE_NUM_DIV*/
 //// #define MIDDLE_LEVEL_SERVICE_NUM_DIV  9//3:>90% 4:>95%,9:>98%
-#define MIDDLE_LEVEL_SERVICE_NUM (5)/*((sizeof(service_table) / sizeof(FUNCT_PTR_V_V)) -HIGH_LEVEL_SERVICE_NUM - LOW_LEVEL_SERVICE_NUM)*//*((sizeof(service_table) / sizeof(FUNCT_PTR_V_V)) /MIDDLE_LEVEL_SERVICE_NUM_DIV)*/
+#define MIDDLE_LEVEL_SERVICE_NUM (4)/*((sizeof(service_table) / sizeof(FUNCT_PTR_V_V)) -HIGH_LEVEL_SERVICE_NUM - LOW_LEVEL_SERVICE_NUM)*//*((sizeof(service_table) / sizeof(FUNCT_PTR_V_V)) /MIDDLE_LEVEL_SERVICE_NUM_DIV)*/
 
 /*SUPPORT_MAIN_SERVICE_LEVEL_POLL: 主程序轮询函数下的副功能,一般关闭即可,除非时序要求非常高,否则不建议开启,会影响正常轮询的执行效率
 如果开启,则会穿插执行列表轮询:
