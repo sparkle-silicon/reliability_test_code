@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-21 22:05:50
+ * @LastEditTime: 2025-10-24 11:08:58
  * @Description:
  *
  *
@@ -204,10 +204,9 @@ extern void Mailbox_eRPMC_Trigger(void);
 extern void Process_Tasks(void);
 extern Task *Add_Task(TaskFunction function, TaskParams params, Task **head);
 extern void Mailbox_Cryp_Selfcheck(void *param);
-extern void AwaitCrypSelfcheck(void);
 extern void Mailbox_SetClockFrequency(void *param);
 void Transfer_IntFlashToExtFlash(uint32_t destAddr, uint32_t srcAddr, size_t dataSize);
 void Transfer_ExtFlashToIntFlash(uint32_t destAddr, uint32_t srcAddr, size_t dataSize);
-extern void Service_PROCESS_TASKS(void);
+extern void Service_Process_Tasks(void);
 extern void Service_Mailbox(void);
 #endif

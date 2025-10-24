@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-22 17:42:57
+ * @LastEditTime: 2025-10-24 11:08:35
  * @Description:
  *
  *
@@ -134,7 +134,7 @@ void Event_1min(void)
 void Service_MS_1(void)
 {
 #if (Service_MS_1_START == 1)
-	if(F_Service_MS_1)
+	if (F_Service_MS_1)
 	{
 		F_Service_MS_1 = 0;
 	}
@@ -144,15 +144,15 @@ void Service_MS_1(void)
 	}
 	Event_1ms();
 	timer_1ms_count++;
-	if(timer_1ms_count >= 10)
+	if (timer_1ms_count >= 10)
 	{
 		timer_1ms_count = 0;
 	}
-	if((timer_1ms_count % 5) == 0) // 5ms
+	if ((timer_1ms_count % 5) == 0) // 5ms
 	{
 		Event_5ms();
 		timer_5ms_count++;
-		if(timer_5ms_count % 2 == 1) // 10ms events
+		if (timer_5ms_count % 2 == 1) // 10ms events
 		{
 			EventA_10ms();
 		}
@@ -160,22 +160,22 @@ void Service_MS_1(void)
 		{
 			EventB_10ms();
 		}
-		if(timer_5ms_count == 2)
+		if (timer_5ms_count == 2)
 		{
 			EventA_50ms();
 		}
-		else if(timer_5ms_count == 4)
+		else if (timer_5ms_count == 4)
 		{
 			EventB_50ms();
 		}
-		else if(timer_5ms_count == 6)
+		else if (timer_5ms_count == 6)
 		{
 			EventC_50ms();
 		}
-		else if(timer_5ms_count == 8)
+		else if (timer_5ms_count == 8)
 		{
 			timer_100ms_count++;
-			if(timer_100ms_count % 2 == 1)
+			if (timer_100ms_count % 2 == 1)
 			{
 				EventA_100ms();
 			}
@@ -184,60 +184,60 @@ void Service_MS_1(void)
 				EventB_100ms();
 			}
 		}
-		else if(timer_5ms_count >= 10)
+		else if (timer_5ms_count >= 10)
 		{
 			timer_5ms_count = 0;
 		}
-		if(timer_5ms_count == 0) // 50ms
+		if (timer_5ms_count == 0) // 50ms
 		{
 			timer_50ms_count++;
-			if(timer_50ms_count % 2 == 0)
+			if (timer_50ms_count % 2 == 0)
 			{
 				EventC_100ms();
 			}
-			if(timer_50ms_count == 4)
+			if (timer_50ms_count == 4)
 			{
 				EventA_500ms();
 			}
-			else if(timer_50ms_count == 6)
+			else if (timer_50ms_count == 6)
 			{
 				EventB_500ms();
 			}
-			else if(timer_50ms_count == 8)
+			else if (timer_50ms_count == 8)
 			{
 				EventC_500ms();
 			}
-			else if(timer_50ms_count == 10)
+			else if (timer_50ms_count == 10)
 			{
 				EventA_1s();
 			}
-			else if(timer_50ms_count == 12)
+			else if (timer_50ms_count == 12)
 			{
 				EventB_1s();
 			}
-			else if(timer_50ms_count == 14)
+			else if (timer_50ms_count == 14)
 			{
 				EventA_500ms();
 			}
-			else if(timer_50ms_count == 16)
+			else if (timer_50ms_count == 16)
 			{
 				EventB_500ms();
 			}
-			else if(timer_50ms_count == 18)
+			else if (timer_50ms_count == 18)
 			{
 				EventC_500ms();
 			}
-			else if(timer_50ms_count == 20)
+			else if (timer_50ms_count == 20)
 			{
 				EventC_1s();
 				timer_50ms_count = 0;
 				timer_1s_count++;
-				if(timer_1s_count == 60)
+				if (timer_1s_count == 60)
 				{
 					Event_1min();
 					timer_1s_count = 0;
 					timer_1min_count++;
-					if(timer_1min_count == 60)
+					if (timer_1min_count == 60)
 					{
 						timer_1min_count = 0;
 						timer_1hours_count++;
@@ -268,8 +268,7 @@ const FUNCT_PTR_V_V service_table[] =
 	Service_MS_1,             // 1 millisecond Service
 	Service_PCI2,             // PMC1 Host Command/Data service
 	Service_KBS,              // Keyboard scanner service
-	Service_PROCESS_TASKS,    // Security SubSystem(Crypto CPU) Mailbox Process Tasks service
-	Service_Mailbox,          // Security SubSystem(Crypto CPU) Mailbox Commands service
+	Service_Mailbox,          // Security SubSystem(Crypto CPU) Mailbox Commands Retuurn service
 
 	// Lo-Level Service
 	//低优先级
@@ -300,16 +299,16 @@ const FUNCT_PTR_V_V service_table[] =
 void main_service(void)
 {
 
-	if(_R1 >= (sizeof(service_table) / sizeof(FUNCT_PTR_V_V)))
+	if (_R1 >= (sizeof(service_table) / sizeof(FUNCT_PTR_V_V)))
 		_R1 = 0;
 	(service_table[_R1])();
 #if SUPPORT_MAIN_SERVICE_LEVEL_POLL
 #if (HIGH_LEVEL_SERVICE_NUM > 0)
-	if(_R1 >= HIGH_LEVEL_SERVICE_NUM)//开启高等级穿插式执行服务
+	if (_R1 >= HIGH_LEVEL_SERVICE_NUM)//开启高等级穿插式执行服务
 	{
 		(service_table[(_R1 % HIGH_LEVEL_SERVICE_NUM)])();
 	#if (MIDDLE_LEVEL_SERVICE_NUM > 0)
-		if(_R1 >= (HIGH_LEVEL_SERVICE_NUM + MIDDLE_LEVEL_SERVICE_NUM))//开启中等级穿插式执行服务
+		if (_R1 >= (HIGH_LEVEL_SERVICE_NUM + MIDDLE_LEVEL_SERVICE_NUM))//开启中等级穿插式执行服务
 		{
 			(service_table[HIGH_LEVEL_SERVICE_NUM + (_R1 % (MIDDLE_LEVEL_SERVICE_NUM))])();
 		}
@@ -326,7 +325,7 @@ void main_service(void)
 void main_loop(void)
 {
 	dprint("Enter main_service.\n");
-	while(1)
+	while (1)
 	{
 		main_service();
 	}
