@@ -131,7 +131,7 @@
 #define HOST_MODULE_EN ((KBC_MODULE_EN||PMC_MODULE_EN)||(ESPI_MODULE_EN||LPC_MODULE_EN)||PECI_MODULE_EN)
 #define ADC_MODULE_EN 0
 #define UART_MODULE_EN 1
-#define I3C_MODULE_EN 1
+#define I3C_MODULE_EN 0
   // reserved
 #define CEC_MODULE_EN 0
 #define RTC_MODULE_EN 0
@@ -262,7 +262,7 @@
 #define I2C2_EXTERNAL_PULL_UP 1
 #define I2C2_INTERNAL_PULL_UP 0
 
-#define I2C3_EN_Init 1 & SMBUS3_CLOCK_EN
+#define I2C3_EN_Init 0 & SMBUS3_CLOCK_EN
 #define I2C3_SPEED 100000
 #define I2C3_DEFAULT_ROLE I2C_NO_ROLE
 #define I2C3_DEFAULT_ADDR 0x00
@@ -309,7 +309,7 @@
 #define I2C2_CLK_SEL 0
 //I3C相关宏控
 // #define I3C_CLOCK_DIVISION 0
-#define I3C0_EN_Init 1 & I3C0_CLOCK_EN
+#define I3C0_EN_Init 0 & I3C0_CLOCK_EN
 #define I3C_MASTER0_SPEED  I3C_LEGACY_SPEED
 #define I3C_MASTER0_DEFAULT_ROLE  I3C_MASTER0_INTFMODE
 #define I3C_MASTER0_DEFAULT_STATICADDR 0x4c
@@ -318,7 +318,7 @@
 #define I3C0_EXTERNAL_PULL_UP 0
 #define I3C0_INTERNAL_PULL_UP 1
 
-#define I3C1_EN_Init 1 & I3C1_CLOCK_EN
+#define I3C1_EN_Init 0 & I3C1_CLOCK_EN
 #define I3C_MASTER1_SPEED  SDR_DEFAULT_SPEED
 #define I3C_MASTER1_DEFAULT_ROLE  I3C_MASTER1_INTFMODE
 #define I3C_MASTER1_DEFAULT_STATICADDR 0x4c
@@ -327,7 +327,7 @@
 #define I3C1_EXTERNAL_PULL_UP 0
 #define I3C1_INTERNAL_PULL_UP 1
 
-#define I3C2_EN_Init 1 & I3C2_CLOCK_EN
+#define I3C2_EN_Init 0 & I3C2_CLOCK_EN
 #define I3C_SLAVE0_SPEED  0
 #define I3C_SLAVE0_DEFAULT_IDPARTNO SLAVE0_SET_IDPARTNO
 #define I3C_SLAVE0_STATIC_ADDR SLAVE0_SET_STATICADDR
@@ -477,7 +477,7 @@
 #define I2C_DEBUG 1 & DEBUG                           // 0:close printf   1:open printf
 #define IRQC_DEBUG 1 & DEBUG                          // 0:close printf   1:open printf
 #define ANX7447_UCSI_DEBUG 1 & DEBUG &SUPPORT_ANX7447 // 0:close printf   1:open printf
-#define I3C_DEBUG 1 & DEBUG                           // 0:close printf   1:open printf
+#define I3C_DEBUG 0 & DEBUG                           // 0:close printf   1:open printf
 
  /****************************************************************************
   * Test enable
