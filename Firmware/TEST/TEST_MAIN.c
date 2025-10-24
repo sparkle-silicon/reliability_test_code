@@ -21,49 +21,49 @@
 #include "KERNEL_INCLUDE.H"
 #if TEST
 
-// void BBLED_TEST(void)//在32k的情况下运行的数据
-// {
-// 	uint8_t pwm_led_mode = 0;
-// 	{//进入低功耗模式(具体可配置未知，目的只是为了输出pwm led)
-// 		SYSCTL_SLEEPCFG = 0;//0x304D4=sleep mode,32K clock,32.768K clock
-// 		SYSCTL_PMUCSR |= BIT(20);//0x30498 = enable WFI
-// 	}
-// //配置TIMER2定时器中断2sec唤醒一次
-// 	SYSCTL_CLKDIV_TMR2 = TIMER2_CLOCK_DIVISION;//配置TMR2分频=0
-// 	timer2_MoudleClock_EN;//enable TMR2 mode
-// 	TIMER_Init(TIMER2, (LOW_CHIP_CLOCK / (2 << TIMER2_CLOCK_DIVISION)/*clock=*/ * 2/*sec*/), 0x1/*loop*/, 0x0/**/);
-// 	//配置PWM波输出
-// 	pwm_MoudleClock_EN;
-// 	PWM_CTRL |= PRESCALE_4;//4分频32000/4=8000
-// 		/* pwm_scale */
-// 	PWM_SCALER0 = 0;//8000/1=8000
-// 	PWM_SCALER1 = 0;//8000/1=8000
-// 	PWM_SCALER2 = 0;//8000/1=8000
-// 	PWM_SCALER3 = 0;//8000/1=8000
-// 	PWM_CTR0_1 = 0x3f3f;//CTR=64-1
-// 	PWM_CTR2_3 = 0x3f3f;//CTR=64-1
-// 	sysctl_iomux_pwm0();
+ // void BBLED_TEST(void)//在32k的情况下运行的数据
+ // {
+ // 	uint8_t pwm_led_mode = 0;
+ // 	{//进入低功耗模式(具体可配置未知，目的只是为了输出pwm led)
+ // 		SYSCTL_SLEEPCFG = 0;//0x304D4=sleep mode,32K clock,32.768K clock
+ // 		SYSCTL_PMUCSR |= BIT(20);//0x30498 = enable WFI
+ // 	}
+ // //配置TIMER2定时器中断2sec唤醒一次
+ // 	SYSCTL_CLKDIV_TMR2 = TIMER2_CLOCK_DIVISION;//配置TMR2分频=0
+ // 	timer2_MoudleClock_EN;//enable TMR2 mode
+ // 	TIMER_Init(TIMER2, (LOW_CHIP_CLOCK / (2 << TIMER2_CLOCK_DIVISION)/*clock=*/ * 2/*sec*/), 0x1/*loop*/, 0x0/**/);
+ // 	//配置PWM波输出
+ // 	pwm_MoudleClock_EN;
+ // 	PWM_CTRL |= PRESCALE_4;//4分频32000/4=8000
+ // 		/* pwm_scale */
+ // 	PWM_SCALER0 = 0;//8000/1=8000
+ // 	PWM_SCALER1 = 0;//8000/1=8000
+ // 	PWM_SCALER2 = 0;//8000/1=8000
+ // 	PWM_SCALER3 = 0;//8000/1=8000
+ // 	PWM_CTR0_1 = 0x3f3f;//CTR=64-1
+ // 	PWM_CTR2_3 = 0x3f3f;//CTR=64-1
+ // 	sysctl_iomux_pwm0();
 
-// 	// printf("wfi\n");//uart 输出，可屏蔽
-// 	PWM_Init_channel(PWM_CHANNEL0, PWM_LOW, PWM_CLK0, PWM_CTR0, pwm_led_mode, 1);//一次步进1，步进64次
-// 	while(1)//被TIMER2中断唤醒后继续跑，重新进入低功耗
-// 	{
-// 		// printf("pwm_led_mode = %#x\n", pwm_led_mode);//uart 输出，可屏蔽
-// 		// while(!(PRINTF_LSR & UART_LSR_TEMP));//uart 输出，可屏蔽
-// 		PWM_ReInit_channel(PWM_CHANNEL0, pwm_led_mode, 1);
-// 		asm volatile("wfi");//进入低功耗模式
-// 		pwm_led_mode = (~pwm_led_mode) & 0x3f;//0/0x3f
-// 	}
-// 	// printf("exit wfi\n");//uart 输出，可屏蔽
-// //退出低功耗模式(恢复现场)
-// 	// PWM_CLOCK_Init();
-// 	// sysctl_iomux_pwm0();
-// 	// PWM_Init_channel(PWM_CHANNEL0, PWM_LOW, PWM_CLK0, PWM_CTR0, 98, 0);
+ // 	// printf("wfi\n");//uart 输出，可屏蔽
+ // 	PWM_Init_channel(PWM_CHANNEL0, PWM_LOW, PWM_CLK0, PWM_CTR0, pwm_led_mode, 1);//一次步进1，步进64次
+ // 	while(1)//被TIMER2中断唤醒后继续跑，重新进入低功耗
+ // 	{
+ // 		// printf("pwm_led_mode = %#x\n", pwm_led_mode);//uart 输出，可屏蔽
+ // 		// while(!(PRINTF_LSR & UART_LSR_TEMP));//uart 输出，可屏蔽
+ // 		PWM_ReInit_channel(PWM_CHANNEL0, pwm_led_mode, 1);
+ // 		asm volatile("wfi");//进入低功耗模式
+ // 		pwm_led_mode = (~pwm_led_mode) & 0x3f;//0/0x3f
+ // 	}
+ // 	// printf("exit wfi\n");//uart 输出，可屏蔽
+ // //退出低功耗模式(恢复现场)
+ // 	// PWM_CLOCK_Init();
+ // 	// sysctl_iomux_pwm0();
+ // 	// PWM_Init_channel(PWM_CHANNEL0, PWM_LOW, PWM_CLK0, PWM_CTR0, 98, 0);
 
-// 	// TIMER_Init(TIMER2, TIMER2_1ms, 0x1, 0x0); // 1ms service计时函数
-// 	pwm_led_mode = 0;
-// 	return;
-// }
+ // 	// TIMER_Init(TIMER2, TIMER2_1ms, 0x1, 0x0); // 1ms service计时函数
+ // 	pwm_led_mode = 0;
+ // 	return;
+ // }
 
 extern lpc_mon lpc_stat;
 extern BYTE Write_buff[256];
@@ -76,20 +76,20 @@ void Service_PCI(void)
 {
 #if (Service_PCI_START == 1)
 #if LPC_WAY_OPTION_SWITCH
-	if(Is_FLAG_CLEAR(KBC_STA, KBC_STA_IBF))
+	if (Is_FLAG_CLEAR(KBC_STA, KBC_STA_IBF))
 		return;
 #if LPC_PRESSURE_TEST && (defined(AE102) || defined(AE103))
 	AUTO_TEST_PORT(0);
 #endif
 #else
-	if(F_Service_PCI == 1)
+	if (F_Service_PCI == 1)
 	{
 		F_Service_PCI = 0;
-		if(Is_FLAG_CLEAR(KBC_STA, KBC_STA_IBF))
+		if (Is_FLAG_CLEAR(KBC_STA, KBC_STA_IBF))
 			return;
-	#if LPC_PRESSURE_TEST && (defined(AE102) || defined(AE103))
+#if LPC_PRESSURE_TEST && (defined(AE102) || defined(AE103))
 		AUTO_TEST_PORT(0);
-	#endif
+#endif
 	}
 #endif
 #endif
@@ -102,20 +102,20 @@ void Service_PCI2(void)
 {
 #if (Service_PCI2_START == 1)
 #if LPC_WAY_OPTION_SWITCH
-	if(Is_FLAG_CLEAR(PMC1_STR, IBF1))
+	if (Is_FLAG_CLEAR(PMC1_STR, IBF1))
 		return;
 #if LPC_PRESSURE_TEST && (defined(AE102) || defined(AE103))
 	AUTO_TEST_PORT(1);
 #endif
 #else
-	if(F_Service_PCI2 == 1)
+	if (F_Service_PCI2 == 1)
 	{
 		F_Service_PCI2 = 0;
-		if(Is_FLAG_CLEAR(PMC1_STR, IBF1))
+		if (Is_FLAG_CLEAR(PMC1_STR, IBF1))
 			return;
-	#if LPC_PRESSURE_TEST && (defined(AE102) || defined(AE103))
+#if LPC_PRESSURE_TEST && (defined(AE102) || defined(AE103))
 		AUTO_TEST_PORT(1);
-	#endif
+#endif
 	}
 #endif
 #endif
@@ -128,20 +128,20 @@ void Service_PCI3(void)
 {
 #if (Service_PCI3_START == 1)
 #if LPC_WAY_OPTION_SWITCH
-	if(Is_FLAG_CLEAR(PMC2_STR, IBF2))
+	if (Is_FLAG_CLEAR(PMC2_STR, IBF2))
 		return;
 #if LPC_PRESSURE_TEST && (defined(AE102) || defined(AE103))
 	AUTO_TEST_PORT(2);
 #endif
 #else
-	if(F_Service_PCI3 == 1)
+	if (F_Service_PCI3 == 1)
 	{
 		F_Service_PCI3 = 0;
-		if(Is_FLAG_CLEAR(PMC2_STR, IBF2))
+		if (Is_FLAG_CLEAR(PMC2_STR, IBF2))
 			return;
-	#if LPC_PRESSURE_TEST && (defined(AE102) || defined(AE103))
+#if LPC_PRESSURE_TEST && (defined(AE102) || defined(AE103))
 		AUTO_TEST_PORT(2);
-	#endif
+#endif
 	}
 #endif
 #endif
@@ -154,20 +154,20 @@ void Service_PCI4(void)
 {
 #if (Service_PCI4_START == 1)
 #if LPC_WAY_OPTION_SWITCH
-	if(Is_FLAG_CLEAR(PMC3_STR, IBF3))
+	if (Is_FLAG_CLEAR(PMC3_STR, IBF3))
 		return;
 #if LPC_PRESSURE_TEST && (defined(AE102) || defined(AE103))
 	AUTO_TEST_PORT(3);
 #endif
 #else
-	if(F_Service_PCI4 == 1)
+	if (F_Service_PCI4 == 1)
 	{
 		F_Service_PCI4 = 0;
-		if(Is_FLAG_CLEAR(PMC3_STR, IBF3))
+		if (Is_FLAG_CLEAR(PMC3_STR, IBF3))
 			return;
-	#if LPC_PRESSURE_TEST && (defined(AE102) || defined(AE103))
+#if LPC_PRESSURE_TEST && (defined(AE102) || defined(AE103))
 		AUTO_TEST_PORT(3);
-	#endif
+#endif
 	}
 #endif
 #endif
@@ -180,20 +180,20 @@ void Service_PCI5(void)
 {
 #if (Service_PCI5_START == 1)
 #if LPC_WAY_OPTION_SWITCH
-	if(Is_FLAG_CLEAR(PMC4_STR, IBF4))
+	if (Is_FLAG_CLEAR(PMC4_STR, IBF4))
 		return;
 #if LPC_PRESSURE_TEST && (defined(AE102) || defined(AE103))
 	AUTO_TEST_PORT(4);
 #endif
 #else
-	if(F_Service_PCI5 == 1)
+	if (F_Service_PCI5 == 1)
 	{
 		F_Service_PCI5 = 0;
-		if(Is_FLAG_CLEAR(PMC4_STR, IBF4))
+		if (Is_FLAG_CLEAR(PMC4_STR, IBF4))
 			return;
-	#if LPC_PRESSURE_TEST && (defined(AE102) || defined(AE103))
+#if LPC_PRESSURE_TEST && (defined(AE102) || defined(AE103))
 		AUTO_TEST_PORT(4);
-	#endif
+#endif
 	}
 #endif
 #endif
@@ -206,20 +206,20 @@ void Service_PCI6(void)
 {
 #if (Service_PCI6_START == 1)
 #if LPC_WAY_OPTION_SWITCH
-	if(Is_FLAG_CLEAR(PMC5_STR, IBF5))
+	if (Is_FLAG_CLEAR(PMC5_STR, IBF5))
 		return;
 #if LPC_PRESSURE_TEST && (defined(AE102) || defined(AE103))
 	AUTO_TEST_PORT(5);
 #endif
 #else
-	if(F_Service_PCI6 == 1)
+	if (F_Service_PCI6 == 1)
 	{
 		F_Service_PCI6 = 0;
-		if(Is_FLAG_CLEAR(PMC5_STR, IBF5))
+		if (Is_FLAG_CLEAR(PMC5_STR, IBF5))
 			return;
-	#if LPC_PRESSURE_TEST && (defined(AE102) || defined(AE103))
+#if LPC_PRESSURE_TEST && (defined(AE102) || defined(AE103))
 		AUTO_TEST_PORT(5);
-	#endif
+#endif
 	}
 #endif
 #endif
@@ -231,21 +231,21 @@ void Service_PCI6(void)
 extern short array_count;
 void test_service(void)
 {
-	while(1)
+	while (1)
 	{
-		if(_R1 >= array_count)
+		if (_R1 >= array_count)
 			_R1 = 0;
 		(service_table[_R1])();
 		_R1++;
-	#if LPC_MODULE_EN
-		if(LPC_EOF == 1)
+#if LPC_MODULE_EN
+		if (LPC_EOF == 1)
 		{
 			dprint("Cycle Type:%s\n", lpc_stat.cyctpe_dir);
 			dprint("Addr:%#x\n", lpc_stat.addr);
 			dprint("Data:%#x\n", lpc_stat.data);
 			LPC_EOF = 0;
 		}
-	#endif
+#endif
 	}
 }
 //----------------------------------------------------------------------------
@@ -256,15 +256,15 @@ extern BYTE RPMC_OOB_TempArr[80];
 // 将一个字符转换为对应的十六进制值
 unsigned char hexCharToValue(char c)
 {
-	if(c >= '0' && c <= '9')
+	if (c >= '0' && c <= '9')
 	{
 		return c - '0';
 	}
-	else if(c >= 'a' && c <= 'f')
+	else if (c >= 'a' && c <= 'f')
 	{
 		return c - 'a' + 10;
 	}
-	else if(c >= 'A' && c <= 'F')
+	else if (c >= 'A' && c <= 'F')
 	{
 		return c - 'A' + 10;
 	}
@@ -275,11 +275,11 @@ unsigned char hexCharToValue(char c)
 }
 
 // 将十六进制字符串转换为字节数组
-void hexStringToByteArray(const char *hexString, unsigned char *byteArray, int byteArraySize)
+void hexStringToByteArray(const char* hexString, unsigned char* byteArray, int byteArraySize)
 {
-	for(int i = 0; i < byteArraySize; i++)
+	for (int i = 0; i < byteArraySize; i++)
 	{
-// 每两个字符组成一个字节
+		// 每两个字符组成一个字节
 		byteArray[i] = (hexCharToValue(hexString[i * 2]) << 4) | hexCharToValue(hexString[i * 2 + 1]);
 	}
 }
@@ -383,52 +383,52 @@ int main()
 	sysctl_iomux_uart3();
 	serial_init(3, 115200);
 #endif
-	
+
 	// 定义指向起始地址的volatile指针（防止编译器优化写操作）
-    volatile unsigned char *base_addr = (volatile unsigned char *)0x29000;
+	volatile unsigned char* base_addr = (volatile unsigned char*)0x29000;
 	// 定义起始地址的volatile指针（防止编译器优化，确保实际读取内存）
-    volatile  unsigned char *base_addr0 = (volatile  unsigned char *)0x2a000;
-    // 计算地址范围大小：0x2a000 - 0x29000 = 0x1000（共4096个字节）
-    const uint32_t range_size = 0x2b000 - 0x2a000;
-    
-    // 循环写入0到0xff（共256个值，对应0x29000到0x290ff）
-    for (uint16_t i = 0; i < 256; i++) {
-        // base_addr[i] 等价于访问地址 0x29000 + i
-        base_addr[i] = i;
-		printf("0x%x : %x\n", 0x29000+i, base_addr[i]);
-    }
+	volatile  unsigned char* base_addr0 = (volatile  unsigned char*)0x2a000;
+	// 计算地址范围大小：0x2a000 - 0x29000 = 0x1000（共4096个字节）
+	const uint32_t range_size = 0x2b000 - 0x2a000;
+
+	// 循环写入0到0xff（共256个值，对应0x29000到0x290ff）
+	for (uint16_t i = 0; i < 256; i++) {
+		// base_addr[i] 等价于访问地址 0x29000 + i
+		base_addr[i] = i;
+		printf("0x%x : %x\n", 0x29000 + i, base_addr[i]);
+	}
 
 	for (uint32_t i = 0; i < range_size; i++) {
 		//清零
-		*(base_addr0 + i)=0;
-    }
+		*(base_addr0 + i) = 0;
+	}
 	printf("dma test start\n");
-	DMA_InitStruct.DMA_Dest_Width=DMA_DST_TR_WIDTH_8bits;
-	DMA_InitStruct.DMA_Src_Width=DMA_SRC_TR_WIDTH_8bits;
-	DMA_InitStruct.DMA_Dest_Inc=DMA_DINC_INC;
-	DMA_InitStruct.DMA_Src_Inc=DMA_SINC_INC;
-	DMA_InitStruct.DMA_Dest_Msize=DMA_DEST_MSIZE_4;
-	DMA_InitStruct.DMA_Src_Msize=DMA_SRC_MSIZE_4;
-	DMA_InitStruct.DMA_Trans_Type=DMA_TT_FC_MtoM_DMA;
-	DMA_InitStruct.DMA_Block_Ts=0x2;
-	DMA_InitStruct.DMA_Priority=0;
-	DMA_InitStruct.DMA_Dest_Addr=0x2a000;
-	DMA_InitStruct.DMA_Src_Addr=0x29000;
+	DMA_InitStruct.DMA_Dest_Width = DMA_DST_TR_WIDTH_8bits;
+	DMA_InitStruct.DMA_Src_Width = DMA_SRC_TR_WIDTH_8bits;
+	DMA_InitStruct.DMA_Dest_Inc = DMA_DINC_INC;
+	DMA_InitStruct.DMA_Src_Inc = DMA_SINC_INC;
+	DMA_InitStruct.DMA_Dest_Msize = DMA_DEST_MSIZE_4;
+	DMA_InitStruct.DMA_Src_Msize = DMA_SRC_MSIZE_4;
+	DMA_InitStruct.DMA_Trans_Type = DMA_TT_FC_MtoM_DMA;
+	DMA_InitStruct.DMA_Block_Ts = 0x2;
+	DMA_InitStruct.DMA_Priority = 0;
+	DMA_InitStruct.DMA_Dest_Addr = 0x2a000;
+	DMA_InitStruct.DMA_Src_Addr = 0x29000;
 	DMA_Init(&DMA_InitStruct);
 	printf("dma init ok\n");
 	vDelayXms(10);
 
-    // 遍历每个地址并打印
-    for (uint32_t i = 0; i < range_size; i++) {
-        // 每16个字节换行，并在行首打印当前起始地址
-        if (i % 16 == 0) {
-            // 地址格式：0x29000 这样的8位十六进制（前导0补齐）
-            printf("\n0x%08x:  ", (uint32_t)(base_addr0 + i));
-        }
-        // 打印当前字节值（两位十六进制，前导0补齐）
-        printf("%02x ", base_addr0[i]);
-    }
-    printf("\n");  // 最后补一个换行
+	// 遍历每个地址并打印
+	for (uint32_t i = 0; i < range_size; i++) {
+		// 每16个字节换行，并在行首打印当前起始地址
+		if (i % 16 == 0) {
+			// 地址格式：0x29000 这样的8位十六进制（前导0补齐）
+			printf("\n0x%08x:  ", (uint32_t)(base_addr0 + i));
+		}
+		// 打印当前字节值（两位十六进制，前导0补齐）
+		printf("%02x ", base_addr0[i]);
+	}
+	printf("\n");  // 最后补一个换行
 
 	//iram -uartb tx
 	// sysctl_iomux_uartb();
@@ -485,39 +485,39 @@ int main()
 	// DMA_Init(&DMA_InitStruct);
 
 	//iram -uart1 tx uart1 rx -> iram
-	REG32(0x29000)=0xffffff41;//A
-	REG32(0x29004)=0xffffff42;//B
-	REG32(0x29008)=0xffffff43;//C
-	sysctl_iomux_uart1(0,0);
+	REG32(0x29000) = 0xffffff41;//A
+	REG32(0x29004) = 0xffffff42;//B
+	REG32(0x29008) = 0xffffff43;//C
+	sysctl_iomux_uart1(0, 0);
 	serial_init(UART1_CHANNEL, 115200);
-	DMA_InitStruct.DMA_Dest_Width=DMA_DST_TR_WIDTH_32bits;
-	DMA_InitStruct.DMA_Src_Width=DMA_SRC_TR_WIDTH_32bits;
-	DMA_InitStruct.DMA_Dest_Inc=DMA_DINC_No_chagne;
-	DMA_InitStruct.DMA_Src_Inc=DMA_SINC_INC;
-	DMA_InitStruct.DMA_Dest_Msize=DMA_DEST_MSIZE_32;
-	DMA_InitStruct.DMA_Src_Msize=DMA_DEST_MSIZE_32;
-	DMA_InitStruct.DMA_Trans_Type=DMA_TT_FC_MtoP_DMA;
-	DMA_InitStruct.DMA_Periph_Type=UART1_DMA_TX;
-	DMA_InitStruct.DMA_Block_Ts=0x3;
-	DMA_InitStruct.DMA_Priority=0;
-	DMA_InitStruct.DMA_Dest_Addr=&UART1_TX;
-	DMA_InitStruct.DMA_Src_Addr=0x29000;
+	DMA_InitStruct.DMA_Dest_Width = DMA_DST_TR_WIDTH_32bits;
+	DMA_InitStruct.DMA_Src_Width = DMA_SRC_TR_WIDTH_32bits;
+	DMA_InitStruct.DMA_Dest_Inc = DMA_DINC_No_chagne;
+	DMA_InitStruct.DMA_Src_Inc = DMA_SINC_INC;
+	DMA_InitStruct.DMA_Dest_Msize = DMA_DEST_MSIZE_32;
+	DMA_InitStruct.DMA_Src_Msize = DMA_DEST_MSIZE_32;
+	DMA_InitStruct.DMA_Trans_Type = DMA_TT_FC_MtoP_DMA;
+	DMA_InitStruct.DMA_Periph_Type = UART1_DMA_TX;
+	DMA_InitStruct.DMA_Block_Ts = 0x3;
+	DMA_InitStruct.DMA_Priority = 0;
+	DMA_InitStruct.DMA_Dest_Addr = &UART1_TX;
+	DMA_InitStruct.DMA_Src_Addr = 0x29000;
 	DMA_Init(&DMA_InitStruct);
 	vDelayXms(10);
 
-	UART1_IER=0;
-	DMA_InitStruct.DMA_Dest_Width=DMA_DST_TR_WIDTH_32bits;
-	DMA_InitStruct.DMA_Src_Width=DMA_SRC_TR_WIDTH_32bits;
-	DMA_InitStruct.DMA_Dest_Inc=DMA_DINC_INC;
-	DMA_InitStruct.DMA_Src_Inc=DMA_SINC_No_chagne;
-	DMA_InitStruct.DMA_Dest_Msize=DMA_DEST_MSIZE_32;
-	DMA_InitStruct.DMA_Src_Msize=DMA_DEST_MSIZE_32;
-	DMA_InitStruct.DMA_Trans_Type=DMA_TT_FC_PtoM_DMA;
-	DMA_InitStruct.DMA_Periph_Type=UART1_DMA_RX;
-	DMA_InitStruct.DMA_Block_Ts=0x1f;
-	DMA_InitStruct.DMA_Priority=0;
-	DMA_InitStruct.DMA_Dest_Addr=0x2a000;
-	DMA_InitStruct.DMA_Src_Addr=&UART1_TX;
+	UART1_IER = 0;
+	DMA_InitStruct.DMA_Dest_Width = DMA_DST_TR_WIDTH_32bits;
+	DMA_InitStruct.DMA_Src_Width = DMA_SRC_TR_WIDTH_32bits;
+	DMA_InitStruct.DMA_Dest_Inc = DMA_DINC_INC;
+	DMA_InitStruct.DMA_Src_Inc = DMA_SINC_No_chagne;
+	DMA_InitStruct.DMA_Dest_Msize = DMA_DEST_MSIZE_32;
+	DMA_InitStruct.DMA_Src_Msize = DMA_DEST_MSIZE_32;
+	DMA_InitStruct.DMA_Trans_Type = DMA_TT_FC_PtoM_DMA;
+	DMA_InitStruct.DMA_Periph_Type = UART1_DMA_RX;
+	DMA_InitStruct.DMA_Block_Ts = 0x1f;
+	DMA_InitStruct.DMA_Priority = 0;
+	DMA_InitStruct.DMA_Dest_Addr = 0x2a000;
+	DMA_InitStruct.DMA_Src_Addr = &UART1_TX;
 	DMA_Init(&DMA_InitStruct);
 
 	//iram -uarta tx
@@ -551,7 +551,7 @@ int main()
 	// I2c_Write_Short(0x2, I2C_DMA_CR_OFFSET, SMBUS);       //主机使能DMA
 	// sysctl_iomux_i2c0(I2C0_CLK_SEL, I2C0_DAT_SEL);
 	// I2c_Channel_Init(SMBUS, I2C0_SPEED, I2C_MASTER_ROLE, 0x4c, 1);
-	
+
 	// DMA_InitStruct.DMA_Dest_Width=DMA_DST_TR_WIDTH_32bits;
 	// DMA_InitStruct.DMA_Src_Width=DMA_SRC_TR_WIDTH_32bits;
 	// DMA_InitStruct.DMA_Dest_Inc=DMA_DINC_No_chagne;
@@ -596,7 +596,7 @@ int main()
 	// I2c_Write_Short(0x2, I2C_DMA_CR_OFFSET, SMBUS);       //主机使能DMA
 	// sysctl_iomux_i2c1();					//改
 	// I2c_Channel_Init(SMBUS, I2C0_SPEED, I2C_MASTER_ROLE, 0x4c, 1);
-	
+
 	// DMA_InitStruct.DMA_Dest_Width=DMA_DST_TR_WIDTH_32bits;
 	// DMA_InitStruct.DMA_Src_Width=DMA_SRC_TR_WIDTH_32bits;
 	// DMA_InitStruct.DMA_Dest_Inc=DMA_DINC_No_chagne;
@@ -642,7 +642,7 @@ int main()
 	// I2c_Write_Short(0x2, I2C_DMA_CR_OFFSET, SMBUS);       //主机使能DMA
 	// sysctl_iomux_i2c2(1);					//改
 	// I2c_Channel_Init(SMBUS, I2C0_SPEED, I2C_MASTER_ROLE, 0x4c, 1);
-	
+
 	// DMA_InitStruct.DMA_Dest_Width=DMA_DST_TR_WIDTH_32bits;
 	// DMA_InitStruct.DMA_Src_Width=DMA_SRC_TR_WIDTH_32bits;
 	// DMA_InitStruct.DMA_Dest_Inc=DMA_DINC_No_chagne;
@@ -687,7 +687,7 @@ int main()
 	// I2c_Write_Short(0x2, I2C_DMA_CR_OFFSET, SMBUS);       //主机使能DMA
 	// sysctl_iomux_i2c3();					//改
 	// I2c_Channel_Init(SMBUS, I2C0_SPEED, I2C_MASTER_ROLE, 0x4c, 1);
-	
+
 	// DMA_InitStruct.DMA_Dest_Width=DMA_DST_TR_WIDTH_32bits;
 	// DMA_InitStruct.DMA_Src_Width=DMA_SRC_TR_WIDTH_32bits;
 	// DMA_InitStruct.DMA_Dest_Inc=DMA_DINC_No_chagne;
@@ -776,7 +776,7 @@ int main()
 	// I2c_Write_Short(0x2, I2C_DMA_CR_OFFSET, SMBUS);       //主机使能DMA
 	// sysctl_iomux_i2c5();					//改
 	// I2c_Channel_Init(SMBUS, I2C0_SPEED, I2C_MASTER_ROLE, 0x4c, 1);
-	
+
 	// DMA_InitStruct.DMA_Dest_Width=DMA_DST_TR_WIDTH_32bits;
 	// DMA_InitStruct.DMA_Src_Width=DMA_SRC_TR_WIDTH_32bits;
 	// DMA_InitStruct.DMA_Dest_Inc=DMA_DINC_No_chagne;
@@ -855,7 +855,7 @@ int main()
 	// printf("temp cmd1:0x%x\n",REG32(0x2a004));
 	// printf("temp cmd10:0x%x\n",REG32(0x2a008));
 
-	
+
 	//uartb rx - iram
 	// sysctl_iomux_uartb();
 	// serial_init(UARTB_CHANNEL, 115200);
@@ -909,7 +909,7 @@ int main()
 	// DMA_InitStruct.DMA_Dest_Addr=0x2a000;
 	// DMA_InitStruct.DMA_Src_Addr=&UARTA_TX;
 	// DMA_Init(&DMA_InitStruct);
-	
+
 	//uart0 -rx uarta tx 没通
 	// sysctl_iomux_uarta(0,0);
 	// serial_init(UARTA_CHANNEL, 115200);
@@ -1039,7 +1039,7 @@ int main()
 	// vDelayXms(20);   //防止片选过早拉高，导致最后一个数读不出来,正向
 	// SPI_Flash_CS_High(0);
 	// //DMA通道使能
-    // DMA_ChEnReg = (0x1 | 0x1 << 8);
+	// DMA_ChEnReg = (0x1 | 0x1 << 8);
 	// vDelayXms(20);
 	// for (int i = 0; i < 30; i++)
 	// {
@@ -1050,7 +1050,7 @@ int main()
 	// #define CS_sel 0
 	// SPIM_CTRL = 0x6754;            //dma_wr_en:0,dma_rd_en=1   //反向是SPIM搬给IRAM，DMA是接收方，所以要打开接收FIFO使能
 	// SPIM_CPSR = 0x1;                                                // 时钟分频
-    // SPIM_IMSR = 0x1f;
+	// SPIM_IMSR = 0x1f;
 	// //SPIM往FLASH中提取数据
 	// unsigned char ad[3];
 	// ad[0] = (ADDRess >> 16) & 0xff;
@@ -1401,6 +1401,15 @@ int main()
 //   dprint("vector table Transport to IVT Space\n");
 // }
 
+#define I3C_TEST 0
+#if I3C_TEST//收到,已确认暂时不管这一段代码
+uint8_t ccc_wdata[10] = { 0x1,0x2,0x3,0x4,0x5,0x6,0x7,0x8,0x9,0xa };
+uint8_t ccc_rdata[10] = { 0,0,0,0,0,0,0,0,0,0 };
+uint8_t ccc_rdata1[10] = { 0,0,0,0,0,0,0,0,0,0 };
+uint8_t ccc_dr_rdata[10] = { 0,0,0,0,0,0,0,0,0,0 };
+uint8_t ccc_dr_rdata1[10] = { 0,0,0,0,0,0,0,0,0,0 };
+#endif
+
 // int __weak main(void)
 // {
 // 	AutoON_Check_AfterUpdate(); // 检查更新后重启设定标志
@@ -1425,6 +1434,102 @@ int main()
 // 	}
 // #endif
 // 	dprint("CPU freq at %d Hz\n", CPU_FREQ);
+
+#if I3C_TEST//收到,已确认暂时不管这一段代码
+	/******仅供i3c测试,泽宇先别删这段测试代码start */
+	// printf("master0/slave0测试\n");
+	// I3C_MASTER_BC_CCC_WRITE(ccc_wdata, 2, SETMWL_BC_CMD, 0, 0, I3C_MASTER0);
+	// printf("slave0 maxlength:%x\n", SLAVE0_MAXLIMITS);
+	// I3C_MASTER_PV_WRITE_WITH7E(0x3a, ccc_wdata, 5, I3C_MASTER0);
+	// I3C_SLAVE_READ(ccc_rdata, 5, I3C_SLAVE0);
+	// for (int i = 0; i < 5; i++)
+	// {
+	// 	printf("private read data%x:%x\n", i, ccc_rdata[i]);
+	// }
+	// I3C_SLAVE_WRITE(ccc_wdata, 5, I3C_SLAVE0);
+	// I3C_MASTER_PV_READ_WITH7E(0x3a, ccc_rdata1, 5, I3C_MASTER0);
+	// for (int i = 0; i < 5; i++)
+	// {
+	// 	printf("private read data%x:%x\n", i, ccc_rdata1[i]);
+	// }
+	// I3C_MASTER_DR_CCC_WRITE(0x3a, ccc_wdata, 2, SETMWL_DR_CMD, 0, 0, I3C_MASTER0);
+	// printf("slave0 maxlength:%x\n", SLAVE0_MAXLIMITS);
+	// I3C_MASTER_DR_CCC_READ(0x3a, ccc_dr_rdata, 1, GETDCR_DR_CMD, 0, 0, I3C_MASTER0);
+	// printf("direct read dcr:%x\n", ccc_dr_rdata[0]);
+
+	// // I3C_SLAVE_IBI_HOTJOIN(I3C_SLAVE0_STATIC_ADDR, I3C_SLAVE0_DEFAULT_IDPARTNO, I3C_SLAVE0_DEFAULT_DCR, I3C_SLAVE0_DEFAULT_BCR, I3C_SLAVE0);
+	// I3C_SLAVE_IBI_DATA(0x55, I3C_SLAVE0_DEFAULT_IDPARTNO, I3C_SLAVE0_DEFAULT_DCR, I3C_SLAVE0_DEFAULT_BCR, I3C_SLAVE0);
+
+	// printf("master0/slave1测试\n");
+	// I3C_MASTER_BC_CCC_WRITE(ccc_wdata, 2, SETMWL_BC_CMD, 0, 0, I3C_MASTER0);
+	// printf("slave1 maxlength:%x\n", SLAVE1_MAXLIMITS);
+	// I3C_MASTER_PV_WRITE_WITH7E(0x3b, ccc_wdata, 5, I3C_MASTER0);
+	// I3C_SLAVE_READ(ccc_rdata, 5, I3C_SLAVE1);
+	// for (int i = 0; i < 5; i++)
+	// {
+	// 	printf("private read data%x:%x\n", i, ccc_rdata[i]);
+	// }
+	// I3C_SLAVE_WRITE(ccc_wdata, 5, I3C_SLAVE1);
+	// I3C_MASTER_PV_READ_WITH7E(0x3b, ccc_rdata1, 5, I3C_MASTER0);
+	// for (int i = 0; i < 5; i++)
+	// {
+	// 	printf("private read data%x:%x\n", i, ccc_rdata1[i]);
+	// }
+	// I3C_MASTER_DR_CCC_WRITE(0x3b, ccc_wdata, 2, SETMWL_DR_CMD, 0, 0, I3C_MASTER0);
+	// printf("slave1 maxlength:%x\n", SLAVE1_MAXLIMITS);
+	// I3C_MASTER_DR_CCC_READ(0x3b, ccc_dr_rdata, 1, GETDCR_DR_CMD, 0, 0, I3C_MASTER0);
+	// printf("direct read dcr:%x\n", ccc_dr_rdata[0]);
+
+	// // I3C_SLAVE_IBI_HOTJOIN(I3C_SLAVE0_STATIC_ADDR, I3C_SLAVE0_DEFAULT_IDPARTNO, I3C_SLAVE0_DEFAULT_DCR, I3C_SLAVE1_DEFAULT_BCR, I3C_SLAVE0);
+	// I3C_SLAVE_IBI_DATA(0x77, I3C_SLAVE0_DEFAULT_IDPARTNO, I3C_SLAVE0_DEFAULT_DCR, I3C_SLAVE0_DEFAULT_BCR, I3C_SLAVE1);
+
+	// printf("master1/slave0测试\n");
+	// I3C_MASTER_BC_CCC_WRITE(ccc_wdata, 2, SETMWL_BC_CMD, 0, 0, I3C_MASTER1);
+	// printf("slave0 maxlength:%x\n", SLAVE0_MAXLIMITS);
+	// I3C_MASTER_PV_WRITE_WITH7E(0x3a, ccc_wdata, 5, I3C_MASTER1);
+	// I3C_SLAVE_READ(ccc_rdata, 5, I3C_SLAVE0);
+	// for (int i = 0; i < 5; i++)
+	// {
+	// 	printf("private read data%x:%x\n", i, ccc_rdata[i]);
+	// }
+	// I3C_SLAVE_WRITE(ccc_wdata, 5, I3C_SLAVE0);
+	// I3C_MASTER_PV_READ_WITH7E(0x3a, ccc_rdata1, 5, I3C_MASTER1);
+	// for (int i = 0; i < 5; i++)
+	// {
+	// 	printf("private read data%x:%x\n", i, ccc_rdata1[i]);
+	// }
+	// I3C_MASTER_DR_CCC_WRITE(0x3a, ccc_wdata, 2, SETMWL_DR_CMD, 0, 0, I3C_MASTER1);
+	// printf("slave0 maxlength:%x\n", SLAVE0_MAXLIMITS);
+	// I3C_MASTER_DR_CCC_READ(0x3a, ccc_dr_rdata, 1, GETDCR_DR_CMD, 0, 0, I3C_MASTER1);
+	// printf("direct read dcr:%x\n", ccc_dr_rdata[0]);
+
+	// // I3C_SLAVE_IBI_HOTJOIN(I3C_SLAVE0_STATIC_ADDR, I3C_SLAVE0_DEFAULT_IDPARTNO, I3C_SLAVE0_DEFAULT_DCR, I3C_SLAVE0_DEFAULT_BCR, I3C_SLAVE0);
+	// I3C_SLAVE_IBI_DATA(0x55, I3C_SLAVE0_DEFAULT_IDPARTNO, I3C_SLAVE0_DEFAULT_DCR, I3C_SLAVE0_DEFAULT_BCR, I3C_SLAVE0);
+
+	// printf("master1/slave1测试\n");
+	// I3C_MASTER_BC_CCC_WRITE(ccc_wdata, 2, SETMWL_BC_CMD, 0, 0, I3C_MASTER1);
+	// printf("slave1 maxlength:%x\n", SLAVE1_MAXLIMITS);
+	// I3C_MASTER_PV_WRITE_WITH7E(0x3b, ccc_wdata, 5, I3C_MASTER1);
+	// I3C_SLAVE_READ(ccc_rdata, 5, I3C_SLAVE1);
+	// for (int i = 0; i < 5; i++)
+	// {
+	// 	printf("private read data%x:%x\n", i, ccc_rdata[i]);
+	// }
+	// I3C_SLAVE_WRITE(ccc_wdata, 5, I3C_SLAVE1);
+	// I3C_MASTER_PV_READ_WITH7E(0x3b, ccc_rdata1, 5, I3C_MASTER1);
+	// for (int i = 0; i < 5; i++)
+	// {
+	// 	printf("private read data%x:%x\n", i, ccc_rdata1[i]);
+	// }
+	// I3C_MASTER_DR_CCC_WRITE(0x3b, ccc_wdata, 2, SETMWL_DR_CMD, 0, 0, I3C_MASTER1);
+	// printf("slave1 maxlength:%x\n", SLAVE1_MAXLIMITS);
+	// I3C_MASTER_DR_CCC_READ(0x3b, ccc_dr_rdata, 1, GETDCR_DR_CMD, 0, 0, I3C_MASTER1);
+	// printf("direct read dcr:%x\n", ccc_dr_rdata[0]);
+
+	// // I3C_SLAVE_IBI_HOTJOIN(I3C_SLAVE0_STATIC_ADDR, I3C_SLAVE0_DEFAULT_IDPARTNO, I3C_SLAVE0_DEFAULT_DCR, I3C_SLAVE1_DEFAULT_BCR, I3C_SLAVE0);
+	// I3C_SLAVE_IBI_DATA(0x77, I3C_SLAVE1_DEFAULT_IDPARTNO, I3C_SLAVE1_DEFAULT_DCR, I3C_SLAVE1_DEFAULT_BCR, I3C_SLAVE1);
+	/*******end */
+#endif
 
 // 	// 若打开GLE01功能，则需要在GLE01主系统第一次启动时，将FLASH文件的256K后的固定32K代码搬运到IRAM0
 // #if ((GLE01 == 1) && (FLASH_TO_IRAM0 == 1))

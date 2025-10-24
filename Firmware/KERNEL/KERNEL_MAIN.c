@@ -134,7 +134,7 @@ void Event_1min(void)
 void Service_MS_1(void)
 {
 #if (Service_MS_1_START == 1)
-	if(F_Service_MS_1)
+	if (F_Service_MS_1)
 	{
 		F_Service_MS_1 = 0;
 	}
@@ -144,15 +144,15 @@ void Service_MS_1(void)
 	}
 	Event_1ms();
 	timer_1ms_count++;
-	if(timer_1ms_count >= 10)
+	if (timer_1ms_count >= 10)
 	{
 		timer_1ms_count = 0;
 	}
-	if((timer_1ms_count % 5) == 0) // 5ms
+	if ((timer_1ms_count % 5) == 0) // 5ms
 	{
 		Event_5ms();
 		timer_5ms_count++;
-		if(timer_5ms_count % 2 == 1) // 10ms events
+		if (timer_5ms_count % 2 == 1) // 10ms events
 		{
 			EventA_10ms();
 		}
@@ -160,22 +160,22 @@ void Service_MS_1(void)
 		{
 			EventB_10ms();
 		}
-		if(timer_5ms_count == 2)
+		if (timer_5ms_count == 2)
 		{
 			EventA_50ms();
 		}
-		else if(timer_5ms_count == 4)
+		else if (timer_5ms_count == 4)
 		{
 			EventB_50ms();
 		}
-		else if(timer_5ms_count == 6)
+		else if (timer_5ms_count == 6)
 		{
 			EventC_50ms();
 		}
-		else if(timer_5ms_count == 8)
+		else if (timer_5ms_count == 8)
 		{
 			timer_100ms_count++;
-			if(timer_100ms_count % 2 == 1)
+			if (timer_100ms_count % 2 == 1)
 			{
 				EventA_100ms();
 			}
@@ -184,60 +184,60 @@ void Service_MS_1(void)
 				EventB_100ms();
 			}
 		}
-		else if(timer_5ms_count >= 10)
+		else if (timer_5ms_count >= 10)
 		{
 			timer_5ms_count = 0;
 		}
-		if(timer_5ms_count == 0) // 50ms
+		if (timer_5ms_count == 0) // 50ms
 		{
 			timer_50ms_count++;
-			if(timer_50ms_count % 2 == 0)
+			if (timer_50ms_count % 2 == 0)
 			{
 				EventC_100ms();
 			}
-			if(timer_50ms_count == 4)
+			if (timer_50ms_count == 4)
 			{
 				EventA_500ms();
 			}
-			else if(timer_50ms_count == 6)
+			else if (timer_50ms_count == 6)
 			{
 				EventB_500ms();
 			}
-			else if(timer_50ms_count == 8)
+			else if (timer_50ms_count == 8)
 			{
 				EventC_500ms();
 			}
-			else if(timer_50ms_count == 10)
+			else if (timer_50ms_count == 10)
 			{
 				EventA_1s();
 			}
-			else if(timer_50ms_count == 12)
+			else if (timer_50ms_count == 12)
 			{
 				EventB_1s();
 			}
-			else if(timer_50ms_count == 14)
+			else if (timer_50ms_count == 14)
 			{
 				EventA_500ms();
 			}
-			else if(timer_50ms_count == 16)
+			else if (timer_50ms_count == 16)
 			{
 				EventB_500ms();
 			}
-			else if(timer_50ms_count == 18)
+			else if (timer_50ms_count == 18)
 			{
 				EventC_500ms();
 			}
-			else if(timer_50ms_count == 20)
+			else if (timer_50ms_count == 20)
 			{
 				EventC_1s();
 				timer_50ms_count = 0;
 				timer_1s_count++;
-				if(timer_1s_count == 60)
+				if (timer_1s_count == 60)
 				{
 					Event_1min();
 					timer_1s_count = 0;
 					timer_1min_count++;
-					if(timer_1min_count == 60)
+					if (timer_1min_count == 60)
 					{
 						timer_1min_count = 0;
 						timer_1hours_count++;
@@ -300,20 +300,20 @@ const FUNCT_PTR_V_V service_table[] =
 void main_service(void)
 {
 
-	if(_R1 >= (sizeof(service_table) / sizeof(FUNCT_PTR_V_V)))
+	if (_R1 >= (sizeof(service_table) / sizeof(FUNCT_PTR_V_V)))
 		_R1 = 0;
 	(service_table[_R1])();
 #if SUPPORT_MAIN_SERVICE_LEVEL_POLL
 #if (HIGH_LEVEL_SERVICE_NUM > 0)
-	if(_R1 >= HIGH_LEVEL_SERVICE_NUM)//开启高等级穿插式执行服务
+	if (_R1 >= HIGH_LEVEL_SERVICE_NUM)//开启高等级穿插式执行服务
 	{
 		(service_table[(_R1 % HIGH_LEVEL_SERVICE_NUM)])();
-	#if (MIDDLE_LEVEL_SERVICE_NUM > 0)
-		if(_R1 >= (HIGH_LEVEL_SERVICE_NUM + MIDDLE_LEVEL_SERVICE_NUM))//开启中等级穿插式执行服务
+#if (MIDDLE_LEVEL_SERVICE_NUM > 0)
+		if (_R1 >= (HIGH_LEVEL_SERVICE_NUM + MIDDLE_LEVEL_SERVICE_NUM))//开启中等级穿插式执行服务
 		{
 			(service_table[HIGH_LEVEL_SERVICE_NUM + (_R1 % (MIDDLE_LEVEL_SERVICE_NUM))])();
 		}
-	#endif
+#endif
 	}
 #endif
 #endif
@@ -326,19 +326,12 @@ void main_service(void)
 void main_loop(void)
 {
 	dprint("Enter main_service.\n");
-	while(1)
+	while (1)
 	{
 		main_service();
 	}
 }
-#define I3C_TEST 0
-#if I3C_TEST//收到,已确认暂时不管这一段代码
-uint8_t ccc_wdata[10] = { 0x1,0x2,0x3,0x4,0x5,0x6,0x7,0x8,0x9,0xa };
-uint8_t ccc_rdata[10] = { 0,0,0,0,0,0,0,0,0,0 };
-uint8_t ccc_rdata1[10] = { 0,0,0,0,0,0,0,0,0,0 };
-uint8_t ccc_dr_rdata[10] = { 0,0,0,0,0,0,0,0,0,0 };
-uint8_t ccc_dr_rdata1[10] = { 0,0,0,0,0,0,0,0,0,0 };
-#endif
+
 //----------------------------------------------------------------------------
 // FUNCTION: main
 // main entry
@@ -356,101 +349,6 @@ int __weak main(void)
 	// 2. print Operational information
 	dprint("This is %s flash main\n", (SYSCTL_PIO_CFG & BIT1) ? "external" : "internal");
 	dprint("CPU freq at %d Hz\n", CPU_FREQ);
-#if I3C_TEST//收到,已确认暂时不管这一段代码
-	/******仅供i3c测试,泽宇先别删这段测试代码start */
-	// printf("master0/slave0测试\n");
-	// I3C_MASTER_BC_CCC_WRITE(ccc_wdata, 2, SETMWL_BC_CMD, 0, 0, I3C_MASTER0);
-	// printf("slave0 maxlength:%x\n", SLAVE0_MAXLIMITS);
-	// I3C_MASTER_PV_WRITE_WITH7E(0x3a, ccc_wdata, 5, I3C_MASTER0);
-	// I3C_SLAVE_READ(ccc_rdata, 5, I3C_SLAVE0);
-	// for (int i = 0; i < 5; i++)
-	// {
-	// 	printf("private read data%x:%x\n", i, ccc_rdata[i]);
-	// }
-	// I3C_SLAVE_WRITE(ccc_wdata, 5, I3C_SLAVE0);
-	// I3C_MASTER_PV_READ_WITH7E(0x3a, ccc_rdata1, 5, I3C_MASTER0);
-	// for (int i = 0; i < 5; i++)
-	// {
-	// 	printf("private read data%x:%x\n", i, ccc_rdata1[i]);
-	// }
-	// I3C_MASTER_DR_CCC_WRITE(0x3a, ccc_wdata, 2, SETMWL_DR_CMD, 0, 0, I3C_MASTER0);
-	// printf("slave0 maxlength:%x\n", SLAVE0_MAXLIMITS);
-	// I3C_MASTER_DR_CCC_READ(0x3a, ccc_dr_rdata, 1, GETDCR_DR_CMD, 0, 0, I3C_MASTER0);
-	// printf("direct read dcr:%x\n", ccc_dr_rdata[0]);
-
-	// // I3C_SLAVE_IBI_HOTJOIN(I3C_SLAVE0_STATIC_ADDR, I3C_SLAVE0_DEFAULT_IDPARTNO, I3C_SLAVE0_DEFAULT_DCR, I3C_SLAVE0_DEFAULT_BCR, I3C_SLAVE0);
-	// I3C_SLAVE_IBI_DATA(0x55, I3C_SLAVE0_DEFAULT_IDPARTNO, I3C_SLAVE0_DEFAULT_DCR, I3C_SLAVE0_DEFAULT_BCR, I3C_SLAVE0);
-
-	// printf("master0/slave1测试\n");
-	// I3C_MASTER_BC_CCC_WRITE(ccc_wdata, 2, SETMWL_BC_CMD, 0, 0, I3C_MASTER0);
-	// printf("slave1 maxlength:%x\n", SLAVE1_MAXLIMITS);
-	// I3C_MASTER_PV_WRITE_WITH7E(0x3b, ccc_wdata, 5, I3C_MASTER0);
-	// I3C_SLAVE_READ(ccc_rdata, 5, I3C_SLAVE1);
-	// for (int i = 0; i < 5; i++)
-	// {
-	// 	printf("private read data%x:%x\n", i, ccc_rdata[i]);
-	// }
-	// I3C_SLAVE_WRITE(ccc_wdata, 5, I3C_SLAVE1);
-	// I3C_MASTER_PV_READ_WITH7E(0x3b, ccc_rdata1, 5, I3C_MASTER0);
-	// for (int i = 0; i < 5; i++)
-	// {
-	// 	printf("private read data%x:%x\n", i, ccc_rdata1[i]);
-	// }
-	// I3C_MASTER_DR_CCC_WRITE(0x3b, ccc_wdata, 2, SETMWL_DR_CMD, 0, 0, I3C_MASTER0);
-	// printf("slave1 maxlength:%x\n", SLAVE1_MAXLIMITS);
-	// I3C_MASTER_DR_CCC_READ(0x3b, ccc_dr_rdata, 1, GETDCR_DR_CMD, 0, 0, I3C_MASTER0);
-	// printf("direct read dcr:%x\n", ccc_dr_rdata[0]);
-
-	// // I3C_SLAVE_IBI_HOTJOIN(I3C_SLAVE0_STATIC_ADDR, I3C_SLAVE0_DEFAULT_IDPARTNO, I3C_SLAVE0_DEFAULT_DCR, I3C_SLAVE1_DEFAULT_BCR, I3C_SLAVE0);
-	// I3C_SLAVE_IBI_DATA(0x77, I3C_SLAVE0_DEFAULT_IDPARTNO, I3C_SLAVE0_DEFAULT_DCR, I3C_SLAVE0_DEFAULT_BCR, I3C_SLAVE1);
-
-	// printf("master1/slave0测试\n");
-	// I3C_MASTER_BC_CCC_WRITE(ccc_wdata, 2, SETMWL_BC_CMD, 0, 0, I3C_MASTER1);
-	// printf("slave0 maxlength:%x\n", SLAVE0_MAXLIMITS);
-	// I3C_MASTER_PV_WRITE_WITH7E(0x3a, ccc_wdata, 5, I3C_MASTER1);
-	// I3C_SLAVE_READ(ccc_rdata, 5, I3C_SLAVE0);
-	// for (int i = 0; i < 5; i++)
-	// {
-	// 	printf("private read data%x:%x\n", i, ccc_rdata[i]);
-	// }
-	// I3C_SLAVE_WRITE(ccc_wdata, 5, I3C_SLAVE0);
-	// I3C_MASTER_PV_READ_WITH7E(0x3a, ccc_rdata1, 5, I3C_MASTER1);
-	// for (int i = 0; i < 5; i++)
-	// {
-	// 	printf("private read data%x:%x\n", i, ccc_rdata1[i]);
-	// }
-	// I3C_MASTER_DR_CCC_WRITE(0x3a, ccc_wdata, 2, SETMWL_DR_CMD, 0, 0, I3C_MASTER1);
-	// printf("slave0 maxlength:%x\n", SLAVE0_MAXLIMITS);
-	// I3C_MASTER_DR_CCC_READ(0x3a, ccc_dr_rdata, 1, GETDCR_DR_CMD, 0, 0, I3C_MASTER1);
-	// printf("direct read dcr:%x\n", ccc_dr_rdata[0]);
-
-	// // I3C_SLAVE_IBI_HOTJOIN(I3C_SLAVE0_STATIC_ADDR, I3C_SLAVE0_DEFAULT_IDPARTNO, I3C_SLAVE0_DEFAULT_DCR, I3C_SLAVE0_DEFAULT_BCR, I3C_SLAVE0);
-	// I3C_SLAVE_IBI_DATA(0x55, I3C_SLAVE0_DEFAULT_IDPARTNO, I3C_SLAVE0_DEFAULT_DCR, I3C_SLAVE0_DEFAULT_BCR, I3C_SLAVE0);
-
-	// printf("master1/slave1测试\n");
-	// I3C_MASTER_BC_CCC_WRITE(ccc_wdata, 2, SETMWL_BC_CMD, 0, 0, I3C_MASTER1);
-	// printf("slave1 maxlength:%x\n", SLAVE1_MAXLIMITS);
-	// I3C_MASTER_PV_WRITE_WITH7E(0x3b, ccc_wdata, 5, I3C_MASTER1);
-	// I3C_SLAVE_READ(ccc_rdata, 5, I3C_SLAVE1);
-	// for (int i = 0; i < 5; i++)
-	// {
-	// 	printf("private read data%x:%x\n", i, ccc_rdata[i]);
-	// }
-	// I3C_SLAVE_WRITE(ccc_wdata, 5, I3C_SLAVE1);
-	// I3C_MASTER_PV_READ_WITH7E(0x3b, ccc_rdata1, 5, I3C_MASTER1);
-	// for (int i = 0; i < 5; i++)
-	// {
-	// 	printf("private read data%x:%x\n", i, ccc_rdata1[i]);
-	// }
-	// I3C_MASTER_DR_CCC_WRITE(0x3b, ccc_wdata, 2, SETMWL_DR_CMD, 0, 0, I3C_MASTER1);
-	// printf("slave1 maxlength:%x\n", SLAVE1_MAXLIMITS);
-	// I3C_MASTER_DR_CCC_READ(0x3b, ccc_dr_rdata, 1, GETDCR_DR_CMD, 0, 0, I3C_MASTER1);
-	// printf("direct read dcr:%x\n", ccc_dr_rdata[0]);
-
-	// // I3C_SLAVE_IBI_HOTJOIN(I3C_SLAVE0_STATIC_ADDR, I3C_SLAVE0_DEFAULT_IDPARTNO, I3C_SLAVE0_DEFAULT_DCR, I3C_SLAVE1_DEFAULT_BCR, I3C_SLAVE0);
-	// I3C_SLAVE_IBI_DATA(0x77, I3C_SLAVE0_DEFAULT_IDPARTNO, I3C_SLAVE0_DEFAULT_DCR, I3C_SLAVE0_DEFAULT_BCR, I3C_SLAVE1);
-	/*******end */
-#endif
 	main_loop();
 	return 0;
 }
