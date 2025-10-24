@@ -3280,6 +3280,6 @@ void intc_init()
 	ICTL1_INTMASK4 = 0x00;
 	ICTL1_INTMASK5 = 0x00;
 	ICTL1_INTMASK6 = 0x00;
-	ICTL1_INTMASK7 = 0x00;
+	ICTL1_INTMASK7 = 0x40;//espi int mask
 #endif
 }

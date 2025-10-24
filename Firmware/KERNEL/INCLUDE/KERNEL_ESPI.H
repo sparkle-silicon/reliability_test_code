@@ -232,6 +232,32 @@
 #define F_IDX7_SMIOUT BIT(1)
 #define F_IDX7_HOST_RST_WARN BIT(0)
 
+#define F_INTR1_SMIOUT BIT(7)    //VWINTRSTA0
+#define F_INTR0_HOST_RST_WARN BIT(6)
+#define F_INTR0_OOB_RST_WARN BIT(5)
+#define F_INTR0_PLT_RST_WARN BIT(4)
+#define F_INTR0_SUS_STAT BIT(3)
+#define F_INTR0_SLP_S5 BIT(2)
+#define F_INTR0_SLP_S4 BIT(1)
+#define F_INTR0_SLP_S3 BIT(0)
+
+#define F_INTR1_SLP_WLAN BIT(6)    //VWINTRSTA1
+#define F_INTR1_SLP_LAN BIT(5) 
+#define F_INTR1_SLP_A BIT(4) 
+#define F_INTR1_SUS_PWRDN_ACK BIT(3) 
+#define F_INTR1_SUS_WARN BIT(2) 
+#define F_INTR1_HOST_C10 BIT(1) 
+#define F_INTR1_NMIOUT BIT(0)
+
+#define F_INTR1_GENERIC7 BIT(7)    //VWINTRSTA2
+#define F_INTR1_GENERIC6 BIT(6)
+#define F_INTR1_GENERIC5 BIT(5)
+#define F_INTR1_GENERIC4 BIT(4)
+#define F_INTR1_GENERIC3 BIT(3)
+#define F_INTR1_GENERIC2 BIT(2)
+#define F_INTR1_GENERIC1 BIT(1)
+#define F_INTR1_GENERIC0 BIT(0)
+
 #define F_IDX40_SUSACK BIT(0) // VWIDX40
 #define F_IDX40_VALID BIT(4)
 
@@ -239,6 +265,7 @@
 #define F_IDX41_VALID BIT(4)
 
 #define F_VW_INT_ENABLE BIT(7)  // VWCTRL0   // VW Interrupt Enable
+#define F_VW_UPDATE_FLAG_SEL BIT(2)
 #define F_ASVWSIE_ENABLE BIT(1) // VWCTRL0   // Auto Send VW SUS_ACK# Interrupt Enable
 #define F_ASVWBIE_ENABLE BIT(0) // VWCTRL0   // Auto Send VW Boot_Load_Done/Status Interrupt Enable
 
@@ -836,7 +863,6 @@ extern void __weak Service_eSPI(void);
 extern BYTE EC_ACK_eSPI_Boot_Ready(void);
 extern BYTE SPK_CHECK_SUS_WARN(void);
 extern void ESPI_Init(void);
-extern void espi_init(void);
 extern void EC_ACK_eSPI_SUS_WARN(void);
 extern BYTE Process_Peripheral_Message_Send(void);
 extern BYTE Process_Peripheral_Memory_Read32(void);

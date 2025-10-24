@@ -1403,8 +1403,6 @@ void Service_PCI3_Main(void)
     #if !(LPC_WAY_OPTION_SWITCH)
         PMC2_CTL |= IBF_INT_ENABLE;
     #endif
-        if(PM2Cmd != 0x0)
-            dprint("Enter PMC2_STR & C_D2 PM2Cmd is %#x,PMC2_STR is %#x \n", PM2Cmd, PMC2_STR);
         PM2Step = 0;
         (Port6C_Table[PM2Cmd >> 4])();
     }

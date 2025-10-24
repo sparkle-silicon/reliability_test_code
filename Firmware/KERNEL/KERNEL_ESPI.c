@@ -172,6 +172,8 @@ void ESPI_Init(void)
 #endif
     ESGCTRL1 = 0x80;                /* REG@31A1.7: eSPI Interrupt Enable */
     ESGCTRL2 = 0x10;                /* REG@31A1.4: eSPI To WUC Enable */
+    VWCTRL0 &= (~(F_VW_UPDATE_FLAG_SEL));
+    VWUPDATEMODESEL = 0x0;
     ESUCTRL0 |= Upstream_INT_EN;    // 使能upsteam中断使能
 #endif
 }
@@ -336,11 +338,16 @@ BYTE EC_ACK_eSPI_Boot_Ready(void)
     {
         if (IS_MASK_SET(REG_310F, F_VW_CHN_READY))
         {
+            if (VWIDX5 == (F_IDX5_SLAVE_BOOT_LOAD_STATUS_VALID +
+            F_IDX5_SLAVE_BOOT_LOAD_DONE_VALID +
+            F_IDX5_SLAVE_BOOT_LOAD_STATUS +
+            F_IDX5_SLAVE_BOOT_LOAD_DONE))
+            return 0;
+
             VWIDX5 = (F_IDX5_SLAVE_BOOT_LOAD_STATUS_VALID +
                 F_IDX5_SLAVE_BOOT_LOAD_DONE_VALID +
                 F_IDX5_SLAVE_BOOT_LOAD_STATUS +
                 F_IDX5_SLAVE_BOOT_LOAD_DONE);
-            VWIDX5 |= F_IDX5_ERROR_FATAL;
 
             /* Detect eSPI Configuration - Alert Mode
                0b: EIO1 (I/O[1] ) pin is used to signal the Alert event.
@@ -2601,7 +2608,7 @@ void __weak Service_eSPI(void)
             F_IDX5_SLAVE_BOOT_LOAD_STATUS +
             F_IDX5_SLAVE_BOOT_LOAD_DONE))
         {
-            // EC_ACK_eSPI_SUS_WARN();  // if SUS_WARN vw wire support
+            EC_ACK_eSPI_SUS_WARN();     // if SUS_WARN vw wire support
             EC_ACK_eSPI_Reset();        // if PLTRST vw wire support
             // EC_BL_CHECK();
 #if SUPPORT_HOOK_WARMBOOT
@@ -2614,7 +2621,7 @@ void __weak Service_eSPI(void)
         }
         else
         {
-            // EC_ACK_eSPI_Boot_Ready();
+            EC_ACK_eSPI_Boot_Ready();
         }
     }
 #if 0

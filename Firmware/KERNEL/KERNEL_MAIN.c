@@ -262,7 +262,7 @@ const FUNCT_PTR_V_V service_table[] =
 	Service_PCI,              // Host send to ec 60/64 Command/Data service
 	Service_Send,             // Send byte from KBC to host service
 	Service_Send_PS2,		  // Send PS2 interface pending data to host service
-
+	Service_eSPI,			  // eSPI service
 	// Mi-Level Service
 	//中优先级
 	Service_MS_1,             // 1 millisecond Service
