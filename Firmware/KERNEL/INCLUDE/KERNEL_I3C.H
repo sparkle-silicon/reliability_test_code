@@ -297,12 +297,12 @@
 //i3c timing limit
 #define PP_TIMING_HCNT_MAX 0xff
 #define PP_TIMING_LCNT_MAX 0xff
-#define PP_TIMING_HCNT_MIN 0x05
-#define PP_TIMING_LCNT_MIN 0x05
+#define PP_TIMING_HCNT_MIN 0x03
+#define PP_TIMING_LCNT_MIN 0x03
 #define OD_TIMING_HCNT_MAX 0xff
 #define OD_TIMING_LCNT_MAX 0xff
-#define OD_TIMING_HCNT_MIN 0x0E
-#define OD_TIMING_LCNT_MIN 0x05
+#define OD_TIMING_HCNT_MIN 0x05
+#define OD_TIMING_LCNT_MIN 0x15
 
 //I3C mode
 #define SDR0_SPEED 0x0  //0~fSCL max
@@ -316,7 +316,7 @@
 #define FM_EX_SPEED 0x1  //FM+
 
 //SDR SPEED
-#define SDR_DEFAULT_SPEED 9600000
+#define SDR_DEFAULT_SPEED 9600000   // speed <= 16M
 #define I3C_LEGACY_SPEED 100000
 //write/read
 #define I3C_MASTER_WRITE 0

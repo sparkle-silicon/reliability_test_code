@@ -572,22 +572,30 @@ BYTE I3C_SDR_Master_Init(uint32_t speed, BYTE i3c_mux)
     uint32_t cnt = (CHIP_CLOCK_INT_HIGH / speed);
     uint32_t hcnt = ((cnt * 1) / 2);    //50%占空比
     uint32_t lcnt = (cnt - hcnt);
-    if (hcnt >= PP_TIMING_HCNT_MAX)hcnt = PP_TIMING_HCNT_MAX;
-    if (lcnt >= PP_TIMING_HCNT_MAX)lcnt = PP_TIMING_LCNT_MAX;
-    if (hcnt <= PP_TIMING_HCNT_MIN)hcnt = PP_TIMING_HCNT_MIN;
-    if (lcnt <= PP_TIMING_LCNT_MIN)lcnt = PP_TIMING_LCNT_MIN;
+    uint32_t pp_hcnt, pp_lcnt, od_hcnt, od_lcnt;
+    pp_hcnt = hcnt;
+    pp_lcnt = lcnt;
+    od_hcnt = hcnt;
+    od_lcnt = lcnt;
+    if (hcnt >= PP_TIMING_HCNT_MAX)pp_hcnt = PP_TIMING_HCNT_MAX;
+    if (lcnt >= PP_TIMING_HCNT_MAX)pp_lcnt = PP_TIMING_LCNT_MAX;
+    if (hcnt <= PP_TIMING_HCNT_MIN)pp_hcnt = PP_TIMING_HCNT_MIN;
+    if (lcnt <= PP_TIMING_LCNT_MIN)pp_lcnt = PP_TIMING_LCNT_MIN;
 
-    if (hcnt >= OD_TIMING_HCNT_MAX)hcnt = OD_TIMING_HCNT_MAX;
-    if (lcnt >= OD_TIMING_HCNT_MAX)lcnt = OD_TIMING_LCNT_MAX;
-    if (hcnt <= OD_TIMING_HCNT_MIN)hcnt = OD_TIMING_HCNT_MIN;
-    if (lcnt <= OD_TIMING_LCNT_MIN)lcnt = OD_TIMING_LCNT_MIN;
+    if (hcnt >= OD_TIMING_HCNT_MAX)od_hcnt = OD_TIMING_HCNT_MAX;
+    if (lcnt >= OD_TIMING_HCNT_MAX)od_lcnt = OD_TIMING_LCNT_MAX;
+    if (hcnt <= OD_TIMING_HCNT_MIN)od_hcnt = OD_TIMING_HCNT_MIN;
+    if (lcnt <= OD_TIMING_LCNT_MIN)od_lcnt = OD_TIMING_LCNT_MIN;
+    i3c_dprint("pp_hcnt:%x,pp_lcnt:%x,od_hcnt:%x,od_lcnt:%x\n", pp_hcnt, pp_lcnt, od_hcnt, od_lcnt);
 
     //Controls whether or not I3C_master is enabled And I2C Slave Present 
     I3C_WriteREG_DWORD(DEVICE_CTRL_ENABLE | DEVICE_CTRL_IBA_INCLUDE, DEVICE_CTRL_OFFSET, i3c_mux);
     //Set I3C OD_TIMING
-    I3C_WriteREG_DWORD((SCL_I3C_OD_TIMING_LCNT(0xff) | SCL_I3C_OD_TIMING_HCNT(0xff)), SCL_I3C_OD_TIMING_OFFSET, i3c_mux);
+    I3C_WriteREG_DWORD((SCL_I3C_OD_TIMING_LCNT((od_lcnt)) | SCL_I3C_OD_TIMING_HCNT(od_hcnt)), SCL_I3C_OD_TIMING_OFFSET, i3c_mux);
+    i3c_dprint("od:%x\n", I3C_ReadREG_DWORD(SCL_I3C_OD_TIMING_OFFSET, i3c_mux));
     //Set I3C PP_TIMING
-    I3C_WriteREG_DWORD((SCL_I3C_PP_TIMING_LCNT(0x4) | SCL_I3C_PP_TIMING_HCNT(0x4)), SCL_I3C_PP_TIMING_OFFSET, i3c_mux);
+    I3C_WriteREG_DWORD((SCL_I3C_PP_TIMING_LCNT(pp_lcnt) | SCL_I3C_PP_TIMING_HCNT(pp_hcnt)), SCL_I3C_PP_TIMING_OFFSET, i3c_mux);
+    i3c_dprint("pp:%x\n", I3C_ReadREG_DWORD(SCL_I3C_PP_TIMING_OFFSET, i3c_mux));
     //set queue thld ctrl
     temp_data = 0;
     temp_data &= QUEUE_THLD_CTRL_RESP_BUF_THLD0 & QUEUE_THLD_CTRL_CMD_EMPTY_BUF_THLD0 & QUEUE_THLD_CTRL_IBI_STATUS_THLD0;
@@ -955,7 +963,6 @@ BYTE I3C_MASTER_DR_CCC_WRITE(uint8_t dynamic_addr, uint8_t* data, uint16_t bytel
             i3c_error = 0;
             return FALSE;
         }
-
     }   //等INTR_STATUS_RESP_READY_STS中断
     DWORD Response_error_status = 0;
     Response_error_status = I3C_ReadREG_DWORD(RESPONSE_QUEUE_PORT_OFFSET, i3c_mux) & RESPONSE_QUEUE_PORT_ERR_STS_MASK;
@@ -1052,6 +1059,22 @@ BYTE I3C_MASTER_DR_CCC_READ(uint8_t dynamic_addr, uint8_t* data, uint16_t bytele
             *data_ptr++ = data_temp.byte[i];
         }
     }//读取数据
+    for (uint32_t timeout = I3C_TIMEOUT; (I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux) & INTR_STATUS_RESP_READY_STS) == 0; timeout--)
+    {
+        if (timeout == 0 || i3c_error)
+        {
+            I3C_Master_IntrStatus(i3c_mux);
+            i3c_error = 0;
+            return FALSE;
+        }
+    }   //等INTR_STATUS_RESP_READY_STS中断
+    DWORD Response_error_status = 0;
+    Response_error_status = I3C_ReadREG_DWORD(RESPONSE_QUEUE_PORT_OFFSET, i3c_mux) & RESPONSE_QUEUE_PORT_ERR_STS_MASK;
+    if (RESPONSE_QUEUE_PORT_ERR_STS_NO_ERROR != Response_error_status)
+    {
+        I3C_Master_IntrStatus(i3c_mux);
+        return FALSE;
+    }
     return TRUE;
 }
 
@@ -1101,7 +1124,6 @@ BYTE I3C_MASTER_PV_WRITE_WITH7E(uint8_t dynamic_addr, uint8_t* data, uint16_t by
                     i3c_error = 0;
                     return FALSE;
                 }
-
             }   //等待INTR_STATUS_TX_THLD_STS 
             I3C_WriteREG_DWORD(data_temp.dword, TX_DATA_PORT_OFFSET, i3c_mux);//发送数据
         }
@@ -1133,8 +1155,14 @@ BYTE I3C_MASTER_PV_WRITE_WITH7E(uint8_t dynamic_addr, uint8_t* data, uint16_t by
             i3c_error = 0;
             return FALSE;
         }
-
     }   //等INTR_STATUS_RESP_READY_STS中断
+    DWORD Response_error_status = 0;
+    Response_error_status = I3C_ReadREG_DWORD(RESPONSE_QUEUE_PORT_OFFSET, i3c_mux) & RESPONSE_QUEUE_PORT_ERR_STS_MASK;
+    if (RESPONSE_QUEUE_PORT_ERR_STS_NO_ERROR != Response_error_status)
+    {
+        I3C_Master_IntrStatus(i3c_mux);
+        return FALSE;
+    }
     return TRUE;
 }
 
@@ -1213,8 +1241,22 @@ BYTE I3C_MASTER_PV_READ_WITH7E(uint8_t dynamic_addr, uint8_t* data, uint16_t byt
             *data_ptr++ = data_temp.byte[i];
         }
     }//读取数据
-    I3C_Master_IntrStatus(i3c_mux); //清除response_ready中断状态
-    i3c_error = 0;
+    for (uint32_t timeout = I3C_TIMEOUT; (I3C_ReadREG_DWORD(INTR_STATUS_OFFSET, i3c_mux) & INTR_STATUS_RESP_READY_STS) == 0; timeout--)
+    {
+        if (timeout == 0 || i3c_error)
+        {
+            I3C_Master_IntrStatus(i3c_mux);
+            i3c_error = 0;
+            return FALSE;
+        }
+    }   //等INTR_STATUS_RESP_READY_STS中断
+    DWORD Response_error_status = 0;
+    Response_error_status = I3C_ReadREG_DWORD(RESPONSE_QUEUE_PORT_OFFSET, i3c_mux) & RESPONSE_QUEUE_PORT_ERR_STS_MASK;
+    if (RESPONSE_QUEUE_PORT_ERR_STS_NO_ERROR != Response_error_status)
+    {
+        I3C_Master_IntrStatus(i3c_mux);
+        return FALSE;
+    }
     return TRUE;
 }
 
@@ -1307,6 +1349,7 @@ repeat_ibi:
             data_length -= len;
             uDword data_temp;
             data_temp.dword = I3C_ReadREG_DWORD(IBI_QUEUE_DATA_OFFSET, i3c_mux);
+            i3c_dprint("data_temp.dword:%x\n", data_temp.dword);
             for (register uint32_t i = 0; i < len; i++)
             {
                 *ibi_ptr++ = data_temp.byte[i];
