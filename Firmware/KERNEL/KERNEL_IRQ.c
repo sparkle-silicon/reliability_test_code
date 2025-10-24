@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-22 16:22:29
+ * @LastEditTime: 2025-10-24 11:16:01
  * @Description:
  *
  *
@@ -168,7 +168,7 @@ void SECTION(".init.irq") Irqc_init(void)
 #endif
 }
 #if IRQC_DEBUG
-char __weak* irq_string = "ISR: %s,IRQ: %d.\n";
+char __weak *irq_string = "ISR: %s,IRQ: %d.\n";
 #endif
 void __interrupt SECTION(".interrupt.CPUS_HANDLER") CPUS_HANDLER(void)
 {
@@ -527,9 +527,9 @@ void __interrupt SECTION(".interrupt.UART0_HANDLER") UART0_HANDLER(void)
 	if (F_Service_CMD == 1)
 	{
 		char temp = UART0_RX;
-#if (!IRQC_DEBUG)
+	#if (!IRQC_DEBUG)
 		UNUSED_VAR(temp);
-#endif
+	#endif
 		irqprint("erro of CMD_RUN:%#x,%c\n", temp, temp);
 		return;
 	}
@@ -586,9 +586,9 @@ void __interrupt SECTION(".interrupt.UARTA_HANDLER") UARTA_HANDLER(void)
 	if (F_Service_CMD == 1)
 	{
 		char temp = UARTA_RX;
-#if (!IRQC_DEBUG)
+	#if (!IRQC_DEBUG)
 		UNUSED_VAR(temp);
-#endif
+	#endif
 		irqprint("erro of CMD_RUN:%#x,%c\n", temp, temp);
 		return;
 	}
@@ -675,9 +675,9 @@ void __interrupt SECTION(".interrupt.UARTB_HANDLER") UARTB_HANDLER(void)
 	if (F_Service_CMD == 1)
 	{
 		char temp = UARTB_RX;
-#if (!IRQC_DEBUG)
+	#if (!IRQC_DEBUG)
 		UNUSED_VAR(temp);
-#endif
+	#endif
 		irqprint("erro of CMD_RUN:%#x,%c\n", temp, temp);
 		return;
 	}
@@ -903,14 +903,6 @@ void __interrupt SECTION(".interrupt.INTC1_HANDLER") INTC1_HANDLER(void)
 	if (intr1_service[(num)] == &intr1_uart1)
 	{
 	}
-	// #elif ((DEBUG_UART_SWITCH == 2))
-	// 	if(intr1_service[(num)] == &intr1_uart2)
-	// 	{
-	// 	}
-	// #elif ((DEBUG_UART_SWITCH == 3))
-	// 	if(intr1_service[(num)] == &intr1_uart3)
-	// 	{
-	// 	}
 #else
 	if (FALSE)
 	{
@@ -920,14 +912,6 @@ void __interrupt SECTION(".interrupt.INTC1_HANDLER") INTC1_HANDLER(void)
 	else if (intr1_service[(num)] == &intr1_uart1)
 	{
 	}
-	// #elif ((COMMAND_UART_SWITCH == 2))
-	// 	else if(intr1_service[(num)] == &intr1_uart2)
-	// 	{
-	// 	}
-	// #elif ((COMMAND_UART_SWITCH == 3))
-	// 	else if(intr1_service[(num)] == &intr1_uart3)
-	// 	{
-	// 	}
 #else
 	else if (FALSE)
 	{
@@ -935,19 +919,15 @@ void __interrupt SECTION(".interrupt.INTC1_HANDLER") INTC1_HANDLER(void)
 #endif
 #if ((PRINTF_UART_SWITCH == 1))
 	else if (intr1_service[(num)] != &intr1_uart1)
-		// #elif ((PRINTF_UART_SWITCH == 2))
-		// else if(intr1_service[(num)] != &intr1_uart2)
-		// #elif ((PRINTF_UART_SWITCH == 3))
-		// else if(intr1_service[(num)] != &intr1_uart3)
-		// #else
+	#else
 	else if (TRUE)
-#endif
+	#endif
 	{
 		irqprint("ISR: %s,IRQ: %d. 2nd-level IRQ[%d]\n", __FUNCTION__, 31, num);
 	}
 	(intr1_service[(num)])(); // Dispatch to service handler.
 }
-const char* Exception_Code[] = { NULL,
+const char *Exception_Code[] = { NULL,
 								"Instruction access error",
 								"Illegal instruction",
 								"Break point",
@@ -961,7 +941,7 @@ DWORD SECTION(".interrupt.kernel_trap") kernel_trap(uintptr_t mcause, uintptr_t 
 {
 	UNUSED_VAR(sp);
 	VBYTE trap_flag = 0x1f & mcause;
-	void* pc = (void*)read_csr(mepc);
+	void *pc = (void *)read_csr(mepc);
 	DWORD val;
 	if ((int)pc % 2)
 	{
