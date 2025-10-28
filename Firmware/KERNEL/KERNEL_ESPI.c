@@ -339,10 +339,10 @@ BYTE EC_ACK_eSPI_Boot_Ready(void)
         if (IS_MASK_SET(REG_310F, F_VW_CHN_READY))
         {
             if (VWIDX5 == (F_IDX5_SLAVE_BOOT_LOAD_STATUS_VALID +
-            F_IDX5_SLAVE_BOOT_LOAD_DONE_VALID +
-            F_IDX5_SLAVE_BOOT_LOAD_STATUS +
-            F_IDX5_SLAVE_BOOT_LOAD_DONE))
-            return 0;
+                F_IDX5_SLAVE_BOOT_LOAD_DONE_VALID +
+                F_IDX5_SLAVE_BOOT_LOAD_STATUS +
+                F_IDX5_SLAVE_BOOT_LOAD_DONE))
+                return 0;
 
             VWIDX5 = (F_IDX5_SLAVE_BOOT_LOAD_STATUS_VALID +
                 F_IDX5_SLAVE_BOOT_LOAD_DONE_VALID +
@@ -1656,59 +1656,6 @@ void Service_OOB_Message(void)
         return;
     }
 #endif
-
-    if (System_PowerState == SYSTEM_S0)
-    {
-        /***********************OOB channel test**************************/
-        // if (xOOB_GetPCH_Temper > 1)
-        // {
-        //     xOOB_GetPCH_Temper--;
-        // }
-        // else
-        // {
-        //     xOOB_GetPCH_Temper = PCH_TEMP_GET_OOB_SEC;
-        // Get_OOB_PCH_Temperature();
-        // }
-        /***********************OOB channel test**************************/
-
-        /***********************FLASH channel test************************/
-        // xOOB_GET_FLASH_ADR0 = 0x0;
-        // xOOB_GET_FLASH_ADR1 = 0x0;
-        // xOOB_GET_FLASH_ADR2 = 0x0;
-        // xOOB_GET_FLASH_ADR3 = 0x80;
-
-        // if (xOOB_GET_FLASH_ADR3 & 0x80)
-        // {
-        // eSPI_Flash_Read((xOOB_GET_FLASH_ADR3 & 0x7F),
-        //                 xOOB_GET_FLASH_ADR2,
-        //                 xOOB_GET_FLASH_ADR1,
-        //                 xOOB_GET_FLASH_ADR0,
-        //                 64,
-        //                 &eSPI_FLASH_DATA[0]);
-        // xOOB_GET_FLASH_ADR3 = 0;
-        // dprint("%x,%x,%x,%x\n", eSPI_FLASH_DATA[0], eSPI_FLASH_DATA[1], eSPI_FLASH_DATA[2], eSPI_FLASH_DATA[3]);
-
-        // eSPI_Flash_Erase((xOOB_GET_FLASH_ADR3 & 0x7F),
-        //                  xOOB_GET_FLASH_ADR2,
-        //                  xOOB_GET_FLASH_ADR1,
-        //                  xOOB_GET_FLASH_ADR0,
-        //                  0x1);
-
-        // eSPI_Flash_Write((xOOB_GET_FLASH_ADR3 & 0x7F),
-        //                  xOOB_GET_FLASH_ADR2,
-        //                  xOOB_GET_FLASH_ADR1,
-        //                  xOOB_GET_FLASH_ADR0,
-        //                  4,
-        //                  &eSPI_FLASH_DATA[0]);
-        // }
-        /************************ FLASH channel test ***********************/
-
-        /***********************PERIPHERAL channel test*********************/
-
-        /***********************PERIPHERAL channel test*********************/
-    }
-
-#if 1
     xOOB_Scan++;
     switch (xOOB_Scan)
     {
@@ -1843,9 +1790,8 @@ void Service_OOB_Message(void)
             xOOB_Scan = 0;
         }
         break;
-    }
-#endif
-}
+        }
+        }
 
 /*-----------------------------------------------------------------------------
  * @subroutine - Get_OOB_PMC_CrashLog
@@ -2594,7 +2540,7 @@ BYTE eSPI_OOBRPMC_Handler(void)
  * FUNCTION: Service_eSPI
  * Polling RSMRST high & vw channel enable then set vw channel ready
  * ------------------------------------------------------------------------- */
-void __weak Service_eSPI(void)
+void Service_eSPI(void)
 {
     //-----------------------------------
     // eSPI Interface Control

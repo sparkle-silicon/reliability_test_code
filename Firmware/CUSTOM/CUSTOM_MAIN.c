@@ -125,6 +125,15 @@ void __weak Hook_100msEventC(void)
 {
     Service_LED_Indicator();
 
+    if (xOOB_GET_CRASHLOG > 0)
+    {
+        return;
+    }
+    if (xOOB_PauseTimer == 0)
+    {
+        Service_OOB_Message();
+    }
+
 #if SUPPORT_PECI
     if (System_PowerState == SYSTEM_S0)
     {

@@ -135,7 +135,7 @@
   // reserved
 #define CEC_MODULE_EN 0
 #define RTC_MODULE_EN 0
-#define PECI_MODULE_EN 0
+#define PECI_MODULE_EN 1
 #define MAILBOX_MODULE_EN 0
 
 /****************************************************************************

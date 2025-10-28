@@ -19,6 +19,7 @@
 #include "CUSTOM_BATTERY.H"
 #include "KERNEL_MAILBOX.H"
 #include "KERNEL_I3C.H"
+#include "CUSTOM_PECI.H"
 
 void gpio_init(void)
 {

@@ -268,7 +268,7 @@ const FUNCT_PTR_V_V service_table[] =
 	Service_MS_1,             // 1 millisecond Service
 	Service_PCI2,             // PMC1 Host Command/Data service
 	Service_KBS,              // Keyboard scanner service
-	Service_Mailbox,          // Security SubSystem(Crypto CPU) Mailbox Commands Retuurn service
+	Service_Mailbox,          // Security SubSystem(Crypto CPU) Mailbox Commands Return service
 
 	// Lo-Level Service
 	//低优先级
@@ -307,12 +307,12 @@ void main_service(void)
 	if (_R1 >= HIGH_LEVEL_SERVICE_NUM)//开启高等级穿插式执行服务
 	{
 		(service_table[(_R1 % HIGH_LEVEL_SERVICE_NUM)])();
-	#if (MIDDLE_LEVEL_SERVICE_NUM > 0)
+#if (MIDDLE_LEVEL_SERVICE_NUM > 0)
 		if (_R1 >= (HIGH_LEVEL_SERVICE_NUM + MIDDLE_LEVEL_SERVICE_NUM))//开启中等级穿插式执行服务
 		{
 			(service_table[HIGH_LEVEL_SERVICE_NUM + (_R1 % (MIDDLE_LEVEL_SERVICE_NUM))])();
 		}
-	#endif
+#endif
 	}
 #endif
 #endif

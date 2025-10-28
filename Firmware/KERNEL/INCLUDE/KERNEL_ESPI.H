@@ -27,10 +27,10 @@
 #define F_PLTRST_LO_TO_HI 3
 #define F_PLTRST_DETECTED 3
 
-//-----------------------------------------------------------------------------
-// (31xxh) eSPI slave Interface ()
-//-----------------------------------------------------------------------------
-/* Device Identification 00h-03h */
+ //-----------------------------------------------------------------------------
+ // (31xxh) eSPI slave Interface ()
+ //-----------------------------------------------------------------------------
+ /* Device Identification 00h-03h */
 #define eSPI_Version_ID REG_3103 // REG_3103
 /* General Capabilities and Configurations     04h-07h */
 #define F_CRC_Checking_Enable BIT(7) // REG_3104
@@ -304,53 +304,53 @@
 //-----------------------------------------------------------------------------
 typedef struct
 {
-// Byte 0
-	uint8_t eSPI_Cycle_Type : 8;   // 0: eSPI Cycle Type: OOB Message = 21h
-	// Byte 1
-	uint8_t Length_High : 4;        // 1: Length[11:8] = 0h
-	uint8_t Tag : 4;                // 1: Tag[3:0] = 0h
-	// Byte 2
-	uint8_t Length_Low : 8;         // 2: Length[7:0] = 48h
-	// Byte 3
-	uint8_t Reserved1 : 1;           // 3: Bit 0 reserved
-	uint8_t Dest_Slave_Addr : 7;    // 3: Dest Slave Addr[7:1] = 07h
-	// Byte 4
-	uint8_t Command_Code : 8;        // 4: Command Code = 0Fh
-	// Byte 5
-	uint8_t Byte_Count : 8;          // 5: Byte Count = 45h
-	// Byte 6
-	uint8_t Reserved2 : 1;           // 6: Bit 0 reserved
-	uint8_t Source_Slave_Addr : 7;   // 6: Source Slave Addr[7:1] = 08h
-	// Byte 7
-	uint8_t Header_Version : 4;      // 7: Header Version = 0h
-	uint8_t MCTP : 4;       		 // 7: MCTP Reserved = 0h
-	// Byte 8
-	uint8_t Destination_Endpoint_ID : 8; // 8: Destination Endpoint ID
-	// Byte 9
-	uint8_t Source_Endpoint_ID : 8;  // 9: Source Endpoint ID
-	// Byte 10
-	uint8_t Message_Tag : 3;         // 10: Message Tag = 000b
-	uint8_t TO : 1;                  // 10: TO = 0b
-	uint8_t Packet_Seq : 2;          // 10: Packet Seq # = 00b
-	uint8_t EOM : 1;                 // 10: EOM = 0b
-	uint8_t SOM : 1;                 // 10: SOM = 1b
-	// Byte 11
-	uint8_t Message_Type : 7;        // 11: Message Type = 7Dh
-	uint8_t IC : 1;                  // 11: IC
-	// Byte 12
-	uint8_t RPMC_Device : 8;         // 12: Reserved = 0h
-	// Byte 13
-	uint8_t Opcode : 8;              // 13: Opcode = 9Bh
-	// Byte 14
-	uint8_t Cmd_Type : 8;            // 14: Cmd Type = 00h
-	// Byte 15
-	uint8_t Counter_Addr : 8;        // 15: Counter Addr[7:0]
-	// Byte 16
-	uint8_t Rsvd : 8;        // 16: Counter Data[7:0]
-	// Byte 17-48
-	uint8_t Root_Key[32];            // 根密钥
-	// Byte 49-72
-	uint8_t TruncatedSignature2_27[26];   // 截断签名
+    // Byte 0
+    uint8_t eSPI_Cycle_Type : 8;   // 0: eSPI Cycle Type: OOB Message = 21h
+    // Byte 1
+    uint8_t Length_High : 4;        // 1: Length[11:8] = 0h
+    uint8_t Tag : 4;                // 1: Tag[3:0] = 0h
+    // Byte 2
+    uint8_t Length_Low : 8;         // 2: Length[7:0] = 48h
+    // Byte 3
+    uint8_t Reserved1 : 1;           // 3: Bit 0 reserved
+    uint8_t Dest_Slave_Addr : 7;    // 3: Dest Slave Addr[7:1] = 07h
+    // Byte 4
+    uint8_t Command_Code : 8;        // 4: Command Code = 0Fh
+    // Byte 5
+    uint8_t Byte_Count : 8;          // 5: Byte Count = 45h
+    // Byte 6
+    uint8_t Reserved2 : 1;           // 6: Bit 0 reserved
+    uint8_t Source_Slave_Addr : 7;   // 6: Source Slave Addr[7:1] = 08h
+    // Byte 7
+    uint8_t Header_Version : 4;      // 7: Header Version = 0h
+    uint8_t MCTP : 4;       		 // 7: MCTP Reserved = 0h
+    // Byte 8
+    uint8_t Destination_Endpoint_ID : 8; // 8: Destination Endpoint ID
+    // Byte 9
+    uint8_t Source_Endpoint_ID : 8;  // 9: Source Endpoint ID
+    // Byte 10
+    uint8_t Message_Tag : 3;         // 10: Message Tag = 000b
+    uint8_t TO : 1;                  // 10: TO = 0b
+    uint8_t Packet_Seq : 2;          // 10: Packet Seq # = 00b
+    uint8_t EOM : 1;                 // 10: EOM = 0b
+    uint8_t SOM : 1;                 // 10: SOM = 1b
+    // Byte 11
+    uint8_t Message_Type : 7;        // 11: Message Type = 7Dh
+    uint8_t IC : 1;                  // 11: IC
+    // Byte 12
+    uint8_t RPMC_Device : 8;         // 12: Reserved = 0h
+    // Byte 13
+    uint8_t Opcode : 8;              // 13: Opcode = 9Bh
+    // Byte 14
+    uint8_t Cmd_Type : 8;            // 14: Cmd Type = 00h
+    // Byte 15
+    uint8_t Counter_Addr : 8;        // 15: Counter Addr[7:0]
+    // Byte 16
+    uint8_t Rsvd : 8;        // 16: Counter Data[7:0]
+    // Byte 17-48
+    uint8_t Root_Key[32];            // 根密钥
+    // Byte 49-72
+    uint8_t TruncatedSignature2_27[26];   // 截断签名
 } eSPI_OOB_WriteRootKet_MESSAGE1;
 
 typedef struct {
@@ -378,12 +378,12 @@ typedef struct {
     uint8_t Destination_Endpoint_ID : 8;        // Destination Endpoint ID
     // Byte 9
     uint8_t Source_Endpoint_ID : 8;             // Source Endpoint ID
-	// Byte 10
-	uint8_t Message_Tag : 3;                    // 10: Message Tag = 000b
-	uint8_t TO : 1;                             // 10: TO = 0b
-	uint8_t Packet_Seq : 2;                     // 10: Packet Seq # = 01b
-	uint8_t EOM : 1;                            // 10: EOM = 1b
-	uint8_t SOM : 1;                            // 10: SOM = 0b
+    // Byte 10
+    uint8_t Message_Tag : 3;                    // 10: Message Tag = 000b
+    uint8_t TO : 1;                             // 10: TO = 0b
+    uint8_t Packet_Seq : 2;                     // 10: Packet Seq # = 01b
+    uint8_t EOM : 1;                            // 10: EOM = 1b
+    uint8_t SOM : 1;                            // 10: SOM = 0b
     // Byte 11
     uint8_t Message_Type : 7;                   // 11: Message Type = 7Dh
     uint8_t IC : 1;                             // 11: IC
@@ -417,12 +417,12 @@ typedef struct {
     uint8_t Destination_Endpoint_ID : 8;        // Destination Endpoint ID
     // Byte 9
     uint8_t Source_Endpoint_ID : 8;             // Source Endpoint ID
-	// Byte 10
-	uint8_t Message_Tag : 3;                    // 10: Message Tag = 000b
-	uint8_t TO : 1;                             // 10: TO = 0b
-	uint8_t Packet_Seq : 2;                     // 10: Packet Seq # = 01b
-	uint8_t EOM : 1;                            // 10: EOM = 1b
-	uint8_t SOM : 1;                            // 10: SOM = 0b
+    // Byte 10
+    uint8_t Message_Tag : 3;                    // 10: Message Tag = 000b
+    uint8_t TO : 1;                             // 10: TO = 0b
+    uint8_t Packet_Seq : 2;                     // 10: Packet Seq # = 01b
+    uint8_t EOM : 1;                            // 10: EOM = 1b
+    uint8_t SOM : 1;                            // 10: SOM = 0b
     // Byte 11
     uint8_t Message_Type : 7;                   // 11: Message Type = 7Dh
     uint8_t IC : 1;                             // 11: IC
@@ -437,53 +437,53 @@ typedef struct {
 
 typedef struct
 {
-// Byte 0
-	uint8_t eSPI_Cycle_Type : 8;   // 0: eSPI Cycle Type: OOB Message = 21h
-	// Byte 1
-	uint8_t Length_High : 4;        // 1: Length[11:8] = 0h
-	uint8_t Tag : 4;                // 1: Tag[3:0] = 0h
-	// Byte 2
-	uint8_t Length_Low : 8;         // 2: Length[7:0] = 48h
-	// Byte 3
-	uint8_t Reserved1 : 1;           // 3: Bit 0 reserved
-	uint8_t Dest_Slave_Addr : 7;    // 3: Dest Slave Addr[7:1] = 07h
-	// Byte 4
-	uint8_t Command_Code : 8;        // 4: Command Code = 0Fh
-	// Byte 5
-	uint8_t Byte_Count : 8;          // 5: Byte Count = 45h
-	// Byte 6
-	uint8_t Reserved2 : 1;           // 6: Bit 0 reserved
-	uint8_t Source_Slave_Addr : 7;   // 6: Source Slave Addr[7:1] = 08h
-	// Byte 7
-	uint8_t Header_Version : 4;      // 7: Header Version = 0h
-	uint8_t MCTP : 4;       		 // 7: MCTP Reserved = 0h
-	// Byte 8
-	uint8_t Destination_Endpoint_ID : 8; // 8: Destination Endpoint ID
-	// Byte 9
-	uint8_t Source_Endpoint_ID : 8;  // 9: Source Endpoint ID
-	// Byte 10
-	uint8_t Message_Tag : 3;         // 10: Message Tag = 000b
-	uint8_t TO : 1;                  // 10: TO = 0b
-	uint8_t Packet_Seq : 2;          // 10: Packet Seq # = 00b
-	uint8_t EOM : 1;                 // 10: EOM = 0b
-	uint8_t SOM : 1;                 // 10: SOM = 1b
-	// Byte 11
-	uint8_t Message_Type : 7;        // 11: Message Type = 7Dh
-	uint8_t IC : 1;                  // 11: IC
-	// Byte 12
-	uint8_t RPMC_Device : 8;         // 12: Reserved = 0h
-	// Byte 13
-	uint8_t Opcode : 8;              // 13: Opcode = 9Bh
-	// Byte 14
-	uint8_t Cmd_Type : 8;            // 14: Cmd Type = 00h
-	// Byte 15
-	uint8_t Counter_Addr : 8;        // 15: Counter Addr[7:0]
-	// Byte 16
-	uint8_t Rsvd : 8;        // 16: Counter Data[7:0]
-	// Byte 17-20
-	uint8_t Key_Data[4];            
-	// Byte 21-52
-	uint8_t Signature[32];   
+    // Byte 0
+    uint8_t eSPI_Cycle_Type : 8;   // 0: eSPI Cycle Type: OOB Message = 21h
+    // Byte 1
+    uint8_t Length_High : 4;        // 1: Length[11:8] = 0h
+    uint8_t Tag : 4;                // 1: Tag[3:0] = 0h
+    // Byte 2
+    uint8_t Length_Low : 8;         // 2: Length[7:0] = 48h
+    // Byte 3
+    uint8_t Reserved1 : 1;           // 3: Bit 0 reserved
+    uint8_t Dest_Slave_Addr : 7;    // 3: Dest Slave Addr[7:1] = 07h
+    // Byte 4
+    uint8_t Command_Code : 8;        // 4: Command Code = 0Fh
+    // Byte 5
+    uint8_t Byte_Count : 8;          // 5: Byte Count = 45h
+    // Byte 6
+    uint8_t Reserved2 : 1;           // 6: Bit 0 reserved
+    uint8_t Source_Slave_Addr : 7;   // 6: Source Slave Addr[7:1] = 08h
+    // Byte 7
+    uint8_t Header_Version : 4;      // 7: Header Version = 0h
+    uint8_t MCTP : 4;       		 // 7: MCTP Reserved = 0h
+    // Byte 8
+    uint8_t Destination_Endpoint_ID : 8; // 8: Destination Endpoint ID
+    // Byte 9
+    uint8_t Source_Endpoint_ID : 8;  // 9: Source Endpoint ID
+    // Byte 10
+    uint8_t Message_Tag : 3;         // 10: Message Tag = 000b
+    uint8_t TO : 1;                  // 10: TO = 0b
+    uint8_t Packet_Seq : 2;          // 10: Packet Seq # = 00b
+    uint8_t EOM : 1;                 // 10: EOM = 0b
+    uint8_t SOM : 1;                 // 10: SOM = 1b
+    // Byte 11
+    uint8_t Message_Type : 7;        // 11: Message Type = 7Dh
+    uint8_t IC : 1;                  // 11: IC
+    // Byte 12
+    uint8_t RPMC_Device : 8;         // 12: Reserved = 0h
+    // Byte 13
+    uint8_t Opcode : 8;              // 13: Opcode = 9Bh
+    // Byte 14
+    uint8_t Cmd_Type : 8;            // 14: Cmd Type = 00h
+    // Byte 15
+    uint8_t Counter_Addr : 8;        // 15: Counter Addr[7:0]
+    // Byte 16
+    uint8_t Rsvd : 8;        // 16: Counter Data[7:0]
+    // Byte 17-20
+    uint8_t Key_Data[4];
+    // Byte 21-52
+    uint8_t Signature[32];
 } eSPI_OOB_UpdateHMACKey;
 
 typedef struct {
@@ -511,12 +511,12 @@ typedef struct {
     uint8_t Destination_Endpoint_ID : 8;        // Destination Endpoint ID
     // Byte 9
     uint8_t Source_Endpoint_ID : 8;             // Source Endpoint ID
-	// Byte 10
-	uint8_t Message_Tag : 3;                    // 10: Message Tag = 000b
-	uint8_t TO : 1;                             // 10: TO = 0b
-	uint8_t Packet_Seq : 2;                     // 10: Packet Seq # = 01b
-	uint8_t EOM : 1;                            // 10: EOM = 1b
-	uint8_t SOM : 1;                            // 10: SOM = 0b
+    // Byte 10
+    uint8_t Message_Tag : 3;                    // 10: Message Tag = 000b
+    uint8_t TO : 1;                             // 10: TO = 0b
+    uint8_t Packet_Seq : 2;                     // 10: Packet Seq # = 01b
+    uint8_t EOM : 1;                            // 10: EOM = 1b
+    uint8_t SOM : 1;                            // 10: SOM = 0b
     // Byte 11
     uint8_t Message_Type : 7;                   // 11: Message Type = 7Dh
     uint8_t IC : 1;                             // 11: IC
@@ -531,53 +531,53 @@ typedef struct {
 
 typedef struct
 {
-// Byte 0
-	uint8_t eSPI_Cycle_Type : 8;   // 0: eSPI Cycle Type: OOB Message = 21h
-	// Byte 1
-	uint8_t Length_High : 4;        // 1: Length[11:8] = 0h
-	uint8_t Tag : 4;                // 1: Tag[3:0] = 0h
-	// Byte 2
-	uint8_t Length_Low : 8;         // 2: Length[7:0] = 48h
-	// Byte 3
-	uint8_t Reserved1 : 1;           // 3: Bit 0 reserved
-	uint8_t Dest_Slave_Addr : 7;    // 3: Dest Slave Addr[7:1] = 07h
-	// Byte 4
-	uint8_t Command_Code : 8;        // 4: Command Code = 0Fh
-	// Byte 5
-	uint8_t Byte_Count : 8;          // 5: Byte Count = 45h
-	// Byte 6
-	uint8_t Reserved2 : 1;           // 6: Bit 0 reserved
-	uint8_t Source_Slave_Addr : 7;   // 6: Source Slave Addr[7:1] = 08h
-	// Byte 7
-	uint8_t Header_Version : 4;      // 7: Header Version = 0h
-	uint8_t MCTP : 4;       		 // 7: MCTP Reserved = 0h
-	// Byte 8
-	uint8_t Destination_Endpoint_ID : 8; // 8: Destination Endpoint ID
-	// Byte 9
-	uint8_t Source_Endpoint_ID : 8;  // 9: Source Endpoint ID
-	// Byte 10
-	uint8_t Message_Tag : 3;         // 10: Message Tag = 000b
-	uint8_t TO : 1;                  // 10: TO = 0b
-	uint8_t Packet_Seq : 2;          // 10: Packet Seq # = 00b
-	uint8_t EOM : 1;                 // 10: EOM = 0b
-	uint8_t SOM : 1;                 // 10: SOM = 1b
-	// Byte 11
-	uint8_t Message_Type : 7;        // 11: Message Type = 7Dh
-	uint8_t IC : 1;                  // 11: IC
-	// Byte 12
-	uint8_t RPMC_Device : 8;         // 12: Reserved = 0h
-	// Byte 13
-	uint8_t Opcode : 8;              // 13: Opcode = 9Bh
-	// Byte 14
-	uint8_t Cmd_Type : 8;            // 14: Cmd Type = 00h
-	// Byte 15
-	uint8_t Counter_Addr : 8;        // 15: Counter Addr[7:0]
-	// Byte 16
-	uint8_t Rsvd : 8;        // 16: Counter Data[7:0]
-	// Byte 17-20
-	uint8_t Counter_Data[4];            
-	// Byte 21-52
-	uint8_t Signature[32];   
+    // Byte 0
+    uint8_t eSPI_Cycle_Type : 8;   // 0: eSPI Cycle Type: OOB Message = 21h
+    // Byte 1
+    uint8_t Length_High : 4;        // 1: Length[11:8] = 0h
+    uint8_t Tag : 4;                // 1: Tag[3:0] = 0h
+    // Byte 2
+    uint8_t Length_Low : 8;         // 2: Length[7:0] = 48h
+    // Byte 3
+    uint8_t Reserved1 : 1;           // 3: Bit 0 reserved
+    uint8_t Dest_Slave_Addr : 7;    // 3: Dest Slave Addr[7:1] = 07h
+    // Byte 4
+    uint8_t Command_Code : 8;        // 4: Command Code = 0Fh
+    // Byte 5
+    uint8_t Byte_Count : 8;          // 5: Byte Count = 45h
+    // Byte 6
+    uint8_t Reserved2 : 1;           // 6: Bit 0 reserved
+    uint8_t Source_Slave_Addr : 7;   // 6: Source Slave Addr[7:1] = 08h
+    // Byte 7
+    uint8_t Header_Version : 4;      // 7: Header Version = 0h
+    uint8_t MCTP : 4;       		 // 7: MCTP Reserved = 0h
+    // Byte 8
+    uint8_t Destination_Endpoint_ID : 8; // 8: Destination Endpoint ID
+    // Byte 9
+    uint8_t Source_Endpoint_ID : 8;  // 9: Source Endpoint ID
+    // Byte 10
+    uint8_t Message_Tag : 3;         // 10: Message Tag = 000b
+    uint8_t TO : 1;                  // 10: TO = 0b
+    uint8_t Packet_Seq : 2;          // 10: Packet Seq # = 00b
+    uint8_t EOM : 1;                 // 10: EOM = 0b
+    uint8_t SOM : 1;                 // 10: SOM = 1b
+    // Byte 11
+    uint8_t Message_Type : 7;        // 11: Message Type = 7Dh
+    uint8_t IC : 1;                  // 11: IC
+    // Byte 12
+    uint8_t RPMC_Device : 8;         // 12: Reserved = 0h
+    // Byte 13
+    uint8_t Opcode : 8;              // 13: Opcode = 9Bh
+    // Byte 14
+    uint8_t Cmd_Type : 8;            // 14: Cmd Type = 00h
+    // Byte 15
+    uint8_t Counter_Addr : 8;        // 15: Counter Addr[7:0]
+    // Byte 16
+    uint8_t Rsvd : 8;        // 16: Counter Data[7:0]
+    // Byte 17-20
+    uint8_t Counter_Data[4];
+    // Byte 21-52
+    uint8_t Signature[32];
 } eSPI_OOB_IncrementCounter;
 
 typedef struct {
@@ -605,12 +605,12 @@ typedef struct {
     uint8_t Destination_Endpoint_ID : 8;        // Destination Endpoint ID
     // Byte 9
     uint8_t Source_Endpoint_ID : 8;             // Source Endpoint ID
-	// Byte 10
-	uint8_t Message_Tag : 3;                    // 10: Message Tag = 000b
-	uint8_t TO : 1;                             // 10: TO = 0b
-	uint8_t Packet_Seq : 2;                     // 10: Packet Seq # = 01b
-	uint8_t EOM : 1;                            // 10: EOM = 1b
-	uint8_t SOM : 1;                            // 10: SOM = 0b
+    // Byte 10
+    uint8_t Message_Tag : 3;                    // 10: Message Tag = 000b
+    uint8_t TO : 1;                             // 10: TO = 0b
+    uint8_t Packet_Seq : 2;                     // 10: Packet Seq # = 01b
+    uint8_t EOM : 1;                            // 10: EOM = 1b
+    uint8_t SOM : 1;                            // 10: SOM = 0b
     // Byte 11
     uint8_t Message_Type : 7;                   // 11: Message Type = 7Dh
     uint8_t IC : 1;                             // 11: IC
@@ -625,53 +625,53 @@ typedef struct {
 
 typedef struct
 {
-// Byte 0
-	uint8_t eSPI_Cycle_Type : 8;   // 0: eSPI Cycle Type: OOB Message = 21h
-	// Byte 1
-	uint8_t Length_High : 4;        // 1: Length[11:8] = 0h
-	uint8_t Tag : 4;                // 1: Tag[3:0] = 0h
-	// Byte 2
-	uint8_t Length_Low : 8;         // 2: Length[7:0] = 48h
-	// Byte 3
-	uint8_t Reserved1 : 1;           // 3: Bit 0 reserved
-	uint8_t Dest_Slave_Addr : 7;    // 3: Dest Slave Addr[7:1] = 07h
-	// Byte 4
-	uint8_t Command_Code : 8;        // 4: Command Code = 0Fh
-	// Byte 5
-	uint8_t Byte_Count : 8;          // 5: Byte Count = 45h
-	// Byte 6
-	uint8_t Reserved2 : 1;           // 6: Bit 0 reserved
-	uint8_t Source_Slave_Addr : 7;   // 6: Source Slave Addr[7:1] = 08h
-	// Byte 7
-	uint8_t Header_Version : 4;      // 7: Header Version = 0h
-	uint8_t MCTP : 4;       		 // 7: MCTP Reserved = 0h
-	// Byte 8
-	uint8_t Destination_Endpoint_ID : 8; // 8: Destination Endpoint ID
-	// Byte 9
-	uint8_t Source_Endpoint_ID : 8;  // 9: Source Endpoint ID
-	// Byte 10
-	uint8_t Message_Tag : 3;         // 10: Message Tag = 000b
-	uint8_t TO : 1;                  // 10: TO = 0b
-	uint8_t Packet_Seq : 2;          // 10: Packet Seq # = 00b
-	uint8_t EOM : 1;                 // 10: EOM = 0b
-	uint8_t SOM : 1;                 // 10: SOM = 1b
-	// Byte 11
-	uint8_t Message_Type : 7;        // 11: Message Type = 7Dh
-	uint8_t IC : 1;                  // 11: IC
-	// Byte 12
-	uint8_t RPMC_Device : 8;         // 12: Reserved = 0h
-	// Byte 13
-	uint8_t Opcode : 8;              // 13: Opcode = 9Bh
-	// Byte 14
-	uint8_t Cmd_Type : 8;            // 14: Cmd Type = 00h
-	// Byte 15
-	uint8_t Counter_Addr : 8;        // 15: Counter Addr[7:0]
-	// Byte 16
-	uint8_t Rsvd : 8;        // 16: Counter Data[7:0]
-	// Byte 17-28
-	uint8_t Tag_Arr[12];            
-	// Byte 21-52
-	uint8_t Signature[32];   
+    // Byte 0
+    uint8_t eSPI_Cycle_Type : 8;   // 0: eSPI Cycle Type: OOB Message = 21h
+    // Byte 1
+    uint8_t Length_High : 4;        // 1: Length[11:8] = 0h
+    uint8_t Tag : 4;                // 1: Tag[3:0] = 0h
+    // Byte 2
+    uint8_t Length_Low : 8;         // 2: Length[7:0] = 48h
+    // Byte 3
+    uint8_t Reserved1 : 1;           // 3: Bit 0 reserved
+    uint8_t Dest_Slave_Addr : 7;    // 3: Dest Slave Addr[7:1] = 07h
+    // Byte 4
+    uint8_t Command_Code : 8;        // 4: Command Code = 0Fh
+    // Byte 5
+    uint8_t Byte_Count : 8;          // 5: Byte Count = 45h
+    // Byte 6
+    uint8_t Reserved2 : 1;           // 6: Bit 0 reserved
+    uint8_t Source_Slave_Addr : 7;   // 6: Source Slave Addr[7:1] = 08h
+    // Byte 7
+    uint8_t Header_Version : 4;      // 7: Header Version = 0h
+    uint8_t MCTP : 4;       		 // 7: MCTP Reserved = 0h
+    // Byte 8
+    uint8_t Destination_Endpoint_ID : 8; // 8: Destination Endpoint ID
+    // Byte 9
+    uint8_t Source_Endpoint_ID : 8;  // 9: Source Endpoint ID
+    // Byte 10
+    uint8_t Message_Tag : 3;         // 10: Message Tag = 000b
+    uint8_t TO : 1;                  // 10: TO = 0b
+    uint8_t Packet_Seq : 2;          // 10: Packet Seq # = 00b
+    uint8_t EOM : 1;                 // 10: EOM = 0b
+    uint8_t SOM : 1;                 // 10: SOM = 1b
+    // Byte 11
+    uint8_t Message_Type : 7;        // 11: Message Type = 7Dh
+    uint8_t IC : 1;                  // 11: IC
+    // Byte 12
+    uint8_t RPMC_Device : 8;         // 12: Reserved = 0h
+    // Byte 13
+    uint8_t Opcode : 8;              // 13: Opcode = 9Bh
+    // Byte 14
+    uint8_t Cmd_Type : 8;            // 14: Cmd Type = 00h
+    // Byte 15
+    uint8_t Counter_Addr : 8;        // 15: Counter Addr[7:0]
+    // Byte 16
+    uint8_t Rsvd : 8;        // 16: Counter Data[7:0]
+    // Byte 17-28
+    uint8_t Tag_Arr[12];
+    // Byte 21-52
+    uint8_t Signature[32];
 } eSPI_OOB_RequestCounter;
 
 typedef struct {
@@ -699,12 +699,12 @@ typedef struct {
     uint8_t Destination_Endpoint_ID : 8;        // Destination Endpoint ID
     // Byte 9
     uint8_t Source_Endpoint_ID : 8;             // Source Endpoint ID
-	// Byte 10
-	uint8_t Message_Tag : 3;                    // 10: Message Tag = 000b
-	uint8_t TO : 1;                             // 10: TO = 0b
-	uint8_t Packet_Seq : 2;                     // 10: Packet Seq # = 01b
-	uint8_t EOM : 1;                            // 10: EOM = 1b
-	uint8_t SOM : 1;                            // 10: SOM = 0b
+    // Byte 10
+    uint8_t Message_Tag : 3;                    // 10: Message Tag = 000b
+    uint8_t TO : 1;                             // 10: TO = 0b
+    uint8_t Packet_Seq : 2;                     // 10: Packet Seq # = 01b
+    uint8_t EOM : 1;                            // 10: EOM = 1b
+    uint8_t SOM : 1;                            // 10: SOM = 0b
     // Byte 11
     uint8_t Message_Type : 7;                   // 11: Message Type = 7Dh
     uint8_t IC : 1;                             // 11: IC
@@ -715,7 +715,7 @@ typedef struct {
     // Byte 14
     uint8_t Extended_Status : 8;         // Counter Data[7:0]
     // Byte 15-26
-    uint8_t Tag_Arr[12];     
+    uint8_t Tag_Arr[12];
     // Byte 27-30
     uint8_t CounterReadData[4];
     // Byte 31-62
@@ -747,12 +747,12 @@ typedef struct {
     uint8_t Destination_Endpoint_ID : 8;        // Destination Endpoint ID
     // Byte 9
     uint8_t Source_Endpoint_ID : 8;             // Source Endpoint ID
-	// Byte 10
-	uint8_t Message_Tag : 3;                    // 10: Message Tag = 000b
-	uint8_t TO : 1;                             // 10: TO = 0b
-	uint8_t Packet_Seq : 2;                     // 10: Packet Seq # = 01b
-	uint8_t EOM : 1;                            // 10: EOM = 1b
-	uint8_t SOM : 1;                            // 10: SOM = 0b
+    // Byte 10
+    uint8_t Message_Tag : 3;                    // 10: Message Tag = 000b
+    uint8_t TO : 1;                             // 10: TO = 0b
+    uint8_t Packet_Seq : 2;                     // 10: Packet Seq # = 01b
+    uint8_t EOM : 1;                            // 10: EOM = 1b
+    uint8_t SOM : 1;                            // 10: SOM = 0b
     // Byte 11
     uint8_t Message_Type : 7;                   // 11: Message Type = 7Dh
     uint8_t IC : 1;                             // 11: IC
@@ -788,12 +788,12 @@ typedef struct {
     uint8_t Destination_Endpoint_ID : 8;        // Destination Endpoint ID
     // Byte 9
     uint8_t Source_Endpoint_ID : 8;             // Source Endpoint ID
-	// Byte 10
-	uint8_t Message_Tag : 3;                    // 10: Message Tag = 000b
-	uint8_t TO : 1;                             // 10: TO = 0b
-	uint8_t Packet_Seq : 2;                     // 10: Packet Seq # = 01b
-	uint8_t EOM : 1;                            // 10: EOM = 1b
-	uint8_t SOM : 1;                            // 10: SOM = 0b
+    // Byte 10
+    uint8_t Message_Tag : 3;                    // 10: Message Tag = 000b
+    uint8_t TO : 1;                             // 10: TO = 0b
+    uint8_t Packet_Seq : 2;                     // 10: Packet Seq # = 01b
+    uint8_t EOM : 1;                            // 10: EOM = 1b
+    uint8_t SOM : 1;                            // 10: SOM = 0b
     // Byte 11
     uint8_t Message_Type : 7;                   // 11: Message Type = 7Dh
     uint8_t IC : 1;                             // 11: IC
@@ -837,18 +837,18 @@ extern void Get_OOB_PCH_Temperature(void);
 extern void Get_OOB_PMC_CrashLog(void);
 
 extern BYTE eSPI_Flash_Read(BYTE add3, BYTE add2, BYTE add1, BYTE add0,
-                            BYTE length, VBYTE *bufferindex);
+    BYTE length, VBYTE* bufferindex);
 extern BYTE eSPI_Flash_Erase(BYTE addr3, BYTE addr2, BYTE addr1, BYTE addr0,
-                             BYTE mode);
+    BYTE mode);
 extern BYTE eSPI_Flash_Write(BYTE addr3, BYTE addr2, BYTE addr1, BYTE addr0,
-                             BYTE length, VBYTE *bufferindex);
+    BYTE length, VBYTE* bufferindex);
 
-extern BYTE OOB_PECI_RdPkgConfig(BYTE addr, BYTE *ReadData, BYTE Domain,
-                                 BYTE Retry, BYTE Index, BYTE LSB,
-                                 BYTE MSB, BYTE ReadLen, BYTE WriteLen);
-extern BYTE OOB_PECI_WrPkgConfig(BYTE addr, BYTE *WriteData, BYTE Domain,
-                                 BYTE Retry, BYTE Index, BYTE LSB,
-                                 BYTE MSB, BYTE ReadLen, BYTE WriteLen);
+extern BYTE OOB_PECI_RdPkgConfig(BYTE addr, BYTE* ReadData, BYTE Domain,
+    BYTE Retry, BYTE Index, BYTE LSB,
+    BYTE MSB, BYTE ReadLen, BYTE WriteLen);
+extern BYTE OOB_PECI_WrPkgConfig(BYTE addr, BYTE* WriteData, BYTE Domain,
+    BYTE Retry, BYTE Index, BYTE LSB,
+    BYTE MSB, BYTE ReadLen, BYTE WriteLen);
 
 extern void OOB_PECI_ReadPowerUnit(void);
 extern void OOB_PECI_ReadPowerLimit1(void);
@@ -859,19 +859,18 @@ extern void OOB_PECI_ReadPowerLimit3(void);
 extern void OOB_PECI_WritePowerLimit3(BYTE SettingWatts);
 extern void OOB_PECI_ReadPowerLimit4(void);
 extern void OOB_PECI_WritePowerLimit4(BYTE SettingWatts);
-extern void __weak Service_eSPI(void);
+extern void Service_eSPI(void);
 extern BYTE EC_ACK_eSPI_Boot_Ready(void);
-extern BYTE SPK_CHECK_SUS_WARN(void);
 extern void ESPI_Init(void);
 extern void EC_ACK_eSPI_SUS_WARN(void);
 extern BYTE Process_Peripheral_Message_Send(void);
 extern BYTE Process_Peripheral_Memory_Read32(void);
 extern BYTE eSPI_OOBRPMC_Handler(void);
-extern BYTE eSPI_OOBReceive(BYTE *OOB_Meg_Table);
+extern BYTE eSPI_OOBReceive(BYTE* OOB_Meg_Table);
 extern void eRPMC_WriteRootKey_Response(void);
 extern void eRPMC_UpdateHMACKey_Response(void);
 extern void eRPMC_IncrementCounter_Response(void);
 extern void eRPMC_RequestCounter_Response(void);
 extern void eRPMC_ReadParameter_Response(void);
-extern BYTE eSPI_OOBSend(BYTE *OOB_Meg_Table);
+extern BYTE eSPI_OOBSend(BYTE* OOB_Meg_Table);
 #endif

@@ -27,6 +27,49 @@
  /*-----------------------------------------------------------------------------
  * Local Parameter Definition
  *---------------------------------------------------------------------------*/
+#define PECI_CLKDIV_1 1
+#define PECI_CLKDIV_2 2
+#define PECI_CLKDIV_4 4
+#define PECI_CLKDIV_8 8
+
+#define PMU_EN_IBIAS 0x00000100UL
+#define PMU_EN_BUF 0x00000200UL
+#define PECI_RESERVED_REG 0x00000001UL
+
+#define VTTlev_110V 0b00    //peci寄存器控制方式设置peci pad电压为1.10v
+#define VTTlev_105V 0b01    //peci寄存器控制方式设置peci pad电压为1.05v
+#define VTTlev_180V 0b10    //peci寄存器控制方式设置peci pad电压为1.80v
+#define VTTlev_125V 0b11    //peci寄存器控制方式设置peci pad电压为1.25v
+
+#define SYSCTL_PECI_VTT_080V 0b0000 //sysctl寄存器控制方式设置peci pad电压为0.8v
+#define SYSCTL_PECI_VTT_085V 0b0001
+#define SYSCTL_PECI_VTT_090V 0b0010
+#define SYSCTL_PECI_VTT_095V 0b0011
+#define SYSCTL_PECI_VTT_100V 0b0100
+#define SYSCTL_PECI_VTT_105V 0b0101
+#define SYSCTL_PECI_VTT_110V 0b0110
+#define SYSCTL_PECI_VTT_115V 0b0111
+#define SYSCTL_PECI_VTT_120V 0b1000
+#define SYSCTL_PECI_VTT_125V 0b1001
+#define SYSCTL_PECI_VTT_130V 0b1010
+#define SYSCTL_PECI_VTT_135V 0b1011
+
+#define PADSEL_SYSCTL 1   //选择sysctl寄存器设置pad电压
+#define PADSEL_PECI 0     //选择peci寄存器设置pad电压
+
+#define TRANSFER_RATE_1_8MHz 0b000  //传输速率
+#define TRANSFER_RATE_1_0MHz 0b001
+#define TRANSFER_RATE_500KHz 0b010
+#define TRANSFER_RATE_250KHz 0b011
+#define TRANSFER_RATE_1_5MHz 0b100
+
+#define PECI_HOST_ENABLE 0x08   //主机使能
+
+#define PECI_VTT_SEL 0x00000080UL
+
+ /*-----------------------------------------------------------------------------
+ * Local Parameter Definition
+ *---------------------------------------------------------------------------*/
 #define SUPPORT_PECI_SUBROUTINE TRUE
 #define SUPPORT_PECI_POWER_CTRL TRUE
 #define SUPPORT_SOFTWARE_AWFCS FALSE
@@ -173,11 +216,11 @@ extern BYTE PECI_CheckHostFinish(void);
 extern void ResetPECIStatus(void);
 extern void PECI_HostControl(BYTE control);
 extern BYTE PECI_Ping(BYTE addr, BYTE ReadLen, BYTE WriteLen);
-extern BYTE PECI_GetDIB(BYTE addr, BYTE *ReadData, BYTE ReadLen, BYTE WriteLen);
-extern BYTE PECI_GetTemp(BYTE addr, BYTE *ReadData, BYTE Domain, BYTE ReadLen, BYTE WriteLen);
-extern BYTE PECI_RdPkgConfig(BYTE addr, BYTE *ReadData, BYTE Domain, BYTE Retry, BYTE Index, BYTE LSB, BYTE MSB, BYTE ReadLen, BYTE WriteLen);
-extern BYTE PECI_WrPkgConfig(BYTE addr, BYTE *WriteData, BYTE Domain, BYTE Retry, BYTE Index, BYTE LSB, BYTE MSB, BYTE ReadLen, BYTE WriteLen);
-extern BYTE PECI_RdIAMSR(BYTE addr, BYTE *ReadData, BYTE Domain, BYTE Retry, BYTE ProcessorID, BYTE LSB, BYTE MSB, BYTE ReadLen, BYTE WriteLen);
+extern BYTE PECI_GetDIB(BYTE addr, BYTE* ReadData, BYTE ReadLen, BYTE WriteLen);
+extern BYTE PECI_GetTemp(BYTE addr, BYTE* ReadData, BYTE Domain, BYTE ReadLen, BYTE WriteLen);
+extern BYTE PECI_RdPkgConfig(BYTE addr, BYTE* ReadData, BYTE Domain, BYTE Retry, BYTE Index, BYTE LSB, BYTE MSB, BYTE ReadLen, BYTE WriteLen);
+extern BYTE PECI_WrPkgConfig(BYTE addr, BYTE* WriteData, BYTE Domain, BYTE Retry, BYTE Index, BYTE LSB, BYTE MSB, BYTE ReadLen, BYTE WriteLen);
+extern BYTE PECI_RdIAMSR(BYTE addr, BYTE* ReadData, BYTE Domain, BYTE Retry, BYTE ProcessorID, BYTE LSB, BYTE MSB, BYTE ReadLen, BYTE WriteLen);
 extern BYTE PECI_ReadDIB(void);
 extern BYTE PECI_ReadTemp(void);
 extern BYTE PECI_ReadPowerUnit(void);
