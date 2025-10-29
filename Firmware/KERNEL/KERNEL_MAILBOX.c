@@ -1,9 +1,14 @@
 #include "KERNEL_MAILBOX.H"
 volatile bool command_processed = true; // 用于标志子系统是否处理完命令
 Task *task_head = NULL;                 // 任务链表头
+volatile char mailbox_task_count = 0; // 全局计数
 // 添加任务到链表
 Task *Add_Task(TaskFunction function, TaskParams params, Task **head)
 {
+    if(mailbox_task_count >= MAX_TASK_COUNT)
+    {
+        return NULL;
+    }
     Task *new_task = malloc(sizeof(Task));
     if (new_task == NULL)
     {
@@ -26,6 +31,7 @@ Task *Add_Task(TaskFunction function, TaskParams params, Task **head)
         }
         p->next = new_task;
     }
+    mailbox_task_count++;  // 全局计数
     return *head; // 返回更新后的头指针
 }
 
@@ -36,8 +42,11 @@ void Process_Tasks(void)
         return;
     Task *task = task_head;
     task_head = task_head->next;   // 移动到下一个任务
+    command_processed = false;     // 处理任务锁
     task->function(&task->params); // 执行任务函数，传递参数
     free(task);                    // 处理完成，释放任务内存
+    if(mailbox_task_count>0)
+        mailbox_task_count--;          // 全局计数减一
 }
 
 void Mailbox_Init(void)
@@ -91,7 +100,6 @@ void Mailbox_ExecuteFirmwareUpdate(void *param)
         }
     }
     MAILBOX_SET_IRQ(MAILBOX_Firmware_IRQ_NUMBER);                                 // 触发对应中断
-    command_processed = false;
 }
 
 void Mailbox_FW_Extension_Trigger(void)
@@ -99,21 +107,18 @@ void Mailbox_FW_Extension_Trigger(void)
     MAILBOX_SELF_CMD = MAILBOX_CMD_FIRMWARE_EXTENSION;       // 命令字
     MAILBOX_SELF_INFO1 = 0x1070800; // 扩展固件信息
     MAILBOX_SET_IRQ(MAILBOX_Control_IRQ_NUMBER);         // 触发子系统中断
-    command_processed = false;
 }
 
 void Mailbox_Read_EFUSE_Trigger(void)
 {
     MAILBOX_SELF_CMD = MAILBOX_CMD_READ_EFUSE; // 命令字
     MAILBOX_SET_IRQ(MAILBOX_Efuse_IRQ_NUMBER);    // 触发子系统中断
-    command_processed = false;
 }
 
 void Mailbox_Read_FLASHID_Trigger(void)
 {
     MAILBOX_SELF_CMD = MAILBOX_CMD_READ_FLASHUID; // 命令字
     MAILBOX_SET_IRQ(MAILBOX_Control_IRQ_NUMBER);   // 触发子系统中断
-    command_processed = false;
 }
 
 void Mailbox_Read_FLASHUID_Trigger(void)
@@ -121,7 +126,6 @@ void Mailbox_Read_FLASHUID_Trigger(void)
     dprint("Read_FLASHUID_Trigger\n");
     MAILBOX_SELF_CMD = MAILBOX_CMD_READ_FLASHUUID; // 命令字
     MAILBOX_SET_IRQ(MAILBOX_Control_IRQ_NUMBER);   // 触发子系统中断
-    command_processed = false;
 }
 
 void Mailbox_APB2_Source_Alloc_Trigger(void *param)
@@ -130,7 +134,6 @@ void Mailbox_APB2_Source_Alloc_Trigger(void *param)
     MAILBOX_SELF_CMD = MAILBOX_CMD_APB_RESOURCE_ALLOC; // 命令字
     MAILBOX_SELF_INFO1 = params->E2C_INFO1;
     MAILBOX_SET_IRQ(MAILBOX_Control_IRQ_NUMBER); // 触发子系统中断
-    command_processed = false;
 }
 
 void Mailbox_Cryp_Selfcheck(void *param)
@@ -139,7 +142,6 @@ void Mailbox_Cryp_Selfcheck(void *param)
     MAILBOX_SELF_INFO1 = params->E2C_INFO1;
     MAILBOX_SELF_CMD = MAILBOX_CMD_CRYPTO_SELFCHECK;
     MAILBOX_SET_IRQ(MAILBOX_Control_IRQ_NUMBER);
-    command_processed = false;
 }
 
 void Mailbox_SetClockFrequency(void *param)
@@ -148,7 +150,6 @@ void Mailbox_SetClockFrequency(void *param)
     MAILBOX_SELF_INFO1 = params->E2C_INFO1;//通知子系统设置多少分频
     MAILBOX_SELF_CMD = MAILBOX_CMD_FREQ_SYNC;
     MAILBOX_SET_IRQ(MAILBOX_Control_IRQ_NUMBER);
-    command_processed = false;
 }
 
 void Transfer_IntFlashToExtFlash(uint32_t destAddr, uint32_t srcAddr, size_t dataSize)
@@ -252,7 +253,6 @@ void Mailbox_WriteRootKey_Trigger(void)
         | (eRPMC_WriteRootKey_m1.Counter_Addr << 16)
         | (eRPMC_WriteRootKey_m1.Rsvd << 24);
     MAILBOX_SET_IRQ(MAILBOX_eRPMC_IRQ_NUMBER);          // 触发子系统中断
-    command_processed = false;
     eRPMC_Busy_Status = 1;
 }
 
@@ -300,7 +300,6 @@ void Mailbox_UpdateHMACKey_Trigger(void)
         | (eRPMC_UpdateHMACKey.Rsvd << 24);
     printf("MAILBOX_E2CINFO1:0x%x\n", MAILBOX_SELF_INFO1);
     MAILBOX_SET_IRQ(MAILBOX_eRPMC_IRQ_NUMBER);           // 触发子系统中断
-    command_processed = false;
     eRPMC_Busy_Status = 1;
 }
 
@@ -347,7 +346,6 @@ void Mailbox_IncrementCounter_Trigger(void)
         | (eRPMC_IncrementCounter.Rsvd << 24);
     printf("MAILBOX_E2CINFO1:0x%x\n", MAILBOX_SELF_INFO1);
     MAILBOX_SET_IRQ(MAILBOX_eRPMC_IRQ_NUMBER);           // 触发子系统中断
-    command_processed = false;
     eRPMC_Busy_Status = 1;
 }
 
@@ -394,7 +392,6 @@ void Mailbox_RequestCounter_Trigger(void)
         | (eRPMC_RequestCounter.Counter_Addr << 16)
         | (eRPMC_RequestCounter.Rsvd << 24);
     MAILBOX_SET_IRQ(MAILBOX_eRPMC_IRQ_NUMBER);          // 触发子系统中断
-    command_processed = false;
     eRPMC_Busy_Status = 1;
 }
 
@@ -412,7 +409,6 @@ void Mailbox_ReadParameter_Trigger(void)
     MAILBOX_SELF_CMD = MAILBOX_CMD_REQUEST_COUNTER;       // 命令字
     MAILBOX_SELF_INFO1 = eRPMC_ReadParameters.Opcode;
     MAILBOX_SET_IRQ(MAILBOX_eRPMC_IRQ_NUMBER);          // 触发子系统中断
-    command_processed = false;
     eRPMC_Busy_Status = 1;
 }
 
@@ -498,7 +494,6 @@ void Mailbox_eRPMC_Trigger(void)
     MAILBOX_SELF_CMD = MAILBOX_CMD_WRITE_ROOTKEY;       // 命令字
     MAILBOX_SELF_INFO1 = 0x0000009B; // WriteRootKey模拟测试
     MAILBOX_SET_IRQ(MAILBOX_eRPMC_IRQ_NUMBER);          // 触发子系统中断
-    command_processed = false;
 }
 /*************************************eRPMC Mailbox***************************************/
 void Mailbox_Control(void)
