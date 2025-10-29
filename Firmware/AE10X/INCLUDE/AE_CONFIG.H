@@ -21,9 +21,12 @@
 #include "AE_GLOBAL.H"
 #include "AE_REG.H"
 /****************************************************************************
- * 平台选择
+ * SCI 
  *****************************************************************************/
-#define SCI_POLLING_CONTROL 0 // 由于龙芯平台SCI有效时间为15ms，如果为龙芯平台需要把该宏打开
+#define SCI_POLLING_CONTROL 0  // SCI切换为轮询模式
+#define SCI_PIN_MODE_VW     0  // SCI切换为VW
+#define ACPI_SCI_Response 0    //ACPI EC SCI Interrupt Response Timing ( 8-16uSec).
+
 #define SOFTWARE_TRIM_CONTROL 0   //打开软件时钟校准(trim 32k/96m)
 #define FLASH_TO_IRAM0 0             // 打开crypto代码从flash搬运到IRAM0功能
 #define MAILBOX_SMS_UPDATE_SUPPORT 1 // 打开4K SMS方式验证更新
@@ -141,9 +144,6 @@
 /****************************************************************************
  * Switch
  *****************************************************************************/
- /* ACPI EC SCI Interrupt Response Timing ( 8-16uSec).*/
-#define ACPI_SCI_Response 0
-
 #define KBD_8_n_SWITCH 16 // n:8*n
 //#define KBD_SN1211        // kbd demo code if nos's run sn1211 please undef
 #if (KBD_8_n_SWITCH == 16)

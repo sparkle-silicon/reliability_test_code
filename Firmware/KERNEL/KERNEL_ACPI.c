@@ -255,11 +255,21 @@ void EC6266_Cmd_84(void)
 }
 void SCI_Low(void)
 {
+    #if SCI_PIN_MODE_VW
+    VWIDX6|=(F_IDX6_SCI_VALID+F_IDX6_SCI);
+    VWCTRL3|=F_VW_INDEX_6_RESEND;
+    #else
     CLEAR_MASK(GPIO0_DR3, BIT(3));
+    #endif
 }
 void SCI_High(void)
 {
+    #if SCI_PIN_MODE_VW
+    VWIDX6&=~F_IDX6_SCI;
+    VWCTRL3|=F_VW_INDEX_6_RESEND;
+    #else
     SET_MASK(GPIO0_DR3, BIT(3));
+    #endif
 }
 //-----------------------------------------------------------------------------
 // Generate SCIs in response to related transactions
@@ -274,9 +284,19 @@ void SCI_Response(BYTE sci_count)
 #else
     for(BYTE i = 0; i < sci_count; i++)
     {
+        #if SCI_PIN_MODE_VW
+        SET_MASK(VWIDX6, F_IDX6_SCI_VALID);
+        CLEAR_MASK(VWIDX6, F_IDX6_SCI);     /* eSPI SCI# */
+        VWCTRL3|=F_VW_INDEX_6_RESEND;
+        Loop_Delay(16);
+        SET_MASK(VWIDX6, F_IDX6_SCI_VALID);
+        SET_MASK(VWIDX6, F_IDX6_SCI);       /* eSPI SCI# */
+        VWCTRL3|=F_VW_INDEX_6_RESEND;
+        #else 
         SCI_Low();
         Loop_Delay(16);
         SCI_High();
+        #endif
     }
 #endif
 }

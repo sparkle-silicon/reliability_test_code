@@ -21,5 +21,4 @@
 #include "KERNEL_MEMORY.H"
 #include "KERNEL_I2C.H"
 extern char get_temperature(WORD i2c_channel);
-extern void test(void);
 #endif
