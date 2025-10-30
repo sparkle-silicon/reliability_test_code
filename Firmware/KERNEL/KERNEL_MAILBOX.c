@@ -37,8 +37,11 @@ Task *Add_Task(TaskFunction function, TaskParams params, Task **head)
 }
 
 // 处理任务队列中的任务
+extern void Default_Mailbox_SetClockFrequency(BYTE ClockDiv);
 void Process_Tasks(void)
 {
+    uint8_t cy_reset_flag = 0;
+    uint8_t freq_bk = 0;
     if (command_processed == false)
     {
         if(timer_1s_count!=mailbox_timeout_s)
@@ -47,30 +50,36 @@ void Process_Tasks(void)
             {
                 if(((timer_1s_count+60)-mailbox_timeout_s)>=MAX_TASK_TIMEOUT)//子系统响应超时
                 {
-                    //复位子系统
-                    SYSCTL_RST1 |= BIT(17);
-                    __nop;
-                    SYSCTL_RST1 &= ~BIT(17);
-                    //复位变量
-                    command_processed = true;
-                    mailbox_task_count = 0;
-                    mailbox_timeout_s = 0;
+                    cy_reset_flag = 1;
                 }
             }
             else
             {
                 if((timer_1s_count-mailbox_timeout_s)>=MAX_TASK_TIMEOUT)//子系统响应超时
                 {
-                    //复位子系统
-                    SYSCTL_RST1 |= BIT(17);
-                    __nop;
-                    SYSCTL_RST1 &= ~BIT(17);
-                    //复位变量
-                    command_processed = true;
-                    mailbox_task_count = 0;
-                    mailbox_timeout_s = 0;
+                    cy_reset_flag = 1;
                 }
             }
+        }
+        if(cy_reset_flag == 1)
+        {
+            //复位子系统
+            SYSCTL_RST1 |= BIT(17);
+            __nop;
+            SYSCTL_RST1 &= ~BIT(17);
+            freq_bk = SYSCTL_CLKDIV_OSC96M;
+            if(SYSCTL_ESTAT & BIT(24))
+                SYSCTL_CLKDIV_OSC96M = 0;
+            else
+                SYSCTL_CLKDIV_OSC96M = 3;
+            while(SYSCTL_ESTAT_CRYPTO_BOOTCTRL == 1);
+            ICTL1_INTMASK7 |= 0x20;//mailbox int mask
+            Default_Mailbox_SetClockFrequency(freq_bk);
+            ICTL1_INTMASK7 &= 0xDF;//mailbox int unmask
+            //复位变量
+            command_processed = true;
+            mailbox_task_count = 0;
+            mailbox_timeout_s = 0;
         }
         return;
     }
