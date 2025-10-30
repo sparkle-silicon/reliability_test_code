@@ -2,6 +2,7 @@
 volatile bool command_processed = true; // 用于标志子系统是否处理完命令
 Task *task_head = NULL;                 // 任务链表头
 volatile char mailbox_task_count = 0; // 全局计数
+uint8_t mailbox_timeout_s = 0;
 // 添加任务到链表
 Task *Add_Task(TaskFunction function, TaskParams params, Task **head)
 {
@@ -39,11 +40,45 @@ Task *Add_Task(TaskFunction function, TaskParams params, Task **head)
 void Process_Tasks(void)
 {
     if (command_processed == false)
+    {
+        if(timer_1s_count!=mailbox_timeout_s)
+        {
+            if(timer_1s_count<mailbox_timeout_s)
+            {
+                if(((timer_1s_count+60)-mailbox_timeout_s)>=MAX_TASK_TIMEOUT)//子系统响应超时
+                {
+                    //复位子系统
+                    SYSCTL_RST1 |= BIT(17);
+                    __nop;
+                    SYSCTL_RST1 &= ~BIT(17);
+                    //复位变量
+                    command_processed = true;
+                    mailbox_task_count = 0;
+                    mailbox_timeout_s = 0;
+                }
+            }
+            else
+            {
+                if((timer_1s_count-mailbox_timeout_s)>=MAX_TASK_TIMEOUT)//子系统响应超时
+                {
+                    //复位子系统
+                    SYSCTL_RST1 |= BIT(17);
+                    __nop;
+                    SYSCTL_RST1 &= ~BIT(17);
+                    //复位变量
+                    command_processed = true;
+                    mailbox_task_count = 0;
+                    mailbox_timeout_s = 0;
+                }
+            }
+        }
         return;
+    }
     Task *task = task_head;
     task_head = task_head->next;   // 移动到下一个任务
     command_processed = false;     // 处理任务锁
     task->function(&task->params); // 执行任务函数，传递参数
+    mailbox_timeout_s = timer_1s_count; //超时计数
     free(task);                    // 处理完成，释放任务内存
     if(mailbox_task_count>0)
         mailbox_task_count--;          // 全局计数减一
@@ -649,6 +684,7 @@ void Mailbox_C2E_Service(void)
             break;
     }
     command_processed = true;
+    mailbox_timeout_s = timer_1s_count; //超时计数同步
     Mailbox_Int_Store = 0;
 }
 //----------------------------------------------------------------------------

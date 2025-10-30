@@ -236,7 +236,7 @@ BYTE Wait_PS2_Device_Ack_Timeout(BYTE channel)
 	BYTE cnt = 0;
 	BYTE ms_cnt = 0;
 	result = 0x1;
-	TIMER_Init(TIMER1, TIMER1_1ms, 0x1, 0x1);
+	TIMER_Init(TIMER1, TIMER1_1ms, 0x0, 0x1);
 	Timer_Int_Clear(TIMER1);
 	do
 	{ // Wait PS2 transaction Done Status
