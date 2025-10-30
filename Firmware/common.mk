@@ -347,7 +347,7 @@ ifneq ($(wildcard $(AE10X_DIR)/libLinuxAE10X.a),)
 LDFLAGS += -L$(AE10X_DIR) -lLinuxAE10X
 endif
 else #Windows or other commands
-ifneq ($(wildcard $(AE10X_DIR)/libWinAE10X.lib),)
+ifneq ($(wildcard $(AE10X_DIR)/libWinAE10X.a),)
 LDFLAGS += -L $(AE10X_DIR) -lWinAE10X
 endif
 endif

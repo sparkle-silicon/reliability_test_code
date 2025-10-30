@@ -179,14 +179,14 @@ else #Windows or other commands
 	@if not exist ..\$(release_dir) mkdir ..\$(release_dir)
 	@xcopy **\* ..\$(release_dir) /s /e /i /y
 	@del /q /f /s ..\$(release_dir)\AE10X\*.c
+	@xcopy .\AE10X\AE_FLASHINFO.c  ..\$(release_dir)\AE10X
 	@del /q /f /s ..\$(release_dir)\AE10X\*.S
-	@del /q /f /s ..\$(release_dir)\HARDWARE
-	@del /q /f /s ..\$(release_dir)\TEST
+	@rmdir /s /q ..\$(release_dir)\TEST
 	@del /q /f /s ..\$(release_dir)\*.sh
-	@del /q /f /s ..\$(release_dir)\TOOLS\app
-	@del /q /f /s ..\$(release_dir)\TOOLS\auto_test
-	@del /q /f /s ..\$(release_dir)\TOOLS\drive
-	@del /q /f /s ..\$(release_dir)\TOOLS\classic_benchmarks
+	@rmdir /s /q ..\$(release_dir)\TOOLS\app
+	@rmdir /s /q ..\$(release_dir)\TOOLS\auto_test
+	@rmdir /s /q ..\$(release_dir)\TOOLS\drive
+	@rmdir /s /q ..\$(release_dir)\TOOLS\classic_benchmarks
 	@del /q /f /s ..\$(release_dir)\TOOLS\check_and_concatenate.sh
 endif
 ##############################################################

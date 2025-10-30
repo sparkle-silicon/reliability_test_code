@@ -18,6 +18,8 @@ IF  "%1" == "compile"     GOTO BUILD
 IF  "%1" == "?"    GOTO OPTIONS
 IF  "%1" == "clear"   GOTO clear
 IF  "%1" == "CLEAR"   GOTO clear
+IF  "%1" == "clean"   GOTO clean
+IF  "%1" == "CLEAN"   GOTO clean
 IF  "%1" == "release"   GOTO release
 
 REM ***********************************************************************************************************
@@ -39,6 +41,7 @@ REM ****************************************************************************
 REM	To clear obj, lst, and bin files.
 REM ***********************************************************************************************************
 :clear
+:clean
 make clean -j4
 GOTO done
 REM ***********************************************************************************************************
@@ -46,8 +49,13 @@ REM	To release the firmware files.
 REM ***********************************************************************************************************
 :release
 make compile -j4
-del /q /f  .\AE10X\libWinAE10X.lib
-riscv-nuclei-elf-gcc-ar -crsv  ./AE10X/libWinAE10X.lib (Get-ChildItem -Path .\AE10X -Filter "*.o").FullName
+del /q /f  .\AE10X\libWinAE10X.a
+for %%f in (.\AE10X\*.o) do (
+    riscv-nuclei-elf-gcc-ar -r .\AE10X\libWinAE10X.a %%f
+)
+@REM for %%f in (.\KERNEL\*.o) do (
+@REM     riscv-nuclei-elf-gcc-ar -r .\KERNEL\libWinKERNEL.a %%f
+@REM )
 make clean -j4
 make release -j4
 GOTO done
