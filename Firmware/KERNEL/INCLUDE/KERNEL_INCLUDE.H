@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-17 14:59:57
+ * @LastEditTime: 2025-10-30 23:20:21
  * @Description:
  *
  *
@@ -48,7 +48,6 @@
 #include "KERNEL_UART.H"
 #include "KERNEL_CEC.H"
 #include "KERNEL_RTC.H"
-#include "KERNEL_TRIM.H"
 #include "KERNEL_PECI.H"
 #include "KERNEL_ESPI.H"
 #include "KERNEL_MAILBOX.H"

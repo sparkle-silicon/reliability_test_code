@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-22 18:09:36
+ * @LastEditTime: 2025-10-30 23:23:04
  * @Description:
  *
  *
@@ -18,7 +18,10 @@
 #include "AE_GLOBAL.H"
 #include "AE_REG.H"
 #include "AE_CONFIG.H"
+#include "AE_FUNC.H"
 #include "KERNEL_INCLUDE.H"
+#include "CUSTOM_INCLUDE.H"
+
 // Module init function
 extern void gpio_init(void);
 extern void mailbox_init(void);

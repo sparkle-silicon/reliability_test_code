@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-22 18:55:49
+ * @LastEditTime: 2025-10-30 14:17:45
  * @Description: This is about the  national crypto algorithm implementation
  *
  *
@@ -14,12 +14,6 @@
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
 #include "KERNEL_SOC_FUNC.H"
-#include "AE_FUNC.H"
-#include "AE_CONFIG.H"
-#include "CUSTOM_BATTERY.H"
-#include "KERNEL_MAILBOX.H"
-#include "KERNEL_I3C.H"
-#include "CUSTOM_PECI.H"
 
 void gpio_init(void)
 {

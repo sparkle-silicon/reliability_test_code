@@ -170,9 +170,10 @@ release:
 ifeq ($(OS),Linux) #Linux
 	@cp ./ ../$(release_dir) -r
 	@rm -f ../$(release_dir)/AE10X/*.c ../$(release_dir)/AE10X/*.S
+	@cp ./AE10X/AE_FLASHINFO.c ../$(release_dir)/AE10X/
 	@rm -rf ../$(release_dir)/HARDWARE ../$(release_dir)/TEST
 	@rm -rf ../$(release_dir)/$(release_dir).sh ../$(release_dir)/rom.sh
-	@rm -rf ../$(release_dir)/TOOLS/AUTO ../$(release_dir)/TOOLS/drive ../$(release_dir)/TOOLS/ROM
+	@rm -rf ../$(release_dir)/TOOLS/app ../$(release_dir)/TOOLS/auto_test ../$(release_dir)/TOOLS/drive ../$(release_dir)/TOOLS/classic_benchmarks
 	@rm -rf ../$(release_dir)/.v* ../$(release_dir)/.s*  ../$(release_dir)/.c* ../$(release_dir)/.g* ../$(release_dir)/.p* 
 else #Windows or other commands
 	@if not exist ..\$(release_dir) mkdir ..\$(release_dir)
@@ -181,12 +182,12 @@ else #Windows or other commands
 	@del /q /f /s ..\$(release_dir)\AE10X\*.S
 	@del /q /f /s ..\$(release_dir)\HARDWARE
 	@del /q /f /s ..\$(release_dir)\TEST
-	@del /q /f /s ..\$(release_dir)\$(release_dir).sh
-	@del /q /f /s ..\$(release_dir)\rom.sh
-	@del /q /f /s ..\$(release_dir)\TOOLS\AUTO
+	@del /q /f /s ..\$(release_dir)\*.sh
+	@del /q /f /s ..\$(release_dir)\TOOLS\app
+	@del /q /f /s ..\$(release_dir)\TOOLS\auto_test
 	@del /q /f /s ..\$(release_dir)\TOOLS\drive
-	@del /q /f /s ..\$(release_dir)\TOOLS\ROM
-	@del /q /f /s ..\$(release_dir)\**\.* 
+	@del /q /f /s ..\$(release_dir)\TOOLS\classic_benchmarks
+	@del /q /f /s ..\$(release_dir)\TOOLS\check_and_concatenate.sh
 endif
 ##############################################################
 #############################################################
