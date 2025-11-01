@@ -2812,7 +2812,7 @@ void intr1_espi(void)
 		TaskParams params;
 		REG32(0x330C0) |= eRPMCSTS;
 		RPMC_OOB_TempArr[14] = 0xAA;//set default
-		if (eSPI_OOBReceive(RPMC_OOB_TempArr))
+		if (eSPI_OOB_Receive(RPMC_OOB_TempArr))
 		{
 			if (RPMC_OOB_TempArr[2] == 0) // receive message length is 0, means no message
 			{
@@ -2836,7 +2836,7 @@ void intr1_espi(void)
 			else//payload length error
 			{
 				eRPMC_WriteRootKey_data.Extended_Status = 0x04;
-				eSPI_OOBSend((BYTE*)&eRPMC_WriteRootKey_data);
+				eSPI_OOB_Send((BYTE*)&eRPMC_WriteRootKey_data);
 			}
 			break;
 		case 0x1:                            // UpdateHMACKey
@@ -2848,7 +2848,7 @@ void intr1_espi(void)
 			else//payload length error
 			{
 				eRPMC_UpdateHMACKey_data.Extended_Status = 0x04;
-				eSPI_OOBSend((BYTE*)&eRPMC_UpdateHMACKey_data);
+				eSPI_OOB_Send((BYTE*)&eRPMC_UpdateHMACKey_data);
 			}
 			break;
 		case 0x2:                            // IncrementCounter
@@ -2860,7 +2860,7 @@ void intr1_espi(void)
 			else//payload length error
 			{
 				eRPMC_IncrementCounter_data.Extended_Status = 0x04;
-				eSPI_OOBSend((BYTE*)&eRPMC_IncrementCounter_data);
+				eSPI_OOB_Send((BYTE*)&eRPMC_IncrementCounter_data);
 			}
 			break;
 		case 0x3:                            // RequestCounter
@@ -2872,7 +2872,7 @@ void intr1_espi(void)
 			else//payload length error
 			{
 				eRPMC_RequestCounter_data.Extended_Status = 0x04;
-				eSPI_OOBSend((BYTE*)&eRPMC_RequestCounter_data);
+				eSPI_OOB_Send((BYTE*)&eRPMC_RequestCounter_data);
 			}
 			break;
 		default:
@@ -2888,7 +2888,7 @@ void intr1_espi(void)
 			else//payload length error
 			{
 				eRPMC_ReadParameters_data.Extended_Status = 0x04;
-				eSPI_OOBSend((BYTE*)&eRPMC_ReadParameters_data);
+				eSPI_OOB_Send((BYTE*)&eRPMC_ReadParameters_data);
 			}
 		}
 	}
