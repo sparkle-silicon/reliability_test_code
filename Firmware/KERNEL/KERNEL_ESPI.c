@@ -1723,7 +1723,7 @@ void Service_OOB_Message(void)
         break;
     case 7:
 #if SUPPORT_OOB_PECI_GetTemp
-        if (System_PowerState == _SYSTEM_S0)
+        if (System_PowerState == SYSTEM_S0)
         {
             if (xOOB_PeciGetCpuT_Timer > 1)
             {
