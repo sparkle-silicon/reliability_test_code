@@ -26,7 +26,7 @@ void PowerSequence_Record_To_Array(char group, BYTE pin, BYTE level, WORD delay)
 {
     PowSeq_Record_Cnt++;
     // Record GPIO Group informae_tion
-    if(group > 0x0 && group <= 0x5)
+    if (group > 0x0 && group <= 0x5)
     {
         PowSeq_Record[Debugger_PowerSequence_Step].pin_group = group - 1;
     }
@@ -35,7 +35,7 @@ void PowerSequence_Record_To_Array(char group, BYTE pin, BYTE level, WORD delay)
         dprint("GPIO group input error\n");
     }
     // Record GPIO Pin Information
-    if(pin >= 0x0 && pin <= 0x1F)
+    if (pin >= 0x0 && pin <= 0x1F)
     {
         PowSeq_Record[Debugger_PowerSequence_Step].pin_location = pin;
     }
@@ -44,11 +44,11 @@ void PowerSequence_Record_To_Array(char group, BYTE pin, BYTE level, WORD delay)
         dprint("gpio pin input error\n");
     }
     // Record GPIO Output Level Information
-    if(level == 0)
+    if (level == 0)
     {
         PowSeq_Record[Debugger_PowerSequence_Step].pin_level = 0x0;
     }
-    else if(level == 1)
+    else if (level == 1)
     {
         PowSeq_Record[Debugger_PowerSequence_Step].pin_level = 0x1;
     }
@@ -56,7 +56,7 @@ void PowerSequence_Record_To_Array(char group, BYTE pin, BYTE level, WORD delay)
     {
         dprint("gpio level input error\n");
     }
-    if((IsGpioOut(group, pin)) == 0)
+    if ((IsGpioOut(group, pin)) == 0)
     {
         PowSeq_Record[Debugger_PowerSequence_Step].pin_level = ReadGPIOLevel(group, pin);
     }
@@ -69,42 +69,42 @@ void PowerSequence_Record_To_Array(char group, BYTE pin, BYTE level, WORD delay)
 /*******************************************************/
 void Copy_Power_Sequence_Record_To_Sram(VBYTE Record_Flag)
 {
-    for(int i = 0; i <= 1024; i++)
+    for (int i = 0; i <= 1024; i++)
     {
-        *((VBYTE *)(0x31000 + i)) = 0x0;
+        *((VBYTE*)(0x31000 + i)) = 0x0;
     }
-    BYTE *PowSeq_Mem_Ptr = (BYTE *)0x31002;
+    BYTE* PowSeq_Mem_Ptr = (BYTE*)0x31002;
     BYTE length_record;
     /*Record PowerSequence type flag to 0x31000*/
-    switch(Record_Flag)
+    switch (Record_Flag)
     {
-        case 1:
-            *((VBYTE *)(SRAM_BASE_ADDR)) = 0x1;
-            break;
-        case 2:
-            *((VBYTE *)(SRAM_BASE_ADDR)) = 0x2;
-            break;
-        case 3:
-            *((VBYTE *)(SRAM_BASE_ADDR)) = 0x3;
-            break;
-        case 4:
-            *((VBYTE *)(SRAM_BASE_ADDR)) = 0x4;
-            break;
-        case 5:
-            *((VBYTE *)(SRAM_BASE_ADDR)) = 0x5;
-            break;
-        case 6:
-            *((VBYTE *)(SRAM_BASE_ADDR)) = 0x6;
-            break;
-        case 7:
-            *((VBYTE *)(SRAM_BASE_ADDR)) = 0x7;
-            break;
-        default:
-            *((VBYTE *)(0x31000)) = 0x0;
-            break;
+    case 1:
+        *((VBYTE*)(SRAM_BASE_ADDR)) = 0x1;
+        break;
+    case 2:
+        *((VBYTE*)(SRAM_BASE_ADDR)) = 0x2;
+        break;
+    case 3:
+        *((VBYTE*)(SRAM_BASE_ADDR)) = 0x3;
+        break;
+    case 4:
+        *((VBYTE*)(SRAM_BASE_ADDR)) = 0x4;
+        break;
+    case 5:
+        *((VBYTE*)(SRAM_BASE_ADDR)) = 0x5;
+        break;
+    case 6:
+        *((VBYTE*)(SRAM_BASE_ADDR)) = 0x6;
+        break;
+    case 7:
+        *((VBYTE*)(SRAM_BASE_ADDR)) = 0x7;
+        break;
+    default:
+        *((VBYTE*)(0x31000)) = 0x0;
+        break;
     }
     /*Record PowerSequence Count to 0x31001 */
-    *((VBYTE *)(0x31001)) = PowSeq_Record_Cnt;
+    *((VBYTE*)(0x31001)) = PowSeq_Record_Cnt;
     PowSeq_Record_Cnt = 0;
     Debugger_PowerSequence_Step = 1;
     /*Copy PowerSequence information to Sram*/
@@ -186,7 +186,7 @@ BYTE S5S0_EXAMPLE_4(void)
 BYTE S5S0_EXAMPLE_5(void)
 {
     // This is S5S0 power sequence 5
-    if(Read_ALW_PWRGD()) // 调试器不需要识别状态判定函数
+    if (Read_ALW_PWRGD()) // 调试器不需要识别状态判定函数
     {
         return (1);
     }
@@ -304,7 +304,7 @@ void Custom_Reboot_Var(void)
     PowerState_Monitor_Index = 0x00;
     PowerChange_Var_Clear();
     KBS_KSDC1R |= (KBS_KSDC1R_EN | KBS_KSDC1R_INT_EN);//keep KBS enable and interrupt enable
-    if(Set_AutoON_AfterUpdate() == TRUE)
+    if (Set_AutoON_AfterUpdate() == TRUE)
     {
     }
     else
@@ -324,6 +324,7 @@ void Reboot_Var(void)
 //-----------------------------------------------------------------------------
 void Custom_SX_S0_Var(void)
 {
+    xOOB_PauseTimer = 200;
     PowerState_Monitor_Index = 0x00;
     KBS_KSDC1R |= (KBS_KSDC1R_EN | KBS_KSDC1R_INT_EN);//keep KBS enable and interrupt enable
 }
@@ -341,6 +342,7 @@ void SX_S0_Var(void)
 //-----------------------------------------------------------------------------
 void Custom_S0_SX_Var(void)
 {
+    xOOB_PauseTimer = 200;
     PowerState_Monitor_Index = 0x00;
 #if (ENABLE_S3_KEYBOARD_INTR&ENABLE_S5_KEYBOARD_INTR)  //如果需要支持S3/S5状态下，按键唤醒，则不关闭KBS扫描和使能
 #else
@@ -578,7 +580,7 @@ const sPowerSEQ PowerSequence_Reboot[] =
 //----------------------------------------------------------------------------
 void Custom_S3_S0_Trigger(void)
 {
-    if(SystemIsS0)
+    if (SystemIsS0)
     {
         return;
     }
@@ -595,7 +597,7 @@ void Custom_S3_S0_Trigger(void)
 //----------------------------------------------------------------------------
 void Custom_S4_S0_Trigger(void)
 {
-    if(SystemIsS0)
+    if (SystemIsS0)
     {
         return;
     }
@@ -613,7 +615,7 @@ void Custom_S4_S0_Trigger(void)
 //----------------------------------------------------------------------------
 void Custom_S5_S0_Trigger(void)
 {
-    if(SystemIsS0)
+    if (SystemIsS0)
     {
         return;
     }
@@ -631,34 +633,34 @@ void Custom_S5_S0_Trigger(void)
 //----------------------------------------------------------------------------
 void Custom_S5S0_Sequence(void)
 {
-    if(PowerSequence_Delay != 0x00)
+    if (PowerSequence_Delay != 0x00)
     {
         PowerSequence_Delay--; // 1m Sec count base
-        if(PowerSequence_Delay != 0x00)
+        if (PowerSequence_Delay != 0x00)
         {
             return;
         }
     }
-    while(PowerSequence_Step < (sizeof(PowerSequence_S5S0) / sizeof(sPowerSEQ)))
+    while (PowerSequence_Step < (sizeof(PowerSequence_S5S0) / sizeof(sPowerSEQ)))
     {
-        if(PowerSequence_S5S0[PowerSequence_Step].checkstatus == 0x00) // Do function
+        if (PowerSequence_S5S0[PowerSequence_Step].checkstatus == 0x00) // Do function
         {
             (PowerSequence_S5S0[PowerSequence_Step].func)();
             PowerSequence_Delay = PowerSequence_S5S0[PowerSequence_Step].delay;
             PowerSequence_Step++;
-            if(PowerSequence_Delay != 0x00)
+            if (PowerSequence_Delay != 0x00)
             {
                 break;
             }
         }
-        else if(PowerSequence_S5S0[PowerSequence_Step].checkstatus == 0x01) // Check input status pin
+        else if (PowerSequence_S5S0[PowerSequence_Step].checkstatus == 0x01) // Check input status pin
         {
-            if((PowerSequence_S5S0[PowerSequence_Step].func)())
+            if ((PowerSequence_S5S0[PowerSequence_Step].func)())
             {
                 PowerSequence_Delay = PowerSequence_S5S0[PowerSequence_Step].delay;
                 PowerSequence_Step++;
                 PowerSequence_WaitTime = Wait_Time;
-                if(PowerSequence_Delay != 0x00)
+                if (PowerSequence_Delay != 0x00)
                 {
                     break;
                 }
@@ -666,18 +668,18 @@ void Custom_S5S0_Sequence(void)
             else    //引脚输入不满足条件时的处理
             {
                 PowerSequence_WaitTime--;
-                if(PowerSequence_WaitTime == 0)
+                if (PowerSequence_WaitTime == 0)
                 {
                     dprint("S5->S0 Step:%d status error\n", PowerSequence_Step);
                     PowerSequence_WaitTime = Wait_Time;
-                #if (!Wait_until_Correct)
+#if (!Wait_until_Correct)
                     PowerSequence_Delay = PowerSequence_S5S0[PowerSequence_Step].delay;
                     PowerSequence_Step++;
-                    if(PowerSequence_Delay != 0x00)
+                    if (PowerSequence_Delay != 0x00)
                     {
                         break;
                     }
-                #endif
+#endif
                 }
                 else
                 {
@@ -690,7 +692,7 @@ void Custom_S5S0_Sequence(void)
             (PowerSequence_S5S0[PowerSequence_Step].func)();
             PowerSequence_Delay = PowerSequence_S5S0[PowerSequence_Step].delay;
             PowerSequence_Step++;
-            if(PowerSequence_Delay != 0x00)
+            if (PowerSequence_Delay != 0x00)
             {
                 break;
             }
@@ -698,10 +700,10 @@ void Custom_S5S0_Sequence(void)
     }
 #if ENABLE_DEBUGGER_SUPPORT
     PowSeq_Record_Flag = D_PowerOn;
-    if(PowerSequence_Step == ((sizeof(PowerSequence_S5S0) / sizeof(sPowerSEQ))))
+    if (PowerSequence_Step == ((sizeof(PowerSequence_S5S0) / sizeof(sPowerSEQ))))
     {
         Copy_Power_Sequence_Record_To_Sram(PowSeq_Record_Flag);
-    }
+}
 #endif
 }
 //----------------------------------------------------------------------------
@@ -709,34 +711,34 @@ void Custom_S5S0_Sequence(void)
 //----------------------------------------------------------------------------
 void Custom_S4S0_Sequence(void)
 {
-    if(PowerSequence_Delay != 0x00)
+    if (PowerSequence_Delay != 0x00)
     {
         PowerSequence_Delay--; // 1m Sec count base
-        if(PowerSequence_Delay != 0x00)
+        if (PowerSequence_Delay != 0x00)
         {
             return;
         }
     }
-    while(PowerSequence_Step < (sizeof(PowerSequence_S4S0) / sizeof(sPowerSEQ)))
+    while (PowerSequence_Step < (sizeof(PowerSequence_S4S0) / sizeof(sPowerSEQ)))
     {
-        if(PowerSequence_S4S0[PowerSequence_Step].checkstatus == 0x00) // Do function
+        if (PowerSequence_S4S0[PowerSequence_Step].checkstatus == 0x00) // Do function
         {
             (PowerSequence_S4S0[PowerSequence_Step].func)();
             PowerSequence_Delay = PowerSequence_S4S0[PowerSequence_Step].delay;
             PowerSequence_Step++;
-            if(PowerSequence_Delay != 0x00)
+            if (PowerSequence_Delay != 0x00)
             {
                 break;
             }
         }
-        else if(PowerSequence_S4S0[PowerSequence_Step].checkstatus == 0x01) // Check input status pin
+        else if (PowerSequence_S4S0[PowerSequence_Step].checkstatus == 0x01) // Check input status pin
         {
-            if((PowerSequence_S4S0[PowerSequence_Step].func)())
+            if ((PowerSequence_S4S0[PowerSequence_Step].func)())
             {
                 PowerSequence_Delay = PowerSequence_S4S0[PowerSequence_Step].delay;
                 PowerSequence_Step++;
                 PowerSequence_WaitTime = Wait_Time;
-                if(PowerSequence_Delay != 0x00)
+                if (PowerSequence_Delay != 0x00)
                 {
                     break;
                 }
@@ -745,18 +747,18 @@ void Custom_S4S0_Sequence(void)
             {
                 /*引脚输入不满足条件时的处理*/
                 PowerSequence_WaitTime--;
-                if(PowerSequence_WaitTime == 0)
+                if (PowerSequence_WaitTime == 0)
                 {
                     dprint("S4->S0 Step:%d status error\n", PowerSequence_Step);
                     PowerSequence_WaitTime = Wait_Time;
-                #if (!Wait_until_Correct)
+#if (!Wait_until_Correct)
                     PowerSequence_Delay = PowerSequence_S4S0[PowerSequence_Step].delay;
                     PowerSequence_Step++;
-                    if(PowerSequence_Delay != 0x00)
+                    if (PowerSequence_Delay != 0x00)
                     {
                         break;
                     }
-                #endif
+#endif
                 }
                 else
                 {
@@ -769,7 +771,7 @@ void Custom_S4S0_Sequence(void)
             (PowerSequence_S4S0[PowerSequence_Step].func)();
             PowerSequence_Delay = PowerSequence_S4S0[PowerSequence_Step].delay;
             PowerSequence_Step++;
-            if(PowerSequence_Delay != 0x00)
+            if (PowerSequence_Delay != 0x00)
             {
                 break;
             }
@@ -777,10 +779,10 @@ void Custom_S4S0_Sequence(void)
     }
 #if ENABLE_DEBUGGER_SUPPORT
     PowSeq_Record_Flag = D_HibernateWakeup;
-    if(PowerSequence_Step == (sizeof(PowerSequence_S4S0) / sizeof(sPowerSEQ)))
+    if (PowerSequence_Step == (sizeof(PowerSequence_S4S0) / sizeof(sPowerSEQ)))
     {
         Copy_Power_Sequence_Record_To_Sram(PowSeq_Record_Flag);
-    }
+}
 #endif
 }
 //----------------------------------------------------------------------------
@@ -788,34 +790,34 @@ void Custom_S4S0_Sequence(void)
 //----------------------------------------------------------------------------
 void Custom_S3S0_Sequence(void)
 {
-    if(PowerSequence_Delay != 0x00)
+    if (PowerSequence_Delay != 0x00)
     {
         PowerSequence_Delay--; // 1m Sec count base
-        if(PowerSequence_Delay != 0x00)
+        if (PowerSequence_Delay != 0x00)
         {
             return;
         }
     }
-    while(PowerSequence_Step < (sizeof(PowerSequence_S3S0) / sizeof(sPowerSEQ)))
+    while (PowerSequence_Step < (sizeof(PowerSequence_S3S0) / sizeof(sPowerSEQ)))
     {
-        if(PowerSequence_S3S0[PowerSequence_Step].checkstatus == 0x00) // Do function
+        if (PowerSequence_S3S0[PowerSequence_Step].checkstatus == 0x00) // Do function
         {
             (PowerSequence_S3S0[PowerSequence_Step].func)();
             PowerSequence_Delay = PowerSequence_S3S0[PowerSequence_Step].delay;
             PowerSequence_Step++;
-            if(PowerSequence_Delay != 0x00)
+            if (PowerSequence_Delay != 0x00)
             {
                 break;
             }
         }
-        else if(PowerSequence_S3S0[PowerSequence_Step].checkstatus == 0x01) // Check input status pin
+        else if (PowerSequence_S3S0[PowerSequence_Step].checkstatus == 0x01) // Check input status pin
         {
-            if((PowerSequence_S3S0[PowerSequence_Step].func)())
+            if ((PowerSequence_S3S0[PowerSequence_Step].func)())
             {
                 PowerSequence_Delay = PowerSequence_S3S0[PowerSequence_Step].delay;
                 PowerSequence_Step++;
                 PowerSequence_WaitTime = Wait_Time;
-                if(PowerSequence_Delay != 0x00)
+                if (PowerSequence_Delay != 0x00)
                 {
                     break;
                 }
@@ -824,18 +826,18 @@ void Custom_S3S0_Sequence(void)
             {
                 /*引脚输入不满足条件时的处理*/
                 PowerSequence_WaitTime--;
-                if(PowerSequence_WaitTime == 0)
+                if (PowerSequence_WaitTime == 0)
                 {
                     dprint("S3->S0 Step:%d status error\n", PowerSequence_Step);
                     PowerSequence_WaitTime = Wait_Time;
-                #if (!Wait_until_Correct)
+#if (!Wait_until_Correct)
                     PowerSequence_Delay = PowerSequence_S3S0[PowerSequence_Step].delay;
                     PowerSequence_Step++;
-                    if(PowerSequence_Delay != 0x00)
+                    if (PowerSequence_Delay != 0x00)
                     {
                         break;
                     }
-                #endif
+#endif
                 }
                 else
                 {
@@ -848,7 +850,7 @@ void Custom_S3S0_Sequence(void)
             (PowerSequence_S3S0[PowerSequence_Step].func)();
             PowerSequence_Delay = PowerSequence_S3S0[PowerSequence_Step].delay;
             PowerSequence_Step++;
-            if(PowerSequence_Delay != 0x00)
+            if (PowerSequence_Delay != 0x00)
             {
                 break;
             }
@@ -856,10 +858,10 @@ void Custom_S3S0_Sequence(void)
     }
 #if ENABLE_DEBUGGER_SUPPORT
     PowSeq_Record_Flag = D_SleepWakeup;
-    if(PowerSequence_Step == (sizeof(PowerSequence_S3S0) / sizeof(sPowerSEQ)))
+    if (PowerSequence_Step == (sizeof(PowerSequence_S3S0) / sizeof(sPowerSEQ)))
     {
         Copy_Power_Sequence_Record_To_Sram(PowSeq_Record_Flag);
-    }
+}
 #endif
 }
 //-----------------------------------------------------------------------------
@@ -871,7 +873,7 @@ void Custom_S3S0_Sequence(void)
 void Sleep_S3_Monitor(void)
 {
     CLEAR_MASK(CTRL_FLAG2, SLEEP_S3_ON);
-    if(Read_SLPS3())
+    if (Read_SLPS3())
     {
         SET_MASK(CTRL_FLAG2, SLEEP_S3_ON);
     }
@@ -882,7 +884,7 @@ void Sleep_S3_Monitor(void)
 void Sleep_S4_Monitor(void)
 {
     CLEAR_MASK(CTRL_FLAG2, SLEEP_S4_ON);
-    if(Read_SLPS4())
+    if (Read_SLPS4())
     {
         SET_MASK(CTRL_FLAG2, SLEEP_S4_ON);
     }
@@ -893,7 +895,7 @@ void Sleep_S4_Monitor(void)
 void Sleep_S5_Monitor(void)
 {
     CLEAR_MASK(CTRL_FLAG2, SLEEP_S5_ON);
-    if(Read_SLPS5())
+    if (Read_SLPS5())
     {
         SET_MASK(CTRL_FLAG2, SLEEP_S5_ON);
     }
@@ -902,82 +904,82 @@ void Change_PowerState(void)
 {
     BYTE presentstatus;
     presentstatus = (CTRL_FLAG2 & (SLEEP_S3_ON + SLEEP_S4_ON + SLEEP_S5_ON));
-    if(PowerStatusBK != presentstatus) // To make sure all SLP is checked.
+    if (PowerStatusBK != presentstatus) // To make sure all SLP is checked.
     {
         PowerStatusBK = presentstatus;
         return;
     }
-    switch(CTRL_FLAG2 & (SLEEP_S3_ON + SLEEP_S4_ON + SLEEP_S5_ON))
+    switch (CTRL_FLAG2 & (SLEEP_S3_ON + SLEEP_S4_ON + SLEEP_S5_ON))
     {
-        case 0: // goto S5
-            switch(System_PowerState)
-            {
-                case SYSTEM_S0:
-                    Custom_S0_S5_Trigger(SC_S0SLPOff);
-                    break;
-                case SYSTEM_S4:
-                    break;
-                case SYSTEM_S3:
-                    Custom_S0_S5_Trigger(SC_S3S4SLPOff);
-                    break;
-            }
+    case 0: // goto S5
+        switch (System_PowerState)
+        {
+        case SYSTEM_S0:
+            Custom_S0_S5_Trigger(SC_S0SLPOff);
             break;
-        case (SLEEP_S3_ON + SLEEP_S4_ON + SLEEP_S5_ON): // goto S0
-            switch(System_PowerState)
-            {
-                case SYSTEM_S3:
-                    Custom_S3_S0_Trigger();
-                    break;
-                case SYSTEM_S4:
-                    Custom_S4_S0_Trigger();
-                    break;
-                case SYSTEM_S5:
-                    Custom_S5_S0_Trigger();
-                    break;
-            }
+        case SYSTEM_S4:
             break;
-        case (SLEEP_S4_ON + SLEEP_S5_ON): // goto S3
-            switch(System_PowerState)
-            {
-                case SYSTEM_S0:
-                    Custom_S0_S3_Trigger(0x30);
-                    break;
-            }
+        case SYSTEM_S3:
+            Custom_S0_S5_Trigger(SC_S3S4SLPOff);
             break;
-        case SLEEP_S5_ON: // goto S4
-            switch(System_PowerState)
-            {
-                case SYSTEM_S0:
-                    Custom_S0_S4_Trigger(0x40);
-                    break;
-            }
+        }
+        break;
+    case (SLEEP_S3_ON + SLEEP_S4_ON + SLEEP_S5_ON): // goto S0
+        switch (System_PowerState)
+        {
+        case SYSTEM_S3:
+            Custom_S3_S0_Trigger();
             break;
+        case SYSTEM_S4:
+            Custom_S4_S0_Trigger();
+            break;
+        case SYSTEM_S5:
+            Custom_S5_S0_Trigger();
+            break;
+        }
+        break;
+    case (SLEEP_S4_ON + SLEEP_S5_ON): // goto S3
+        switch (System_PowerState)
+        {
+        case SYSTEM_S0:
+            Custom_S0_S3_Trigger(0x30);
+            break;
+        }
+        break;
+    case SLEEP_S5_ON: // goto S4
+        switch (System_PowerState)
+        {
+        case SYSTEM_S0:
+            Custom_S0_S4_Trigger(0x40);
+            break;
+        }
+        break;
     }
 }
 //------------------------------------------------------------------------------
 void PowerState_Monitor(void)
 {
-    switch(PowerState_Monitor_Index)
+    switch (PowerState_Monitor_Index)
     {
-        case 0:
-            Sleep_S3_Monitor(); // Check SLP_S3#(or SUS_B#)
-            PowerState_Monitor_Index++;
-            break;
-        case 1:
-            Sleep_S4_Monitor(); // Check SLP_S4#
-            PowerState_Monitor_Index++;
-            break;
-        case 2:
-            Sleep_S5_Monitor(); // Check SLP_S5#(or SUS_C#)
-            PowerState_Monitor_Index++;
-            break;
-        case 3:
-            Change_PowerState();
-            PowerState_Monitor_Index = 0x00;
-            break;
-        default:
-            PowerState_Monitor_Index = 0x00;
-            break;
+    case 0:
+        Sleep_S3_Monitor(); // Check SLP_S3#(or SUS_B#)
+        PowerState_Monitor_Index++;
+        break;
+    case 1:
+        Sleep_S4_Monitor(); // Check SLP_S4#
+        PowerState_Monitor_Index++;
+        break;
+    case 2:
+        Sleep_S5_Monitor(); // Check SLP_S5#(or SUS_C#)
+        PowerState_Monitor_Index++;
+        break;
+    case 3:
+        Change_PowerState();
+        PowerState_Monitor_Index = 0x00;
+        break;
+    default:
+        PowerState_Monitor_Index = 0x00;
+        break;
     }
 }
 //----------------------------------------------------------------------------
@@ -985,7 +987,7 @@ void PowerState_Monitor(void)
 //----------------------------------------------------------------------------
 void Custom_S0_S3_Trigger(BYTE cause)
 {
-    if(SystemIsS3)
+    if (SystemIsS3)
     {
         return;
     }
@@ -1003,7 +1005,7 @@ void Custom_S0_S3_Trigger(BYTE cause)
 //----------------------------------------------------------------------------
 void Custom_S0_S4_Trigger(BYTE cause)
 {
-    if(SystemIsS4)
+    if (SystemIsS4)
     {
         return;
     }
@@ -1021,7 +1023,7 @@ void Custom_S0_S4_Trigger(BYTE cause)
 //----------------------------------------------------------------------------
 void Custom_S0_S5_Trigger(BYTE cause)
 {
-    if(SystemIsS5)
+    if (SystemIsS5)
     {
         return;
     }
@@ -1039,7 +1041,7 @@ void Custom_S0_S5_Trigger(BYTE cause)
 //----------------------------------------------------------------------------
 void Custom_Reboot_Trigger(BYTE cause)
 {
-    if(SystemIsS5)
+    if (SystemIsS5)
     {
         return;
     }
@@ -1075,34 +1077,34 @@ void Custom_Reboot_Trigger(BYTE cause)
 //----------------------------------------------------------------------------
 void Custom_S0S3_Sequence(void)
 {
-    if(PowerSequence_Delay != 0x00)
+    if (PowerSequence_Delay != 0x00)
     {
         PowerSequence_Delay--; // 1m Sec count base
-        if(PowerSequence_Delay != 0x00)
+        if (PowerSequence_Delay != 0x00)
         {
             return;
         }
     }
-    while(PowerSequence_Step < (sizeof(PowerSequence_S0S3) / sizeof(sPowerSEQ)))
+    while (PowerSequence_Step < (sizeof(PowerSequence_S0S3) / sizeof(sPowerSEQ)))
     {
-        if(PowerSequence_S0S3[PowerSequence_Step].checkstatus == 0x00) // Do function
+        if (PowerSequence_S0S3[PowerSequence_Step].checkstatus == 0x00) // Do function
         {
             (PowerSequence_S0S3[PowerSequence_Step].func)();
             PowerSequence_Delay = PowerSequence_S0S3[PowerSequence_Step].delay;
             PowerSequence_Step++;
-            if(PowerSequence_Delay != 0x00)
+            if (PowerSequence_Delay != 0x00)
             {
                 break;
             }
         }
-        else if(PowerSequence_S0S3[PowerSequence_Step].checkstatus == 0x01) // Check input status pin
+        else if (PowerSequence_S0S3[PowerSequence_Step].checkstatus == 0x01) // Check input status pin
         {
-            if((PowerSequence_S0S3[PowerSequence_Step].func)())
+            if ((PowerSequence_S0S3[PowerSequence_Step].func)())
             {
                 PowerSequence_Delay = PowerSequence_S0S3[PowerSequence_Step].delay;
                 PowerSequence_Step++;
                 PowerSequence_WaitTime = Wait_Time;
-                if(PowerSequence_Delay != 0x00)
+                if (PowerSequence_Delay != 0x00)
                 {
                     break;
                 }
@@ -1111,18 +1113,18 @@ void Custom_S0S3_Sequence(void)
             {
                 /*引脚输入不满足条件时的处理*/
                 PowerSequence_WaitTime--;
-                if(PowerSequence_WaitTime == 0)
+                if (PowerSequence_WaitTime == 0)
                 {
                     dprint("S0->S3 Step:%d status error\n", PowerSequence_Step);
                     PowerSequence_WaitTime = Wait_Time;
-                #if (!Wait_until_Correct)
+#if (!Wait_until_Correct)
                     PowerSequence_Delay = PowerSequence_S0S3[PowerSequence_Step].delay;
                     PowerSequence_Step++;
-                    if(PowerSequence_Delay != 0x00)
+                    if (PowerSequence_Delay != 0x00)
                     {
                         break;
                     }
-                #endif
+#endif
                 }
                 else
                 {
@@ -1135,7 +1137,7 @@ void Custom_S0S3_Sequence(void)
             (PowerSequence_S0S3[PowerSequence_Step].func)();
             PowerSequence_Delay = PowerSequence_S0S3[PowerSequence_Step].delay;
             PowerSequence_Step++;
-            if(PowerSequence_Delay != 0x00)
+            if (PowerSequence_Delay != 0x00)
             {
                 break;
             }
@@ -1143,10 +1145,10 @@ void Custom_S0S3_Sequence(void)
     }
 #if ENABLE_DEBUGGER_SUPPORT
     PowSeq_Record_Flag = D_Sleep;
-    if(PowerSequence_Step == (sizeof(PowerSequence_S0S3) / sizeof(sPowerSEQ)))
+    if (PowerSequence_Step == (sizeof(PowerSequence_S0S3) / sizeof(sPowerSEQ)))
     {
         Copy_Power_Sequence_Record_To_Sram(PowSeq_Record_Flag);
-    }
+}
 #endif
 }
 //----------------------------------------------------------------------------
@@ -1154,34 +1156,34 @@ void Custom_S0S3_Sequence(void)
 //----------------------------------------------------------------------------
 void Custom_S0S4_Sequence(void)
 {
-    if(PowerSequence_Delay != 0x00)
+    if (PowerSequence_Delay != 0x00)
     {
         PowerSequence_Delay--; // 1m Sec count base
-        if(PowerSequence_Delay != 0x00)
+        if (PowerSequence_Delay != 0x00)
         {
             return;
         }
     }
-    while(PowerSequence_Step < (sizeof(PowerSequence_S0S4) / sizeof(sPowerSEQ)))
+    while (PowerSequence_Step < (sizeof(PowerSequence_S0S4) / sizeof(sPowerSEQ)))
     {
-        if(PowerSequence_S0S4[PowerSequence_Step].checkstatus == 0x00) // Do function
+        if (PowerSequence_S0S4[PowerSequence_Step].checkstatus == 0x00) // Do function
         {
             (PowerSequence_S0S4[PowerSequence_Step].func)();
             PowerSequence_Delay = PowerSequence_S0S4[PowerSequence_Step].delay;
             PowerSequence_Step++;
-            if(PowerSequence_Delay != 0x00)
+            if (PowerSequence_Delay != 0x00)
             {
                 break;
             }
         }
-        else if(PowerSequence_S0S4[PowerSequence_Step].checkstatus == 0x01) // Check input status pin
+        else if (PowerSequence_S0S4[PowerSequence_Step].checkstatus == 0x01) // Check input status pin
         {
-            if((PowerSequence_S0S4[PowerSequence_Step].func)())
+            if ((PowerSequence_S0S4[PowerSequence_Step].func)())
             {
                 PowerSequence_Delay = PowerSequence_S0S4[PowerSequence_Step].delay;
                 PowerSequence_Step++;
                 PowerSequence_WaitTime = Wait_Time;
-                if(PowerSequence_Delay != 0x00)
+                if (PowerSequence_Delay != 0x00)
                 {
                     break;
                 }
@@ -1190,18 +1192,18 @@ void Custom_S0S4_Sequence(void)
             {
                 /*引脚输入不满足条件时的处理*/
                 PowerSequence_WaitTime--;
-                if(PowerSequence_WaitTime == 0)
+                if (PowerSequence_WaitTime == 0)
                 {
                     dprint("S0->S4 Step:%d status error\n", PowerSequence_Step);
                     PowerSequence_WaitTime = Wait_Time;
-                #if (!Wait_until_Correct)
+#if (!Wait_until_Correct)
                     PowerSequence_Delay = PowerSequence_S0S4[PowerSequence_Step].delay;
                     PowerSequence_Step++;
-                    if(PowerSequence_Delay != 0x00)
+                    if (PowerSequence_Delay != 0x00)
                     {
                         break;
                     }
-                #endif
+#endif
                 }
                 else
                 {
@@ -1214,7 +1216,7 @@ void Custom_S0S4_Sequence(void)
             (PowerSequence_S0S4[PowerSequence_Step].func)();
             PowerSequence_Delay = PowerSequence_S0S4[PowerSequence_Step].delay;
             PowerSequence_Step++;
-            if(PowerSequence_Delay != 0x00)
+            if (PowerSequence_Delay != 0x00)
             {
                 break;
             }
@@ -1222,10 +1224,10 @@ void Custom_S0S4_Sequence(void)
     }
 #if ENABLE_DEBUGGER_SUPPORT
     PowSeq_Record_Flag = D_Hibernate;
-    if(PowerSequence_Step == (sizeof(PowerSequence_S0S4) / sizeof(sPowerSEQ)))
+    if (PowerSequence_Step == (sizeof(PowerSequence_S0S4) / sizeof(sPowerSEQ)))
     {
         Copy_Power_Sequence_Record_To_Sram(PowSeq_Record_Flag);
-    }
+}
 #endif
 }
 //-----------------------------------------------------------------
@@ -1233,34 +1235,34 @@ void Custom_S0S4_Sequence(void)
 //-----------------------------------------------------------------
 void Custom_S0S5_Sequence(void)
 {
-    if(PowerSequence_Delay != 0x00)
+    if (PowerSequence_Delay != 0x00)
     {
         PowerSequence_Delay--; // 1m Sec count base
-        if(PowerSequence_Delay != 0x00)
+        if (PowerSequence_Delay != 0x00)
         {
             return;
         }
     }
-    while(PowerSequence_Step < (sizeof(PowerSequence_S0S5) / sizeof(sPowerSEQ)))
+    while (PowerSequence_Step < (sizeof(PowerSequence_S0S5) / sizeof(sPowerSEQ)))
     {
-        if(PowerSequence_S0S5[PowerSequence_Step].checkstatus == 0x00) // Do function
+        if (PowerSequence_S0S5[PowerSequence_Step].checkstatus == 0x00) // Do function
         {
             (PowerSequence_S0S5[PowerSequence_Step].func)();
             PowerSequence_Delay = PowerSequence_S0S5[PowerSequence_Step].delay;
             PowerSequence_Step++;
-            if(PowerSequence_Delay != 0x00)
+            if (PowerSequence_Delay != 0x00)
             {
                 break;
             }
         }
-        else if(PowerSequence_S0S5[PowerSequence_Step].checkstatus == 0x01) // Check input status pin
+        else if (PowerSequence_S0S5[PowerSequence_Step].checkstatus == 0x01) // Check input status pin
         {
-            if((PowerSequence_S0S5[PowerSequence_Step].func)())
+            if ((PowerSequence_S0S5[PowerSequence_Step].func)())
             {
                 PowerSequence_Delay = PowerSequence_S0S5[PowerSequence_Step].delay;
                 PowerSequence_Step++;
                 PowerSequence_WaitTime = Wait_Time;
-                if(PowerSequence_Delay != 0x00)
+                if (PowerSequence_Delay != 0x00)
                 {
                     break;
                 }
@@ -1269,18 +1271,18 @@ void Custom_S0S5_Sequence(void)
             {
                 /*引脚输入不满足条件时的处理*/
                 PowerSequence_WaitTime--;
-                if(PowerSequence_WaitTime == 0)
+                if (PowerSequence_WaitTime == 0)
                 {
                     dprint("S0->S5 Step:%d status error\n", PowerSequence_Step);
                     PowerSequence_WaitTime = Wait_Time;
-                #if (!Wait_until_Correct)
+#if (!Wait_until_Correct)
                     PowerSequence_Delay = PowerSequence_S0S5[PowerSequence_Step].delay;
                     PowerSequence_Step++;
-                    if(PowerSequence_Delay != 0x00)
+                    if (PowerSequence_Delay != 0x00)
                     {
                         break;
                     }
-                #endif
+#endif
                 }
                 else
                 {
@@ -1293,7 +1295,7 @@ void Custom_S0S5_Sequence(void)
             (PowerSequence_S0S5[PowerSequence_Step].func)();
             PowerSequence_Delay = PowerSequence_S0S5[PowerSequence_Step].delay;
             PowerSequence_Step++;
-            if(PowerSequence_Delay != 0x00)
+            if (PowerSequence_Delay != 0x00)
             {
                 break;
             }
@@ -1301,42 +1303,42 @@ void Custom_S0S5_Sequence(void)
     }
 #if ENABLE_DEBUGGER_SUPPORT
     PowSeq_Record_Flag = D_Shutdown;
-    if(PowerSequence_Step == ((sizeof(PowerSequence_S0S5) / sizeof(sPowerSEQ))))
+    if (PowerSequence_Step == ((sizeof(PowerSequence_S0S5) / sizeof(sPowerSEQ))))
     {
         Copy_Power_Sequence_Record_To_Sram(PowSeq_Record_Flag);
-    }
+}
 #endif
 }
 void Custom_Reboot_Sequence(void)
 {
-    if(PowerSequence_Delay != 0x00)
+    if (PowerSequence_Delay != 0x00)
     {
         PowerSequence_Delay--; // 1m Sec count base
-        if(PowerSequence_Delay != 0x00)
+        if (PowerSequence_Delay != 0x00)
         {
             return;
         }
     }
-    while(PowerSequence_Step < (sizeof(PowerSequence_Reboot) / sizeof(sPowerSEQ)))
+    while (PowerSequence_Step < (sizeof(PowerSequence_Reboot) / sizeof(sPowerSEQ)))
     {
-        if(PowerSequence_Reboot[PowerSequence_Step].checkstatus == 0x00) // Do function
+        if (PowerSequence_Reboot[PowerSequence_Step].checkstatus == 0x00) // Do function
         {
             (PowerSequence_Reboot[PowerSequence_Step].func)();
             PowerSequence_Delay = PowerSequence_Reboot[PowerSequence_Step].delay;
             PowerSequence_Step++;
-            if(PowerSequence_Delay != 0x00)
+            if (PowerSequence_Delay != 0x00)
             {
                 break;
             }
         }
-        else if(PowerSequence_Reboot[PowerSequence_Step].checkstatus == 0x01) // Check input status pin
+        else if (PowerSequence_Reboot[PowerSequence_Step].checkstatus == 0x01) // Check input status pin
         {
-            if((PowerSequence_Reboot[PowerSequence_Step].func)())
+            if ((PowerSequence_Reboot[PowerSequence_Step].func)())
             {
                 PowerSequence_Delay = PowerSequence_Reboot[PowerSequence_Step].delay;
                 PowerSequence_Step++;
                 PowerSequence_WaitTime = Wait_Time;
-                if(PowerSequence_Delay != 0x00)
+                if (PowerSequence_Delay != 0x00)
                 {
                     break;
                 }
@@ -1345,18 +1347,18 @@ void Custom_Reboot_Sequence(void)
             {
                 /*引脚输入不满足条件时的处理*/
                 PowerSequence_WaitTime--;
-                if(PowerSequence_WaitTime == 0)
+                if (PowerSequence_WaitTime == 0)
                 {
                     dprint("Reboot Step:%d status error\n", PowerSequence_Step);
                     PowerSequence_WaitTime = Wait_Time;
-                #if (!Wait_until_Correct)
+#if (!Wait_until_Correct)
                     PowerSequence_Delay = PowerSequence_Reboot[PowerSequence_Step].delay;
                     PowerSequence_Step++;
-                    if(PowerSequence_Delay != 0x00)
+                    if (PowerSequence_Delay != 0x00)
                     {
                         break;
                     }
-                #endif
+#endif
                 }
                 else
                 {
@@ -1369,7 +1371,7 @@ void Custom_Reboot_Sequence(void)
             (PowerSequence_Reboot[PowerSequence_Step].func)();
             PowerSequence_Delay = PowerSequence_Reboot[PowerSequence_Step].delay;
             PowerSequence_Step++;
-            if(PowerSequence_Delay != 0x00)
+            if (PowerSequence_Delay != 0x00)
             {
                 break;
             }
@@ -1377,10 +1379,10 @@ void Custom_Reboot_Sequence(void)
     }
 #if ENABLE_DEBUGGER_SUPPORT
     PowSeq_Record_Flag = D_Reboot;
-    if(PowerSequence_Step == ((sizeof(PowerSequence_Reboot) / sizeof(sPowerSEQ))))
+    if (PowerSequence_Step == ((sizeof(PowerSequence_Reboot) / sizeof(sPowerSEQ))))
     {
         Copy_Power_Sequence_Record_To_Sram(PowSeq_Record_Flag);
-    }
+}
 #endif
 }
 //-----------------------------------------------------------------------------
@@ -1388,12 +1390,12 @@ void Custom_Reboot_Sequence(void)
 //-----------------------------------------------------------------------------
 void HWPG_Monitor(void)
 {
-    if(SystemIsS0)
+    if (SystemIsS0)
     {
-        if(!Read_HWPG())
+        if (!Read_HWPG())
         {
             HWPG_TIMER++;
-            if(HWPG_TIMER > T_HWPG)
+            if (HWPG_TIMER > T_HWPG)
             {
                 Custom_S0_S5_Trigger(SC_HWPS0Off);
                 HWPG_TIMER = 0x00;
@@ -1410,13 +1412,13 @@ void HWPG_Monitor(void)
 //----------------------------------------------------------------------------
 void Auto_PowerOn_Monitor(void)
 {
-    if(ECAutoPowerOn == 1)
+    if (ECAutoPowerOn == 1)
     {
         ECAutoPowerOn = 0;
         DelayDoPowerSeq = 1000;
         Custom_S5_S0_Trigger();
     }
-    if(ECWDTRSTNow)
+    if (ECWDTRSTNow)
     {
         ECWDTRSTNow = 0;
         System_PowerState = SYSTEM_EC_WDTRST;
@@ -1428,15 +1430,15 @@ void Auto_PowerOn_Monitor(void)
 //-----------------------------------------------------------------------------
 void Sys_PowerState_Control(void)
 {
-    if(SystemIsS0)
+    if (SystemIsS0)
     {
         // reserved
     }
     // Check if delay doing PowerSeq is needed.
-    if(DelayDoPowerSeq != 0x00)
+    if (DelayDoPowerSeq != 0x00)
     {
         DelayDoPowerSeq--;
-        if(DelayDoPowerSeq != 0x00)
+        if (DelayDoPowerSeq != 0x00)
         {
             return;
         }
@@ -1446,89 +1448,89 @@ void Sys_PowerState_Control(void)
         PowerState_Monitor();
     }*/
     // Check current System PowerState and do corresponding powersequence
-    switch(System_PowerState)
+    switch (System_PowerState)
     {
-        case SYSTEM_S0:
-            // HWPG_Monitor();
-            break;
-        case SYSTEM_S3:
-            break;
-        case SYSTEM_S4:
-            break;
-        case SYSTEM_S5:
-            // Auto_PowerOn_Monitor();
-            break;
-        case SYSTEM_S4_S0:
-            // dprint("Custom_S4S0_Sequence\n");
-            Custom_S4S0_Sequence();
-            break;
-        case SYSTEM_S5_S0:
-            // dprint("Custom_S5S0_Sequence\n");
-            Custom_S5S0_Sequence();
-            break;
-        case SYSTEM_S3_S0:
-            // dprint("Custom_S3S0_Sequence\n");
-            Custom_S3S0_Sequence();
-            break;
-        case SYSTEM_S0_S3:
-            // dprint("Custom_S0S3_Sequence\n");
-            Custom_S0S3_Sequence();
-            break;
-        case SYSTEM_S0_S4:
-            // dprint("Custom_S0S4_Sequence\n");
-            Custom_S0S4_Sequence();
-            break;
-        case SYSTEM_S0_S5:
-            //dprint("Custom_S0S5_Sequence\n");
-            Custom_S0S5_Sequence();
-            break;
-        case SYSTEM_REBOOT:
-            //dprint("Custom_Reboot_Sequence\n");
-            Custom_Reboot_Sequence();
-            break;
-        case SYSTEM_EC_WDTRST:
-            // InternalWDTNow();
-            break;
-        default:
-            System_PowerState = SYSTEM_S5;
-            break;
+    case SYSTEM_S0:
+        // HWPG_Monitor();
+        break;
+    case SYSTEM_S3:
+        break;
+    case SYSTEM_S4:
+        break;
+    case SYSTEM_S5:
+        // Auto_PowerOn_Monitor();
+        break;
+    case SYSTEM_S4_S0:
+        // dprint("Custom_S4S0_Sequence\n");
+        Custom_S4S0_Sequence();
+        break;
+    case SYSTEM_S5_S0:
+        // dprint("Custom_S5S0_Sequence\n");
+        Custom_S5S0_Sequence();
+        break;
+    case SYSTEM_S3_S0:
+        // dprint("Custom_S3S0_Sequence\n");
+        Custom_S3S0_Sequence();
+        break;
+    case SYSTEM_S0_S3:
+        // dprint("Custom_S0S3_Sequence\n");
+        Custom_S0S3_Sequence();
+        break;
+    case SYSTEM_S0_S4:
+        // dprint("Custom_S0S4_Sequence\n");
+        Custom_S0S4_Sequence();
+        break;
+    case SYSTEM_S0_S5:
+        //dprint("Custom_S0S5_Sequence\n");
+        Custom_S0S5_Sequence();
+        break;
+    case SYSTEM_REBOOT:
+        //dprint("Custom_Reboot_Sequence\n");
+        Custom_Reboot_Sequence();
+        break;
+    case SYSTEM_EC_WDTRST:
+        // InternalWDTNow();
+        break;
+    default:
+        System_PowerState = SYSTEM_S5;
+        break;
     }
 }
 void ResetSource_Monitor(void)
 {
-    switch(RSTStatus & 0x03)
+    switch (RSTStatus & 0x03)
     {
-        case 0:
-        case 1:
-            if(GPCRA0 == 0x84)
-            {
-                ShutDnCause = SC_ECColdBoot;
-            }
-            else
-            {
-                ShutDnCause = SC_EC_0x0000;
-            }
-            break;
-        case 2:
-            if(GPCRA0 == 0x84)
-            {
-                ShutDnCause = SC_IntWatchDog;
-            }
-            else
-            {
-                ShutDnCause = SC_EC_0x0000;
-            }
-            break;
-        case 3:
-            if(GPCRA0 == 0x84)
-            {
-                ShutDnCause = SC_ExtWatchDog;
-            }
-            else
-            {
-                ShutDnCause = SC_EC_0x0000;
-            }
-            break;
+    case 0:
+    case 1:
+        if (GPCRA0 == 0x84)
+        {
+            ShutDnCause = SC_ECColdBoot;
+        }
+        else
+        {
+            ShutDnCause = SC_EC_0x0000;
+        }
+        break;
+    case 2:
+        if (GPCRA0 == 0x84)
+        {
+            ShutDnCause = SC_IntWatchDog;
+        }
+        else
+        {
+            ShutDnCause = SC_EC_0x0000;
+        }
+        break;
+    case 3:
+        if (GPCRA0 == 0x84)
+        {
+            ShutDnCause = SC_ExtWatchDog;
+        }
+        else
+        {
+            ShutDnCause = SC_EC_0x0000;
+        }
+        break;
     }
 }
 //-----------------------------------------------------------------------------
@@ -1544,10 +1546,10 @@ void SB_PowerButton_Enable(void)
 //-----------------------------------------------------------------------------
 void SB_PowerButton_Monitor(void)
 {
-    if(SBSWReleaseCunt != 0x00)
+    if (SBSWReleaseCunt != 0x00)
     {
         SBSWReleaseCunt--;
-        if(SBSWReleaseCunt == 0x00)
+        if (SBSWReleaseCunt == 0x00)
         {
             DNBSWON_OFF();
         }
@@ -1596,7 +1598,7 @@ void PWRSW_Config(BYTE timeout, BYTE mode)
 #if (SYSCTL_CLOCK_EN)
     u_int32_t pwrswcsr = 0;
     pwrswcsr |= PWRSW_WDTIME(timeout) | PWRSW_EN;
-    if(mode)
+    if (mode)
     {
         pwrswcsr |= PWRSW_RSTMODE;
     }
@@ -1624,7 +1626,7 @@ void PWRSW_Rstoutputen(void)
 //-----------------------------------------------------------------------------
 void AutoON_Check_AfterUpdate(void)
 {
-    if((SHARE_RAM8(0xFFF) == 0xDC) && ((SHARE_RAM8(0xFFE) == 0xCD)))
+    if ((SHARE_RAM8(0xFFF) == 0xDC) && ((SHARE_RAM8(0xFFE) == 0xCD)))
     {
         SHARE_RAM8(0xFFE) = 0x0;
         SHARE_RAM8(0xFFF) = 0x0;
@@ -1636,7 +1638,7 @@ void AutoON_Check_AfterUpdate(void)
 //-----------------------------------------------------------------------------
 void CHIPRESET_Check_AfterUpdate(void)
 {
-    if(SYSCTL_CFG & BIT3)
+    if (SYSCTL_CFG & BIT3)
     {
         SYSCTL_CFG &= (~BIT3);
         SYSCTL_RST1 |= 0x00010000;
@@ -1649,7 +1651,7 @@ void CHIPRESET_Check_AfterUpdate(void)
 //-----------------------------------------------------------------------------
 BYTE Set_AutoON_AfterUpdate(void)
 {
-    if(SYSCTL_CFG & BIT3)
+    if (SYSCTL_CFG & BIT3)
     {
         SYSCTL_CFG &= (~BIT3);
         SYSCTL_RST1 |= 0x00010000;

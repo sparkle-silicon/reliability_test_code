@@ -73,6 +73,19 @@ void __weak Hook_10msEventB(void)
 #if SUPPROT_PS2DEV_SCAN
     InitAndIdentifyPS2();
 #endif
+
+    //set oob execute delay timer
+    if (xOOB_PauseTimer > 0)
+    {
+        xOOB_PauseTimer--;
+        if (xOOB_PauseTimer == 0)
+        {
+            xOOB_Scan = 0;
+            xOOB_GetPCH_Temper = 5;
+            xOOB_GetPCH_RTC_Timer = 120;
+            xOOB_PeciGetCpuT_Timer = 2;
+        }
+    }
 }
 //-----------------------------------------------------------------------------
 // Oem 50ms Events/Hook Here

@@ -26,10 +26,9 @@ extern BYTE eRPMC_Busy_Status;
  * eSPI Module Proess Definition
  *---------------------------------------------------------------------------*/
 #define SUPPORT_OOB_SERVICE_MODULE TRUE
-#define DEBUG_OOB_MESSAGE FALSE
 
  /* eSPI <-> OOB <-> PCH */
-#define SUPPORT_OOB_PCH_TEMPERATURE FALSE
+#define SUPPORT_OOB_PCH_TEMPERATURE TRUE
 #define PCH_TEMP_GET_OOB_SEC 5
 
 #define SUPPORT_OOB_PCH_RTC_TIME TRUE
@@ -1673,7 +1672,7 @@ void Service_OOB_Message(void)
         break;
     case 2:
 #if SUPPORT_OOB_PCH_TEMPERATURE
-        if (System_PowerState == _SYSTEM_S0)
+        if (System_PowerState == SYSTEM_S0)
         {
             if (xOOB_GetPCH_Temper > 1)
             {
@@ -1790,8 +1789,8 @@ void Service_OOB_Message(void)
             xOOB_Scan = 0;
         }
         break;
-        }
-        }
+    }
+}
 
 /*-----------------------------------------------------------------------------
  * @subroutine - Get_OOB_PMC_CrashLog
