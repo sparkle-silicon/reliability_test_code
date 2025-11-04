@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2024-03-08 19:04:20
+ * @LastEditTime: 2025-11-04 16:06:31
  * @Description: This file is used for Code xlate
  *
  *
@@ -64,7 +64,7 @@ void KBS_Xlate_Code2(uKEY key, BYTE event)
     dprint("code1 is %#x\n", _R4);
 #endif
     /*2： Keyboard wake up system 唤醒系统的操作*/
-    if(SystemIsS3 && (event == MAKE_EVENT))
+    if (SystemIsS3 && (event == MAKE_EVENT))
     {
         Check_KB_Wake_S3(key.index.kso, key.index.ksi);
     }
@@ -91,12 +91,12 @@ BYTE Check_FnKey_Related_Flag(BYTE KBD_code, BYTE event)
     BYTE Fn_bundled = 0x00;                      // pre-set no bundled fn key
     BYTE buffer_index = ((KBD_code - 0x90) / 8); // index of buffer "Fn_BUNDLED_FLAG"
     BYTE buffer_mask = ((KBD_code - 0x90) % 8);  // mask of buffer "Fn_BUNDLED_FLAG"
-    if(KBD_code >= SSKEY2_SPE_CODE)
+    if (KBD_code >= SSKEY2_SPE_CODE)
     {
         // Key break按键break事件
-        if(event == BREAK_EVENT)
+        if (event == BREAK_EVENT)
         {
-            if(Fn_BUNDLED_FLAG[buffer_index] & BIT(buffer_mask)) // with fn key but no bundled fn key flag.
+            if (Fn_BUNDLED_FLAG[buffer_index] & BIT(buffer_mask)) // with fn key but no bundled fn key flag.
             {
                 Fn_bundled = 0x01; // with fn key and bundled fn key flag.
             }
@@ -104,9 +104,9 @@ BYTE Check_FnKey_Related_Flag(BYTE KBD_code, BYTE event)
         }
         else // Key make or repeat
         {
-            if(KBD_SCAN_STATE.index.Fn && event == MAKE_EVENT) // Fn key
+            if (KBD_SCAN_STATE.index.Fn && event == MAKE_EVENT) // Fn key
                 Fn_BUNDLED_FLAG[buffer_index] |= BIT(buffer_mask);
-            if(KBD_SCAN_STATE.index.Fn || (Fn_BUNDLED_FLAG[buffer_index] & BIT(buffer_mask)))
+            if (KBD_SCAN_STATE.index.Fn || (Fn_BUNDLED_FLAG[buffer_index] & BIT(buffer_mask)))
                 Fn_bundled = 0x01; // with fn key or bundled fn key flag.
         }
     }
@@ -119,14 +119,14 @@ BYTE Check_FnKey_Related_Flag(BYTE KBD_code, BYTE event)
  * ------------------------------------------------------------------------- */
 void Transmit_Key(BYTE table_entry, BYTE event)
 {
-    if(Skip_Send_Key() == 0xFF)
+    if (Skip_Send_Key() == 0xFF)
         return;
     BYTE temp;
     BYTE temp_table_entry = table_entry;
     Check_Send_Key(table_entry, event);
     KBD_SCAN.mark = KBD_SCAN.tail;       /*标记缓冲区防止溢出*/
     KBD_SCAN_STATE.byte = Scanner_State; /*组合键的flag，这个flag在KBD_SCAN_STATE.byte   修改*/
-    if(table_entry >= SSKEY2_OVL_CODE)  // Fn key + any key.
+    if (table_entry >= SSKEY2_OVL_CODE)  // Fn key + any key.
     {
         /**********************************************************************
             功能：特殊组合功能按键的处理
@@ -138,11 +138,11 @@ void Transmit_Key(BYTE table_entry, BYTE event)
             有效键码：0xE0-0xEC
         **********************************************************************/
         temp = (table_entry - SSKEY2_OVL_CODE) << 1;
-        if(Check_FnKey_Related_Flag(temp_table_entry, event) == 0x01)
+        if (Check_FnKey_Related_Flag(temp_table_entry, event) == 0x01)
             temp++;                               // 递增索引以获得表项的奇数字节
         table_entry = sskey2_overlay_table[temp]; // Get a sskey2 value.
     }
-    else if((table_entry >= SSKEY2_SPE_CODE))
+    else if ((table_entry >= SSKEY2_SPE_CODE))
     {
         /**********************************************************************
             功能：组合功能按键的处理
@@ -173,10 +173,10 @@ void Transmit_Key(BYTE table_entry, BYTE event)
  * ------------------------------------------------------------------------- */
 void Process_Sskey3(BYTE kbd_code2, BYTE event)
 {
-    if(kbd_code2 == 0)
+    if (kbd_code2 == 0)
     {
     } // Null code
-    else if((kbd_code2 & 0x80) == 0)
+    else if ((kbd_code2 & 0x80) == 0)
     {
         /**********************************************************************
             功能：普通按键的处理
@@ -234,19 +234,19 @@ void Particular_Code(BYTE code_byte, BYTE event)
 {
     static const BYTE key126_normal_mk[] = { 0xE1, 0x14, 0x77, 0xE1, 0xF0, 0x14, 0xF0, 0x77, 0x00 };
     static const BYTE key126_ctrl_mk[] = { 0xE0, 0x7E, 0xE0, 0xF0, 0x7E, 0x00 };
-    if(code_byte == 2) // Print Scr
+    if (code_byte == 2) // Print Scr
     {
-        if(Scanner_State_ALT)
+        if (Scanner_State_ALT)
         {
             Single_Code(0x84, event);
         }
-        else if(Scanner_State_CONTROL || Scanner_State_LEFT || Scanner_State_RIGHT)
+        else if (Scanner_State_CONTROL || Scanner_State_LEFT || Scanner_State_RIGHT)
         {
             Add_E0_Code(0x7C, event);
         }
         else
         {
-            if(event == BREAK_EVENT) // Break
+            if (event == BREAK_EVENT) // Break
             {
                 Add_E0_Code(0x7C, event);
                 Add_E0_Code(0x12, event);
@@ -260,9 +260,9 @@ void Particular_Code(BYTE code_byte, BYTE event)
     }
     else
     {
-        if(event == MAKE_EVENT)
+        if (event == MAKE_EVENT)
         {
-            if(Scanner_State_CONTROL)
+            if (Scanner_State_CONTROL)
                 KBS_Buffer_puts(key126_ctrl_mk); // Buffer Ctrl case string.
             else
                 KBS_Buffer_puts(key126_normal_mk); // Buffer normal code string.
@@ -280,7 +280,7 @@ void Particular_Code(BYTE code_byte, BYTE event)
  * ------------------------------------------------------------------------- */
 void Single_Code(BYTE scan_code, BYTE event)
 {
-    if(event == BREAK_EVENT)
+    if (event == BREAK_EVENT)
     {
         // if(XT_SCAN_CODE)
         //     scan_code |= 0x80;
@@ -304,7 +304,7 @@ void Single_Code(BYTE scan_code, BYTE event)
 //*****************************************************************************
 BYTE Check_Others_Key(BYTE scan_code_a)
 {
-    if(scan_code_a == 0x70     // Insert
+    if (scan_code_a == 0x70     // Insert
         || scan_code_a == 0x71  // Delete
         || scan_code_a == 0x6B  // Left Arrow
         || scan_code_a == 0x6C  // Home
@@ -315,7 +315,7 @@ BYTE Check_Others_Key(BYTE scan_code_a)
         || scan_code_a == 0x7A  // Page Down
         || scan_code_a == 0x74) // Right Arrow
         return (0x01);
-    else if(scan_code_a == 0x4A) // Numeric / on US keyboards
+    else if (scan_code_a == 0x4A) // Numeric / on US keyboards
         return (0x02);
     else
         return (0x00);
@@ -336,28 +336,28 @@ void Add_E0_Code(BYTE scan_code, BYTE event)
     //-------------------------------------------
     // To check make and repeat
     //-------------------------------------------
-    if(event != BREAK_EVENT) // Make. Repeat
+    if (event != BREAK_EVENT) // Make. Repeat
     {
-        if(additional_key == 0x01)
+        if (additional_key == 0x01)
         {
-            if(Scanner_State_NUM_LOCK) // Num Lock ON
+            if (Scanner_State_NUM_LOCK) // Num Lock ON
             {
-                if((!Scanner_State_LEFT) && (!Scanner_State_RIGHT)) // LShift || Rshift
+                if ((!Scanner_State_LEFT) && (!Scanner_State_RIGHT)) // LShift || Rshift
                     KBS_Buffer_puts(kbd_buf_left1);
             }
             else // Num Lock OFF
             {
-                if(Scanner_State_LEFT)
+                if (Scanner_State_LEFT)
                     KBS_Buffer_puts(kbd_buf_left0); // Precede Base Make code with (E0 f0 12)
-                if(Scanner_State_RIGHT)
+                if (Scanner_State_RIGHT)
                     KBS_Buffer_puts(kbd_buf_RIGHT0); // Precede Base Make code with (E0 f0 59)
             }
         }
-        else if(additional_key == 0x02)
+        else if (additional_key == 0x02)
         {
-            if(Scanner_State_LEFT)
+            if (Scanner_State_LEFT)
                 KBS_Buffer_puts(kbd_buf_left0); // Precede Base Make code with (E0 f0 12)
-            if(Scanner_State_RIGHT)
+            if (Scanner_State_RIGHT)
                 KBS_Buffer_puts(kbd_buf_RIGHT0); // Precede Base Make code with (E0 f0 59)
         }
     }
@@ -366,28 +366,28 @@ void Add_E0_Code(BYTE scan_code, BYTE event)
     //-------------------------------------------
     // To check break
     //-------------------------------------------
-    if(event == BREAK_EVENT) // Break
+    if (event == BREAK_EVENT) // Break
     {
-        if(additional_key == 0x01)
+        if (additional_key == 0x01)
         {
-            if(Scanner_State_NUM_LOCK) // Num Lock ON
+            if (Scanner_State_NUM_LOCK) // Num Lock ON
             {
-                if((!Scanner_State_LEFT) && (!Scanner_State_RIGHT)) // LShift || Rshift
-                    KBS_Buffer_puts(kbd_buf_left1);
+                if ((!Scanner_State_LEFT) && (!Scanner_State_RIGHT)) // LShift || Rshift
+                    KBS_Buffer_puts(kbd_buf_left0);
             }
             else // Num Lock OFF
             {
-                if(Scanner_State_LEFT)
+                if (Scanner_State_LEFT)
                     KBS_Buffer_puts(kbd_buf_left1);
-                if(Scanner_State_RIGHT)
+                if (Scanner_State_RIGHT)
                     KBS_Buffer_puts(kbd_buf_RIGHT1);
             }
         }
-        else if(additional_key == 0x02)
+        else if (additional_key == 0x02)
         {
-            if(Scanner_State_LEFT)
+            if (Scanner_State_LEFT)
                 KBS_Buffer_puts(kbd_buf_left1);
-            if(Scanner_State_RIGHT)
+            if (Scanner_State_RIGHT)
                 KBS_Buffer_puts(kbd_buf_RIGHT1);
         }
     }
@@ -405,14 +405,14 @@ void Shift_Cursor(BYTE scan_code, BYTE event)
     static const BYTE csr_sftr_mk[] = { 0xE0, 0xF0, 0x59, 0x00 };
     static const BYTE csr_sftl_brk2[] = { 0xE0, 0x12, 0x00 };
     static const BYTE csr_sftr_brk2[] = { 0xE0, 0x59, 0x00 };
-    if(event == BREAK_EVENT)      /* Key has just been released. This is a "break event". */
+    if (event == BREAK_EVENT)      /* Key has just been released. This is a "break event". */
         KBS_Buffer_puts(csr_brk1); /* Buffer pre-string. */
-    else if(event == MAKE_EVENT)
+    else if (event == MAKE_EVENT)
     {                                     /* Key is pressed for the first time, a "make event". */
                                           /* Left and/or Right SHIFT is pressed. */
-        if(KBD_SCAN_STATE.index.lShift)  /* Left SHIFT is pressed. */
+        if (KBD_SCAN_STATE.index.lShift)  /* Left SHIFT is pressed. */
             KBS_Buffer_puts(csr_sftl_mk); /* Buffer pre-string. */
-        if(KBD_SCAN_STATE.index.rShift)  /* Right SHIFT is pressed. */
+        if (KBD_SCAN_STATE.index.rShift)  /* Right SHIFT is pressed. */
             KBS_Buffer_puts(csr_sftr_mk); /* Buffer pre-string. */
         KBS_Buffer_Input(0xE0);           /* Buffer end of pre-string. */
     }
@@ -421,11 +421,11 @@ void Shift_Cursor(BYTE scan_code, BYTE event)
         KBS_Buffer_Input(0xE0); /* Buffer E0h prefix */
     }
     KBS_Buffer_Input(scan_code); /* Buffer base code. */
-    if(event == BREAK_EVENT)    /* Key has just been released. This is a "break event". */
+    if (event == BREAK_EVENT)    /* Key has just been released. This is a "break event". */
     {
-        if(KBD_SCAN_STATE.index.lShift)    /* Left shift has been pressed. */
+        if (KBD_SCAN_STATE.index.lShift)    /* Left shift has been pressed. */
             KBS_Buffer_puts(csr_sftl_brk2); /* Buffer tail-string. */
-        if(KBD_SCAN_STATE.index.rShift)    /* Right shift has been pressed. */
+        if (KBD_SCAN_STATE.index.rShift)    /* Right shift has been pressed. */
             KBS_Buffer_puts(csr_sftr_brk2); /* Buffer tail-string. */
     }
 }
@@ -439,14 +439,14 @@ void Numlock_Corsor(BYTE scan_code, BYTE event)
 {
     static const BYTE csr_numlock_mk[] = { 0xE0, 0x12, 0xE0, 0x00 };
     static const BYTE csr_numlock_brk2[] = { 0xE0, 0xF0, 0x12, 0x00 };
-    if(event == BREAK_EVENT)
+    if (event == BREAK_EVENT)
         KBS_Buffer_puts(csr_brk1); // Buffer pre-string.
-    else if(event == MAKE_EVENT)
+    else if (event == MAKE_EVENT)
         KBS_Buffer_puts(csr_numlock_mk); // Buffer pre-string.
     else
         KBS_Buffer_Input(0xE0); // Buffer E0h prefix.
     KBS_Buffer_Input(scan_code); // Buffer base code.
-    if(event == BREAK_EVENT)
+    if (event == BREAK_EVENT)
         KBS_Buffer_puts(csr_numlock_brk2); // Buffer tail-string.
 }
 /* ----------------------------------------------------------------------------
@@ -482,19 +482,19 @@ void HotKey_Fn_Function(BYTE code_byte, BYTE event)
  * ------------------------------------------------------------------------- */
 void Generate_Event(BYTE state, BYTE event)
 {
-    if(event == MAKE_EVENT)
+    if (event == MAKE_EVENT)
     {
-        if(state & FN)
+        if (state & FN)
             Scratch_Fn_Key_Make();
-        if(state & NUM_LOCK)
+        if (state & NUM_LOCK)
             Scratch_NUMLK_Key_Make();
         KBD_SCAN_STATE.byte |= state;
     }
-    else if(event == BREAK_EVENT)
+    else if (event == BREAK_EVENT)
     {
-        if(state & FN)
+        if (state & FN)
             Scratch_Fn_Key_Break();
-        if(state & NUM_LOCK)
+        if (state & NUM_LOCK)
             Scratch_NUMLK_Key_Break();
         KBD_SCAN_STATE.byte &= ~state;
     }
@@ -523,18 +523,18 @@ void Generate_Event(BYTE state, BYTE event)
 void Generate_Scan_Code(BYTE state, BYTE event)
 {
     /*发送这些按键的按键码*/
-    if((event == MAKE_EVENT) || (event == BREAK_EVENT))
+    if ((event == MAKE_EVENT) || (event == BREAK_EVENT))
     {
             /*根据不同的事件，将相应的flag置位*/
-        if(state & LShift)
+        if (state & LShift)
             Single_Code(0x12, event);
-        else if(state & LAlt)
+        else if (state & LAlt)
             Single_Code(0x11, event);
-        else if(state & LCtrl)
+        else if (state & LCtrl)
             Single_Code(0x14, event);
-        else if(state & RShift)
+        else if (state & RShift)
             Single_Code(0x59, event);
-        else if(state & NUM_LOCK)
+        else if (state & NUM_LOCK)
             Single_Code(0x77, event);
         Generate_Event(state, event);
     }
@@ -561,14 +561,14 @@ void Generate_Scan_Code(BYTE state, BYTE event)
  * ------------------------------------------------------------------------- */
 void Generate_Scan_Code_E0(BYTE state, BYTE event)
 { //   只有Alt-R and Ctrl-R.这两个按键才会走这个流程
-    if((event == MAKE_EVENT) || (event == BREAK_EVENT))
+    if ((event == MAKE_EVENT) || (event == BREAK_EVENT))
     {
         // First setup to generate KBD_SCAN code set 2.
-        if(state & RAlt)
+        if (state & RAlt)
             Add_E0_Code(0x11, event);
-        else if(state & RCtrl)
+        else if (state & RCtrl)
             Add_E0_Code(0x14, event);
-        else if(state & FN)
+        else if (state & FN)
             Add_E0_Code(0x63, event);
         /*根据事件设置和清除相应的flag*/
         Generate_Event(state, event);
@@ -602,71 +602,71 @@ BYTE Get_Comb_Index(BYTE comb, BYTE table_entry, BYTE event)
     BYTE bit_num;
     offset = 0;
     bit_num = 0;
-    if(comb & BIT(1))
+    if (comb & BIT(1))
     { // Combination has Shift.
-        if(KBD_SCAN_STATE.index.lShift | KBD_SCAN_STATE.index.rShift)
+        if (KBD_SCAN_STATE.index.lShift | KBD_SCAN_STATE.index.rShift)
         { // Either left or right shift is pressed.
             offset |= (1 << bit_num);
         }
         bit_num++; // Increment bit position.
     }
-    if(comb & BIT(2))
+    if (comb & BIT(2))
     { // Combination has Alt.
-        if(KBD_SCAN_STATE.index.tALT)
+        if (KBD_SCAN_STATE.index.tALT)
         { // Alt is pressed.
             offset |= (1 << bit_num);
         }
         bit_num++; // Increment bit position.
     }
-    if(comb & BIT(3))
+    if (comb & BIT(3))
     { // Combination has Ctrl.
-        if(KBD_SCAN_STATE.index.tCtrl)
+        if (KBD_SCAN_STATE.index.tCtrl)
         { // Ctrl is pressed.
             offset |= (1 << bit_num);
         }
         bit_num++; // Increment bit position.
     }
-    if(comb & BIT(4))
+    if (comb & BIT(4))
     {   // Combination has Num Lock.
     #if 1//NumLock_Key lock state wait break code ,unlock state wait last break code
-        if(NumLockKey)
+        if (NumLockKey)
         { // Fn is pressed.
             offset |= (1 << bit_num);
         }
     #else//NumLock_Key lock state wait Make code  ,unlock state wait break code
-        if(KBD_SCAN_STATE.index.num_lock)
+        if (KBD_SCAN_STATE.index.num_lock)
         {   								// NumLock has been pressed.
             offset |= (1 << bit_num);
         }
     #endif
         bit_num++; 	 						// Increment bit position.
     }
-    if(comb & BIT(5))
+    if (comb & BIT(5))
     { // Combination has Fn.
     #if 1
-        if(Check_FnKey_Related_Flag(table_entry, event) == 0x01)
+        if (Check_FnKey_Related_Flag(table_entry, event) == 0x01)
         {
             offset |= (1 << bit_num);
         }
     #else
-        if(KBD_SCAN_STATE.index.Fn)
+        if (KBD_SCAN_STATE.index.Fn)
         {   								// Fn is pressed.
             offset |= (1 << bit_num);
         }
     #endif
         bit_num++; // Increment bit position.
     }
-    if(comb & BIT(6))
+    if (comb & BIT(6))
     { // Combination has Hook_calc_index_comb_BIT6
-        if(Scratch_Get_Index_Comb_BIT6() == 0xFF)
+        if (Scratch_Get_Index_Comb_BIT6() == 0xFF)
         {
             offset |= (1 << bit_num);
         }
         bit_num++; // Increment bit position.
     }
-    if(comb & BIT(7))
+    if (comb & BIT(7))
     { // Combination has Hook_calc_index_comb_BIT7
-        if(Scratch_Get_Index_Comb_BIT7() == 0xFF)
+        if (Scratch_Get_Index_Comb_BIT7() == 0xFF)
         {
             offset |= (1 << bit_num);
         }
