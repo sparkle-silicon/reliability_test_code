@@ -21,7 +21,7 @@
 #include "AE_GLOBAL.H"
 #include "AE_REG.H"
 /****************************************************************************
- * SCI 
+ * SCI
  *****************************************************************************/
 #define SCI_POLLING_CONTROL 0  // SCI切换为轮询模式
 #define SCI_PIN_MODE_VW     0  // SCI切换为VW
@@ -145,7 +145,7 @@
  * Switch
  *****************************************************************************/
 #define KBD_8_n_SWITCH 16 // n:8*n
-//#define KBD_SN1211        // kbd demo code if nos's run sn1211 please undef
+ //#define KBD_SN1211        // kbd demo code if nos's run sn1211 please undef
 #if (KBD_8_n_SWITCH == 16)
 #define KBD_8_16
 #elif (KBD_8_n_SWITCH == 17)
@@ -244,7 +244,6 @@
 #define I2C0_SPEED 100000
 #define I2C0_DEFAULT_ROLE I2C_NO_ROLE
 #define I2C0_DEFAULT_ADDR 0x00
-#define I2C0_SPEED 100000
 #define I2C0_EXTERNAL_PULL_UP 1
 #define I2C0_INTERNAL_PULL_UP 0
 
@@ -423,8 +422,8 @@
 #define CEC0_EN_Init 0 & CEC_CLOCK_EN
 #define CEC1_EN_Init 0 & CEC_CLOCK_EN
 #define CEC0_PIN_SEL 0
-#define CEC0_MODE_SWITCH                      0//"1": as initiator; "0" as follower
-#define CEC1_MODE_SWITCH                      0//"1": as initiator; "0" as follower
+#define CEC0_MODE_SWITCH      0//"1": as initiator; "0" as follower
+#define CEC1_MODE_SWITCH      0//"1": as initiator; "0" as follower
 #define CEC0_EXTERNAL_PULL_UP 1
 #define CEC0_INTERNAL_PULL_UP 0
 #define CEC1_EXTERNAL_PULL_UP 1

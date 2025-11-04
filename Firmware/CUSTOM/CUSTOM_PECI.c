@@ -338,7 +338,7 @@ void Service_PECI_Data(void)
 void Service_PECI_Command(void)
 {
     //-------------------------------------------------------------------------
-    //if (SysPowState != _SYSTEM_S0)
+    //if (SysPowState != SYSTEM_S0)
     //{
     //    PECI_FLAG = 0;
     //    return;

@@ -1,16 +1,16 @@
 #include "KERNEL_MAILBOX.H"
 volatile bool command_processed = true; // 用于标志子系统是否处理完命令
-Task *task_head = NULL;                 // 任务链表头
+Task* task_head = NULL;                 // 任务链表头
 volatile char mailbox_task_count = 0; // 全局计数
 uint8_t mailbox_timeout_s = 0;
 // 添加任务到链表
-Task *Add_Task(TaskFunction function, TaskParams params, Task **head)
+Task* Add_Task(TaskFunction function, TaskParams params, Task** head)
 {
-    if(mailbox_task_count >= MAX_TASK_COUNT)
+    if (mailbox_task_count >= MAX_TASK_COUNT)
     {
         return NULL;
     }
-    Task *new_task = malloc(sizeof(Task));
+    Task* new_task = malloc(sizeof(Task));
     if (new_task == NULL)
     {
         return NULL;
@@ -25,7 +25,7 @@ Task *Add_Task(TaskFunction function, TaskParams params, Task **head)
     }
     else // 链表不为空,尾插入
     {
-        Task *p = *head;
+        Task* p = *head;
         while (p->next != NULL)
         {
             p = p->next;
@@ -44,35 +44,35 @@ void Process_Tasks(void)
     uint8_t freq_bk = 0;
     if (command_processed == false)
     {
-        if(timer_1s_count!=mailbox_timeout_s)
+        if (timer_1s_count != mailbox_timeout_s)
         {
-            if(timer_1s_count<mailbox_timeout_s)
+            if (timer_1s_count < mailbox_timeout_s)
             {
-                if(((timer_1s_count+60)-mailbox_timeout_s)>=MAX_TASK_TIMEOUT)//子系统响应超时
+                if (((timer_1s_count + 60) - mailbox_timeout_s) >= MAX_TASK_TIMEOUT)//子系统响应超时
                 {
                     cy_reset_flag = 1;
                 }
             }
             else
             {
-                if((timer_1s_count-mailbox_timeout_s)>=MAX_TASK_TIMEOUT)//子系统响应超时
+                if ((timer_1s_count - mailbox_timeout_s) >= MAX_TASK_TIMEOUT)//子系统响应超时
                 {
                     cy_reset_flag = 1;
                 }
             }
         }
-        if(cy_reset_flag == 1)
+        if (cy_reset_flag == 1)
         {
             //复位子系统
             SYSCTL_RST1 |= BIT(17);
             __nop;
             SYSCTL_RST1 &= ~BIT(17);
             freq_bk = SYSCTL_CLKDIV_OSC96M;
-            if(SYSCTL_ESTAT & BIT(24))
+            if (SYSCTL_ESTAT & BIT(24))
                 SYSCTL_CLKDIV_OSC96M = 0;
             else
                 SYSCTL_CLKDIV_OSC96M = 3;
-            while(SYSCTL_ESTAT_CRYPTO_BOOTCTRL == 1);
+            while (SYSCTL_ESTAT_CRYPTO_BOOTCTRL == 1);
             ICTL1_INTMASK7 |= 0x20;//mailbox int mask
             Default_Mailbox_SetClockFrequency(freq_bk);
             ICTL1_INTMASK7 &= 0xDF;//mailbox int unmask
@@ -83,13 +83,13 @@ void Process_Tasks(void)
         }
         return;
     }
-    Task *task = task_head;
+    Task* task = task_head;
     task_head = task_head->next;   // 移动到下一个任务
     command_processed = false;     // 处理任务锁
     task->function(&task->params); // 执行任务函数，传递参数
     mailbox_timeout_s = timer_1s_count; //超时计数
     free(task);                    // 处理完成，释放任务内存
-    if(mailbox_task_count>0)
+    if (mailbox_task_count > 0)
         mailbox_task_count--;          // 全局计数减一
 }
 
@@ -110,13 +110,12 @@ void Mailbox_Init(void)
     {
         MAILBOX_OTHER_INT = MAILBOX_OTHER_INT; // 清除所有中断
         nop;
-    }
-    while (MAILBOX_OTHER_INT);
+    } while (MAILBOX_OTHER_INT);
 }
 
-void Mailbox_ExecuteFirmwareUpdate(void *param)
+void Mailbox_ExecuteFirmwareUpdate(void* param)
 {
-    TaskParams *params = (TaskParams *)param;
+    TaskParams* params = (TaskParams*)param;
     MAILBOX_SELF_CMD = MAILBOX_CMD_FIRMWARE_MIRROR;                              // 命令字
     MAILBOX_SELF_INFO1 = params->E2C_INFO1;                 // 固件更新模式
     MAILBOX_SELF_INFO2 = params->E2C_INFO2;                 // 更新大小
@@ -172,25 +171,25 @@ void Mailbox_Read_FLASHUID_Trigger(void)
     MAILBOX_SET_IRQ(MAILBOX_Control_IRQ_NUMBER);   // 触发子系统中断
 }
 
-void Mailbox_APB2_Source_Alloc_Trigger(void *param)
+void Mailbox_APB2_Source_Alloc_Trigger(void* param)
 {
-    TaskParams *params = (TaskParams *)param;
+    TaskParams* params = (TaskParams*)param;
     MAILBOX_SELF_CMD = MAILBOX_CMD_APB_RESOURCE_ALLOC; // 命令字
     MAILBOX_SELF_INFO1 = params->E2C_INFO1;
     MAILBOX_SET_IRQ(MAILBOX_Control_IRQ_NUMBER); // 触发子系统中断
 }
 
-void Mailbox_Cryp_Selfcheck(void *param)
+void Mailbox_Cryp_Selfcheck(void* param)
 {
-    TaskParams *params = (TaskParams *)param;
+    TaskParams* params = (TaskParams*)param;
     MAILBOX_SELF_INFO1 = params->E2C_INFO1;
     MAILBOX_SELF_CMD = MAILBOX_CMD_CRYPTO_SELFCHECK;
     MAILBOX_SET_IRQ(MAILBOX_Control_IRQ_NUMBER);
 }
 
-void Mailbox_SetClockFrequency(void *param)
+void Mailbox_SetClockFrequency(void* param)
 {
-    TaskParams *params = (TaskParams *)param;
+    TaskParams* params = (TaskParams*)param;
     MAILBOX_SELF_INFO1 = params->E2C_INFO1;//通知子系统设置多少分频
     MAILBOX_SELF_CMD = MAILBOX_CMD_FREQ_SYNC;
     MAILBOX_SET_IRQ(MAILBOX_Control_IRQ_NUMBER);
@@ -250,12 +249,12 @@ void Mailbox_WriteRootKey_Trigger(void)
     {
         printf("RPMC Device is in busy status\n");
         eRPMC_WriteRootKey_data.Extended_Status = 0x04;
-        eSPI_OOBSend((BYTE *)&eRPMC_WriteRootKey_data);
+        eSPI_OOB_Send((BYTE*)&eRPMC_WriteRootKey_data);
         return;
     }
     // WriteRootKey命令  往SRAM的0x31800后填入对应eRPMC数据
     // 定义目标地址
-    uint32_t *pTarget = (uint32_t *)0x3181C;
+    uint32_t* pTarget = (uint32_t*)0x3181C;
     uint32_t data = 0;
     // 将 Root_Key 搬运到目标地址
     for (int i = 0; i < 32; i += 4)
@@ -265,12 +264,12 @@ void Mailbox_WriteRootKey_Trigger(void)
             | (uint32_t)eRPMC_WriteRootKey_m1.Root_Key[i + 2] << 16
             | (uint32_t)eRPMC_WriteRootKey_m1.Root_Key[i + 1] << 8
             | (uint32_t)eRPMC_WriteRootKey_m1.Root_Key[i];
-            // 将组合后的数据存储到目标地址
+        // 将组合后的数据存储到目标地址
         pTarget[i / 4] = data;
     }
 
     //TruncatedSignature
-    pTarget = (uint32_t *)0x31800;
+    pTarget = (uint32_t*)0x31800;
     for (int i = 0; i < 28; i += 4)
     {
         if (i > 23)
@@ -306,12 +305,12 @@ void Mailbox_UpdateHMACKey_Trigger(void)
     {
         printf("RPMC Device is in busy status\n");
         eRPMC_UpdateHMACKey_data.Extended_Status = 0x04;
-        eSPI_OOBSend((BYTE *)&eRPMC_UpdateHMACKey_data);
+        eSPI_OOB_Send((BYTE*)&eRPMC_UpdateHMACKey_data);
         return;
     }
     // UpdateHMACKey命令  往SRAM的0x31800后填入对应eRPMC数据
     // 定义目标地址
-    uint32_t *pTarget = (uint32_t *)0x31800;
+    uint32_t* pTarget = (uint32_t*)0x31800;
     uint32_t data = 0;
     // 将 Signature 搬运到目标地址
     for (int i = 0; i < 32; i += 4)
@@ -321,11 +320,11 @@ void Mailbox_UpdateHMACKey_Trigger(void)
             | (uint32_t)eRPMC_UpdateHMACKey.Signature[i + 2] << 16
             | (uint32_t)eRPMC_UpdateHMACKey.Signature[i + 1] << 8
             | (uint32_t)eRPMC_UpdateHMACKey.Signature[i];
-            // 将组合后的数据存储到目标地址
+        // 将组合后的数据存储到目标地址
         pTarget[i / 4] = data;
     }
     // KeyData
-    pTarget = (uint32_t *)0x31820;
+    pTarget = (uint32_t*)0x31820;
     for (int i = 0; i < 4; i += 4)
     {
         // 将 Root_Key 的四个字节组合成一个 uint32_t
@@ -333,7 +332,7 @@ void Mailbox_UpdateHMACKey_Trigger(void)
             | (uint32_t)eRPMC_UpdateHMACKey.Key_Data[i + 2] << 16
             | (uint32_t)eRPMC_UpdateHMACKey.Key_Data[i + 1] << 8
             | (uint32_t)eRPMC_UpdateHMACKey.Key_Data[i];
-            // 将组合后的数据存储到目标地址
+        // 将组合后的数据存储到目标地址
         pTarget[i / 4] = data;
     }
 
@@ -353,11 +352,11 @@ void Mailbox_IncrementCounter_Trigger(void)
     {
         printf("RPMC Device is in busy status\n");
         eRPMC_IncrementCounter_data.Extended_Status = 0x04;
-        eSPI_OOBSend((BYTE *)&eRPMC_IncrementCounter_data);
+        eSPI_OOB_Send((BYTE*)&eRPMC_IncrementCounter_data);
         return;
     }
     // IncrementCounter命令  往SRAM的0x31800后填入对应eRPMC数据
-    uint32_t *pTarget = (uint32_t *)0x31800;
+    uint32_t* pTarget = (uint32_t*)0x31800;
     uint32_t data = 0;
     // 将 Signature 搬运到目标地址
     for (int i = 0; i < 32; i += 4)
@@ -367,11 +366,11 @@ void Mailbox_IncrementCounter_Trigger(void)
             | (uint32_t)eRPMC_IncrementCounter.Signature[i + 2] << 16
             | (uint32_t)eRPMC_IncrementCounter.Signature[i + 1] << 8
             | (uint32_t)eRPMC_IncrementCounter.Signature[i];
-            // 将组合后的数据存储到目标地址
+        // 将组合后的数据存储到目标地址
         pTarget[i / 4] = data;
     }
     // Counter_Data
-    pTarget = (uint32_t *)0x31820;
+    pTarget = (uint32_t*)0x31820;
     for (int i = 0; i < 4; i += 4)
     {
         // 将 Root_Key 的四个字节组合成一个 uint32_t
@@ -379,7 +378,7 @@ void Mailbox_IncrementCounter_Trigger(void)
             | (uint32_t)eRPMC_IncrementCounter.Counter_Data[i + 2] << 16
             | (uint32_t)eRPMC_IncrementCounter.Counter_Data[i + 1] << 8
             | (uint32_t)eRPMC_IncrementCounter.Counter_Data[i];
-            // 将组合后的数据存储到目标地址
+        // 将组合后的数据存储到目标地址
         pTarget[i / 4] = data;
     }
 
@@ -400,11 +399,11 @@ void Mailbox_RequestCounter_Trigger(void)
     {
         printf("RPMC Device is in busy status\n");
         eRPMC_RequestCounter_data.Extended_Status = 0x04;
-        eSPI_OOBSend((BYTE *)&eRPMC_RequestCounter_data);
+        eSPI_OOB_Send((BYTE*)&eRPMC_RequestCounter_data);
         return;
     }
     // RequestCounter命令  往SRAM的0x31800后填入对应eRPMC数据
-    uint32_t *pTarget = (uint32_t *)0x31800;
+    uint32_t* pTarget = (uint32_t*)0x31800;
     uint32_t data = 0;
     // 将 Signature 搬运到目标地址
     for (int i = 0; i < 32; i += 4)
@@ -414,11 +413,11 @@ void Mailbox_RequestCounter_Trigger(void)
             | (uint32_t)eRPMC_RequestCounter.Signature[i + 2] << 16
             | (uint32_t)eRPMC_RequestCounter.Signature[i + 1] << 8
             | (uint32_t)eRPMC_RequestCounter.Signature[i];
-            // 将组合后的数据存储到目标地址
+        // 将组合后的数据存储到目标地址
         pTarget[i / 4] = data;
     }
     // Tag
-    pTarget = (uint32_t *)0x31820;
+    pTarget = (uint32_t*)0x31820;
     for (int i = 0; i < 12; i += 4)
     {
         // 将 Root_Key 的四个字节组合成一个 uint32_t
@@ -426,7 +425,7 @@ void Mailbox_RequestCounter_Trigger(void)
             | (uint32_t)eRPMC_RequestCounter.Tag_Arr[i + 2] << 16
             | (uint32_t)eRPMC_RequestCounter.Tag_Arr[i + 1] << 8
             | (uint32_t)eRPMC_RequestCounter.Tag_Arr[i];
-            // 将组合后的数据存储到目标地址
+        // 将组合后的数据存储到目标地址
         pTarget[i / 4] = data;
     }
 
@@ -446,7 +445,7 @@ void Mailbox_ReadParameter_Trigger(void)
     {
         printf("RPMC Device is in busy status\n");
         eRPMC_ReadParameters_data.Extended_Status = 0x04;
-        eSPI_OOBSend((BYTE *)&eRPMC_ReadParameters_data);
+        eSPI_OOB_Send((BYTE*)&eRPMC_ReadParameters_data);
         return;
     }
     // RequestCounter命令  往SRAM的0x31800后填入对应eRPMC数据
@@ -497,42 +496,42 @@ void Mailbox_eRPMC_Trigger(void)
 
 #if 0
     //WriteRootKey命令  往SRAM的0x31800后填入对应eRPMC数据
-    * ((VDWORD *)0x31800) = 0xaf73d623;
-    *((VDWORD *)0x31804) = 0x135e43d5;
-    *((VDWORD *)0x31808) = 0x40cbc22e;
-    *((VDWORD *)0x3180C) = 0xfe22f42c;
-    *((VDWORD *)0x31810) = 0x4abc377d;
-    *((VDWORD *)0x31814) = 0xb7d3cfbd;
-    *((VDWORD *)0x31818) = 0xb3674211;
+    * ((VDWORD*)0x31800) = 0xaf73d623;
+    *((VDWORD*)0x31804) = 0x135e43d5;
+    *((VDWORD*)0x31808) = 0x40cbc22e;
+    *((VDWORD*)0x3180C) = 0xfe22f42c;
+    *((VDWORD*)0x31810) = 0x4abc377d;
+    *((VDWORD*)0x31814) = 0xb7d3cfbd;
+    *((VDWORD*)0x31818) = 0xb3674211;
 
-    *((VDWORD *)0x3181C) = 0x1c1d1e1f;
-    *((VDWORD *)0x31820) = 0x18191a1b;
-    *((VDWORD *)0x31824) = 0x14151617;
-    *((VDWORD *)0x31828) = 0x10111213;
-    *((VDWORD *)0x3182C) = 0x0c0d0e0f;
-    *((VDWORD *)0x31830) = 0x08090a0b;
-    *((VDWORD *)0x31834) = 0x04050607;
-    *((VDWORD *)0x31838) = 0x00010203;
+    *((VDWORD*)0x3181C) = 0x1c1d1e1f;
+    *((VDWORD*)0x31820) = 0x18191a1b;
+    *((VDWORD*)0x31824) = 0x14151617;
+    *((VDWORD*)0x31828) = 0x10111213;
+    *((VDWORD*)0x3182C) = 0x0c0d0e0f;
+    *((VDWORD*)0x31830) = 0x08090a0b;
+    *((VDWORD*)0x31834) = 0x04050607;
+    *((VDWORD*)0x31838) = 0x00010203;
 #endif
 
 #if 0
     // UpdateHMACKey命令  往SRAM的0x31800后填入对应eRPMC数据
-    * ((VDWORD *)0x31800) = 0xaf73d623;
-    *((VDWORD *)0x31804) = 0x135e43d5;
-    *((VDWORD *)0x31808) = 0x40cbc22e;
-    *((VDWORD *)0x3180C) = 0xfe22f42c;
-    *((VDWORD *)0x31810) = 0x4abc377d;
-    *((VDWORD *)0x31814) = 0xb7d3cfbd;
-    *((VDWORD *)0x31818) = 0xb3674211;
+    * ((VDWORD*)0x31800) = 0xaf73d623;
+    *((VDWORD*)0x31804) = 0x135e43d5;
+    *((VDWORD*)0x31808) = 0x40cbc22e;
+    *((VDWORD*)0x3180C) = 0xfe22f42c;
+    *((VDWORD*)0x31810) = 0x4abc377d;
+    *((VDWORD*)0x31814) = 0xb7d3cfbd;
+    *((VDWORD*)0x31818) = 0xb3674211;
 
-    *((VDWORD *)0x3181C) = 0x1c1d1e1f;
-    *((VDWORD *)0x31820) = 0x18191a1b;
-    *((VDWORD *)0x31824) = 0x14151617;
-    *((VDWORD *)0x31828) = 0x10111213;
-    *((VDWORD *)0x3182C) = 0x0c0d0e0f;
-    *((VDWORD *)0x31830) = 0x08090a0b;
-    *((VDWORD *)0x31834) = 0x04050607;
-    *((VDWORD *)0x31838) = 0x00010203;
+    *((VDWORD*)0x3181C) = 0x1c1d1e1f;
+    *((VDWORD*)0x31820) = 0x18191a1b;
+    *((VDWORD*)0x31824) = 0x14151617;
+    *((VDWORD*)0x31828) = 0x10111213;
+    *((VDWORD*)0x3182C) = 0x0c0d0e0f;
+    *((VDWORD*)0x31830) = 0x08090a0b;
+    *((VDWORD*)0x31834) = 0x04050607;
+    *((VDWORD*)0x31838) = 0x00010203;
 #endif
 
     MAILBOX_SELF_CMD = MAILBOX_CMD_WRITE_ROOTKEY;       // 命令字
@@ -649,16 +648,20 @@ void Mailbox_eRPMC(void)
 }
 
 void Mailbox_SecretKey(void)
-{}
+{
+}
 
 void Mailbox_Crypto(void)
-{}
+{
+}
 
 void Mailbox_SecureStorage(void)
-{}
+{
+}
 
 void Mailbox_E2C_Service(void)
-{}
+{
+}
 
 void Mailbox_C2E_Service(void)
 {
@@ -667,30 +670,30 @@ void Mailbox_C2E_Service(void)
 
     switch (Mailbox_Int_Store)
     {
-        case 0x01:
-            Mailbox_Control();
-            break;
-        case 0x02:
-            Mailbox_Firmware();
-            break;
-        case 0x04:
-            Mailbox_Efuse();
-            break;
-        case 0x08:
-            Mailbox_eRPMC();
-            break;
-        case 0x10:
-            Mailbox_SecretKey();
-            break;
-        case 0x20:
-            Mailbox_Crypto();
-            break;
-        case 0x40:
-            Mailbox_SecureStorage();
-            break;
-        default:
-            dprint("Mailbox_Int_Store:%x\n", Mailbox_Int_Store);
-            break;
+    case 0x01:
+        Mailbox_Control();
+        break;
+    case 0x02:
+        Mailbox_Firmware();
+        break;
+    case 0x04:
+        Mailbox_Efuse();
+        break;
+    case 0x08:
+        Mailbox_eRPMC();
+        break;
+    case 0x10:
+        Mailbox_SecretKey();
+        break;
+    case 0x20:
+        Mailbox_Crypto();
+        break;
+    case 0x40:
+        Mailbox_SecureStorage();
+        break;
+    default:
+        dprint("Mailbox_Int_Store:%x\n", Mailbox_Int_Store);
+        break;
     }
     command_processed = true;
     mailbox_timeout_s = timer_1s_count; //超时计数同步

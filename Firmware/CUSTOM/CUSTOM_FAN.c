@@ -15,7 +15,7 @@
  */
 #include "CUSTOM_FAN.H"
 #include "CUSTOM_TEMPERATURE.H"
-/*FAN TEMP,Level and */
+ /*FAN TEMP,Level and */
 VBYTE	 last_dcr = 0, Level = 1;
 /*
 FAN FREQ 25kHz demo:
@@ -118,11 +118,7 @@ static BYTE ReadLastDCR(BYTE channel)
 	offset = PWM_DCR0_1_OFFSET + ((channel & 0x06));
 	shift = ((channel & 0x1) << 3);
 	last_dcr = (PWM_REG(offset) & (0xFF << shift)) >> shift;
-	if((PWM_MODE & (0x100 << channel)))//低有效则占空比取反
-	{
-		last_dcr = last_dcr;
-	}
-	else
+	if (!(PWM_MODE & (0x100 << channel)))//低有效则占空比取反
 	{
 		last_dcr = FAN0_MAX_DCR - last_dcr;
 	}
@@ -134,21 +130,17 @@ static BYTE FAN_Update_PWM_DCR(BYTE channel, BYTE dcr, BYTE step)
 	/* 引脚复用 */
 	sysctl_iomux_config(GPIOA, channel, 1);
 	/* 极性检查 */
-	if((PWM_MODE & (0x100 << channel)))//低有效则占空比取反
-	{
-		dcr = dcr;
-	}
-	else
+	if (!(PWM_MODE & (0x100 << channel)))//低有效则占空比取反
 	{
 		dcr = FAN0_MAX_DCR - dcr;
 	}
 	register BYTE offset = 0;
 	register BYTE shift = 0;
-		/*更新step值*/
+	/*更新step值*/
 	offset = PWM_STEP3_0_OFFSET + ((channel & 0x4) >> 1);
 	shift = ((channel & 0x3) << 2);
 	PWM_REG(offset) &= ~(0x000f << shift);
-	if(step)
+	if (step)
 	{
 		PWM_MODE |= (0x1 << channel);
 		PWM_REG(offset) |= (step << shift);
@@ -232,68 +224,68 @@ BYTE FAN_LEV(BYTE channel)//等级算法
 {
 	channel &= 0x7;
 	static signed char last_temp = 127;
-/*1.获取温度*/
+	/*1.获取温度*/
 	s8 temp = ReadTemp();
 	last_dcr = ReadLastDCR(channel);
-	if(temp == last_temp)//恒温
+	if (temp == last_temp)//恒温
 	{
 		return last_dcr;
 	}
-/*2:获取等级*/
+	/*2:获取等级*/
 RE_LEVEL_ADD:
-	if(Level < (sizeof(ThermalTalbe1) / sizeof(thermal) - 1))/*如果风扇不是最大的转速，可以进入这个判断处理流程当中*/
+	if (Level < (sizeof(ThermalTalbe1) / sizeof(thermal) - 1))/*如果风扇不是最大的转速，可以进入这个判断处理流程当中*/
 	{
-		if(temp > ThermalTalbe1[Level].CFanOn)
+		if (temp > ThermalTalbe1[Level].CFanOn)
 		{
 			Level += 1;
 			goto RE_LEVEL_ADD;//直到对应等级
 		}
 	}
 RE_LEVEL_SUB:
-	if(Level > 0)/*如果风扇不是最低档转速的存在，就可以进入这个流程，处理降低风扇转???*/
+	if (Level > 0)/*如果风扇不是最低档转速的存在，就可以进入这个流程，处理降低风扇转???*/
 	{
-		if(temp < ThermalTalbe1[Level].CFanOff)
+		if (temp < ThermalTalbe1[Level].CFanOff)
 		{
 			Level -= 1;
 			goto RE_LEVEL_SUB;//直到对应等级
 		}
 	}
-/*3:根据新的等级和参数算出占空比*/
+	/*3:根据新的等级和参数算出占空比*/
 	u8 dcr = ThermalTalbe1[Level].CDCR;//计算新的dcr
 	u8 step = ThermalTalbe1[Level].CSTEP & 0xf;
-	if(dcr != 0)
-		if(dcr < FAN0_MAX_DCR)
+	if (dcr != 0)
+		if (dcr < FAN0_MAX_DCR)
 		{
-			if(temp > last_temp)//升温
+			if (temp > last_temp)//升温
 			{
 				//调节后转速 = 初始转速 +（当前温度 – 开始温度）* 转速调节系数
 				signed char tmp = (temp - ThermalTalbe1[Level].CFanOff) * step;
-				if(FAN0_MAX_DCR - dcr >= tmp)
+				if (FAN0_MAX_DCR - dcr >= tmp)
 					dcr = dcr + tmp;
 				else dcr = FAN0_MAX_DCR;
-				if(dcr < last_dcr)
+				if (dcr < last_dcr)
 				{
-					if(last_dcr <= FAN0_MAX_DCR - step)
+					if (last_dcr <= FAN0_MAX_DCR - step)
 						dcr = last_dcr + step;
 					else dcr = FAN0_MAX_DCR;
 				}//升温的情况要比原先更大转速
 			}
-			else if(temp < last_temp)//降温
+			else if (temp < last_temp)//降温
 			{
 				//调节后转速 = 初始转速 +[ (当前温度+当前区间差值)/2] – 开始温度）* 转速调节系数
 				char tmp = (ThermalTalbe1[Level].CFanOn - ThermalTalbe1[Level].CFanOff) >> 1;
 				tmp = (temp + tmp - ThermalTalbe1[Level].CFanOff) * step;
-				if(FAN0_MAX_DCR - dcr >= tmp)
+				if (FAN0_MAX_DCR - dcr >= tmp)
 					dcr = dcr + tmp;
 				else dcr = FAN0_MAX_DCR;
-				if(dcr > last_dcr)dcr = last_dcr;//降温情况如果转速更大则保持不变
+				if (dcr > last_dcr)dcr = last_dcr;//降温情况如果转速更大则保持不变
 			}
 		}
-	if(dcr > FAN0_MAX_DCR)dcr = FAN0_MAX_DCR;
-/*4:更新配置*/
-	if(dcr == 0)
+	if (dcr > FAN0_MAX_DCR)dcr = FAN0_MAX_DCR;
+	/*4:更新配置*/
+	if (dcr == 0)
 		GPIO_Config(GPIOA, channel, 1, 0, 0, 0);
-	else if(dcr == FAN0_MAX_DCR)
+	else if (dcr == FAN0_MAX_DCR)
 		GPIO_Config(GPIOA, channel, 1, 1, 0, 0);
 	else
 		FAN_Update_PWM_DCR(channel, dcr, step);
@@ -319,51 +311,51 @@ BYTE FAN_Dynamic(BYTE channel)//动态算法,需自行调整参数
 	/*1.获取温度*/
 	s8 temp = ReadTemp();
 	last_dcr = ReadLastDCR(channel);
-/*2:根据温度调节转速*/
+	/*2:根据温度调节转速*/
 	u8 dcr = last_dcr;//计算新的dcr
 	u8 step;
-	if(temp >= TEMP_MAX)//在这个值之上永远满速运行
+	if (temp >= TEMP_MAX)//在这个值之上永远满速运行
 	{
 		step = 0;
 		dcr = FAN0_MAX_DCR;
 	}
-	else if(temp > TEMP_SETPOINT)
+	else if (temp > TEMP_SETPOINT)
 	{
 		step = (temp >> 4);
-		if(temp >= last_temp)//升温
+		if (temp >= last_temp)//升温
 		{
 			//调节后转速 = (当前转速 +（当前温度 – 上次温度+1）* 转速调节系数)
 			char tmp = (temp - last_temp + 1) * step + (step >> 4);
-			if(FAN0_MAX_DCR - dcr >= tmp)
+			if (FAN0_MAX_DCR - dcr >= tmp)
 				dcr = dcr + tmp;
 			else dcr = FAN0_MAX_DCR;
 		}
-		else if(temp < last_temp)//降温则可以缓慢减少风扇转速直到
+		else if (temp < last_temp)//降温则可以缓慢减少风扇转速直到
 		{
 			step >>= 1;
 			//调节后转速 = 当前转速 -(温差值* 转速调节系数+1)
 			char tmp = (last_temp - temp) * step + 1;
-			if(dcr >= tmp)
+			if (dcr >= tmp)
 				dcr = dcr - tmp;
-			else if(dcr)
+			else if (dcr)
 				dcr--;
 		}
-		if(dcr > FAN0_MAX_DCR)dcr = FAN0_MAX_DCR;
+		if (dcr > FAN0_MAX_DCR)dcr = FAN0_MAX_DCR;
 	}
-	else if(temp == TEMP_SETPOINT)
+	else if (temp == TEMP_SETPOINT)
 	{
 		step = 0;//等于这个值就不加减
 	}
 	else//低于这个参考值则逐渐降低转速
 	{
 		step = 1;
-		if(dcr)//逐渐减少到0
+		if (dcr)//逐渐减少到0
 			dcr--;
 	}
-/*3:更新配置*/
-	if(dcr == 0)
+	/*3:更新配置*/
+	if (dcr == 0)
 		GPIO_Config(GPIOA, channel, 1, 0, 0, 0);
-	else if(dcr == FAN0_MAX_DCR)
+	else if (dcr == FAN0_MAX_DCR)
 		GPIO_Config(GPIOA, channel, 1, 1, 0, 0);
 	else
 		FAN_Update_PWM_DCR(channel, dcr, step);
@@ -391,10 +383,10 @@ BYTE FAN_PID(BYTE channel)//PID算法预留，需自行调整参数
 	/*1.获取温度*/
 	s8 temp = ReadTemp();
 	last_dcr = ReadLastDCR(channel);
-/*2:根据温度调节转速*/
+	/*2:根据温度调节转速*/
 	u8 dcr = last_dcr;//计算新的dcr
 	u8 step;
-	if(temp >= TEMP_MAX)//在保护值之上永远满速运行
+	if (temp >= TEMP_MAX)//在保护值之上永远满速运行
 	{
 		step = 0;
 		dcr = FAN0_MAX_DCR;
@@ -408,24 +400,24 @@ BYTE FAN_PID(BYTE channel)//PID算法预留，需自行调整参数
 		s8 dout = ((tmp - last_tmp) * _Kd);
 		s16 pidValue = pout + intergral + dout;
 		last_tmp = tmp;
-		if(last_tmp < 0)
+		if (last_tmp < 0)
 		{
 			dcr = dcr + pidValue;
 		}
 		else
 		{
-			if(pidValue > (FAN0_MAX_DCR))
+			if (pidValue > (FAN0_MAX_DCR))
 				dcr = FAN0_MAX_DCR;
 			else
 				dcr = dcr + pidValue;
 		}
-		if(dcr > FAN0_MAX_DCR)
+		if (dcr > FAN0_MAX_DCR)
 			dcr = FAN0_MAX_DCR;
 	}
-/*3:更新配置*/
-	if(dcr == 0)
+	/*3:更新配置*/
+	if (dcr == 0)
 		GPIO_Config(GPIOA, channel, 1, 0, 0, 0);
-	else if(dcr == FAN0_MAX_DCR)
+	else if (dcr == FAN0_MAX_DCR)
 		GPIO_Config(GPIOA, channel, 1, 1, 0, 0);
 	else
 		FAN_Update_PWM_DCR(channel, dcr, step);
