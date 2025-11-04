@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2023-11-07 12:14:22
+ * @LastEditTime: 2025-11-04 18:55:47
  * @Description:
  *
  *
@@ -31,36 +31,36 @@ void *_sbrk(size_t nbyte) // 申请空间
 {
 	size_t bit, cnt;
 	heap_prt = NULL;
-	if(mem_start == NULL) // 初始化
+	if (mem_start == NULL) // 初始化
 	{
 		*heap_size = ((&_heap_end) - (_heap_start)); // 获得堆栈大小
 		*heap_info_size = *heap_size / 32;			  // 获得信息存储空间大小
 		heap_info = (BYTEP)heap_info_size + sizeof(size_t);
-		for(DWORD i = 0; i < *heap_info_size; i++)
+		for (DWORD i = 0; i < *heap_info_size; i++)
 			*(heap_info + i) = 0;									// 赋予内容
 		mem_start = heap_info + *heap_info_size;					// 每1字节代表32个字节即为每1位代表4个字节
 		mem_start = (BYTEP)(((DWORD)mem_start + 3) & (0xfffffffc)); // 4字节对齐
 	}
-	for(bit = 0, cnt = 0; bit < *heap_size / 4; bit++) // 查找合适位置
+	for (bit = 0, cnt = 0; bit < *heap_size / 4; bit++) // 查找合适位置
 	{
-		if((*(heap_info + bit / 8)) & (1 << (bit % 8)))
+		if ((*(heap_info + bit / 8)) & (1 << (bit % 8)))
 			cnt = 0;
 		else
 			cnt++;
-		if(cnt * 4 >= nbyte)
+		if (cnt * 4 >= nbyte)
 		{
 			bit -= (cnt - 1);
 			heap_prt = mem_start + bit * 4;
 			break;
 		}
 	}
-	if(heap_prt == NULL || (heap_prt + nbyte) >= &_heap_end) // 因为实际信息比计算信息空间更小(字节对齐，info也算在内等因素)
+	if (heap_prt == NULL || (heap_prt + nbyte) >= &_heap_end) // 因为实际信息比计算信息空间更小(字节对齐，info也算在内等因素)
 	{
 		return NULL;
 	}
 	else
 	{
-		while(bit < bit + cnt)
+		while (bit < bit + cnt)
 		{
 			(*(heap_info + bit / 8)) |= (1 << (bit % 8));
 			bit++;
@@ -75,15 +75,15 @@ void *malloc_r(size_t nbyte) // 数据处理
 {
 	size_t byte = (size_t)(((DWORD)nbyte + 3) & (0xfffffffc)); // 4字节对齐
 	byte += sizeof(size_t);									   // 加入4字节存储申请空间大小
-	if(byte == 0 || byte < nbyte)
+	if (byte == 0 || byte < nbyte)
 		return NULL;
-	if(byte < 8)
+	if (byte < 8)
 		nbyte = 8; // 至少申请8个字节
 	return _sbrk(byte);
 }
 void *malloc(size_t nbytes) /* get a block */
 {
-	if(nbytes == 0)
+	if (nbytes == 0)
 		return NULL; // 防0
 	return malloc_r(nbytes);
 }
@@ -93,7 +93,7 @@ void free(void *aptr)
 	size_t block = nbyte / 4;								  // 获取大小
 	size_t cnt = 0;
 	DWORD bit = ((DWORD)aptr - sizeof(size_t) - (DWORD)mem_start) / 4;
-	while(cnt < block) // 释放
+	while (cnt < block) // 释放
 	{
 		*(heap_info + bit / 8) &= (~(1 << (bit % 8)));
 		cnt++;
@@ -105,7 +105,7 @@ void *realloc(void *aptr, size_t nbytes) // 重新申请
 	DWORD i = 0;
 	void *new_mem = malloc(nbytes);												   // 申请新空间
 	size_t nbyte = ((*(size_t *)((BYTEP)aptr - sizeof(size_t))) - sizeof(size_t)); // 获取大小
-	while(i < nbyte)															   // 转移
+	while (i < nbyte)															   // 转移
 	{
 		*((BYTEP)new_mem + i) = *((BYTEP)aptr + i);
 		i++;
@@ -117,7 +117,7 @@ void *calloc(size_t num, size_t size) // 初始化malloc
 {
 	void *new_mem = malloc(num * size);
 	size_t cnt;
-	for(cnt = 0; cnt < num * size; cnt++)
+	for (cnt = 0; cnt < num * size; cnt++)
 	{
 		*((BYTEP)new_mem + cnt) = 0;
 	}
@@ -125,19 +125,23 @@ void *calloc(size_t num, size_t size) // 初始化malloc
 }
 int memcmp(const void *mem1, const void *mem2, size_t cnt)
 {
-	DWORD i = cnt-1;
-	while(*((char *)mem1 + i) == *((char *)mem2 + i))
+	const int8_t *s1 = (const int8_t *)mem1;
+	const int8_t *s2 = (const int8_t *)mem2;
+	for (size_t i = 0; i < cnt; i++)
 	{
-		if(i == 0)
-			break;
-		i--;
+		if (*s1 != *s2)
+		{
+			return (int)(*s1 - *s2);
+		}
+		s1++;
+		s2++;
 	}
-	return i;
+	return 0;
 }
 void *memset(void *str, int c, size_t n)
 {
 	c &= 0xff;
-	for(size_t i = 0; i < n; i++)
+	for (size_t i = 0; i < n; i++)
 		*((BYTEP)str + i) = c;
 	return str;
 }
@@ -146,9 +150,9 @@ void *memcpy(void *str1, const void *str2, size_t num)
 	void *ret = str1;
 	BYTEP dest = (BYTEP)str1;
 	BYTEP src = (BYTEP)str2;
-	if(dest == NULL || src == NULL)
+	if (dest == NULL || src == NULL)
 		return ((void *)-1);
-	while(num--)
+	while (num--)
 	{
 		*dest = *src;
 		dest++;
@@ -161,9 +165,9 @@ void *memchr(const void *str, int c, size_t n)
 {
 	char *mem = (char *)str;
 	size_t i = 0;
-	while(*(int *)(mem + i) != c)
+	while (*(int *)(mem + i) != c)
 	{
-		if(i == n)
+		if (i == n)
 			return NULL;
 		i++;
 	}
@@ -175,11 +179,11 @@ void *memmove(void *dst, const void *src, size_t len)
 	const char *s = src;
 	/* The overlap case is allegedly rare - with this implementation
 	   it will have a high penalty on the GR6.  */
-	if(s < d && d < s + len)
+	if (s < d && d < s + len)
 	{
 		s += len;
 		d += len;
-		while(len--)
+		while (len--)
 			*--d = *--s;
 		return dst;
 	}
@@ -193,14 +197,14 @@ _sbrk(int incr)
 {
 	static BYTE *heap_end = NULL; /* Previous end of heap or 0 if none */
 	BYTE *prev_heap_end;
-	if(NULL == heap_end)
+	if (NULL == heap_end)
 	{
 		heap_end = _heap_start; /* Initialize first time round */
 	}
 	prev_heap_end = heap_end;
 	heap_end += incr;
 	// check
-	if((BYTEP)(heap_end + incr) < (BYTEP)(&_heap_end))
+	if ((BYTEP)(heap_end + incr) < (BYTEP)(&_heap_end))
 	{
 	}
 	else
@@ -235,13 +239,13 @@ int mem_malloc(unsigned int msize)
 {
 	unsigned int all_size = msize + sizeof(mem_block);
 	mem_block tmp_blk;
-	if(msize == 0)
+	if (msize == 0)
 		return 0;
-	if(sum)
+	if (sum)
 	{
 		mem_block *ptr_blk = (mem_block *)(MEM_START + BLK_SIZE * (sum - 1));
 		int free_blk = (BYTEP)ptr_blk->mem_ptr - (MEM_START + BLK_SIZE * sum);
-		if(all_size <= free_blk)
+		if (all_size <= free_blk)
 		{
 			tmp_blk.mem_ptr = ptr_blk->mem_ptr - msize;
 			tmp_blk.mem_size = msize;
@@ -253,7 +257,7 @@ int mem_malloc(unsigned int msize)
 	}
 	else
 	{
-		if(all_size <= MEM_SIZE)
+		if (all_size <= MEM_SIZE)
 		{
 			tmp_blk.mem_ptr = MEM_END - msize;
 			tmp_blk.mem_size = msize;
@@ -267,10 +271,10 @@ int mem_malloc(unsigned int msize)
 }
 int mem_realloc(int id, unsigned int msize)
 {
-	for(int i = 0; i < sum; i++)
+	for (int i = 0; i < sum; i++)
 	{
 		mem_block *ptr_blk = (mem_block *)(MEM_START + BLK_SIZE * i);
-		if(id == ptr_blk->mem_index)
+		if (id == ptr_blk->mem_index)
 		{
 			int free_blk = (BYTEP)ptr_blk->mem_ptr - (MEM_START + BLK_SIZE * sum);
 			int old_size = ptr_blk->mem_size;
@@ -278,35 +282,35 @@ int mem_realloc(int id, unsigned int msize)
 			int move_size = 0;
 			int n = sum - i;
 			mem_block *ptr_tmp;
-			if(offset == 0)
+			if (offset == 0)
 			{
 				return 0;
 			}
-			else if(offset < 0)
+			else if (offset < 0)
 			{
 				offset = old_size - msize;
-				for(int j = 1; j < n; j++)
+				for (int j = 1; j < n; j++)
 				{
 					ptr_tmp = (mem_block *)(MEM_START + BLK_SIZE * (i + j));
 					move_size += ptr_tmp->mem_size;
 				}
-				if(n == 1)
+				if (n == 1)
 				{
 					ptr_tmp = (mem_block *)(MEM_START + BLK_SIZE * i);
 				}
 				move_size += msize;
 				char *dst_addr = ptr_tmp->mem_ptr + move_size + offset - 1;
 				char *src_addr = ptr_tmp->mem_ptr + move_size - 1;
-				for(int j = move_size; j > 0; j--)
+				for (int j = move_size; j > 0; j--)
 				{
 					*dst_addr-- = *src_addr--;
 				}
 				memset(src_addr, 0, offset + 1);
-				for(int j = 0; j < n; j++)
+				for (int j = 0; j < n; j++)
 				{
 					ptr_tmp = (mem_block *)(MEM_START + BLK_SIZE * (i + j));
 					ptr_tmp->mem_ptr += offset;
-					if(j == 0)
+					if (j == 0)
 					{
 						ptr_tmp->mem_size = msize;
 					}
@@ -315,29 +319,29 @@ int mem_realloc(int id, unsigned int msize)
 			}
 			else
 			{
-				if(offset <= free_blk)
+				if (offset <= free_blk)
 				{
-					for(int j = 1; j < n; j++)
+					for (int j = 1; j < n; j++)
 					{
 						ptr_tmp = (mem_block *)(MEM_START + BLK_SIZE * (i + j));
 						move_size += ptr_tmp->mem_size;
 					}
-					if(n == 1)
+					if (n == 1)
 					{
 						ptr_tmp = (mem_block *)(MEM_START + BLK_SIZE * i);
 					}
 					move_size += old_size;
 					char *dst_addr = ptr_tmp->mem_ptr - offset;
 					char *src_addr = ptr_tmp->mem_ptr;
-					for(int j = 0; j < move_size; j++)
+					for (int j = 0; j < move_size; j++)
 					{
 						*dst_addr++ = *src_addr++;
 					}
-					for(int j = 0; j < n; j++)
+					for (int j = 0; j < n; j++)
 					{
 						ptr_tmp = (mem_block *)(MEM_START + BLK_SIZE * (i + j));
 						ptr_tmp->mem_ptr -= offset;
-						if(j == 0)
+						if (j == 0)
 						{
 							ptr_tmp->mem_size = msize;
 						}
@@ -351,10 +355,10 @@ int mem_realloc(int id, unsigned int msize)
 }
 void *mem_buffer(int id)
 {
-	for(int i = 0; i < sum; i++)
+	for (int i = 0; i < sum; i++)
 	{
 		mem_block *ptr_blk = (mem_block *)(MEM_START + BLK_SIZE * i);
-		if(id == ptr_blk->mem_index)
+		if (id == ptr_blk->mem_index)
 		{
 			return ptr_blk->mem_ptr;
 		}
@@ -363,19 +367,19 @@ void *mem_buffer(int id)
 }
 int mem_free(int id)
 {
-	for(int i = 0; i < sum; i++)
+	for (int i = 0; i < sum; i++)
 	{
 		mem_block *ptr_blk = (mem_block *)(MEM_START + BLK_SIZE * i);
-		if(id == ptr_blk->mem_index)
+		if (id == ptr_blk->mem_index)
 		{
 			mem_block *ptr_old;
-			if(i != (sum - 1))
+			if (i != (sum - 1))
 			{
 				int offset = ptr_blk->mem_size;
 				int move_size = 0;
 				int n = sum - i;
 				mem_block *ptr_tmp;
-				for(int j = 1; j < n; j++)
+				for (int j = 1; j < n; j++)
 				{
 					ptr_tmp = (mem_block *)(MEM_START + BLK_SIZE * (i + j));
 					move_size += ptr_tmp->mem_size;
@@ -383,12 +387,12 @@ int mem_free(int id)
 				// memmove();
 				char *dst_addr = ptr_tmp->mem_ptr + move_size + offset - 1;
 				char *src_addr = ptr_tmp->mem_ptr + move_size - 1;
-				for(int j = move_size; j > 0; j--)
+				for (int j = move_size; j > 0; j--)
 				{
 					*dst_addr-- = *src_addr--;
 				}
 				memset(src_addr, 0, offset + 1);
-				for(int j = 0; j < (n - 1); j++)
+				for (int j = 0; j < (n - 1); j++)
 				{
 					ptr_tmp = (mem_block *)(MEM_START + BLK_SIZE * (i + j));
 					ptr_old = (mem_block *)(MEM_START + BLK_SIZE * (i + j + 1));
