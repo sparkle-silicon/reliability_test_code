@@ -168,7 +168,7 @@ void SECTION(".init.irq") Irqc_init(void)
 #endif
 }
 #if IRQC_DEBUG
-char __weak *irq_string = "ISR: %s,IRQ: %d.\n";
+char __weak* irq_string = "ISR: %s,IRQ: %d.\n";
 #endif
 void __interrupt SECTION(".interrupt.CPUS_HANDLER") CPUS_HANDLER(void)
 {
@@ -414,14 +414,6 @@ void __interrupt SECTION(".interrupt.WU42_HANDLER") WU42_HANDLER(void)
 	Intr_num[17]++;
 #endif
 	irqprint(irq_string, __FUNCTION__, 17);
-	/* irqprint("WU42_HANDLER\n");
-	irqprint("mepc is %#x\n",read_csr(mepc));//指针
-	irqprint("mcause is %#x\n",read_csr(mcause));//控制位
-	irqprint("irqcip is %#x\n",read_csr(0xBD0));//中断源等待
-	irqprint("irqcie is %#x\n",read_csr(0xBD1));//中断源使能
-	irqprint("irqclvl is %#x\n",read_csr(0xBD2));//中断源电平触发
-	irqprint("irqcedge is %#x\n",read_csr(0xBD3));//中断源边沿触发
-	irqprint("irqcinfo is %d\n",0x3f&read_csr(0xBD4));//中断源个数 */
 };
 
 void __interrupt SECTION(".interrupt.RTC_HANDLER") RTC_HANDLER(void)
@@ -436,7 +428,6 @@ void __interrupt SECTION(".interrupt.RTC_HANDLER") RTC_HANDLER(void)
 	irqprint(irq_string, __FUNCTION__, 18);
 	Set_RTC_MatchVal(Get_RTC_CountVal() + 1);
 	RTC_EOI0;//clear interrupt
-	printf("RTC\n");
 };
 
 void __interrupt SECTION(".interrupt.WDT_HANDLER") WDT_HANDLER(void)
@@ -463,9 +454,6 @@ void __interrupt SECTION(".interrupt.ADC_HANDLER") ADC_HANDLER(void)
 	irqprint(irq_string, __FUNCTION__, 20);
 	BYTE ADC_ValidStatus_1 = ADC_INTSTAT & 0xff;
 	BYTE ADC_ValidStatus_2 = (ADC_INTSTAT >> 8) & 0xff;
-	// dprint("ADC_INTSTAT_int:%x\n",ADC_INTSTAT);
-	// dprint("ADC_ValidStatus_1 is 0x%x\n",ADC_ValidStatus_1);
-	// dprint("ADC_ValidStatus_2 is 0x%x\n",ADC_ValidStatus_2);
 	for (short i = 0; i < 8; i++)
 	{
 		if (ADC_ValidStatus_1 & (1 << i))
@@ -473,14 +461,14 @@ void __interrupt SECTION(".interrupt.ADC_HANDLER") ADC_HANDLER(void)
 			// printf("i:======%x\n",i);
 			(&ADC_Data0)[i] = ADC_ReadData(i);
 			ADC_INTSTAT |= 1 << i;		//清除中断
-			dprint("ADC%d:0x%x\n", i, (&ADC_Data0)[i]);
+			irqprint("ADC%d:0x%x\n", i, (&ADC_Data0)[i]);
 		}
 		if (ADC_ValidStatus_2 & (1 << i))
 		{
 			if (i < 3 && i >= 0)
 			{
 				ADC_INTSTAT |= 1 << (i + 8);		//清除中断
-				printf("compare%d: compare failed\n", i);
+				irqprint("compare%d: compare failed\n", i);
 			}
 		}
 	}
@@ -492,7 +480,7 @@ void __interrupt SECTION(".interrupt.ADC_HANDLER") ADC_HANDLER(void)
 		if (counter_1 < 10)
 		{
 			counter_1++;
-			printf("counter_1:%x\n", counter_1);
+			irqprint("counter_1:%x\n", counter_1);
 		}
 		else
 		{
@@ -527,9 +515,9 @@ void __interrupt SECTION(".interrupt.UART0_HANDLER") UART0_HANDLER(void)
 	if (F_Service_CMD == 1)
 	{
 		char temp = UART0_RX;
-	#if (!IRQC_DEBUG)
+#if (!IRQC_DEBUG)
 		UNUSED_VAR(temp);
-	#endif
+#endif
 		irqprint("erro of CMD_RUN:%#x,%c\n", temp, temp);
 		return;
 	}
@@ -586,9 +574,9 @@ void __interrupt SECTION(".interrupt.UARTA_HANDLER") UARTA_HANDLER(void)
 	if (F_Service_CMD == 1)
 	{
 		char temp = UARTA_RX;
-	#if (!IRQC_DEBUG)
+#if (!IRQC_DEBUG)
 		UNUSED_VAR(temp);
-	#endif
+#endif
 		irqprint("erro of CMD_RUN:%#x,%c\n", temp, temp);
 		return;
 	}
@@ -619,6 +607,7 @@ void __interrupt SECTION(".interrupt.UARTA_HANDLER") UARTA_HANDLER(void)
 #endif
 #endif
 #endif
+#if 0	//此处代码需要后续功能继续完善，先暂时屏蔽
 	// uart_crtpram_updatebuffer[uart_crypram_updateindex] = UARTA_RX;
 	// printf("%d rx:%x\n", uart_crypram_updateindex, uart_crtpram_updatebuffer[uart_crypram_updateindex]);
 	// uart_crypram_updateindex++;
@@ -648,6 +637,7 @@ void __interrupt SECTION(".interrupt.UARTA_HANDLER") UARTA_HANDLER(void)
 	// 	update_crypram_flag = 0;
 	// 	update_intflash_flag = 0;
 	// }
+#endif
 
 }
 void __interrupt SECTION(".interrupt.UARTB_HANDLER") UARTB_HANDLER(void)
@@ -675,9 +665,9 @@ void __interrupt SECTION(".interrupt.UARTB_HANDLER") UARTB_HANDLER(void)
 	if (F_Service_CMD == 1)
 	{
 		char temp = UARTB_RX;
-	#if (!IRQC_DEBUG)
+#if (!IRQC_DEBUG)
 		UNUSED_VAR(temp);
-	#endif
+#endif
 		irqprint("erro of CMD_RUN:%#x,%c\n", temp, temp);
 		return;
 	}
@@ -751,7 +741,7 @@ void __interrupt SECTION(".interrupt.TIMER0_HANDLER") TIMER0_HANDLER(void)
 
 	if ((TIMER0_TIS & 0x1) == 0x1)
 		TIMER0_TEOI; // clear int
-};
+	};
 void __interrupt SECTION(".interrupt.TIMER1_HANDLER") TIMER1_HANDLER(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
@@ -782,7 +772,7 @@ void __interrupt SECTION(".interrupt.TIMER1_HANDLER") TIMER1_HANDLER(void)
 	{
 		TIMER1_TEOI; // clear int
 	}
-};
+	};
 void __interrupt SECTION(".interrupt.TIMER2_HANDLER") TIMER2_HANDLER(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
@@ -845,7 +835,7 @@ void __interrupt SECTION(".interrupt.TIMER3_HANDLER") TIMER3_HANDLER(void)
 	{
 		TIMER3_TEOI;
 	}
-};
+	};
 /*Intr0*/
 void __interrupt SECTION(".interrupt.INTC0_HANDLER") INTC0_HANDLER(void)
 {
@@ -906,7 +896,7 @@ void __interrupt SECTION(".interrupt.INTC1_HANDLER") INTC1_HANDLER(void)
 #else
 	if (FALSE)
 	{
-	}
+}
 #endif
 #if ((COMMAND_UART_SWITCH == 1))
 	else if (intr1_service[(num)] == &intr1_uart1)
@@ -915,19 +905,19 @@ void __interrupt SECTION(".interrupt.INTC1_HANDLER") INTC1_HANDLER(void)
 #else
 	else if (FALSE)
 	{
-	}
+}
 #endif
 #if ((PRINTF_UART_SWITCH == 1))
 	else if (intr1_service[(num)] != &intr1_uart1)
-	#else
+#else
 	else if (TRUE)
-	#endif
+#endif
 	{
 		irqprint("ISR: %s,IRQ: %d. 2nd-level IRQ[%d]\n", __FUNCTION__, 31, num);
 	}
 	(intr1_service[(num)])(); // Dispatch to service handler.
 }
-const char *Exception_Code[] = { NULL,
+const char* Exception_Code[] = { NULL,
 								"Instruction access error",
 								"Illegal instruction",
 								"Break point",
@@ -941,7 +931,7 @@ DWORD SECTION(".interrupt.kernel_trap") kernel_trap(uintptr_t mcause, uintptr_t 
 {
 	UNUSED_VAR(sp);
 	VBYTE trap_flag = 0x1f & mcause;
-	void *pc = (void *)read_csr(mepc);
+	void* pc = (void*)read_csr(mepc);
 	DWORD val;
 	if ((int)pc % 2)
 	{

@@ -247,7 +247,7 @@ void Mailbox_WriteRootKey_Trigger(void)
 {
     if (eRPMC_Busy_Status == 1)
     {
-        printf("RPMC Device is in busy status\n");
+        dprint("RPMC Device is in busy status\n");
         eRPMC_WriteRootKey_data.Extended_Status = 0x04;
         eSPI_OOB_Send((BYTE*)&eRPMC_WriteRootKey_data);
         return;
@@ -303,7 +303,7 @@ void Mailbox_UpdateHMACKey_Trigger(void)
 {
     if (eRPMC_Busy_Status == 1)
     {
-        printf("RPMC Device is in busy status\n");
+        dprint("RPMC Device is in busy status\n");
         eRPMC_UpdateHMACKey_data.Extended_Status = 0x04;
         eSPI_OOB_Send((BYTE*)&eRPMC_UpdateHMACKey_data);
         return;
@@ -341,7 +341,7 @@ void Mailbox_UpdateHMACKey_Trigger(void)
         | (eRPMC_UpdateHMACKey.Cmd_Type << 8)
         | (eRPMC_UpdateHMACKey.Counter_Addr << 16)
         | (eRPMC_UpdateHMACKey.Rsvd << 24);
-    printf("MAILBOX_E2CINFO1:0x%x\n", MAILBOX_SELF_INFO1);
+    dprint("MAILBOX_E2CINFO1:0x%x\n", MAILBOX_SELF_INFO1);
     MAILBOX_SET_IRQ(MAILBOX_eRPMC_IRQ_NUMBER);           // 触发子系统中断
     eRPMC_Busy_Status = 1;
 }
@@ -350,7 +350,7 @@ void Mailbox_IncrementCounter_Trigger(void)
 {
     if (eRPMC_Busy_Status == 1)
     {
-        printf("RPMC Device is in busy status\n");
+        dprint("RPMC Device is in busy status\n");
         eRPMC_IncrementCounter_data.Extended_Status = 0x04;
         eSPI_OOB_Send((BYTE*)&eRPMC_IncrementCounter_data);
         return;
@@ -387,7 +387,7 @@ void Mailbox_IncrementCounter_Trigger(void)
         | (eRPMC_IncrementCounter.Cmd_Type << 8)
         | (eRPMC_IncrementCounter.Counter_Addr << 16)
         | (eRPMC_IncrementCounter.Rsvd << 24);
-    printf("MAILBOX_E2CINFO1:0x%x\n", MAILBOX_SELF_INFO1);
+    dprint("MAILBOX_E2CINFO1:0x%x\n", MAILBOX_SELF_INFO1);
     MAILBOX_SET_IRQ(MAILBOX_eRPMC_IRQ_NUMBER);           // 触发子系统中断
     eRPMC_Busy_Status = 1;
 }
@@ -397,7 +397,7 @@ void Mailbox_RequestCounter_Trigger(void)
 
     if (eRPMC_Busy_Status == 1)
     {
-        printf("RPMC Device is in busy status\n");
+        dprint("RPMC Device is in busy status\n");
         eRPMC_RequestCounter_data.Extended_Status = 0x04;
         eSPI_OOB_Send((BYTE*)&eRPMC_RequestCounter_data);
         return;
@@ -443,7 +443,7 @@ void Mailbox_ReadParameter_Trigger(void)
 
     if (eRPMC_Busy_Status == 1)
     {
-        printf("RPMC Device is in busy status\n");
+        dprint("RPMC Device is in busy status\n");
         eRPMC_ReadParameters_data.Extended_Status = 0x04;
         eSPI_OOB_Send((BYTE*)&eRPMC_ReadParameters_data);
         return;
@@ -488,11 +488,11 @@ void Mailbox_eRPMC_Trigger(void)
     }
     else
     {
-        printf("parameter error\n");
+        dprint("parameter error\n");
     }
 #endif
 
-    printf("erpmc trigger\n");
+    dprint("erpmc trigger\n");
 
 #if 0
     //WriteRootKey命令  往SRAM的0x31800后填入对应eRPMC数据
@@ -546,19 +546,19 @@ void Mailbox_Control(void)
         Cry_SelfCheck_Flag = MAILBOX_OTHER_INFO1;
         /*子系统自检结果反馈*/
         if ((BYTE)(Cry_SelfCheck_Flag & 0xff) == 0x1)
-            printf("Crypto SelfCheck Pass\n");
+            dprint("Crypto SelfCheck Pass\n");
         else if ((BYTE)(Cry_SelfCheck_Flag & 0xff) == 0x2)
         {
-            printf("Crypto SelfCheck error\n");
+            dprint("Crypto SelfCheck error\n");
         }
     }
     else if (C2E_CMD == MAILBOX_CMD_FIRMWARE_EXTENSION)
     {
         /* 固件扩展结果反馈 */
         if ((BYTE)(MAILBOX_OTHER_INFO1 & 0xff) == 0x1)
-            printf("固件扩展完毕\n");
+            dprint("固件扩展完毕\n");
         else if ((BYTE)(MAILBOX_OTHER_INFO1 & 0xff) == 0x2)
-            printf("固件扩展失败\n");
+            dprint("固件扩展失败\n");
     }
     else if (C2E_CMD == MAILBOX_CMD_APB_RESOURCE_ALLOC)
     {
@@ -567,12 +567,12 @@ void Mailbox_Control(void)
         {
             APB_ShareMod_temp &= ~APB_ERR;
             APB_ShareMod_Cry = APB_ShareMod_temp;
-            printf("request or release err apb_share_mod_cry:0x%x\n", APB_ShareMod_Cry);
+            dprint("request or release err apb_share_mod_cry:0x%x\n", APB_ShareMod_Cry);
         }
         else
         {
             APB_ShareMod_Cry = APB_ShareMod_temp;
-            printf("apb_share_mod_cry:0x%x\n", APB_ShareMod_Cry);
+            dprint("apb_share_mod_cry:0x%x\n", APB_ShareMod_Cry);
         }
     }
     else if (C2E_CMD == MAILBOX_CMD_READ_FLASHUID)
@@ -581,27 +581,27 @@ void Mailbox_Control(void)
         if ((BYTE)(MAILBOX_OTHER_INFO1 & 0xff) == 0x1)
         {
             Flash_Capacity = (1 << ((MAILBOX_OTHER_INFO1 >> 24) & 0xff));
-            printf("flash capacity:%d BYTES\n", Flash_Capacity);
-            printf("flash 9f cmd return id:0x%x\n", (MAILBOX_OTHER_INFO1 >> 8));
+            dprint("flash capacity:%d BYTES\n", Flash_Capacity);
+            dprint("flash 9f cmd return id:0x%x\n", (MAILBOX_OTHER_INFO1 >> 8));
         }
         else if ((BYTE)(MAILBOX_OTHER_INFO1 & 0xff) == 0x2)
-            printf("read flash failed\n");
+            dprint("read flash failed\n");
     }
     else if (C2E_CMD == MAILBOX_CMD_FREQ_SYNC)
     {
         /* 响应子系统降频 */
         // SYSCTL_CLKDIV_OSC96M = (CHIP_CLOCK_SWITCH - 1);
-        __nop
-            Module_init();//暂时保留，后续根据实际情况是否需要调用初始化
+        __nop;
+        Module_init();//暂时保留，后续根据实际情况是否需要调用初始化
         eFlash_Forbid_Flag = 1;   // 降频到48MHz后，设置eFlash禁止主系统访问标志
     }
     else if (C2E_CMD == MAILBOX_CMD_READ_FLASHUUID)
     {
         /* 读取内部FLASH ID */
         if ((BYTE)(MAILBOX_OTHER_INFO1 & 0x1) == 0x1)
-            printf("flash 9fcmd return id:0x%x 0x%x 0x%x 0x%x\n", MAILBOX_OTHER_INFO5, MAILBOX_OTHER_INFO4, MAILBOX_OTHER_INFO3, MAILBOX_OTHER_INFO2);
+            dprint("flash 9fcmd return id:0x%x 0x%x 0x%x 0x%x\n", MAILBOX_OTHER_INFO5, MAILBOX_OTHER_INFO4, MAILBOX_OTHER_INFO3, MAILBOX_OTHER_INFO2);
         else if ((BYTE)(MAILBOX_OTHER_INFO1 & 0x2) == 0x2)
-            printf("read flash failed\n");
+            dprint("read flash failed\n");
     }
 }
 
@@ -618,7 +618,7 @@ void Mailbox_Firmware(void)
     }
     else
     {
-        printf("unknown fw update cmd\n");
+        dprint("unknown fw update cmd\n");
     }
 }
 
@@ -627,7 +627,7 @@ void Mailbox_Efuse(void)
     if (C2E_CMD == MAILBOX_CMD_READ_EFUSE)
     {
         EFUSE_Avail = 1;
-        printf("efuse:%x,%x,%x,%x,%x,%x,%x\n", MAILBOX_OTHER_INFO1, MAILBOX_OTHER_INFO2, MAILBOX_OTHER_INFO3, MAILBOX_OTHER_INFO4, MAILBOX_OTHER_INFO5, MAILBOX_OTHER_INFO6, MAILBOX_OTHER_INFO7);
+        dprint("efuse:%x,%x,%x,%x,%x,%x,%x\n", MAILBOX_OTHER_INFO1, MAILBOX_OTHER_INFO2, MAILBOX_OTHER_INFO3, MAILBOX_OTHER_INFO4, MAILBOX_OTHER_INFO5, MAILBOX_OTHER_INFO6, MAILBOX_OTHER_INFO7);
     }
 }
 

@@ -15,9 +15,9 @@
  */
 #include "KERNEL_HOST.H"
 #include "AE_DEBUGGER.H"
-//****************************************************************************
-//static function  declaration
-//****************************************************************************
+ //****************************************************************************
+ //static function  declaration
+ //****************************************************************************
 static BYTE Send_To_Host(BYTE data_word, BYTE break_prefix_flag);
 static BYTE Common_Send_To_HOST(BYTE data_word, BYTE break_prefix_flag);
 static BYTE Switch_Scan_Code(BYTE data_word, BYTE break_prefix_flag);
@@ -58,15 +58,15 @@ static BYTE Switch_Scan_Code(BYTE data_word, BYTE break_prefix_flag)
         0x52, 0x53, 0x50, 0x4C, 0x4D, 0x48, 0x01, 0x45,
         0x57, 0x4E, 0x51, 0x4A, 0x37, 0x49, 0x46, 0x54 };
     BYTE check_break_bit = FALSE;
-    if(data_word == 0xF0)
+    if (data_word == 0xF0)
     { /* Signify that break code prefix was encountered. */
         data_word = 0xFF;
     }
-    else if(data_word == 0x00)
+    else if (data_word == 0x00)
     {
         data_word = 0x00; /* Key detection error/overrun. */
     }
-    else if((data_word & 0x80) == 0)
+    else if ((data_word & 0x80) == 0)
     { /* Translate codes 01 thru 7F. */
         /* The variable "data" has KBD_SCAN code (set 2) to translate.
            Set "data" to the translated (to set 1) KBD_SCAN code. */
@@ -74,17 +74,17 @@ static BYTE Switch_Scan_Code(BYTE data_word, BYTE break_prefix_flag)
         // dprint("scan2_1 data_word is %#x \n",data_word);
         check_break_bit = TRUE;
     }
-    else if(data_word == 0x83) /* ID code for 101/102 keys. */
+    else if (data_word == 0x83) /* ID code for 101/102 keys. */
     {
         data_word = 0x41; /* Translate ID code. */
         check_break_bit = TRUE;
     }
-    else if(data_word == 0x84) /* ID code for 84 keys. */
+    else if (data_word == 0x84) /* ID code for 84 keys. */
     {
         data_word = 0x54; /* Translate ID code. */
         check_break_bit = TRUE;
     }
-    if(check_break_bit && break_prefix_flag)
+    if (check_break_bit && break_prefix_flag)
     { /* Last code received by this routine was the break prefix.This must be
          a break code. Set high bit to indicate that this is a break code. */
         data_word |= 0x80;
@@ -97,25 +97,24 @@ static BYTE Common_Send_To_HOST(BYTE data_word, BYTE break_prefix_flag)
     dprint("Common_Send_To_HOST data is %#x\n", data_word);
 #endif
     BYTE send_it = FALSE;
-    if(Host_Flag_XLATE_PC == 0) // Send data as is.
+    if (Host_Flag_XLATE_PC == 0) // Send data as is.
     {
-    #if KBS_DEBUG
+#if KBS_DEBUG
         dprint("Host_Flag_XLATE_PC is 0\n");
-    #endif
+#endif
         send_it = TRUE;
         break_prefix_flag = FALSE;
     }
     else // Translation mode is enabled.
     {
         data_word = Switch_Scan_Code(data_word, break_prefix_flag);
-        if(data_word == 0xFF)
+        if (data_word == 0xFF)
         {
             break_prefix_flag = TRUE; // Don't send break code prefix.
         }
-        else if(data_word == 0x00)
+        else if (data_word == 0x00)
         {
-            break_prefix_flag = TRUE;
-            ; // Don't send break code prefix.
+            break_prefix_flag = TRUE; // Don't send break code prefix.
         }
         else
         {
@@ -124,12 +123,12 @@ static BYTE Common_Send_To_HOST(BYTE data_word, BYTE break_prefix_flag)
         }
     }
 #if KBS_DEBUG
-    if(send_it == FALSE)
+    if (send_it == FALSE)
         dprint("send_it FALSE\n");
-    if(break_prefix_flag == FALSE)
+    if (break_prefix_flag == FALSE)
         dprint("break_prefix_flag FALSE\n");
 #endif
-    if(send_it)
+    if (send_it)
     {
         Transmit_Data_To_Host(data_word);
     }
@@ -167,7 +166,7 @@ static BYTE Send_To_Host(BYTE data_word, BYTE break_prefix_flag)
  * ------------------------------------------------------------------------- */
 BYTE Send_KB_Data_To_Host(BYTE nKBData)
 {
-    if(IS_SET(KBC_STA, KBC_OBF) || IS_SET(KBC_STA, KBC_IBF))
+    if (IS_SET(KBC_STA, KBC_OBF) || IS_SET(KBC_STA, KBC_IBF))
     {
         KBC_Data_Suspend(nKBData);
         return 0x0;
@@ -202,31 +201,31 @@ void Service_Send(void)
     BYTE nKBData;
     BYTE bBreak;
     BYTE KBCmdAck;
-// if(F_Service_Send == 0)return ;
+    // if(F_Service_Send == 0)return ;
 #if ENABLE_DEBUGGER_SUPPORT
 #else
-    if(Is_FLAG_SET(KBC_STA, KBC_STA_OBF) || Is_FLAG_SET(KBC_STA, KBC_STA_IBF))
+    if (Is_FLAG_SET(KBC_STA, KBC_STA_OBF) || Is_FLAG_SET(KBC_STA, KBC_STA_IBF))
     {
         return;
     }
 #endif
-    if(KBPendingRXCount > KBPendingTXCount)
+    if (KBPendingRXCount > KBPendingTXCount)
     {
         KBCmdAck = Release_KBC_Data_Suspend();
-    #if KBS_DEBUG
+#if KBS_DEBUG
         dprint("Service Send. pending data is %#x\n", KBCmdAck);
-    #endif
+#endif
         Send_KB_Data_To_Host(KBCmdAck);
         return;
     }
     /* ------------------------------------------------------------------------
      * Keyboard Buffer Data Send to Host(System)
      * ---------------------------------------------------------------------- */
-    if(Host_Flag_DISAB_KEY)
+    if (Host_Flag_DISAB_KEY)
         return;
     nKBData = KBS_Buffer_Get(&nKBData);
     // FORCE_NO_XLATE = 0;
-    if(nKBData == 0xFF) // 0xFF: No key data in buffer
+    if (nKBData == 0xFF) // 0xFF: No key data in buffer
     {
         return;
     }
@@ -234,13 +233,13 @@ void Service_Send(void)
     {
         bBreak = Gen_Info_BREAK_SCAN;
         Gen_Info_BREAK_SCAN = 0;
-        if(Send_To_Host(nKBData, bBreak))
+        if (Send_To_Host(nKBData, bBreak))
         {
             Gen_Info_BREAK_SCAN = 1; // Break prefix code.
         }
-    #if KBS_DEBUG
+#if KBS_DEBUG
         dprint("Service Send data is %#x\n", nKBData);
-    #endif
+#endif
     }
     //-------------------------------------------------------------------------
 #endif
@@ -261,7 +260,7 @@ void Transmit_Data_To_Host(BYTE data_byte)
     //KBC_STA &= 0x0f;
     SET_BIT(KBC_STA, KBC_KL);
     CLEAR_BIT(KBC_STA, KBC_SAOBF);
-    if(Host_Flag_INTR_KEY)
+    if (Host_Flag_INTR_KEY)
     {
         SET_BIT(KBC_CTL, KBC_OBFKIE);
     }
@@ -290,7 +289,7 @@ void KBC_Data_Suspend(BYTE nPending)
 #if KBC_DEBUG
     dprint("KBPendingRXCount is %#x \n", KBPendingRXCount);
 #endif
-    if(KBPendingRXCount > 3)
+    if (KBPendingRXCount > 3)
         return;
     KBDataPending[(KBPendingRXCount & 0x03)] = nPending;
     KBPendingRXCount++;
@@ -300,7 +299,7 @@ BYTE Release_KBC_Data_Suspend(void)
     BYTE buffer_data;
     buffer_data = KBDataPending[(KBPendingTXCount & 0x03)];
     KBPendingTXCount++;
-    if(KBPendingTXCount >= KBPendingRXCount)
+    if (KBPendingTXCount >= KBPendingRXCount)
     {
         KBPendingTXCount = 0;
         KBPendingRXCount = 0;
@@ -323,7 +322,7 @@ void Mouse_Data_To_Host(BYTE data_byte)
 {
     KBC_STA &= 0x0F;
     SET_BIT(KBC_STA, KBC_SAOBF);
-    if(Host_Flag_INTR_AUX)
+    if (Host_Flag_INTR_AUX)
     {
         SET_BIT(KBC_CTL, KBC_OBFMIE);
     }

@@ -15,19 +15,19 @@
  */
 #include "KERNEL_BRAM.H"
 #include "KERNEL_TIMER.H"
-/**
- * @brief 此函数用于配置BRAM逻辑设备，并初始化其相关参数。
- *
- * @param 无
- *
- * @return 无
- */
+ /**
+  * @brief 此函数用于配置BRAM逻辑设备，并初始化其相关参数。
+  *
+  * @param 无
+  *
+  * @return 无
+  */
 void BRAM_Config(void)
 {
 #if !(BRAM_CLOCK_EN)
   return;
 #endif
-// Enable BRAM logic device
+  // Enable BRAM logic device
 #if (SYSCTL_CLOCK_EN)
   SYSCTL_HDEVEN |= HBRAM_EN;      //host侧BRAM使能
 #endif
@@ -49,8 +49,7 @@ void BRAM_Config(void)
  */
 void BRAM_EC_Write(void)
 {
-  int i;
-  for(i = 0; i < 48; i++)
+  for (int i = 0; i < 48; i++)
   {
     BATTERY_BRAM8(i) = 0xec;
     vDelayXms(1);
@@ -68,10 +67,9 @@ void BRAM_EC_Write(void)
  */
 void BRAM_EC_Read(void)
 {
-  uint8_t i;
-  for(i = 0; i <= 0x2F; i++)
+  for (int i = 0; i < 48; i++)
   {
-    BRAM_ReadBuff[i] = *((volatile uint8_t *)(BRAM_BASE_ADDR + i));
+    BRAM_ReadBuff[i] = *((volatile uint8_t*)(BRAM_BASE_ADDR + i));
     dprint("bram data is %#x\n", BRAM_ReadBuff[i]);
   }
   dprint("bram data read end!\n");

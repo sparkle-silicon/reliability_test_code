@@ -14,6 +14,7 @@
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
 #include "KERNEL_PECI.H"
+
 #if PECI_Softwave_AWFCS
 u8 PECI_CRC8;
 #endif
@@ -150,7 +151,7 @@ BYTE PECI_CheckHostFinish(void)
         {
             if (IS_MASK_SET(status, PECI_HOSTAR_FINISH))
             {
-                PECI_HOSTAR |= PECI_HOSTAR_FINISH; // 閸愶拷1濞撳懘娅嶧INISH閻樿埖鈧拷
+                PECI_HOSTAR |= PECI_HOSTAR_FINISH;
                 error = 0x00;
                 break;
             }
@@ -248,8 +249,8 @@ void PECI_CalcCRC8(BYTE sourcebyte)
 //  parameter :
 //              (1) addr : The address of processor
 //              (2) *ReadData : the start address of variable to save data
-//              (3) Domain : 0 or 1闁跨喓鏄�
-//                           0 : Domain 0, 1 : Domain 1闁跨喓鏄�
+//              (3) Domain : 0 or 1
+//                           0 : Domain 0, 1 : Domain 1
 //              (4) Retry   0 or 1
 //              (5) Index
 //              (6) LSB of parameter

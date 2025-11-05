@@ -39,6 +39,7 @@ void ADC_TriggerMode_Config(uint8_t mode)
             break;
       case 3:
             ADC_CTRL |= (0x3 << 7);       // 自动采样
+            break;
       default:
             break;
       }
