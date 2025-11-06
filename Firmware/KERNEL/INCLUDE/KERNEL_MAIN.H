@@ -19,7 +19,8 @@
 #include "AE_INCLUDE.H"
 #include "KERNEL_INCLUDE.H"
 #include "CUSTOM_INCLUDE.H"
-// #define HIGH_LEVEL_SERVICE_NUM_DIV  5//3:>90% 4:>95%,9:>98%
+
+ // #define HIGH_LEVEL_SERVICE_NUM_DIV  5//3:>90% 4:>95%,9:>98%
 #define HIGH_LEVEL_SERVICE_NUM (3)/*((sizeof(service_table) / sizeof(FUNCT_PTR_V_V)) /HIGH_LEVEL_SERVICE_NUM_DIV)*/
 // #define LOW_LEVEL_SERVICE_NUM_MUL  3//11/6:>90% 7/5:>95%,17/15:>98%
 // #define LOW_LEVEL_SERVICE_NUM_DIV  2//
@@ -51,5 +52,5 @@
     其高优先级访问效率明显提高(其数量越小,效率提升越明显),中优先级访问效率和原来相近(其数量越小,效率提升越明显),其低优先级(其数量越小,越贴近原效率,同时整体效率越低)效率明显降低,
     */
 #define SUPPORT_MAIN_SERVICE_LEVEL_POLL 0
-//-----------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------
 #endif

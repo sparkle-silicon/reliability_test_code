@@ -67,16 +67,15 @@ extern void Service_PCI(void);
 extern void KB_Cmd_Handle(BYTE data_byte);
 extern void Write_Debug_Data_To_Sram(uint8_t Data);
 extern void Write_KCCB(BYTE NewKCCB);
-extern BYTE  Set_Port60_Data_Handle(void);
-extern BYTE  Set_Port60_Multi_Data_Handle(void);
-extern BYTE  Loop_Wait_Get_Port60_Data(void);
+extern BYTE Set_Port60_Data_Handle(void);
+extern BYTE Set_Port60_Multi_Data_Handle(void);
+extern BYTE Loop_Wait_Get_Port60_Data(void);
 extern void Service_PCI_Main(void);
 extern void A20GATE_ON(void);
 extern void Command_A7(void);
 extern void Command_A8(void);
 extern void Command_AD(void);
 extern void Command_AE(void);
-extern BYTE Read_Output_Port_2(void);
 extern void KBC_Variable_Clear(void);
 /*-----------------------------------------------------------------------------
  * Internal Process Prototype

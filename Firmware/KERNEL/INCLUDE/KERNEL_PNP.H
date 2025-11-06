@@ -85,5 +85,5 @@ extern void Config_PNP_Read(BYTE idx, BYTE ldn);
 extern void Clear_Logical_Device_Default_IRQ_Num(void);
 extern void LogicalDevice_PNP_Config(void);
 extern BYTE LD_PNP_Config(void);
-extern void ShareMem_PNP_Config(void);
+extern void ShareMem_Config(void);
 #endif

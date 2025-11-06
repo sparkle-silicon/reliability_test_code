@@ -271,7 +271,6 @@ void Default_GPIO_InputSet()
 	//打开PWRSW复位功能
 	SYSCTL_PWRSWCSR = PWRSW_EN | PWRSW_WDTIME_1000ms | PWRSW_INT_WDT | PWRSW_DBTIMEL_64ms; // 使能PWR超时计时，1000ms，有wdt中断，
 #endif
-
 }
 /*
  * @brief 进行一些默认配置,防止异常
@@ -308,15 +307,13 @@ void Device_init(void)
 	FAN_Init(FAN2_PWM_CHANNEL_SWITCH, PWM_CLK0, PWM_CTR0);
 #endif
 #endif
-
 	//2.Host Device Init
+#if SUPPORT_SHAREMEM_CONFIG
+	ShareMem_Config();
+#endif
 #if SUPPORT_LD_PNP_DEVBOARD
 	LogicalDevice_PNP_Config();
 #endif
-#if SUPPORT_SHAREMEM_PNP
-	ShareMem_PNP_Config();
-#endif
-
 	//3.Service Timer 1ms Init
 #if TIMER_MODULE_EN
 	TIMER_Init(TIMER2, TIMER2_1ms, 0x1, 0x0); // 1ms service计时函数

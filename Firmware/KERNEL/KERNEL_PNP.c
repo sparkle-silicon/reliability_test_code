@@ -180,7 +180,7 @@ BYTE Sio_PNP_Table[] =
 	0x71,0x05,0x03, // set serirq level/edge
 	0x30,0x05,0x01, // enable ld
 	/*LD:KEYBOARD*/
-	0x07,0x06,0x06, // select ld mouse
+	0x07,0x06,0x06, // select ld keyboard
 	0x61,0x06,0x60, // config io port 60
 	0x63,0x06,0x64, // config io port 64
 	0x70,0x06,0x01, // select serirq num:1
@@ -188,14 +188,14 @@ BYTE Sio_PNP_Table[] =
 	0x30,0x06,0x01, // enable ld
 #if !(KBC_PNP_ONLY_SWITCH)
 	/*LD:PM1*/
-	0x07,0x11,0x11, // select ld mouse
+	0x07,0x11,0x11, // select ld pm1
 	0x61,0x11,0x62, // config io port 62
 	0x63,0x11,0x66, // config io port 66
 	0x70,0x11,0x05, // select serirq num:5
 	0x71,0x11,0x03, // set serirq level/edge
 	0x30,0x11,0x01, // enable ld
 	/*LD:PM2*/
-	0x07,0x12,0x12, // select ld mouse
+	0x07,0x12,0x12, // select ld pm2
 	0x61,0x12,0x68, // config io port 68
 	0x63,0x12,0x6c, // config io port 6c
 	0x70,0x12,0x09, // select serirq num:9
@@ -204,7 +204,7 @@ BYTE Sio_PNP_Table[] =
 #endif
 #if SUPPORT_SHAREMEM_PNP
 	/*LD:ShareMem*/
-	0x07,0xf,0xf, // select sharemem
+	0x07,0xf,0xf, 	// select ld sharemem
 	//config firmware cycle 
 	0xf0,0xf,0xfe,
 	0xf1,0xf,0x00,
@@ -215,7 +215,7 @@ BYTE Sio_PNP_Table[] =
 	//Config SRAM offset map
 	0x60,0xf,0x00,
 	0x61,0xf,0x00,
-	0xfa,0xf,0x00,	//config HOST Semaphore address
+	0xfa,0xf,0x00,	// config HOST Semaphore address
 	0x30,0xf,0x01, 	// enable ld
 #endif
 #if 0
@@ -350,7 +350,7 @@ void Sio_PNP_Config(void)
 		Config_PNP_Write(*(data_pntr + 3 * cnt + 0), *(data_pntr + 3 * cnt + 1), *(data_pntr + 3 * cnt + 2));
 		cnt++;
 	}
-	dprint("Sio_PNP_Config finish\n");
+	dprint("SIO_PNP Config finish\n");
 }
 //-----------------------------------------------------------------------------
 // LogicalDevice PNP config function
@@ -373,12 +373,12 @@ void LogicalDevice_PNP_Config(void)
 //-----------------------------------------------------------------------------
 // ShareMem PNP config function
 //-----------------------------------------------------------------------------
-void ShareMem_PNP_Config(void)
+void ShareMem_Config(void)
 {
 	h2e_ModuleClock_EN;
 	sram_ModuleClock_EN;
 	SYSCTL_HDEVEN |= HOST_SMFI_EN;
-	SYSCTL_SPCTL0 |= PNPCNST_SETEN; //enable pnp const register//PNPKEY, PNPPORT, VENDORID, CHIPVER 的设置使
+	SYSCTL_SPCTL0 |= PNPCNST_SETEN; //enable pnp const register//PNPKEY, PNPPORT, VENDORID, CHIPVER 的设置使能
 	SHAREMEMORY_INIT();
 }
 //-----------------------------------------------------------------------------
@@ -386,8 +386,8 @@ void ShareMem_PNP_Config(void)
 //-----------------------------------------------------------------------------
 BYTE LD_PNP_Config(void)
 {
-#if SUPPORT_SHAREMEM_PNP
-	ShareMem_PNP_Config();
+#if SUPPORT_SHAREMEM_CONFIG
+	ShareMem_Config();
 #endif
 #if SUPPORT_LD_PNP	
 	LogicalDevice_PNP_Config();

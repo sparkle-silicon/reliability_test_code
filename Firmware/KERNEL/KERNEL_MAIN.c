@@ -14,6 +14,7 @@
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
 #include "KERNEL_MAIN.H"
+
 #define printf_instructions_msg " \
 \n\
 ************************************************************************************\n\
@@ -258,20 +259,16 @@ void Service_MS_1(void)
 const FUNCT_PTR_V_V service_table[] =
 {
 	// Hi-Level Service
-	//高优先级
 	Service_PCI,              // Host send to ec 60/64 Command/Data service
 	Service_Send,             // Send byte from KBC to host service
 	Service_Send_PS2,		  // Send PS2 interface pending data to host service
 	Service_eSPI,			  // eSPI service
 	// Mi-Level Service
-	//中优先级
 	Service_MS_1,             // 1 millisecond Service
 	Service_PCI2,             // PMC1 Host Command/Data service
 	Service_KBS,              // Keyboard scanner service
 	Service_Mailbox,          // Security SubSystem(Crypto CPU) Mailbox Commands Return service
-
 	// Lo-Level Service
-	//低优先级
 	Service_PCI3,             // PMC2 Host Command/Data service
 	Service_PCI4,             // PMC3 Host Command/Data service
 	Service_HOST_RST,         // LPC reset and espi reset Service
@@ -290,7 +287,6 @@ const FUNCT_PTR_V_V service_table[] =
 	Service_Debugger,         // DEBUGGER service
 	Service_Debugger_Send_KBD,        // DEBUGGER
 #endif
-
 };
 //----------------------------------------------------------------------------
 // FUNCTION: main_service
@@ -298,7 +294,6 @@ const FUNCT_PTR_V_V service_table[] =
 //----------------------------------------------------------------------------
 void main_service(void)
 {
-
 	if (_R1 >= (sizeof(service_table) / sizeof(FUNCT_PTR_V_V)))
 		_R1 = 0;
 	(service_table[_R1])();
@@ -338,6 +333,8 @@ void main_loop(void)
 int __weak main(void)
 {
 	AutoON_Check_AfterUpdate(); // 检查更新后重启设定标志
+
+	// 1. print Operational information
 #if DEBUG
 	printr(printf_instructions_msg);
 	printr("Core Name %s\n", CORE_NAME);
@@ -345,9 +342,11 @@ int __weak main(void)
 	printr("Code Version %s\n", CODE_VERSION);
 	printr("Compile Time : %s %s\n", __DATE__, __TIME__);
 #endif
-	// 2. print Operational information
+	// 2. print nessary information
 	dprint("This is %s flash main\n", (SYSCTL_PIO_CFG & BIT1) ? "external" : "internal");
 	dprint("CPU freq at %d Hz\n", CPU_FREQ);
+
+	// 3. main loop entry
 	main_loop();
 	return 0;
 }

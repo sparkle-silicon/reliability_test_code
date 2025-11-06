@@ -231,22 +231,14 @@ void spi_init(void)
 }
 void pwm_tach_init(void)
 {
-
 #if (TACH_MODULE_EN | PWM_MODULE_EN)
 	pwm_ModuleClock_EN;
 #endif
 #if (PWM_MODULE_EN)
-	PWM_CLOCK_Init(); // defined PWM_CLKn_PRESCALE PWM_CTRnm PWM_TCLK_PRESCALE config
+	PWM_CLOCK_Init();
 #if (PWM0_EN_Init)
 	sysctl_iomux_pwm0();
-	PWM_Init_channel(PWM_CHANNEL0, PWM_LOW, PWM_CLK0, PWM_CTR0, 98, 0);
-	// PWM_CTR0_1 = 0x104;//0x163;
-	// PWM_CTR2_3 = 0x101;
-	// PWM_DCR0_1 = 0x101;
-	// PWM_DCR2_3 = 0x101;
-	// PWM_DCR4_5 = 0x101;
-	// PWM_DCR6_7 = 0x101;
-	// PWM_CTRL = 0xff01;
+	PWM_Init_channel(PWM_CHANNEL0, PWM_LOW, PWM_CLK0, PWM_CTR0, 5, 0);
 #endif
 #if (PWM1_EN_Init)
 	sysctl_iomux_pwm1();
@@ -500,14 +492,15 @@ void __weak SECTION(".init.module") Module_init(void)
 	pwm_tach_init();
 	// 9.Initialize The Host(KBC, PMC, LPC or ESPI, SWUC)
 	host_init();
-	// 10.Initialize  The KBS and The PS2
+	// 10.Initialize  The KBS
 	kbs_init();
+	// 11.Initialize  The PS2 Channel
 	ps2_init();
-	// 11.Initialize The CEC
+	// 12.Initialize The CEC
 	cec_init();
-	// 12.Initialize The ADC
+	// 13.Initialize The ADC
 	adc_init();
-	// 13 Initialize The timer and The watch dog and The RTC
+	// 14 Initialize The timer and The watch dog and The RTC
 	time_init();
 	dprint("Module init End.\n");
 	return;

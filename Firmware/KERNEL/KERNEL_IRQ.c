@@ -158,10 +158,8 @@ void SECTION(".init.irq") Irqc_init(void)
 	//1. Set Interrupt controller
 	intc_ModuleClock_EN;
 	intc_init();
-	// dprint("INTC init done.\n");
 	//2. Set CPU CSR IRQ
 	cpu_irq_en();
-	// dprint("IRQ init done.\n");
 	//3. Enable interrupts in general.
 	set_csr(mstatus, MSTATUS_MIE);
 	dprint("Irqc init End.\n");

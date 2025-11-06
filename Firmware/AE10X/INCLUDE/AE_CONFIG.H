@@ -77,15 +77,17 @@
 // debuger Function Setting
 // EC FIRMWARE UPDATA
 #define SUPPORT_FIRMWARE_UPDATE 0 // firmware update support
-#define SUPPORT_SHAREMEM_PNP 0    // SHM PNP support
+#define SUPPORT_SHAREMEM_CONFIG 1 // sharememory 配置使能
+
 // UART
 #define SUPPORT_REAL_OR_DELAY_PRINTF 0 // 0:实时输出；1：延时输出（延时输出可切换为实时输出）
 #define ENABLE_COMMAND_SUPPORT 1       // CMD Enable
 #define ENABLE_DEBUGGER_SUPPORT 0      // Debugger Enable
 #define SUPPORT_BREATHING_LED 0        // LED
 // port80 &&pnp
-#define SUPPORT_LD_PNP 1           // 1:open logicdevice pnp  0:close pnp
-#define SUPPORT_LD_PNP_DEVBOARD 0  // 1:open logicdevice pnp when devboard  0:close pnp
+#define SUPPORT_LD_PNP 1           // 实际使用环境中配置逻辑设备PNP使能
+#define SUPPORT_LD_PNP_DEVBOARD 0  // 使用开发板测试时，配置逻辑设备PNP使能
+#define SUPPORT_SHAREMEM_PNP 0     // sharememory 逻辑设备 PNP使能
 #define SUPPORT_8042DEBUG_OUTPUT 0 // 输出8042交互命令数据流到SRAM，必要时可以将这段内存打印出来观察
 #define SUPPORT_MEM_MALLOC 0       // 0 run mem_malloc 1 not run mem_malloc (if user it,can't user heap)
 

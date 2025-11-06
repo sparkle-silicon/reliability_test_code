@@ -15,42 +15,42 @@
  */
 #include "AE_INIT.H"
 
-/*
- * @brief 双启动流程
- */
+ /*
+  * @brief 双启动流程
+  */
 void SECTION(".init.dbinit") DoubleBoot_Init(void)
 {
 #if 1
   // 1.get OEM Set Double Boot Addr and Code Space ID
   register FUNCT_PTR_V_V func_ptr = Get_DoubleBoot_ADDR();
-  if(func_ptr == NULL)
+  if (func_ptr == NULL)
     return;
   // 2.Separate ID and address
   register u16 id = (u8)((((u32)func_ptr) >> 20) & 0xfff);
   func_ptr = (FUNCT_PTR_V_V)(((u32)func_ptr) & 0xfffff);
   // 3.Determine the current boot ID and perform the corresponding operation
-  switch(id) // 选择ID
+  switch (id) // 选择ID
   {
-    case 0xFF0: // 直接跳转
-      (*func_ptr)();
-      break;
-    case 0xFF1:                  // 启动片区1和2的选择
-      if(SYSCTL_ESTAT & BIT(3)) // 判断是否为看门狗复位
-      {
-        if(func_ptr != (FUNCT_PTR_V_V)0x0) // 是否地址
-          (*func_ptr)();
-      }
-      break;
-    case 0xFF2:                  // 启动片区1和2的选择
-      if(SYSCTL_ESTAT & BIT(6)) // 判断是否为PWRSW复位
-      {
-        if(func_ptr != (FUNCT_PTR_V_V)0x0) // 是否地址
-          (*func_ptr)();
-      }
-      break;
-    case 0xFF3://切换FLASH后跳转选择
-    default:
-      break;
+  case 0xFF0: // 直接跳转
+    (*func_ptr)();
+    break;
+  case 0xFF1:                  // 启动片区1和2的选择
+    if (SYSCTL_ESTAT & BIT(3)) // 判断是否为看门狗复位
+    {
+      if (func_ptr != (FUNCT_PTR_V_V)0x0) // 是否地址
+        (*func_ptr)();
+    }
+    break;
+  case 0xFF2:                  // 启动片区1和2的选择
+    if (SYSCTL_ESTAT & BIT(6)) // 判断是否为PWRSW复位
+    {
+      if (func_ptr != (FUNCT_PTR_V_V)0x0) // 是否地址
+        (*func_ptr)();
+    }
+    break;
+  case 0xFF3://切换FLASH后跳转选择
+  default:
+    break;
   }
   return;
 #endif
@@ -67,7 +67,7 @@ void SECTION(".init.dbinit") DoubleBoot_Init(void)
 ************************************Init*************************************/
 void SECTION(".init.flow") Init()
 {
-  // 0. check update over init
+  // 0.check update over init
   AE_UPDATE_NO_INIT_FUNCTION;
   // 1.double boot
   DoubleBoot_Init();
