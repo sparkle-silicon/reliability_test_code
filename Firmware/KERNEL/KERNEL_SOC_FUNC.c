@@ -18,9 +18,9 @@
 void gpio_init(void)
 {
 #if GPIO_MODULE_EN
-	gpio_MoudleClock_EN;
+	gpio_ModuleClock_EN;
 	SYSCTL_CLKDIV_GPIODB = GPIODB_CLOCK_DIVISION; // set clock division to 0
-	gpiodb_MoudleClock_EN;
+	gpiodb_ModuleClock_EN;
 	// 1.default config pin iomux and pull up
 	pin_DefaultConfig();
 	// 2.default config gpio  Voltage Signal and IO Direction
@@ -30,7 +30,7 @@ void gpio_init(void)
 void mailbox_init(void)
 {
 #if MAILBOX_MODULE_EN
-	mailbox_MoudleClock_EN;
+	mailbox_ModuleClock_EN;
 	Mailbox_Init();
 #endif
 }
@@ -41,25 +41,25 @@ void uart_init(void)
 	int flag = 0;
 	int baud[4];
 #ifdef UART0_BAUD
-	uart0_MoudleClock_EN;
+	uart0_ModuleClock_EN;
 	sysctl_iomux_uart0();
 	flag |= BIT0;
 	baud[0] = serial_init(UART0_CHANNEL, UART0_BAUD);
 #endif
 #ifdef UART1_BAUD
-	uart1_MoudleClock_EN;
+	uart1_ModuleClock_EN;
 	sysctl_iomux_uart1(UART1_TX_SEL, UART1_RX_SEL);
 	flag |= BIT1;
 	baud[1] = serial_init(UART1_CHANNEL, UART1_BAUD);
 #endif
 #ifdef UARTA_BAUD
-	uarta_MoudleClock_EN;
+	uarta_ModuleClock_EN;
 	sysctl_iomux_uarta(UARTA_TX_SEL, UARTA_RX_SEL);
 	flag |= BIT2;
 	baud[2] = serial_init(UARTA_CHANNEL, UARTA_BAUD);
 #endif
 #ifdef UARTB_BAUD
-	uartb_MoudleClock_EN;
+	uartb_ModuleClock_EN;
 	sysctl_iomux_uartb();
 	flag |= BIT3;
 	baud[3] = serial_init(UARTB_CHANNEL, UARTB_BAUD);
@@ -79,55 +79,55 @@ void smbus_init(void)
 #if I2C_MODULE_EN
 	SYSCTL_CLKDIV_SMB = SMUBUS_CLOCK_DIVISION;
 #if I2C0_EN_Init||((DEBUGGER_OUTPUT_SWITCH == 1)&&(DEBUGGER_I2C_CHANNEL==I2C_CHANNEL_0))
-	smbus0_MoudleClock_EN;
+	smbus0_ModuleClock_EN;
 	sysctl_iomux_i2c0(I2C0_CLK_SEL, I2C0_DAT_SEL);
 	i2c0_pull_up(I2C0_CLK_SEL, I2C0_DAT_SEL);
 	I2c_Channel_Init(I2C_CHANNEL_0, I2C0_SPEED, I2C0_DEFAULT_ROLE, I2C0_DEFAULT_ADDR, 1);
 #endif
 #if I2C1_EN_Init||((DEBUGGER_OUTPUT_SWITCH == 1)&&(DEBUGGER_I2C_CHANNEL==I2C_CHANNEL_1))
-	smbus1_MoudleClock_EN;
+	smbus1_ModuleClock_EN;
 	sysctl_iomux_i2c1();
 	i2c1_pull_up();
 	I2c_Channel_Init(I2C_CHANNEL_1, I2C1_SPEED, I2C1_DEFAULT_ROLE, I2C1_DEFAULT_ADDR, 1);
 #endif
 #if I2C2_EN_Init||((DEBUGGER_OUTPUT_SWITCH == 1)&&(DEBUGGER_I2C_CHANNEL==I2C_CHANNEL_2))
-	smbus2_MoudleClock_EN;
+	smbus2_ModuleClock_EN;
 	sysctl_iomux_i2c2(I2C2_CLK_SEL);
 	i2c2_pull_up(I2C2_CLK_SEL);
 	I2c_Channel_Init(I2C_CHANNEL_2, I2C2_SPEED, I2C2_DEFAULT_ROLE, I2C2_DEFAULT_ADDR, 1);
 #endif
 #if I2C3_EN_Init||((DEBUGGER_OUTPUT_SWITCH == 1)&&(DEBUGGER_I2C_CHANNEL==I2C_CHANNEL_3))
-	smbus3_MoudleClock_EN;
+	smbus3_ModuleClock_EN;
 	sysctl_iomux_i2c3();
 	i2c3_pull_up();
 	I2c_Channel_Init(I2C_CHANNEL_3, I2C3_SPEED, I2C3_DEFAULT_ROLE, I2C3_DEFAULT_ADDR, 1);
 #endif
 #if I2C4_EN_Init||((DEBUGGER_OUTPUT_SWITCH == 1)&&(DEBUGGER_I2C_CHANNEL==I2C_CHANNEL_4))
-	smbus4_MoudleClock_EN;
+	smbus4_ModuleClock_EN;
 	sysctl_iomux_i2c4();
 	i2c4_pull_up();
 	I2c_Channel_Init(I2C_CHANNEL_4, I2C4_SPEED, I2C4_DEFAULT_ROLE, I2C4_DEFAULT_ADDR, 1);
 #endif
 #if I2C5_EN_Init||((DEBUGGER_OUTPUT_SWITCH == 1)&&(DEBUGGER_I2C_CHANNEL==I2C_CHANNEL_5))
-	smbus5_MoudleClock_EN;
+	smbus5_ModuleClock_EN;
 	sysctl_iomux_i2c5();
 	i2c5_pull_up();
 	I2c_Channel_Init(I2C_CHANNEL_5, I2C5_SPEED, I2C5_DEFAULT_ROLE, I2C5_DEFAULT_ADDR, 1);
 #endif
 #if I2C6_EN_Init||((DEBUGGER_OUTPUT_SWITCH == 1)&&(DEBUGGER_I2C_CHANNEL==I2C_CHANNEL_6))
-	smbus6_MoudleClock_EN;
+	smbus6_ModuleClock_EN;
 	sysctl_iomux_i2c6();
 	i2c6_pull_up();
 	I2c_Channel_Init(I2C_CHANNEL_6, I2C6_SPEED, I2C6_DEFAULT_ROLE, I2C6_DEFAULT_ADDR, 1);
 #endif
 #if I2C7_EN_Init||((DEBUGGER_OUTPUT_SWITCH == 1)&&(DEBUGGER_I2C_CHANNEL==I2C_CHANNEL_7))
-	smbus7_MoudleClock_EN;
+	smbus7_ModuleClock_EN;
 	sysctl_iomux_i2c7();
 	i2c7_pull_up();
 	I2c_Channel_Init(I2C_CHANNEL_7, I2C7_SPEED, I2C7_DEFAULT_ROLE, I2C7_DEFAULT_ADDR, 1);
 #endif
 #if I2C8_EN_Init||((DEBUGGER_OUTPUT_SWITCH == 1)&&(DEBUGGER_I2C_CHANNEL==I2C_CHANNEL_8))
-	smbus8_MoudleClock_EN;
+	smbus8_ModuleClock_EN;
 	sysctl_iomux_i2c8();
 	i2c8_pull_up();
 	I2c_Channel_Init(I2C_CHANNEL_8, I2C8_SPEED, I2C8_DEFAULT_ROLE, I2C8_DEFAULT_ADDR, 1);
@@ -145,19 +145,19 @@ void i3c_init(void)
 	// SYSCTL_CLKDIV_I3C = I3C_CLOCK_DIVISION;
 	/****************** slave init(only I3C2 and I3C3) ******************/
 #if I3C2_EN_Init
-	i3c2_MoudleClock_EN;
+	i3c2_ModuleClock_EN;
 	sysctl_iomux_slave0();
 	I3C_Slave_Init(I3C_SLAVE0_STATIC_ADDR, I3C_SLAVE0_DEFAULT_IDPARTNO, I3C_SLAVE0_DEFAULT_DCR, I3C_SLAVE0_DEFAULT_BCR, I3C_SLAVE0);
 #endif
 #if I2C3_EN_Init
-	i3c3_MoudleClock_EN;
+	i3c3_ModuleClock_EN;
 	sysctl_iomux_slave1();
 	I3C_Slave_Init(I3C_SLAVE1_STATIC_ADDR, I3C_SLAVE1_DEFAULT_IDPARTNO, I3C_SLAVE1_DEFAULT_DCR, I3C_SLAVE1_DEFAULT_BCR, I3C_SLAVE1);
 #endif
 	dprint("I3C slave init done.\n");
 	/****************** master init(only I3C0 and I3C1) ******************/
 #if I3C0_EN_Init
-	i3c0_MoudleClock_EN;
+	i3c0_ModuleClock_EN;
 	sysctl_iomux_master0();
 	i3c0_pull_up();
 	I3C_WAIT_SDA_PU(I3C_MASTER0);	//需要等SCL/SDA都拉高后才能进行初始化，否则会误触发IBI中断
@@ -174,7 +174,7 @@ void i3c_init(void)
 	}
 #endif
 #if I3C1_EN_Init
-	i3c1_MoudleClock_EN;
+	i3c1_ModuleClock_EN;
 	sysctl_iomux_master1();
 	i3c1_pull_up();
 	I3C_WAIT_SDA_PU(I3C_MASTER1);	//需要等SCL/SDA都拉高后才能进行初始化，否则会误触发IBI中断
@@ -199,7 +199,7 @@ void spi_init(void)
 #if SPI_MODULE_EN
 #if SPIM_EN_Init
 	SYSCTL_CLKDIV_SPIM = SPIM_CLOCK_DIVISION;
-	spim_MoudleClock_EN;
+	spim_ModuleClock_EN;
 	sysctl_iomux_spim(SPIM_MOSI_SEL, SPIM_MISO_SEL, SPIM_QE_SEL);
 #if SPIM_CS_EN
 	/*By default, a slave device does not multiplexing the chip select signal and utilizes hardware
@@ -212,7 +212,7 @@ void spi_init(void)
 #endif
 	dprint("SPI Master init done.\n");
 #if SPIFE_EN_Init
-	spif_MoudleClock_EN;
+	spif_ModuleClock_EN;
 	if (SYSCTL_PIO_CFG & BIT1)//使用外部FLASH
 	{
 		SPIFI_Init();//内部SPIF无法控制,因此主要是内部引脚开关,内部FLASH运行状态之类的控制
@@ -233,7 +233,7 @@ void pwm_tach_init(void)
 {
 
 #if (TACH_MODULE_EN | PWM_MODULE_EN)
-	pwm_MoudleClock_EN;
+	pwm_ModuleClock_EN;
 #endif
 #if (PWM_MODULE_EN)
 	PWM_CLOCK_Init(); // defined PWM_CLKn_PRESCALE PWM_CTRnm PWM_TCLK_PRESCALE config
@@ -306,13 +306,13 @@ void host_init(void)
 {
 #if HOST_MODULE_EN
 #if ESPI_EN_Init
-	espi_MoudleClock_EN;
+	espi_ModuleClock_EN;
 	//Switch espi
 	sysctl_iomux_host(1, HOST_IRQ_PIN_SEL, HOST_RST_PIN_SEL, 0, 0);
 	ESPI_Init();
 	dprint("ESPI init done.\n");
 #elif LPC_EN_Init
-	// LPC_MoudleClock_EN;
+	// LPC_ModuleClock_EN;
 		//Switch lpc
 	sysctl_iomux_host(0, HOST_IRQ_PIN_SEL, HOST_RST_PIN_SEL, LPC_CLKRUN_PIN_SEL, LPC_PD_PIN_SEL);
 	//lpc init
@@ -322,7 +322,7 @@ void host_init(void)
 	dprint("Default host iomux init done.\n");
 #endif
 #if SWUC_EN_Init
-	swuc_MoudleClock_EN;
+	swuc_ModuleClock_EN;
 	sysctl_iomux_swuc(SWUC_GA20_ENABLE, SWUC_KRST_ENABLE, SWUC_PWUREQ_ENABLE, HOST_SMI_PLTRST_SWITCH);
 	SWUC_Init(SWUC_GA20_ENABLE, SWUC_GA20_MODE, SWUC_KRST_ENABLE, HOST_SMI_PLTRST_SWITCH, SWUC_PWUREQ_ENABLE, SWUC_ACPI_ENABLE);
 	dprint("SWUC init done.\n");
@@ -332,7 +332,7 @@ void host_init(void)
 	L80_Init();
 #endif
 #if (KBC_MODULE_EN||PMC_MODULE_EN)
-	pmckbc_MoudleClock_EN;
+	pmckbc_ModuleClock_EN;
 #endif
 #if (KBC_MODULE_EN)
 	kbc_init();
@@ -348,7 +348,7 @@ void host_init(void)
 #endif
 #if (PECI_MODULE_EN)
 	SYSCTL_CLKDIV_PECI = PECI_CLOCK_DIVISION;
-	peci_MoudleClock_EN;
+	peci_ModuleClock_EN;
 	sysctl_iomux_peci();
 	PECI_Init();
 	dprint("PECI init done.\n");
@@ -358,7 +358,7 @@ void host_init(void)
 void kbs_init(void)
 {
 #if (KBS_MODULE_EN)
-	kbs_MoudleClock_EN;
+	kbs_ModuleClock_EN;
 	sysctl_iomux_kbs(KBD_8_n_SWITCH); // KBD_8_n_SWITCH
 	kbs_pull_up(KBD_8_n_SWITCH);
 	KBS_Init();
@@ -370,13 +370,13 @@ void ps2_init(void)
 #if (PS2_MODULE_EN)
 	SYSCTL_CLKDIV_PS2 = PS2_CLOCK_DIVISION;
 #if PS2_0_EN_Init
-	ps2_0_MoudleClock_EN;
+	ps2_0_ModuleClock_EN;
 	sysctl_iomux_ps2_0(PS2_0_CLK_SEL, PS2_0_DAT_SEL);
 	ps2_0_pull_up(PS2_0_CLK_SEL, PS2_0_DAT_SEL);
 	PS2_PortN_Init(PS2_0_CHANNEL);//仅初始化通道,Device初始化应该由实际情况实现
 #endif
 #if PS2_1_EN_Init
-	ps2_1_MoudleClock_EN;
+	ps2_1_ModuleClock_EN;
 	sysctl_iomux_ps2_1(PS2_1_CLK_SEL, PS2_1_DAT_SEL);
 	ps2_1_pull_up(PS2_1_CLK_SEL, PS2_1_DAT_SEL);
 	PS2_PortN_Init(PS2_1_CHANNEL);//仅初始化通道,Device初始化应该由实际情况实现
@@ -388,7 +388,7 @@ void cec_init(void)
 {
 #if (CEC_MODULE_EN)
 	SYSCTL_CLKDIV_CEC = CEC_CLOCK_DIVISION; // 24M clock
-	cec_MoudleClock_EN;
+	cec_ModuleClock_EN;
 #if CEC0_EN_Init
 	sysctl_iomux_cec0(CEC0_PIN_SEL);
 	cec0_pull_up(CEC0_PIN_SEL);
@@ -406,7 +406,7 @@ void adc_init(void)
 {
 #if ADC_MODULE_EN
 	SYSCTL_CLKDIV_OSC96M_ADC = ADC_CLOCK_DIVISION;
-	adc_MoudleClock_EN;
+	adc_ModuleClock_EN;
 #if (ADC0_EN_Init)
 	sysctl_iomux_adc0();
 	ADC_SW_Sample_Init_Single(ADC_CHANNEL0, ADC_DATA_CHANNEL0, ADC_SINGLEENDED);
@@ -446,19 +446,19 @@ void time_init(void)
 {
 #if TIMER_MODULE_EN
 	SYSCTL_CLKDIV_TMR0 = TIMER0_CLOCK_DIVISION;
-	timer0_MoudleClock_EN;
+	timer0_ModuleClock_EN;
 	TIMER_Init(TIMER0, 1, 0x0, 0x1); // 24Mdelay~= 0.083us,96Mdelay~=0.041us
 
 	SYSCTL_CLKDIV_TMR1 = TIMER1_CLOCK_DIVISION;
-	timer1_MoudleClock_EN;			 // ms delay
+	timer1_ModuleClock_EN;			 // ms delay
 	TIMER_Init(TIMER1, 1, 0x0, 0x1); // 24Mdelay~= 0.083us,96Mdelay~=0.041us
 
 	SYSCTL_CLKDIV_TMR2 = TIMER2_CLOCK_DIVISION;
-	timer2_MoudleClock_EN;			 // 1ms service
+	timer2_ModuleClock_EN;			 // 1ms service
 	TIMER_Init(TIMER2, 1, 0x0, 0x1); // 24Mdelay~= 0.083us,96Mdelay~=0.041us
 
 	SYSCTL_CLKDIV_TMR3 = TIMER3_CLOCK_DIVISION;
-	timer3_MoudleClock_EN;			 // us delay
+	timer3_ModuleClock_EN;			 // us delay
 	TIMER_Init(TIMER3, 1, 0x0, 0x1); // 24Mdelay~= 0.083us,96Mdelay~=0.041us
 
 	while ((TIMER_TRIS & 0xf) != 0xf)
@@ -468,13 +468,13 @@ void time_init(void)
 #endif
 
 #if (RTC_MODULE_EN)
-	rtc_MoudleClock_EN;
+	rtc_ModuleClock_EN;
 	RTC_Init(0, 1, LOW_CHIP_CLOCK);
 	dprint("RTC init done.\n");
 #endif
 #if WDT_MODULE_EN
 	/*wdt*/
-	wdt_MoudleClock_EN;
+	wdt_ModuleClock_EN;
 	WDT_Init(0x1, 0xa); // FIXME
 	dprint("WDT init done.\n");
 #endif

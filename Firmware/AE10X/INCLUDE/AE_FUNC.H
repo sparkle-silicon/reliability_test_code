@@ -215,233 +215,233 @@ extern void Disable_Interrupt_Main_Switch(void);
 extern void Enable_Interrupt_Main_Switch(void);
 void Default_Config();
 #if SPIM_CLOCK_EN
-#define spim_MoudleClock_EN SYSCTL_MODEN0 |= SPIM_EN;
+#define spim_ModuleClock_EN SYSCTL_MODEN0 |= SPIM_EN;
 #else
-#define spim_MoudleClock_EN SYSCTL_MODEN0 &= (~SPIM_EN);
+#define spim_ModuleClock_EN SYSCTL_MODEN0 &= (~SPIM_EN);
 #endif
 #if UART1_CLOCK_EN
-#define uart1_MoudleClock_EN SYSCTL_MODEN0 |= UART1_EN;
+#define uart1_ModuleClock_EN SYSCTL_MODEN0 |= UART1_EN;
 #else
-#define uart1_MoudleClock_EN SYSCTL_MODEN0 &= (~UART1_EN);
+#define uart1_ModuleClock_EN SYSCTL_MODEN0 &= (~UART1_EN);
 #endif
 #if UART0_CLOCK_EN
-#define uart0_MoudleClock_EN SYSCTL_MODEN0 |= UART0_EN;
+#define uart0_ModuleClock_EN SYSCTL_MODEN0 |= UART0_EN;
 #else
-#define uart0_MoudleClock_EN SYSCTL_MODEN0 &= (~UART0_EN);
+#define uart0_ModuleClock_EN SYSCTL_MODEN0 &= (~UART0_EN);
 #endif
 #if UARTB_CLOCK_EN
-#define uartb_MoudleClock_EN SYSCTL_MODEN0 |= UARTB_EN;
+#define uartb_ModuleClock_EN SYSCTL_MODEN0 |= UARTB_EN;
 #else
-#define uartb_MoudleClock_EN SYSCTL_MODEN0 &= (~UARTB_EN);
+#define uartb_ModuleClock_EN SYSCTL_MODEN0 &= (~UARTB_EN);
 #endif
 #if UARTA_CLOCK_EN
-#define uarta_MoudleClock_EN SYSCTL_MODEN0 |= UARTA_EN;
+#define uarta_ModuleClock_EN SYSCTL_MODEN0 |= UARTA_EN;
 #else
-#define uarta_MoudleClock_EN SYSCTL_MODEN0 &= (~UARTA_EN);
+#define uarta_ModuleClock_EN SYSCTL_MODEN0 &= (~UARTA_EN);
 #endif
 #if PWM_CLOCK_EN
-#define pwm_MoudleClock_EN SYSCTL_MODEN0 |= PWM_EN;
+#define pwm_ModuleClock_EN SYSCTL_MODEN0 |= PWM_EN;
 #else
-#define pwm_MoudleClock_EN SYSCTL_MODEN0 &= (~PWM_EN);
+#define pwm_ModuleClock_EN SYSCTL_MODEN0 &= (~PWM_EN);
 #endif
 #if ADC_CLOCK_EN
-#define adc_MoudleClock_EN SYSCTL_MODEN0 |= ADC_EN;
+#define adc_ModuleClock_EN SYSCTL_MODEN0 |= ADC_EN;
 #else
-#define adc_MoudleClock_EN SYSCTL_MODEN0 &= (~ADC_EN);
+#define adc_ModuleClock_EN SYSCTL_MODEN0 &= (~ADC_EN);
 #endif
 #if MAILBOX_CLOCK_EN
-#define mailbox_MoudleClock_EN SYSCTL_MODEN0 |= MAILBOX_EN;
+#define mailbox_ModuleClock_EN SYSCTL_MODEN0 |= MAILBOX_EN;
 #else
-#define mailbox_MoudleClock_EN SYSCTL_MODEN0 &= (~MAILBOX_EN);
+#define mailbox_ModuleClock_EN SYSCTL_MODEN0 &= (~MAILBOX_EN);
 #endif
 #if WDT_CLOCK_EN
-#define wdt_MoudleClock_EN SYSCTL_MODEN0 |= WDT_EN;
+#define wdt_ModuleClock_EN SYSCTL_MODEN0 |= WDT_EN;
 #else
-#define wdt_MoudleClock_EN SYSCTL_MODEN0 &= (~WDT_EN);
+#define wdt_ModuleClock_EN SYSCTL_MODEN0 &= (~WDT_EN);
 #endif
 #if SMBUS8_CLOCK_EN
-#define smbus8_MoudleClock_EN SYSCTL_MODEN0 |= SMB8_EN;
+#define smbus8_ModuleClock_EN SYSCTL_MODEN0 |= SMB8_EN;
 #else
-#define smbus8_MoudleClock_EN SYSCTL_MODEN0 &= (~SMB8_EN);
+#define smbus8_ModuleClock_EN SYSCTL_MODEN0 &= (~SMB8_EN);
 #endif
 #if SMBUS7_CLOCK_EN
-#define smbus7_MoudleClock_EN SYSCTL_MODEN0 |= SMB7_EN;
+#define smbus7_ModuleClock_EN SYSCTL_MODEN0 |= SMB7_EN;
 #else
-#define smbus7_MoudleClock_EN SYSCTL_MODEN0 &= (~SMB7_EN);
+#define smbus7_ModuleClock_EN SYSCTL_MODEN0 &= (~SMB7_EN);
 #endif
 #if SMBUS6_CLOCK_EN
-#define smbus6_MoudleClock_EN SYSCTL_MODEN0 |= SMB6_EN;
+#define smbus6_ModuleClock_EN SYSCTL_MODEN0 |= SMB6_EN;
 #else
-#define smbus6_MoudleClock_EN SYSCTL_MODEN0 &= (~SMB6_EN);
+#define smbus6_ModuleClock_EN SYSCTL_MODEN0 &= (~SMB6_EN);
 #endif
 #if SMBUS5_CLOCK_EN
-#define smbus5_MoudleClock_EN SYSCTL_MODEN1 |= SMB5_EN;
+#define smbus5_ModuleClock_EN SYSCTL_MODEN1 |= SMB5_EN;
 #else
-#define smbus5_MoudleClock_EN SYSCTL_MODEN1 &= (~SMB5_EN);
+#define smbus5_ModuleClock_EN SYSCTL_MODEN1 &= (~SMB5_EN);
 #endif
 #if SMBUS4_CLOCK_EN
-#define smbus4_MoudleClock_EN SYSCTL_MODEN1 |= SMB4_EN;
+#define smbus4_ModuleClock_EN SYSCTL_MODEN1 |= SMB4_EN;
 #else
-#define smbus4_MoudleClock_EN SYSCTL_MODEN1 &= (~SMB4_EN);
+#define smbus4_ModuleClock_EN SYSCTL_MODEN1 &= (~SMB4_EN);
 #endif
 #if SMBUS3_CLOCK_EN
-#define smbus3_MoudleClock_EN SYSCTL_MODEN0 |= SMB3_EN;
+#define smbus3_ModuleClock_EN SYSCTL_MODEN0 |= SMB3_EN;
 #else
-#define smbus3_MoudleClock_EN SYSCTL_MODEN0 &= (~SMB3_EN);
+#define smbus3_ModuleClock_EN SYSCTL_MODEN0 &= (~SMB3_EN);
 #endif
 #if SMBUS2_CLOCK_EN
-#define smbus2_MoudleClock_EN SYSCTL_MODEN0 |= SMB2_EN;
+#define smbus2_ModuleClock_EN SYSCTL_MODEN0 |= SMB2_EN;
 #else
-#define smbus2_MoudleClock_EN SYSCTL_MODEN0 &= (~SMB2_EN);
+#define smbus2_ModuleClock_EN SYSCTL_MODEN0 &= (~SMB2_EN);
 #endif
 #if SMBUS1_CLOCK_EN
-#define smbus1_MoudleClock_EN SYSCTL_MODEN0 |= SMB1_EN;
+#define smbus1_ModuleClock_EN SYSCTL_MODEN0 |= SMB1_EN;
 #else
-#define smbus1_MoudleClock_EN SYSCTL_MODEN0 &= (~SMB1_EN);
+#define smbus1_ModuleClock_EN SYSCTL_MODEN0 &= (~SMB1_EN);
 #endif
 #if SMBUS0_CLOCK_EN
-#define smbus0_MoudleClock_EN SYSCTL_MODEN0 |= SMB0_EN;
+#define smbus0_ModuleClock_EN SYSCTL_MODEN0 |= SMB0_EN;
 #else
-#define smbus0_MoudleClock_EN SYSCTL_MODEN0 &= (~SMB0_EN);
+#define smbus0_ModuleClock_EN SYSCTL_MODEN0 &= (~SMB0_EN);
 #endif
 #if GPIO_CLOCK_EN
-#define gpio_MoudleClock_EN SYSCTL_MODEN0 |= GPIO_EN;
+#define gpio_ModuleClock_EN SYSCTL_MODEN0 |= GPIO_EN;
 #else
-#define gpio_MoudleClock_EN SYSCTL_MODEN0 &= (~GPIO_EN);
+#define gpio_ModuleClock_EN SYSCTL_MODEN0 &= (~GPIO_EN);
 #endif
 #if BRAM_CLOCK_EN
-#define bram_MoudleClock_EN SYSCTL_MODEN0 |= BRAM_EN;
+#define bram_ModuleClock_EN SYSCTL_MODEN0 |= BRAM_EN;
 #else
-#define bram_MoudleClock_EN SYSCTL_MODEN0 &= (~BRAM_EN);
+#define bram_ModuleClock_EN SYSCTL_MODEN0 &= (~BRAM_EN);
 #endif
 #if SWUC_CLOCK_EN
-#define swuc_MoudleClock_EN SYSCTL_MODEN0 |= SWUC_EN;
+#define swuc_ModuleClock_EN SYSCTL_MODEN0 |= SWUC_EN;
 #else
-#define swuc_MoudleClock_EN SYSCTL_MODEN0 &= (~SWUC_EN);
+#define swuc_ModuleClock_EN SYSCTL_MODEN0 &= (~SWUC_EN);
 #endif
 #if SHM_CLOCK_EN
-#define shm_MoudleClock_EN SYSCTL_MODEN0 |= SHM_EN;
+#define shm_ModuleClock_EN SYSCTL_MODEN0 |= SHM_EN;
 #else
-#define shm_MoudleClock_EN SYSCTL_MODEN0 &= (~SHM_EN);
+#define shm_ModuleClock_EN SYSCTL_MODEN0 &= (~SHM_EN);
 #endif
 #if PMCKBC_CLOCK_EN
-#define pmckbc_MoudleClock_EN SYSCTL_MODEN0 |= PMCKBC_EN;
+#define pmckbc_ModuleClock_EN SYSCTL_MODEN0 |= PMCKBC_EN;
 #else
-#define pmckbc_MoudleClock_EN SYSCTL_MODEN0 &= (~PMCKBC_EN);
+#define pmckbc_ModuleClock_EN SYSCTL_MODEN0 &= (~PMCKBC_EN);
 #endif
 #if PS2_0_CLOCK_EN
-#define ps2_0_MoudleClock_EN SYSCTL_MODEN0 |= PS2_0_EN;
+#define ps2_0_ModuleClock_EN SYSCTL_MODEN0 |= PS2_0_EN;
 #else
-#define ps2_0_MoudleClock_EN SYSCTL_MODEN0 &= (~PS2_0_EN);
+#define ps2_0_ModuleClock_EN SYSCTL_MODEN0 &= (~PS2_0_EN);
 #endif
 #if PS2_1_CLOCK_EN
-#define ps2_1_MoudleClock_EN SYSCTL_MODEN0 |= PS2_1_EN;
+#define ps2_1_ModuleClock_EN SYSCTL_MODEN0 |= PS2_1_EN;
 #else
-#define ps2_1_MoudleClock_EN SYSCTL_MODEN0 &= (~PS2_1_EN);
+#define ps2_1_ModuleClock_EN SYSCTL_MODEN0 &= (~PS2_1_EN);
 #endif
 #if KBS_CLOCK_EN
-#define kbs_MoudleClock_EN SYSCTL_MODEN0 |= KBS_EN;
+#define kbs_ModuleClock_EN SYSCTL_MODEN0 |= KBS_EN;
 #else
-#define kbs_MoudleClock_EN SYSCTL_MODEN0 &= (~KBS_EN);
+#define kbs_ModuleClock_EN SYSCTL_MODEN0 &= (~KBS_EN);
 #endif
 #if TIMER3_CLOCK_EN
-#define timer3_MoudleClock_EN SYSCTL_MODEN0 |= TMR3_EN;
+#define timer3_ModuleClock_EN SYSCTL_MODEN0 |= TMR3_EN;
 #else
-#define timer3_MoudleClock_EN SYSCTL_MODEN0 &= (~TMR3_EN);
+#define timer3_ModuleClock_EN SYSCTL_MODEN0 &= (~TMR3_EN);
 #endif
 #if TIMER2_CLOCK_EN
-#define timer2_MoudleClock_EN SYSCTL_MODEN0 |= TMR2_EN;
+#define timer2_ModuleClock_EN SYSCTL_MODEN0 |= TMR2_EN;
 #else
-#define timer2_MoudleClock_EN SYSCTL_MODEN0 &= (~TMR2_EN);
+#define timer2_ModuleClock_EN SYSCTL_MODEN0 &= (~TMR2_EN);
 #endif
 #if TIMER1_CLOCK_EN
-#define timer1_MoudleClock_EN SYSCTL_MODEN0 |= TMR1_EN;
+#define timer1_ModuleClock_EN SYSCTL_MODEN0 |= TMR1_EN;
 #else
-#define timer1_MoudleClock_EN SYSCTL_MODEN0 &= (~TMR1_EN);
+#define timer1_ModuleClock_EN SYSCTL_MODEN0 &= (~TMR1_EN);
 #endif
 #if I3C0_CLOCK_EN
-#define i3c0_MoudleClock_EN SYSCTL_MODEN0 |= I3C0_EN;
+#define i3c0_ModuleClock_EN SYSCTL_MODEN0 |= I3C0_EN;
 #else
-#define i3c0_MoudleClock_EN SYSCTL_MODEN0 &= (~I3C0_EN);
+#define i3c0_ModuleClock_EN SYSCTL_MODEN0 &= (~I3C0_EN);
 #endif
 #if I3C1_CLOCK_EN
-#define i3c1_MoudleClock_EN SYSCTL_MODEN0 |= I3C1_EN;
+#define i3c1_ModuleClock_EN SYSCTL_MODEN0 |= I3C1_EN;
 #else
-#define i3c1_MoudleClock_EN SYSCTL_MODEN0 &= (~I3C1_EN);
+#define i3c1_ModuleClock_EN SYSCTL_MODEN0 &= (~I3C1_EN);
 #endif
 #if I3C2_CLOCK_EN
-#define i3c2_MoudleClock_EN SYSCTL_MODEN0 |= I3C2_EN;
+#define i3c2_ModuleClock_EN SYSCTL_MODEN0 |= I3C2_EN;
 #else
-#define i3c2_MoudleClock_EN SYSCTL_MODEN0 &= (~I3C2_EN);
+#define i3c2_ModuleClock_EN SYSCTL_MODEN0 &= (~I3C2_EN);
 #endif
 #if I3C3_CLOCK_EN
-#define i3c3_MoudleClock_EN SYSCTL_MODEN0 |= I3C3_EN;
+#define i3c3_ModuleClock_EN SYSCTL_MODEN0 |= I3C3_EN;
 #else
-#define i3c3_MoudleClock_EN SYSCTL_MODEN0 &= (~I3C3_EN);
+#define i3c3_ModuleClock_EN SYSCTL_MODEN0 &= (~I3C3_EN);
 #endif
 #if TIMER0_CLOCK_EN
-#define timer0_MoudleClock_EN SYSCTL_MODEN1 |= TMR0_EN;
+#define timer0_ModuleClock_EN SYSCTL_MODEN1 |= TMR0_EN;
 #else
-#define timer0_MoudleClock_EN SYSCTL_MODEN1 &= (~TMR0_EN);
+#define timer0_ModuleClock_EN SYSCTL_MODEN1 &= (~TMR0_EN);
 #endif
 #if ICTL_CLOCK_EN
-#define intc_MoudleClock_EN SYSCTL_MODEN1 |= ICTL_EN;
+#define intc_ModuleClock_EN SYSCTL_MODEN1 |= ICTL_EN;
 #else
-#define intc_MoudleClock_EN SYSCTL_MODEN1 &= (~ICTL_EN);
+#define intc_ModuleClock_EN SYSCTL_MODEN1 &= (~ICTL_EN);
 #endif
 #if H2E_CLOCK_EN
-#define h2e_MoudleClock_EN SYSCTL_MODEN1 |= H2E_EN;
+#define h2e_ModuleClock_EN SYSCTL_MODEN1 |= H2E_EN;
 #else
-#define h2e_MoudleClock_EN SYSCTL_MODEN1 &= (~H2E_EN);
+#define h2e_ModuleClock_EN SYSCTL_MODEN1 &= (~H2E_EN);
 #endif
 #if SPIFE_CLOCK_EN
-#define spif_MoudleClock_EN SYSCTL_MODEN1 |= SPIFE_EN;
+#define spif_ModuleClock_EN SYSCTL_MODEN1 |= SPIFE_EN;
 #else
-#define spif_MoudleClock_EN SYSCTL_MODEN1 &= (~SPIFE_EN);
+#define spif_ModuleClock_EN SYSCTL_MODEN1 &= (~SPIFE_EN);
 #endif
 #if SRAM_CLOCK_EN
-#define sram_MoudleClock_EN SYSCTL_MODEN1 |= SRAM_EN;
+#define sram_ModuleClock_EN SYSCTL_MODEN1 |= SRAM_EN;
 #else
-#define sram_MoudleClock_EN SYSCTL_MODEN1 &= (~SRAM_EN);
+#define sram_ModuleClock_EN SYSCTL_MODEN1 &= (~SRAM_EN);
 #endif
 #if GPIODB_CLOCK_EN
-#define gpiodb_MoudleClock_EN SYSCTL_MODEN1 |= GPIODB_EN;
+#define gpiodb_ModuleClock_EN SYSCTL_MODEN1 |= GPIODB_EN;
 #else
-#define gpiodb_MoudleClock_EN SYSCTL_MODEN1 &= (~GPIODB_EN);
+#define gpiodb_ModuleClock_EN SYSCTL_MODEN1 &= (~GPIODB_EN);
 #endif
 #if SYSCTL_CLOCK_EN
-#define sysctl_MoudleClock_EN SYSCTL_MODEN1 |= SYSCTL_EN;
+#define sysctl_ModuleClock_EN SYSCTL_MODEN1 |= SYSCTL_EN;
 #else
-#define sysctl_MoudleClock_EN SYSCTL_MODEN1 &= (~SYSCTL_EN);
+#define sysctl_ModuleClock_EN SYSCTL_MODEN1 &= (~SYSCTL_EN);
 #endif
 #if DRAM_CLOCK_EN
-#define dram_MoudleClock_EN SYSCTL_MODEN1 |= DRAM_EN;
+#define dram_ModuleClock_EN SYSCTL_MODEN1 |= DRAM_EN;
 #else
-#define dram_MoudleClock_EN SYSCTL_MODEN1 &= (~DRAM_EN);
+#define dram_ModuleClock_EN SYSCTL_MODEN1 &= (~DRAM_EN);
 #endif
 #if APB_CLOCK_EN
-#define apb_MoudleClock_EN SYSCTL_MODEN1 |= APB_EN;
+#define apb_ModuleClock_EN SYSCTL_MODEN1 |= APB_EN;
 #else
-#define apb_MoudleClock_EN SYSCTL_MODEN1 &= (~APB_EN);
+#define apb_ModuleClock_EN SYSCTL_MODEN1 &= (~APB_EN);
 #endif
 #if CEC_CLOCK_EN
-#define cec_MoudleClock_EN SYSCTL_MODEN1 |= CEC_EN;
+#define cec_ModuleClock_EN SYSCTL_MODEN1 |= CEC_EN;
 #else
-#define cec_MoudleClock_EN SYSCTL_MODEN1 &= (~CEC_EN);
+#define cec_ModuleClock_EN SYSCTL_MODEN1 &= (~CEC_EN);
 #endif
 #if RTC_CLOCK_EN
-#define rtc_MoudleClock_EN SYSCTL_MODEN1 |= RTC_EN;
+#define rtc_ModuleClock_EN SYSCTL_MODEN1 |= RTC_EN;
 #else
-#define rtc_MoudleClock_EN SYSCTL_MODEN1 &= (~RTC_EN);
+#define rtc_ModuleClock_EN SYSCTL_MODEN1 &= (~RTC_EN);
 #endif
 #if PECI_CLOCK_EN
-#define peci_MoudleClock_EN SYSCTL_MODEN1 |= PECI_EN;
+#define peci_ModuleClock_EN SYSCTL_MODEN1 |= PECI_EN;
 #else
-#define peci_MoudleClock_EN SYSCTL_MODEN1 &= (~PECI_EN);
+#define peci_ModuleClock_EN SYSCTL_MODEN1 &= (~PECI_EN);
 #endif
 #if ESPI_CLOCK_EN
-#define espi_MoudleClock_EN SYSCTL_MODEN1 |= ESPI_EN;
+#define espi_ModuleClock_EN SYSCTL_MODEN1 |= ESPI_EN;
 #else
-#define espi_MoudleClock_EN SYSCTL_MODEN1 &= (~ESPI_EN);
+#define espi_ModuleClock_EN SYSCTL_MODEN1 &= (~ESPI_EN);
 #endif
 #endif

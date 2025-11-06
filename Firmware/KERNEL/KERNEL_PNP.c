@@ -27,13 +27,12 @@ void Config_PNP_Access_Request(void)
 	// judge access request clear or not
 	do
 	{
-		if((PNP_CONFIG & E2PNP_RDY) == 1)
+		if ((PNP_CONFIG & E2PNP_RDY) == 1)
 			break; /* OK */
 		udelay(1000);
 		timeout--;
-	}
-	while(timeout);
-	if(timeout == 0)
+	} while (timeout);
+	if (timeout == 0)
 		dprint("access request timeout\n");
 }
 //-----------------------------------------------------------------------------
@@ -47,13 +46,12 @@ void Config_PNP_Access_Release(void)
 	// judge access request clear or not
 	do
 	{
-		if((PNP_CONFIG & E2PNP_RDY) == 0)
+		if ((PNP_CONFIG & E2PNP_RDY) == 0)
 			break; /* OK */
 		udelay(1000);
 		timeout--;
-	}
-	while(timeout);
-	if(timeout == 0)
+	} while (timeout);
+	if (timeout == 0)
 		dprint("access request clear timeout\n");
 }
 //-----------------------------------------------------------------------------
@@ -74,13 +72,12 @@ void Config_PNP_Write(BYTE idx, BYTE ldn, BYTE data)
 	{
 		rdata = PNP_CTRL1;
 		e2pnp_reg_wc = (rdata & E2PNP_WC);
-		if(e2pnp_reg_wc != 0)
+		if (e2pnp_reg_wc != 0)
 			break; /* OK */
 		udelay(1000);
 		timeout--;
-	}
-	while(timeout);
-	if(timeout == 0)
+	} while (timeout);
+	if (timeout == 0)
 		dprint("pnp write done timeout\n");
 	// clear write requeset
 	PNP_CTRL1 &= ~E2PNP_WriteREQ;
@@ -103,13 +100,12 @@ void Config_PNP_Read(BYTE idx, BYTE ldn)
 	{
 		rdata = PNP_CTRL1;
 		e2pnp_reg_rc = (rdata & E2PNP_RC);
-		if(e2pnp_reg_rc != 0)
+		if (e2pnp_reg_rc != 0)
 			break; /* OK */
 		udelay(1000);
 		timeout--;
-	}
-	while(timeout);
-	if(timeout == 0)
+	} while (timeout);
+	if (timeout == 0)
 		dprint("pnp read done timeout\n");
 	idx = (rdata & 0xff000000) >> 24;
 	ldn = (rdata & 0x00ff0000) >> 16;
@@ -120,13 +116,12 @@ void Config_PNP_Read(BYTE idx, BYTE ldn)
 	do
 	{
 		rdata = PNP_CTRL1;
-		if(((rdata & 0x00000f00) >> 8) == 0xc)
+		if (((rdata & 0x00000f00) >> 8) == 0xc)
 			break;
 		udelay(1000);
 		timeout1--;
-	}
-	while(timeout1);
-	if(timeout1 == 0)
+	} while (timeout1);
+	if (timeout1 == 0)
 		dprint("pnp finish timeout\n");
 }
 //-----------------------------------------------------------------------------
@@ -347,10 +342,10 @@ BYTE Sio_PNP_Table[] =
 };
 void Sio_PNP_Config(void)
 {
-	BYTE *data_pntr;
+	BYTE* data_pntr;
 	BYTE cnt = 0;
 	data_pntr = Sio_PNP_Table;
-	while(cnt < (sizeof(Sio_PNP_Table) / 3))
+	while (cnt < (sizeof(Sio_PNP_Table) / 3))
 	{
 		Config_PNP_Write(*(data_pntr + 3 * cnt + 0), *(data_pntr + 3 * cnt + 1), *(data_pntr + 3 * cnt + 2));
 		cnt++;
@@ -362,7 +357,7 @@ void Sio_PNP_Config(void)
 //-----------------------------------------------------------------------------
 void LogicalDevice_PNP_Config(void)
 {
-	h2e_MoudleClock_EN;
+	h2e_ModuleClock_EN;
 	// The Host's PNP device enable
 	SYSCTL_HDEVEN = (HOST_UARTx_EN | HOST_KBC_PMC_EN | HOST_PP_EN | HOST_BRAM_P80_EN | HOST_SMFI_SSPI_EN | HOST_CANx_EN);
 	// Send Request
@@ -380,8 +375,8 @@ void LogicalDevice_PNP_Config(void)
 //-----------------------------------------------------------------------------
 void ShareMem_PNP_Config(void)
 {
-	h2e_MoudleClock_EN;
-	sram_MoudleClock_EN;
+	h2e_ModuleClock_EN;
+	sram_ModuleClock_EN;
 	SYSCTL_HDEVEN |= HOST_SMFI_EN;
 	SYSCTL_SPCTL0 |= PNPCNST_SETEN; //enable pnp const register//PNPKEY, PNPPORT, VENDORID, CHIPVER 的设置使
 	SHAREMEMORY_INIT();

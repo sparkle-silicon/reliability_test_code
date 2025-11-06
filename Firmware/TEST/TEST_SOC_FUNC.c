@@ -15,7 +15,7 @@
  */
 #include "TEST_SOC_FUNC.H"
 #if TEST
-char *err = "PS2 %d self check error\n";
+char* err = "PS2 %d self check error\n";
 void ps2_0_init_test(void)
 {
 	register u8 timeout;
@@ -23,10 +23,9 @@ void ps2_0_init_test(void)
 	timeout = 100;
 	do
 	{
-		if(PS2_PORT0_IBUF == 0x55)break;
-	}
-	while(--timeout);
-	if(!timeout)
+		if (PS2_PORT0_IBUF == 0x55)break;
+	} while (--timeout);
+	if (!timeout)
 		dprint(err, 0);
 }
 
@@ -37,19 +36,18 @@ void ps2_1_init_test(void)
 	timeout = (PS2_CLOCK / 100000);
 	do
 	{
-		if(PS2_PORT1_IBUF == 0x55)break;
-	}
-	while(--timeout);
-	if(!timeout)
+		if (PS2_PORT1_IBUF == 0x55)break;
+	} while (--timeout);
+	if (!timeout)
 		dprint(err, 1);
 }
 void can_lpc_init(void)
 {
 #if CAN_MODULE_EN
-	can0_MoudleClock_EN;
-	can1_MoudleClock_EN;
-	can2_MoudleClock_EN;
-	can3_MoudleClock_EN;
+	can0_ModuleClock_EN;
+	can1_ModuleClock_EN;
+	can2_ModuleClock_EN;
+	can3_ModuleClock_EN;
 	sysctl_iomux_can();
 	/*can*/
 	// 波特率为125kbs 验证id为0x123 掩码0xffff8000

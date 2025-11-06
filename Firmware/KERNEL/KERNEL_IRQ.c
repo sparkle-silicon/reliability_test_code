@@ -156,7 +156,7 @@ void SECTION(".init.irq") Irqc_init(void)
 	//0. Disable interrupts in general.
 	clear_csr(mstatus, MSTATUS_MIE);
 	//1. Set Interrupt controller
-	intc_MoudleClock_EN;
+	intc_ModuleClock_EN;
 	intc_init();
 	// dprint("INTC init done.\n");
 	//2. Set CPU CSR IRQ
@@ -741,7 +741,7 @@ void __interrupt SECTION(".interrupt.TIMER0_HANDLER") TIMER0_HANDLER(void)
 
 	if ((TIMER0_TIS & 0x1) == 0x1)
 		TIMER0_TEOI; // clear int
-	};
+};
 void __interrupt SECTION(".interrupt.TIMER1_HANDLER") TIMER1_HANDLER(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
@@ -772,7 +772,7 @@ void __interrupt SECTION(".interrupt.TIMER1_HANDLER") TIMER1_HANDLER(void)
 	{
 		TIMER1_TEOI; // clear int
 	}
-	};
+};
 void __interrupt SECTION(".interrupt.TIMER2_HANDLER") TIMER2_HANDLER(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
@@ -835,7 +835,7 @@ void __interrupt SECTION(".interrupt.TIMER3_HANDLER") TIMER3_HANDLER(void)
 	{
 		TIMER3_TEOI;
 	}
-	};
+};
 /*Intr0*/
 void __interrupt SECTION(".interrupt.INTC0_HANDLER") INTC0_HANDLER(void)
 {
@@ -896,7 +896,7 @@ void __interrupt SECTION(".interrupt.INTC1_HANDLER") INTC1_HANDLER(void)
 #else
 	if (FALSE)
 	{
-}
+	}
 #endif
 #if ((COMMAND_UART_SWITCH == 1))
 	else if (intr1_service[(num)] == &intr1_uart1)
@@ -905,7 +905,7 @@ void __interrupt SECTION(".interrupt.INTC1_HANDLER") INTC1_HANDLER(void)
 #else
 	else if (FALSE)
 	{
-}
+	}
 #endif
 #if ((PRINTF_UART_SWITCH == 1))
 	else if (intr1_service[(num)] != &intr1_uart1)

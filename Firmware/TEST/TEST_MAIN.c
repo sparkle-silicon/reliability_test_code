@@ -30,10 +30,10 @@
  // 	}
  // //配置TIMER2定时器中断2sec唤醒一次
  // 	SYSCTL_CLKDIV_TMR2 = TIMER2_CLOCK_DIVISION;//配置TMR2分频=0
- // 	timer2_MoudleClock_EN;//enable TMR2 mode
+ // 	timer2_ModuleClock_EN;//enable TMR2 mode
  // 	TIMER_Init(TIMER2, (LOW_CHIP_CLOCK / (2 << TIMER2_CLOCK_DIVISION)/*clock=*/ * 2/*sec*/), 0x1/*loop*/, 0x0/**/);
  // 	//配置PWM波输出
- // 	pwm_MoudleClock_EN;
+ // 	pwm_ModuleClock_EN;
  // 	PWM_CTRL |= PRESCALE_4;//4分频32000/4=8000
  // 		/* pwm_scale */
  // 	PWM_SCALER0 = 0;//8000/1=8000
@@ -370,16 +370,16 @@ int main()
 	KBC_CTL = 0x8;
 	PMC1_CTL = 0x1;
 	PMC2_CTL = 0x1;
-	uart0_MoudleClock_EN;
+	uart0_ModuleClock_EN;
 	sysctl_iomux_uart0();
 	serial_init(0, 115200);
-	uart1_MoudleClock_EN;
+	uart1_ModuleClock_EN;
 	sysctl_iomux_uart1();
 	serial_init(1, 115200);
-	uart2_MoudleClock_EN;
+	uart2_ModuleClock_EN;
 	sysctl_iomux_uart2();
 	serial_init(2, 115200);
-	uart3_MoudleClock_EN;
+	uart3_ModuleClock_EN;
 	sysctl_iomux_uart3();
 	serial_init(3, 115200);
 #endif
@@ -543,7 +543,7 @@ int main()
 
 	//iram -> smbus0 tx  smbus0 rx  -> iram 
 	// #define SMBUS I2C_CHANNEL_0						//改
-	// smbus0_MoudleClock_EN;
+	// smbus0_ModuleClock_EN;
 	// REG32(0x29000)=0x00000001;//cmd:0x00(w)      data:0x01
 	// REG32(0x29004)=0x00000300;//cmd:0x03(stp/r)  data:0x00
 	// REG32(0x29008)=0xffffff10;//C
@@ -588,7 +588,7 @@ int main()
 
 	//iram -> smbus1 tx  smbus1 rx  -> iram 
 	// #define SMBUS I2C_CHANNEL_1						//改
-	// smbus0_MoudleClock_EN;
+	// smbus0_ModuleClock_EN;
 	// REG32(0x29000)=0x00000001;//cmd:0x00(w)      data:0x01
 	// REG32(0x29004)=0x00000300;//cmd:0x03(stp/r)  data:0x00
 	// REG32(0x29008)=0xffffff10;//C
@@ -634,7 +634,7 @@ int main()
 
 	//iram -> smbus2 tx  smbus2 rx  -> iram 
 	// #define SMBUS I2C_CHANNEL_2						//改
-	// smbus0_MoudleClock_EN;
+	// smbus0_ModuleClock_EN;
 	// REG32(0x29000)=0x00000001;//cmd:0x00(w)      data:0x01
 	// REG32(0x29004)=0x00000300;//cmd:0x03(stp/r)  data:0x00
 	// REG32(0x29008)=0xffffff10;//C
@@ -679,7 +679,7 @@ int main()
 
 	//iram -> smbus3 tx  smbus3 rx  -> iram 
 	// #define SMBUS I2C_CHANNEL_3						//改
-	// smbus0_MoudleClock_EN;
+	// smbus0_ModuleClock_EN;
 	// REG32(0x29000)=0x00000001;//cmd:0x00(w)      data:0x01
 	// REG32(0x29004)=0x00000300;//cmd:0x03(stp/r)  data:0x00
 	// REG32(0x29008)=0xffffff10;//C
@@ -724,7 +724,7 @@ int main()
 
 	//iram -> smbus4 tx  smbus4 rx  -> iram 
 	// #define SMBUS I2C_CHANNEL_4						//改
-	// smbus0_MoudleClock_EN;
+	// smbus0_ModuleClock_EN;
 	// REG32(0x29000)=0x00000001;//cmd:0x00(w)      data:0x01
 	// REG32(0x29004)=0x00000300;//cmd:0x03(stp/r)  data:0x00
 	// REG32(0x29008)=0xffffff10;//C
@@ -768,7 +768,7 @@ int main()
 
 	//iram -> smbus5 tx  smbus5 rx  -> iram 
 	// #define SMBUS I2C_CHANNEL_5						//改
-	// smbus0_MoudleClock_EN;
+	// smbus0_ModuleClock_EN;
 	// REG32(0x29000)=0x00000001;//cmd:0x00(w)      data:0x01
 	// REG32(0x29004)=0x00000300;//cmd:0x03(stp/r)  data:0x00
 	// REG32(0x29008)=0xffffff10;//C
@@ -813,7 +813,7 @@ int main()
 
 	//iram -> smbus6 tx  smbus6 rx  -> iram 
 	// #define SMBUS I2C_CHANNEL_6						//改
-	// smbus0_MoudleClock_EN;
+	// smbus0_ModuleClock_EN;
 	// REG32(0x29000)=0x00000001;//cmd:0x00(w)      data:0x01
 	// REG32(0x29004)=0x00000300;//cmd:0x03(stp/r)  data:0x00
 	// REG32(0x29008)=0xffffff10;//C

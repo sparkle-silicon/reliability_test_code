@@ -45,13 +45,13 @@ int32_t SYSCTL_PMU_CFG_CONTEXT = 0;
  * you need set corresponding bit to enable Module reset
  *
  * -----------------------------Module Reset bit map---------------------------
- * Moudle_RESET_REG0(0x30428)  1:reset enable  0:reset disable
+ * Module_RESET_REG0(0x30428)  1:reset enable  0:reset disable
  *   bit31:PS2_0 bit30:ROMP bit29:KBC bit28:PMC5 bit27:PMC4 bit26:PMC3 bit25:PMC2 bit24:PMC1
  *   bit23:SHM bit22:SWUC bit21:BRAM bit20:GPIO bit19:SMB0 bit18:SMB1 bit17:SMB2 bit16:SMB3
  *   bit15:WDT bit14:PPRORT bit13:HOST bit12:ADC bit11:PWM bit10:UARTA_BAUD bit9:UARTB_BAUD bit8:UART0_BAUD
  *   bit7:UART1_BAUD bit6:UART2_BAUD bit5:UART3_BAUD bit4:CAN0 bit3:CAN1 bit2:CAN2 bit1:CAN3 bit0:SPIM
  * ----------------------------------------------------------------------------
- * Moudle_RESET_REG1(0x3042c)  1:reset enable  0:reset disable
+ * Module_RESET_REG1(0x3042c)  1:reset enable  0:reset disable
  *   bit18:LPC RESET ENABLE 1:yes 0:no     bit 16:CHIP RESET
  *   bit15:APB bit14:SYSCTL bit13:SM2 bit12:SM3 bit11:EFUSE bit10:PNP bit9:LDN bit8:SPIF
  *   bit7:H2E bit6:ICTL bit5:TIMER0 bit4:TIMER1 bit3:TIMER2 bit2:TIMER3 bit1:KBS bit0:PS2_1
@@ -59,18 +59,18 @@ int32_t SYSCTL_PMU_CFG_CONTEXT = 0;
 void Module_SoftReset(int reg_idx, int bit_no)
 {
 	/*--------------this is a module reset example-------------*/
-	// Moudle_RESET_REG0 |= 0x3ff066e1;
-	// Moudle_RESET_REG0 = 0x0;
-	// Moudle_RESET_REG1 = 0x0; 
-	if(reg_idx == 0)
+	// Module_RESET_REG0 |= 0x3ff066e1;
+	// Module_RESET_REG0 = 0x0;
+	// Module_RESET_REG1 = 0x0; 
+	if (reg_idx == 0)
 	{
-		Moudle_RESET_REG0 |= (1 << bit_no);
-		Moudle_RESET_REG0 = 0x0;
+		Module_RESET_REG0 |= (1 << bit_no);
+		Module_RESET_REG0 = 0x0;
 	}
 	else
 	{
-		Moudle_RESET_REG1 |= (1 << bit_no);
-		Moudle_RESET_REG1 = 0x0;
+		Module_RESET_REG1 |= (1 << bit_no);
+		Module_RESET_REG1 = 0x0;
 	}
 
 }
@@ -94,14 +94,14 @@ void ALIGNED(4) OPTIMIZE(0) CPU_SLP_RES(void)
 	MAILBOX_SET_IRQ(MAILBOX_Control_IRQ_NUMBER);   // 触发子系统中断
 	MAILBOX_WAIT_IRQ(MAILBOX_CMD_FLASH_ENTERLOWPOWER, MAILBOX_Control_IRQ_NUMBER);
 	MAILBOX_CLEAR_IRQ(MAILBOX_Control_IRQ_NUMBER); // 清除中断状态
-	if(MAILBOX_OTHER_INFO1)
+	if (MAILBOX_OTHER_INFO1)
 	{
 		MAILBOX_SELF_CMD = MAILBOX_CMD_FLASH_ENTERLOWPOWER; // 命令字
 		MAILBOX_SET_IRQ(MAILBOX_Control_IRQ_NUMBER);   // 触发子系统中断
 		MAILBOX_WAIT_IRQ(MAILBOX_CMD_FLASH_ENTERLOWPOWER, MAILBOX_Control_IRQ_NUMBER);
 		MAILBOX_CLEAR_IRQ(MAILBOX_Control_IRQ_NUMBER); // 清除中断状态
 	}
-	for(i = 0; i < 50000; i++)
+	for (i = 0; i < 50000; i++)
 	{
 		nop; nop; nop;
 	}
@@ -118,15 +118,15 @@ void ALIGNED(4) OPTIMIZE(0) CPU_SLP_RES(void)
 	//mem retn
 	SYSCTL_RET_CTRL &= ~(BIT(1) | BIT(2) | BIT(4) | BIT(5) | BIT(6) | BIT(7) | BIT(8) | BIT(9) | BIT(10) | BIT(11));//3μA
 #ifdef SUPPORT_DEEPSLEEP
-//vcore->1.0V
+	//vcore->1.0V
 	SYSCTL_PMU_CFG &= (~(0xff << 10));
 	SYSCTL_PMU_CFG |= 22 << 10;
 #endif
 #ifdef SUPPORT_SLEEP
-//switch osc to 3m
+	//switch osc to 3m
 	SYSCTL_CLKDIV_OSC96M = 0x3F;
 #endif
-//cpu sleep
+	//cpu sleep
 	asm volatile("wfi");
 	nop; nop; nop; nop; nop; nop;
 	SYSCTL_PMU_CFG = SYSCTL_PMU_CFG_CONTEXT;
@@ -158,7 +158,7 @@ void ALIGNED(4) OPTIMIZE(0) CPU_SLP_RES(void)
 	KBS_KSDC2R = KBS_KSDC2R_CONTEXT;
 	KBS_KSDC3R = KBS_KSDC3R_CONTEXT;
 #endif 
-	for(i = 0; i < 1000; i++)
+	for (i = 0; i < 1000; i++)
 	{
 		nop; nop; nop;
 	}
@@ -167,14 +167,14 @@ void ALIGNED(4) OPTIMIZE(0) CPU_SLP_RES(void)
 	MAILBOX_SET_IRQ(MAILBOX_Control_IRQ_NUMBER);   // 触发子系统中断
 	MAILBOX_WAIT_IRQ(MAILBOX_CMD_FLASH_EXITLOWPOWER, MAILBOX_Control_IRQ_NUMBER);
 	MAILBOX_CLEAR_IRQ(MAILBOX_Control_IRQ_NUMBER); // 清除中断状态
-	if(MAILBOX_OTHER_INFO1)
+	if (MAILBOX_OTHER_INFO1)
 	{
 		MAILBOX_SELF_CMD = MAILBOX_CMD_FLASH_EXITLOWPOWER; // 命令字
 		MAILBOX_SET_IRQ(MAILBOX_Control_IRQ_NUMBER);   // 触发子系统中断
 		MAILBOX_WAIT_IRQ(MAILBOX_CMD_FLASH_EXITLOWPOWER, MAILBOX_Control_IRQ_NUMBER);
 		MAILBOX_CLEAR_IRQ(MAILBOX_Control_IRQ_NUMBER); // 清除中断状态
 	}
-	for(i = 0; i < 10000; i++)
+	for (i = 0; i < 10000; i++)
 	{
 		nop; nop; nop;
 	}
@@ -282,10 +282,10 @@ void Enter_LowPower_Mode(void)
 	GPIO_Config(GPIOA, 3, 2, 0, 1, 0);
 #endif
 #if SUPPORT_KBS_WAKEUP
-	if((SYSCTL_PIOE_UPCFG & 0xff0000) != 0xff0000)//kbs in pull up
+	if ((SYSCTL_PIOE_UPCFG & 0xff0000) != 0xff0000)//kbs in pull up
 	{
 		SYSCTL_PIOE_UPCFG |= 0x00ff0000;
-		for(volatile int i = 0; i < 100000; i++)
+		for (volatile int i = 0; i < 100000; i++)
 		{
 			nop; nop; nop;
 		}
@@ -294,7 +294,7 @@ void Enter_LowPower_Mode(void)
 	//开启wfi模式，降低CPU运行
 	Disable_Interrupt_Main_Switch();                  // Disable All Interrupt
 	Smf_Ptr = Load_Smfi_To_Dram(CPU_SLP_RES, 0x600);
-	if(Smf_Ptr != 0)
+	if (Smf_Ptr != 0)
 		(*Smf_Ptr)(); // Do Function at malloc address
 	Enable_Interrupt_Main_Switch();
 	free(Smf_Ptr);  // 释放通过 malloc 分配的内存空间
@@ -302,7 +302,7 @@ void Enter_LowPower_Mode(void)
 }
 void Exit_LowPower_Mode(void)
 {
-	if(Low_Power_Flag)
+	if (Low_Power_Flag)
 	{
 		//*(volatile uint32_t *)(0x2780) = 0x0;
 		Low_Power_Flag = 0;
@@ -440,9 +440,9 @@ void CHIP_Deep_Sleep2(void)
 	GPIO_Config(GPIOA, 11, 2, 0, 1, 0);
 	// *(volatile uint32_t *)(0x3050c) = 0x0;
 	// SYSCTL_RESERVER = BIT(28);
-	*(volatile uint8_t *)(0x2780) = 0x1 << 4;
+	*(volatile uint8_t*)(0x2780) = 0x1 << 4;
 	SYSCTL_DVDD_EN = 0xff6109;
-	*(volatile uint32_t *)(0x30510) = 0x1eff;
+	*(volatile uint32_t*)(0x30510) = 0x1eff;
 	SYSCTL_PMUCSR |= BIT(20) | BIT0;//Enable WFI Mode deepsleep2 flag
 	// SYSCTL_PIO1_CFG = 0x0;
 	// SYSCTL_RST1 |= 0x1<<16;
@@ -461,10 +461,10 @@ void CHIP_Deep_Sleep2(void)
 void CHIP_Hibernation(void)
 {
 	dprint("Hibernation mode\n");
-	if(REG8(0x2780) & 0x1)
+	if (REG8(0x2780) & 0x1)
 	{
 		REG8(0x2780) = 0;
-		for(volatile int i = 0; i < 100000; i++)
+		for (volatile int i = 0; i < 100000; i++)
 		{
 			nop;
 		}
@@ -477,7 +477,7 @@ void CHIP_Hibernation(void)
 //----------------------------------------------------------------------------
 void Service_LowPower(void)
 {
-	if(F_Service_WakeUp)
+	if (F_Service_WakeUp)
 	{
 		F_Service_WakeUp = 0;
 		dprint("cpu Enter Goto LowPower Mode service!\n");

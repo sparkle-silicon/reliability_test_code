@@ -21,25 +21,25 @@ void SMS_Init(VBYTE windows, VBYTE baseaddr, VBYTE aas)
   dprint("SRAM_CLOCK_EN is not ready!");
   return;
 #endif
-  if(windows == 0)
+  if (windows == 0)
   {
     SMS_WUCTL |= SMS_WUCTL_SMSW0E;//enable window
     SMS_W0BA = baseaddr; //config sram window base addr
     SMS_W0AAS = aas;//config sram window size & protection 
   }
-  else if(windows == 1)
+  else if (windows == 1)
   {
     SMS_WUCTL |= SMS_WUCTL_SMSW1E;//enable window
     SMS_W1BA = baseaddr; //config sram window base addr
     SMS_W1AAS = aas;//config sram window size & protection 
   }
-  else if(windows == 2)
+  else if (windows == 2)
   {
     SMS_WUCTL |= SMS_WUCTL_SMSW2E;//enable window
     SMS_W2BA = baseaddr; //config sram window base addr
     SMS_W2AAS = aas;//config sram window size & protection 
   }
-  else if(windows == 3)
+  else if (windows == 3)
   {
     SMS_WUCTL |= SMS_WUCTL_SMSW3E;//enable window
     SMS_W3BA = baseaddr; //config sram window base addr
@@ -54,7 +54,7 @@ void SMF_Init(void)
 }
 void SHAREMEM_PNP(void)
 {
-   //Enable SMFI
+  //Enable SMFI
   SYSCTL_HDEVEN |= HOST_SMFI_EN; // host SMFI logic device pnp enable
   SYSCTL_SPCTL0 |= PNPCNST_SETEN; //enable pnp const register//PNPKEY, PNPPORT, VENDORID, CHIPVER 的设置使
   Config_PNP_Access_Request();
@@ -93,7 +93,7 @@ void SHAREMEMORY_INIT(void)
   dprint("SHM_CLOCK_EN is not ready!");
   return;
 #endif
-  sram_MoudleClock_EN;
+  sram_ModuleClock_EN;
   SMS_Init(0, 0x00, SMS_WxAAS_1024SIZE | SMS_WxAAS_NWPE | SMS_WxAAS_NRPE);
   SMS_Init(1, 0x40, SMS_WxAAS_1024SIZE | SMS_WxAAS_NWPE | SMS_WxAAS_NRPE);
   SMS_Init(2, 0x80, SMS_WxAAS_1024SIZE | SMS_WxAAS_NWPE | SMS_WxAAS_NRPE);

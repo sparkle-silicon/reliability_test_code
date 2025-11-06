@@ -23,8 +23,8 @@
 #include "AE_SOFT_FP.H"
 
 #if SUPPORT_REAL_OR_DELAY_PRINTF
-extern int printr(const char *fmt, ...);//实时输出
-extern int printd(const char *fmt, ...);//延时输出
+extern int printr(const char* fmt, ...);//实时输出
+extern int printd(const char* fmt, ...);//延时输出
 #define REAL_PRINT_ON F_Service_PUTC = 1;//开启实时输出
 #define DELAY_PRINT_ON F_Service_PUTC = 0;//开启延时输出
 #else
@@ -33,8 +33,8 @@ extern int printd(const char *fmt, ...);//延时输出
 #define REAL_PRINT_ON 
 #define DELAY_PRINT_ON 
 #endif
-/**********************define**************************************************************/
-// #define DEBUG
+ /**********************define**************************************************************/
+ // #define DEBUG
 #if DEBUG
 #define dprint(fmt, args...) printf(fmt, ##args)//调试输出
 #define assert_print(fmt, args...) printf("%s:%d,%s:" fmt "\n", __FILE__, __LINE__, __FUNCTION__, ##args)//调试代码信息输出
@@ -42,7 +42,7 @@ extern int printd(const char *fmt, ...);//延时输出
 #define dprint(fmt, args...)
 #define assert_print(fmt, args...)
 #endif
-#define Moudle_dbg(Mod_Dbg_En,fmt, args...) {if(Mod_Dbg_En)printf(fmt, ##args);}//模块输出
+#define Module_dbg(Mod_Dbg_En,fmt, args...) {if(Mod_Dbg_En)printf(fmt, ##args);}//模块输出
 #define Level_dbg(level,fmt, args...) {  if((level) >= Debug_PRINTF_LEVEL)printf(fmt, ##args);}//等级输出
 #define Mod_lev_dbg(Mod_Dbg_En,level,fmt, args...) {  if((Mod_Dbg_En)&&((level) >= Debug_PRINTF_LEVEL))printf(fmt, ##args);}//模块等级输出
 
@@ -133,20 +133,6 @@ extern VBYTE print_buff[];
 #define PRINTF_IIR UART1_IIR
 #define PRINTF_TX UART1_TX
 #define PRINTF_RX UART1_RX
-// #elif (PRINTF_UART_SWITCH == 2)
-// #define PRINTF_LSR UART2_LSR
-// #define PRINTF_LCR UART2_LCR
-// #define PRINTF_IER UART2_IER
-// #define PRINTF_IIR UART2_IIR
-// #define PRINTF_TX UART2_TX
-// #define PRINTF_RX UART2_RX
-// #elif (PRINTF_UART_SWITCH == 3)
-// #define PRINTF_LSR UART3_LSR
-// #define PRINTF_LCR UART3_LCR
-// #define PRINTF_IER UART3_IER
-// #define PRINTF_IIR UART3_IIR
-// #define PRINTF_TX UART3_TX
-// #define PRINTF_RX UART3_RX
 #elif (PRINTF_UART_SWITCH == 2)
 #define PRINTF_LSR UARTA_LSR
 #define PRINTF_LCR UARTA_LCR

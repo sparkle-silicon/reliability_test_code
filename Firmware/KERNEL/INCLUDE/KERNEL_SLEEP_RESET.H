@@ -36,13 +36,13 @@
 #define SYSCTL_RST_BIT_POS 14
 /*--------------------------------------------------------------------------*/
 /*--------------------Soft reset Register Address definition-----------------*/
-#define Moudle_RESET_REG0_OFFSET        HEX28
-#define Moudle_RESET_REG1_OFFSET        HEX2C
+#define Module_RESET_REG0_OFFSET        HEX28
+#define Module_RESET_REG1_OFFSET        HEX2C
 #define SRESET_REG_ADDR(offset)         REG_ADDR(SYSCTL_BASE_ADDR,offset)
-#define Moudle_RESET_REG0_ADDR          SRESET_REG_ADDR(Moudle_RESET_REG0_OFFSET)
-#define Moudle_RESET_REG1_ADDR          SRESET_REG_ADDR(Moudle_RESET_REG1_OFFSET)
-#define Moudle_RESET_REG0               REG32(Moudle_RESET_REG0_ADDR)
-#define Moudle_RESET_REG1               REG32(Moudle_RESET_REG1_ADDR)
+#define Module_RESET_REG0_ADDR          SRESET_REG_ADDR(Module_RESET_REG0_OFFSET)
+#define Module_RESET_REG1_ADDR          SRESET_REG_ADDR(Module_RESET_REG1_OFFSET)
+#define Module_RESET_REG0               REG32(Module_RESET_REG0_ADDR)
+#define Module_RESET_REG1               REG32(Module_RESET_REG1_ADDR)
 /*--------------------------------------------------------------------------*/
 #define Hibernation_Wakeup_GPIO Hibernation_Wakeup_GPIOA11
 extern void Module_SoftReset(int, int);
