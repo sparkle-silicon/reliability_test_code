@@ -21,9 +21,9 @@
 #include "AE_CONFIG.H"
 #include "AE_DEBUGGER.H"
 #ifndef I3C_CLOCK_DIVISION
-#define I3C_CLOCK  (HIGHT_CHIP_CLOCK)
+#define I3C_CLOCK  (HIGH_CHIP_CLOCK)
 #else
-#define I3C_CLOCK  (HIGHT_CHIP_CLOCK / (SYSCTL_CLKDIV_I3C+1))
+#define I3C_CLOCK  (HIGH_CHIP_CLOCK / (SYSCTL_CLKDIV_I3C+1))
 #endif
  /* * * * * MASTER * * * * */
  /** CCC Command Definitions of broadcast**/

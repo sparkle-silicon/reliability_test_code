@@ -72,7 +72,7 @@
 #define UART_IP_TXWM 0x1
 #define UART_IP_RXWM 0x2
 
-#define UART_CLOCK  (HIGHT_CHIP_CLOCK / (SYSCTL_CLKDIV_UART+1)) // UART clock
+#define UART_CLOCK  (HIGH_CHIP_CLOCK / (SYSCTL_CLKDIV_UART+1)) // UART clock
 
 extern BYTE Uart_Int_Enable(BYTE channel, BYTE type);
 extern BYTE Uart_Int_Disable(BYTE channel, BYTE type);

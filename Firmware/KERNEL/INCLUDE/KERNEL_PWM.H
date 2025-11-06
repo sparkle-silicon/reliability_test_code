@@ -23,9 +23,9 @@
 //*****************************************************************************
 #define PWM_TCLK_PRESCALE 1//0:480 prescale/1:4 prescale
 #if ((PWM_TCLK_PRESCALE==4)||(PWM_TCLK_PRESCALE==1))
-#define PWM_TCLK_FREQ ((HIGHT_CHIP_CLOCK)/4)
+#define PWM_TCLK_FREQ ((HIGH_CHIP_CLOCK)/4)
 #else
-#define PWM_TCLK_FREQ ((HIGHT_CHIP_CLOCK)/480)
+#define PWM_TCLK_FREQ ((HIGH_CHIP_CLOCK)/480)
 #endif
 #define PWM_CLK0_PRESCALE 1//(PWM_SCALER0=PWM_CLK0_PRESCALE-1)
 #define PWM_CLK1_PRESCALE 2//(PWM_SCALER1=PWM_CLK0_PRESCALE-1)
@@ -82,7 +82,7 @@
 #define Tach_Int_Enable_Read(channel)		((TACH_INT & (0x1 << channel)) != 0)
 
 #define TACH_CLK_PRESCALE 480
-#define TACH_CLK (HIGHT_CHIP_CLOCK/TACH_CLK_PRESCALE)
+#define TACH_CLK (HIGH_CHIP_CLOCK/TACH_CLK_PRESCALE)
 #define TACH_MINUTE 60
 #define TACH_HOUR 3600
 #define TACH_DAY 86400

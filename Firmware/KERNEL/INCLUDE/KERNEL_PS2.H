@@ -19,7 +19,7 @@
 #include "AE_REG.H"
 #include "AE_CONFIG.H"
 
-#define PS2_CLOCK  (HIGHT_CHIP_CLOCK / (SYSCTL_CLKDIV_PS2+1)) 
+#define PS2_CLOCK  (HIGH_CHIP_CLOCK / (SYSCTL_CLKDIV_PS2+1)) 
 #define PS2_WaitTime 3000
 //-----------------------------------------------------------------------------
 // PS2 CMD WORD

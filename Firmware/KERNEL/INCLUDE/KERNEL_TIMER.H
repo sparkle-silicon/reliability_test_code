@@ -25,7 +25,7 @@
 #define TIMER2 0x2
 #define TIMER3 0x3
 /************TIMER0常见定时定义************/
-#define TIMER0_CLOCK (HIGHT_CHIP_CLOCK / ((SYSCTL_CLKDIV_TMR0+1)<<1))
+#define TIMER0_CLOCK (HIGH_CHIP_CLOCK / ((SYSCTL_CLKDIV_TMR0+1)<<1))
 #define TIMER0_1ms (TIMER0_CLOCK/1000)
 #define TIMER0_100us (TIMER0_1ms / 10)
 #define TIMER0_50us (TIMER0_1ms / 20)
@@ -35,7 +35,7 @@
 #define TIMER0_2us (TIMER0_1ms / 500)
 #define TIMER0_1us (TIMER0_1ms / 1000)
 /************TIMER1常见定时定义************/
-#define TIMER1_CLOCK (HIGHT_CHIP_CLOCK / ((SYSCTL_CLKDIV_TMR1+1)<<1))
+#define TIMER1_CLOCK (HIGH_CHIP_CLOCK / ((SYSCTL_CLKDIV_TMR1+1)<<1))
 #define TIMER1_1ms (TIMER1_CLOCK/1000)
 #define TIMER1_100us (TIMER1_1ms / 10)
 #define TIMER1_50us (TIMER1_1ms / 20)
@@ -46,7 +46,7 @@
 #define TIMER1_1us (TIMER1_1ms / 1000)
 /************TIMER2常见定时定义************/
 // 由于计数器只有16位而timer2频率有24.576Mhz所以延时最长大概4ms左右
-#define TIMER2_CLOCK (HIGHT_CHIP_CLOCK / ((SYSCTL_CLKDIV_TMR2+1)<<1))
+#define TIMER2_CLOCK (HIGH_CHIP_CLOCK / ((SYSCTL_CLKDIV_TMR2+1)<<1))
 #define TIMER2_1ms (TIMER2_CLOCK / 1000)
 #define TIMER2_100us (TIMER2_1ms / 10)
 #define TIMER2_50us (TIMER2_1ms / 20)
@@ -57,7 +57,7 @@
 #define TIMER2_1us (TIMER2_1ms / 1000)
 /************TIMER3常见定时定义************/
 // 由于计数器只有16位而timer2频率有24.576Mhz所以延时最长大概4ms左右
-#define TIMER3_CLOCK (HIGHT_CHIP_CLOCK / ((SYSCTL_CLKDIV_TMR3+1)<<1))
+#define TIMER3_CLOCK (HIGH_CHIP_CLOCK / ((SYSCTL_CLKDIV_TMR3+1)<<1))
 #define TIMER3_1ms (TIMER3_CLOCK / 1000)
 #define TIMER3_100us (TIMER3_1ms / 10)
 #define TIMER3_50us (TIMER3_1ms / 20)

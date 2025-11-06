@@ -1421,7 +1421,7 @@ void I3C_Slave_Init(BYTE static_addr, uint32_t idpartno, uint8_t dcr, uint8_t bc
     temp_data |= IDEXT_DCR(dcr) | IDEXT_BCR(bcr);
     I3C_WriteREG_DWORD(temp_data, IDEXT_OFFSET, i3c_mux);   //set dcr&bcr
 
-    I3C_WriteREG_DWORD(((I3C_ReadREG_DWORD(TCCLOCK_OFFSET, i3c_mux) & 0x000000FF) | ((((uint32_t)(HIGHT_CHIP_CLOCK * 2 / 1000000)) << 8) & 0x0000FF00)), TCCLOCK_OFFSET, i3c_mux);   //设置TCCLOCK
+    I3C_WriteREG_DWORD(((I3C_ReadREG_DWORD(TCCLOCK_OFFSET, i3c_mux) & 0x000000FF) | ((((uint32_t)(HIGH_CHIP_CLOCK * 2 / 1000000)) << 8) & 0x0000FF00)), TCCLOCK_OFFSET, i3c_mux);   //设置TCCLOCK
     I3C_WriteREG_DWORD(0x0, INTSET_OFFSET, i3c_mux);   //中断全部失能
     I3C_WriteREG_DWORD(0x0, DMACTRL_OFFSET, i3c_mux);   //DMA失能
 }

@@ -171,7 +171,7 @@
 #define I2C_STOP 0x200
 #define I2C_RESTART 0x4
 
-#define SMUBUS_CLOCK  (HIGHT_CHIP_CLOCK / (SYSCTL_CLKDIV_SMB+1)) //SMBUS clock
+#define SMUBUS_CLOCK  (HIGH_CHIP_CLOCK / (SYSCTL_CLKDIV_SMB+1)) //SMBUS clock
 #define I2CTimeOut	(SMUBUS_CLOCK/15/20)	//TimeOut set
 
 

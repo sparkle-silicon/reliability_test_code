@@ -21,7 +21,7 @@
 #define CEC0_CHANNEL 0
 #define CEC1_CHANNEL 1
 
-#define CEC_CLOCK  (HIGHT_CHIP_CLOCK / (SYSCTL_CLKDIV_CEC+1))
+#define CEC_CLOCK  (HIGH_CHIP_CLOCK / (SYSCTL_CLKDIV_CEC+1))
 
 #define CEC_Destination_address              0x0F//option. and the "F" mean broadcast
 #define CEC_Initiator_address                0x0F//as device address while CEC used to follower 

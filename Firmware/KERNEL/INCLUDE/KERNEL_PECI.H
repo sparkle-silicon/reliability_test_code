@@ -22,7 +22,7 @@
 #include "AE_PRINTF.H"
 #include "AE_MALLOC.H"
 
-#define PECI_CLOCK  (HIGHT_CHIP_CLOCK / (SYSCTL_CLKDIV_PECI+1)) 
+#define PECI_CLOCK  (HIGH_CHIP_CLOCK / (SYSCTL_CLKDIV_PECI+1)) 
 
  /*-----------------------------------------------------------------------------
  * Local Parameter Definition

@@ -14,31 +14,31 @@
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
 #include <AE_FUNC.H>
-// Configure PMP to make all the address space accesable and executable
+ // Configure PMP to make all the address space accesable and executable
 void pmp_open_all_space()
 {
   // Config entry0 addr to all 1s to make the range cover all space
   asm volatile("li x6, 0xffffffff" ::
-                   : "x6");
+    : "x6");
   asm volatile("csrw pmpaddr0, x6" ::
-                   :);
+    :);
   // Config entry0 cfg to make it NAPOT address mode, and R/W/X okay
   asm volatile("li x6, 0x7f" ::
-                   : "x6");
+    : "x6");
   asm volatile("csrw pmpcfg0, x6" ::
-                   :);
+    :);
 }
 void switch_m2u_mode()
 {
   clear_csr(mstatus, MSTATUS_MPP);
   asm volatile("la x6, 1f    " ::
-                   : "x6");
+    : "x6");
   asm volatile("csrw mepc, x6" ::
-                   :);
+    :);
   asm volatile("mret" ::
-                   :);
+    :);
   asm volatile("1:" ::
-                   :);
+    :);
 }
 uint32_t mtime_lo(void)
 {
@@ -73,14 +73,12 @@ uint32_t NOINLINE measure_cpu_freq(size_t n)
   do
   {
     start_mtime = mtime_lo(); // 获取计时器改变后的值（用的32K的时钟，时间相对比较久，判断新的开始）
-  }
-  while(start_mtime == tmp);
+  } while (start_mtime == tmp);
   uint32_t start_mcycle = read_csr(mcycle); // get Lower 32 bits of Cycle counter（周期计数器）//用于反映处理器执行了多少个时钟周期。只要处理器处于执行状态时，此计数器便会不断自增计数
   do
   {
     delta_mtime = mtime_lo() - start_mtime; // 判断走了n个计时器时钟
-  }
-  while(delta_mtime < n);
+  } while (delta_mtime < n);
   register uint32_t delta_mcycle = read_csr(mcycle) - start_mcycle; // 获取时钟周期差值
   disable_mcycle_minstret();
   // 24M时钟周期/32k时钟周期*预定32k的频率+24M时钟周期%32k时钟周期*预定32k频率/32K时钟频率
@@ -88,7 +86,7 @@ uint32_t NOINLINE measure_cpu_freq(size_t n)
 #else
   //后续如果有方案可以添加,目前暂时认为其为标准时钟
   UNUSED_VAR(n);
-  return HIGHT_CHIP_CLOCK;
+  return HIGH_CHIP_CLOCK;
 #endif
 }
 uint32_t get_cpu_freq()
@@ -109,7 +107,7 @@ uint32_t get_cpu_freq()
 static void precise_delay(uint32_t cycles)
 {
   volatile uint32_t count = cycles;
-  while(count--);
+  while (count--);
 }
 
 // 测量函数（核心）
@@ -125,8 +123,7 @@ static uint64_t measure_ratio(uint32_t n)
   do
   {
     start_mtime = mtime_lo();
-  }
-  while(start_mtime == tmp);
+  } while (start_mtime == tmp);
 
   start_mcycle = read_csr(mcycle);
 
@@ -138,8 +135,7 @@ static uint64_t measure_ratio(uint32_t n)
     elapsed = (end_mtime >= start_mtime) ?
       (end_mtime - start_mtime) :
       (0xFFFFFFFF - start_mtime + end_mtime + 1);
-  }
-  while(elapsed < n);
+  } while (elapsed < n);
 
   end_mcycle = read_csr(mcycle);
   disable_mcycle_minstret();
@@ -155,14 +151,14 @@ static uint64_t measure_ratio(uint32_t n)
 // 主测量函数
 uint32_t NOINLINE measure_cpu_freq(void)
 {
-// 预热测量系统
+  // 预热测量系统
   measure_ratio(100);
 
   // 多次测量取平均
   uint64_t total_ratio = 0;
-  for(int i = 0; i < CALIBRATION_SAMPLES; i++)
+  for (int i = 0; i < CALIBRATION_SAMPLES; i++)
   {
-// 每次测量使用不同的时间基准
+    // 每次测量使用不同的时间基准
     uint32_t n = MIN_MEASUREMENT_CYCLES + (i * 10000);
 
     uint64_t result = measure_ratio(n);
@@ -236,11 +232,11 @@ BYTE CPU_Int_Type_Read(BYTE type)
   uint32_t value1, value2;
   value1 = (read_csr(0xBD2) & (0x1 < type));
   value2 = (read_csr(0xBD3) & (0x1 < type));
-  if(value1 != 0 && value2 == 0)
+  if (value1 != 0 && value2 == 0)
   {
     return 0;
   }
-  else if(value1 == 0 && value2 != 0)
+  else if (value1 == 0 && value2 != 0)
   {
     return 1;
   }
@@ -254,13 +250,13 @@ BYTE CPU_Int_Polarity_Read(BYTE type)//0为低，1为高
   uint32_t value2, value1;
   value1 = (read_csr(0xBD2) & (0x1 << type));
   value2 = (read_csr(0xBD3) & (0x1 << type));
-  if(value1 != 0)
+  if (value1 != 0)
   {
     return 1;
   }
   else
   {
-    if(value2 == 0)
+    if (value2 == 0)
     {
       return 1;
     }

@@ -84,8 +84,8 @@ void Service_PECI(void)
         return;
     }
 
-    PECI_HOCTLR = 0x08; /* PECI module only enable one time */
-    PECI_HOSTAR |= 0xEE; // 0xFE;      /* ResetPECIStatus  */
+    PECI_HOCTLR = 0x08;     /* PECI module only enable one time */
+    PECI_HOSTAR |= 0xEE;    /* ResetPECIStatus  */
 
 #if 1
     if (!(PECI_FLAG & F_PECI_INIT))
