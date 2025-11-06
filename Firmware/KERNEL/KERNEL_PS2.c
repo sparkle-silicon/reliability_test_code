@@ -747,40 +747,6 @@ BYTE Handle_Kbd_Event(BYTE channel)
 //-----------------------------------------------------------------
 int Send_Aux_Data_To_Host(BYTE auxdata)
 {
-#if 0
-	int PS2_Timeout = PS2_WaitTime;
-	if (TP_ACK_CUNT == 0) // ps2 pure
-	{
-		if (IS_SET(KBC_STA, 1) || IS_SET(KBC_STA, 0))
-			// if(IS_SET( KBC_STA,0))
-		{
-#if KBC_DEBUG
-			dprint("MS_Data_Suspend \n");
-#endif
-			MS_Data_Suspend(auxdata);
-			return 0x00;
-		}
-	}
-	else
-	{
-		// while(IS_SET( KBC_STA,0));
-		while (IS_SET(KBC_STA, 0) && (PS2_Timeout > 0))
-		{
-			PS2_Timeout--;
-			if (PS2_PORT0_SR & 0x1)
-			{
-				if (TP_ACK_CUNT != 0)
-				{
-					MS_Data_Suspend(PS2_PORT0_IBUF);
-				}
-			}
-		}
-		if (PS2_Timeout == 0)
-		{
-			dprint("PS2 Timeout\n");
-		}
-	}
-#endif
 	KBC_STA &= 0x0f;
 	SET_BIT(KBC_STA, KBC_SAOBF);//ps2数据标志位
 	if (Host_Flag_INTR_AUX)
@@ -791,9 +757,7 @@ int Send_Aux_Data_To_Host(BYTE auxdata)
 	{
 		CLEAR_BIT(KBC_CTL, KBC_OBFMIE);
 	}
-#if KBC_DEBUG
-	dprint("adth:%x,icr:%x,isr:%x\n", auxdata, KBC_CTL, KBC_STA);
-#endif
+	kbc_dprint("adth:%x,icr:%x,isr:%x\n", auxdata, KBC_CTL, KBC_STA);
 #if SUPPORT_8042DEBUG_OUTPUT
 	Write_Debug_Data_To_Sram(auxdata);
 #endif
@@ -810,9 +774,7 @@ int Send_Aux_Data_To_Host(BYTE auxdata)
 }
 void MS_Data_Suspend(BYTE nPending)
 {
-#if KBC_DEBUG
-	dprint("MSPendingRXCount is %#x \n", MSPendingRXCount);
-#endif
+	kbc_dprint("MSPendingRXCount:%#x \n", MSPendingRXCount);
 	if (MSPendingRXCount >= 4)
 	{
 		if (((MS_Main_CHN == 1) && ((SYSCTL_PIO2_CFG & (0x3 << 16)) > 0)) || ((MS_Main_CHN == 2) && ((SYSCTL_PIO2_CFG & (0x3 << 24)) > 0))) // 若触摸板接入，且对应引脚复用为时钟线
@@ -892,9 +854,7 @@ BYTE Release_MS_Data_Suspend(void)
 	{
 		MSPendingRXCount--;
 	}
-#if KBC_DEBUG
-	dprint("Release_MS_Data_Suspend is %#x \n", buffer_data);
-#endif
+	kbc_dprint("Release_MS_Data_Suspend:%#x \n", buffer_data);
 	return buffer_data;
 }
 //-----------------------------------------------------------------
@@ -902,9 +862,7 @@ BYTE Release_MS_Data_Suspend(void)
 //-----------------------------------------------------------------
 void Send_Data_To_PS2(BYTE PortNum, BYTE PortData)
 {
-#if KBC_DEBUG
-	dprint("PortNum is %#x ,Send_Data_To_PS2 %#x,MS_Main_CHN is %#x\n", PortNum, PortData, MS_Main_CHN);
-#endif
+	kbc_dprint("PortNum:%#x,Send_Data_To_PS2:%#x,MS_Main_CHN:%#x\n", PortNum, PortData, MS_Main_CHN);
 	if (PortNum == 0)
 		PS2_PortN_Write_Output_W(PortData, PortNum);
 	else if (PortNum == 1)
@@ -929,9 +887,7 @@ void Send_Cmd_To_PS2_Mouse(BYTE PortNum)
 		{
 			MS_Sampling_Rate = KBHIData;
 		}
-#if KBC_DEBUG
-		dprint("AUX2ByteCommand \n");
-#endif
+		kbc_dprint("AUX2ByteCommand\n");
 		Send_Data_To_PS2(PortNum, KBHIData);
 		AUX2ByteCommand = 0;
 		return;

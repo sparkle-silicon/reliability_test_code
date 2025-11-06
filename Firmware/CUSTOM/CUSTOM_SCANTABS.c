@@ -15,91 +15,91 @@
  */
 #include "CUSTOM_SCANTABS.H"
 #include "CUSTOM_POWER.H"
-// KBD_SN1211 Column ROW demo
-//     /* C\R    R0    R1    R2    R3    R4    R5    R6    R7 */
-//             /***********************************************/
-//     /* C0*/ {0x24, 0x04, 0x23, 0x0C, 0x21, 0x00, 0x06, 0x26},
-//     /* C0     E     F3    D     F4    C    K133   F2    3# */
-//             /***********************************************/
-//     /* C1*/ {0x2D, 0x2C, 0x2B, 0x34, 0x2A, 0x32, 0x2E, 0x25},
-//     /* C1     R     T     F     G     V     B     5%    4$ */
-//             /***********************************************/
-//     /* C2*/ {0x3C, 0x35, 0x3B, 0x33, 0x3A, 0x31, 0x36, 0x3D},
-//     /* C2     U     Y     J     H     M     N     6^    7& */
-//             /***********************************************/
-//     /* C3*/ {0x43, 0x5B, 0x42, 0x0B, 0x41, 0x00, 0x55, 0x3E},
-//     /* C3     I     ]}    K     F6    ,<    K56   =+    8* */
-//             /***********************************************/
-//     /* C4*/ {0x44, 0x80, 0x4B, 0x00, 0x49, 0x84, 0x0A, 0x46},
-//     /* C4     O     F7    L     H1    .>    APP   F8    9( */
-//             /***********************************************/
-//     /* C5*/ {0xA7, 0x00, 0x81, 0xE4, 0xEB, 0xE6, 0xE0, 0xE1},
-//     /* C5    +Pad  K107  ENTP   ↑    PPPS   ←    Home   End*/
-//             /***********************************************/
-//     /* C6*/ {0x9E, 0xA2, 0xA6, 0xAA, 0x9F, 0xA3, 0xE2, 0xE3},
-//     /* C6    9Pad  6Pad  3Pad  .Pad  *Pad  -Pad  PGUP  PGDN*/
-//             /***********************************************/
-//     /* C7*/ {0x9D, 0xA1, 0xA5, 0xA8, 0xAB, 0xE7, 0xFC, 0x00},
-//     /* C7    8Pad  5Pad  2Pad  0Pad  /Pad   →     Ins   H6 */
-//             /***********************************************/
-//     /* C8*/ {0x9C, 0xA0, 0xA4, 0x29, 0x90, 0xE5, 0xFA, 0x00},
-//     /* C8    7Pad  4Pad  1Pad  SPCE   Num   ↓     Del   H5 */
-//             /***********************************************/
-//     /* C9*/ {0x00, 0x88, 0x89, 0xEE, 0xED, 0xE8, 0xE9, 0xF9},
-//     /* C9     H7   SHFL  SHFR  VOL-  VOL+  NTTK  PRTK  MEDI*/
-//             /***********************************************/
-//     /*C10*/ {0x00, 0x66, 0x5D, 0x78, 0x5A, 0x07, 0x01, 0x09},
-//     /*C10     K14  BKSP   \|    F11   ENT   F12   F9    F10*/
-//             /***********************************************/
-//     /*C11*/ {0x4D, 0x54, 0x4C, 0x52, 0x00, 0x4A, 0x4E, 0x45},
-//     /*C11     P     [{    ;:    '"    K42   /?    -_    0) */
-//             /***********************************************/
-//     /*C12*/ {0x7E, 0x00, 0x8E, 0x8A, 0x00, 0x8B, 0x00, 0xFD},
-//     /*C12    SCRL   H2    Fn   AltL   H3   AltR   H4   PRTS*/
-//             /***********************************************/
-//     /*C13*/ {0x91, 0x85, 0xFE, 0x86, 0x8D, 0x87, 0x8C, 0x03},
-//     /*C13    PAUS   PWR  Euro   SLP  CtrR  WkUP  CtrL   F5 */
-//             /***********************************************/
-//     /*C14*/ {0xEF, 0x82, 0xF3, 0xF4, 0xF2, 0xF5, 0xEC, 0xF0},
-//     /*C14    Mail  WinL  WWFd  WWSp  WWBk  WWRH  Mute  WWSH*/
-//             /***********************************************/
-//     /*C15*/ {0x00, 0xF6, 0x27, 0xF8, 0xEA, 0xF7, 0xF1, 0x00},
-//     /*C15     KRL   fav  WinR  MyPC  Stop  Calc  WBHM   KRR*/
-//             /***********************************************/
-//     /*C16*/ {0x1D, 0x58, 0x1B, 0x00, 0x22, 0x00, 0x05, 0x1E},
-//     /*C16     W    Caps   S     K45   X    K132   F1    2@ */
-//             /***********************************************/
-//     /*C17*/ {0x15, 0x0D, 0x1C, 0x76, 0x1A, 0x00, 0x0E, 0x16},
-//     /*C17     Q     Tab   A     ESC   Z    K131   `~    1! */
-//             /***********************************************/
-//     /*C18*/ {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x26},
-//     /*C18     H8    H9    H10   H11   H12   H13   H14   BL */
-//             /***********************************************/
-// Keyboard Printing Example
-// .-----..-----..-----..-----..-----..-----..-----..-----..-----..-----..-----..-----..-----..-----..-----..-----..------..-----..-----..-----.
-// |ESC  || F1  || F2  || F3  || F4  || F5  || F6  || F7  || F8  || F9  || F10 ||F11  || F12 ||PRINT||PAUSE|| Ins || Del  ||NUMLK||  /  ||  *  |
-// '-----''-----''-----''-----''-----''-----''-----''-----''-----''-----''-----''-----''-----''-----''-----''-----''------''-----''-----''-----'
-// .------..------..------..------..------..------..------..------..------..------..------..------..------..--------------..-----..-----..-----.
-// |  ~`  ||  1!  ||  2@  ||  3#  ||  4$  ||  5%  ||  6^  ||  7&  ||  8*  ||  9(  ||  0)  ||  -_  ||  +=  ||   Backspace  ||  .  ||  +  ||  -  |
-// |      ||      ||      ||      ||      ||      ||      ||      ||      ||      ||      ||      ||      ||              || Del ||     ||     |
-// '------''------''------''------''------''------''------''------''------''------''------''------''------''--------------''-----''-----''-----'
-// .----------..------..------..------..------..------..------..------..------..------..------..------..------..----------..-----..-----..-----.
-// |    Tab   ||  Q   ||  W   ||  E   ||  R   ||  T   ||  Y   ||  U   ||  I   ||  O   ||  P   ||  [{  ||  ]}  ||     \|   ||  7  ||  8  ||  9  |
-// |          ||      ||      ||      ||      ||      ||      ||      ||      ||      ||      ||      ||      ||          || Home||  ↑  ||PG UP|
-// '----------''------''------''------''------''------''------''------''------''------''------''------''------''----------''-----''-----''-----'
-// .-------------..------..------..------..------..------..------..------..------..------..------..------..---------------..-----..-----..-----.
-// |     Cpas    ||  A   ||  S   ||  D   ||  F   ||  G   ||  H   ||  J   ||  K   ||  L   ||  ;:  ||  '"  ||     Enter     ||  4  ||  5  ||  6  |
-// |             ||      ||      ||      ||  __  ||      ||      ||  __  ||      ||      ||      ||      ||               ||  <- || __  ||  -> |
-// '-------------''------''------''------''------''------''------''------''------''------''------''------''---------------''-----''-----''-----'
-// .-----------------..------..------..------..------..------..------..------..------..------..------..-------------------..-----..-----..-----.
-// |      Shift      ||  Z   ||  X   ||  C   ||  V   ||  B   ||  N   ||  M   ||  ,<  ||  .>  ||  /?  ||       Shift       ||  1  ||  2  ||  3  |
-// |                 ||      ||      ||      ||      ||      ||      ||      ||      ||      ||      ||                   || End ||  ↓  ||PG DN|
-// '-----------------''------''------''------''------''------''------''------''------''------''------''-------------------''-----''-----''-----'
-// .------..------..------..------..--------------------------------------..------..------..------.        .------.        .-----..------------.
-// | Ctrl ||  Fn  ||  GUI ||  Alt ||                 SPACE                ||  Alt ||  GUI || Ctrl |.------.|__↑___|.------.|  0  ||    ENTER   |
-// |      ||      ||      ||      ||                                      ||      ||      ||      ||  <-  ||  ↓   ||  ->  || INS ||            |
-// '------''------''------''------''--------------------------------------''------''------''------''------''------''------''-----''------------'
-// 列行.（Column row）
+ // KBD_SN1211 Column ROW demo
+ //     /* C\R    R0    R1    R2    R3    R4    R5    R6    R7 */
+ //             /***********************************************/
+ //     /* C0*/ {0x24, 0x04, 0x23, 0x0C, 0x21, 0x00, 0x06, 0x26},
+ //     /* C0     E     F3    D     F4    C    K133   F2    3# */
+ //             /***********************************************/
+ //     /* C1*/ {0x2D, 0x2C, 0x2B, 0x34, 0x2A, 0x32, 0x2E, 0x25},
+ //     /* C1     R     T     F     G     V     B     5%    4$ */
+ //             /***********************************************/
+ //     /* C2*/ {0x3C, 0x35, 0x3B, 0x33, 0x3A, 0x31, 0x36, 0x3D},
+ //     /* C2     U     Y     J     H     M     N     6^    7& */
+ //             /***********************************************/
+ //     /* C3*/ {0x43, 0x5B, 0x42, 0x0B, 0x41, 0x00, 0x55, 0x3E},
+ //     /* C3     I     ]}    K     F6    ,<    K56   =+    8* */
+ //             /***********************************************/
+ //     /* C4*/ {0x44, 0x80, 0x4B, 0x00, 0x49, 0x84, 0x0A, 0x46},
+ //     /* C4     O     F7    L     H1    .>    APP   F8    9( */
+ //             /***********************************************/
+ //     /* C5*/ {0xA7, 0x00, 0x81, 0xE4, 0xEB, 0xE6, 0xE0, 0xE1},
+ //     /* C5    +Pad  K107  ENTP   ↑    PPPS   ←    Home   End*/
+ //             /***********************************************/
+ //     /* C6*/ {0x9E, 0xA2, 0xA6, 0xAA, 0x9F, 0xA3, 0xE2, 0xE3},
+ //     /* C6    9Pad  6Pad  3Pad  .Pad  *Pad  -Pad  PGUP  PGDN*/
+ //             /***********************************************/
+ //     /* C7*/ {0x9D, 0xA1, 0xA5, 0xA8, 0xAB, 0xE7, 0xFC, 0x00},
+ //     /* C7    8Pad  5Pad  2Pad  0Pad  /Pad   →     Ins   H6 */
+ //             /***********************************************/
+ //     /* C8*/ {0x9C, 0xA0, 0xA4, 0x29, 0x90, 0xE5, 0xFA, 0x00},
+ //     /* C8    7Pad  4Pad  1Pad  SPCE   Num   ↓     Del   H5 */
+ //             /***********************************************/
+ //     /* C9*/ {0x00, 0x88, 0x89, 0xEE, 0xED, 0xE8, 0xE9, 0xF9},
+ //     /* C9     H7   SHFL  SHFR  VOL-  VOL+  NTTK  PRTK  MEDI*/
+ //             /***********************************************/
+ //     /*C10*/ {0x00, 0x66, 0x5D, 0x78, 0x5A, 0x07, 0x01, 0x09},
+ //     /*C10     K14  BKSP   \|    F11   ENT   F12   F9    F10*/
+ //             /***********************************************/
+ //     /*C11*/ {0x4D, 0x54, 0x4C, 0x52, 0x00, 0x4A, 0x4E, 0x45},
+ //     /*C11     P     [{    ;:    '"    K42   /?    -_    0) */
+ //             /***********************************************/
+ //     /*C12*/ {0x7E, 0x00, 0x8E, 0x8A, 0x00, 0x8B, 0x00, 0xFD},
+ //     /*C12    SCRL   H2    Fn   AltL   H3   AltR   H4   PRTS*/
+ //             /***********************************************/
+ //     /*C13*/ {0x91, 0x85, 0xFE, 0x86, 0x8D, 0x87, 0x8C, 0x03},
+ //     /*C13    PAUS   PWR  Euro   SLP  CtrR  WkUP  CtrL   F5 */
+ //             /***********************************************/
+ //     /*C14*/ {0xEF, 0x82, 0xF3, 0xF4, 0xF2, 0xF5, 0xEC, 0xF0},
+ //     /*C14    Mail  WinL  WWFd  WWSp  WWBk  WWRH  Mute  WWSH*/
+ //             /***********************************************/
+ //     /*C15*/ {0x00, 0xF6, 0x27, 0xF8, 0xEA, 0xF7, 0xF1, 0x00},
+ //     /*C15     KRL   fav  WinR  MyPC  Stop  Calc  WBHM   KRR*/
+ //             /***********************************************/
+ //     /*C16*/ {0x1D, 0x58, 0x1B, 0x00, 0x22, 0x00, 0x05, 0x1E},
+ //     /*C16     W    Caps   S     K45   X    K132   F1    2@ */
+ //             /***********************************************/
+ //     /*C17*/ {0x15, 0x0D, 0x1C, 0x76, 0x1A, 0x00, 0x0E, 0x16},
+ //     /*C17     Q     Tab   A     ESC   Z    K131   `~    1! */
+ //             /***********************************************/
+ //     /*C18*/ {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x26},
+ //     /*C18     H8    H9    H10   H11   H12   H13   H14   BL */
+ //             /***********************************************/
+ // Keyboard Printing Example
+ // .-----..-----..-----..-----..-----..-----..-----..-----..-----..-----..-----..-----..-----..-----..-----..-----..------..-----..-----..-----.
+ // |ESC  || F1  || F2  || F3  || F4  || F5  || F6  || F7  || F8  || F9  || F10 ||F11  || F12 ||PRINT||PAUSE|| Ins || Del  ||NUMLK||  /  ||  *  |
+ // '-----''-----''-----''-----''-----''-----''-----''-----''-----''-----''-----''-----''-----''-----''-----''-----''------''-----''-----''-----'
+ // .------..------..------..------..------..------..------..------..------..------..------..------..------..--------------..-----..-----..-----.
+ // |  ~`  ||  1!  ||  2@  ||  3#  ||  4$  ||  5%  ||  6^  ||  7&  ||  8*  ||  9(  ||  0)  ||  -_  ||  +=  ||   Backspace  ||  .  ||  +  ||  -  |
+ // |      ||      ||      ||      ||      ||      ||      ||      ||      ||      ||      ||      ||      ||              || Del ||     ||     |
+ // '------''------''------''------''------''------''------''------''------''------''------''------''------''--------------''-----''-----''-----'
+ // .----------..------..------..------..------..------..------..------..------..------..------..------..------..----------..-----..-----..-----.
+ // |    Tab   ||  Q   ||  W   ||  E   ||  R   ||  T   ||  Y   ||  U   ||  I   ||  O   ||  P   ||  [{  ||  ]}  ||     \|   ||  7  ||  8  ||  9  |
+ // |          ||      ||      ||      ||      ||      ||      ||      ||      ||      ||      ||      ||      ||          || Home||  ↑  ||PG UP|
+ // '----------''------''------''------''------''------''------''------''------''------''------''------''------''----------''-----''-----''-----'
+ // .-------------..------..------..------..------..------..------..------..------..------..------..------..---------------..-----..-----..-----.
+ // |     Cpas    ||  A   ||  S   ||  D   ||  F   ||  G   ||  H   ||  J   ||  K   ||  L   ||  ;:  ||  '"  ||     Enter     ||  4  ||  5  ||  6  |
+ // |             ||      ||      ||      ||  __  ||      ||      ||  __  ||      ||      ||      ||      ||               ||  <- || __  ||  -> |
+ // '-------------''------''------''------''------''------''------''------''------''------''------''------''---------------''-----''-----''-----'
+ // .-----------------..------..------..------..------..------..------..------..------..------..------..-------------------..-----..-----..-----.
+ // |      Shift      ||  Z   ||  X   ||  C   ||  V   ||  B   ||  N   ||  M   ||  ,<  ||  .>  ||  /?  ||       Shift       ||  1  ||  2  ||  3  |
+ // |                 ||      ||      ||      ||      ||      ||      ||      ||      ||      ||      ||                   || End ||  ↓  ||PG DN|
+ // '-----------------''------''------''------''------''------''------''------''------''------''------''-------------------''-----''-----''-----'
+ // .------..------..------..------..--------------------------------------..------..------..------.        .------.        .-----..------------.
+ // | Ctrl ||  Fn  ||  GUI ||  Alt ||                 SPACE                ||  Alt ||  GUI || Ctrl |.------.|__↑___|.------.|  0  ||    ENTER   |
+ // |      ||      ||      ||      ||                                      ||      ||      ||      ||  <-  ||  ↓   ||  ->  || INS ||            |
+ // '------''------''------''------''--------------------------------------''------''------''------''------''------''------''-----''------------'
+ // 列行.（Column row）
 
 const BYTE Cr_KBD_Tables[][8] = {
 #if (defined(KBD_8_18)||defined(KBD_8_17)||defined(KBD_8_16))  // SN1211 16
@@ -254,8 +254,6 @@ void Do_HotKey_FnF8(BYTE event)
 void Do_HotKey_FnF9(BYTE event)
 {
     UNUSED_VAR(event);
-#ifdef KBD_8_16  
-#endif
 }
 //----------------------------------------------------------------------------
 // The function of hotkey Fn + F10
@@ -327,8 +325,8 @@ const FUNCT_PTR_V_B HotKey_Fn_Fx[] = {
     Do_HotKey_FnDOWN,   // Fn + down arrow
     Do_HotKey_FnLEFT,   // Fn + left arrow
     Do_HotKey_FnRIGHT,  // Fn + right arrow
-                        // Do_HotKey_FnIns,		// Fn + Ins (Scr Lk)
-                        // Do_HotKey_FnDel,		// Fn + Del (NumLk)
+    // Do_HotKey_FnIns,		// Fn + Ins (Scr Lk)
+    // Do_HotKey_FnDel,		// Fn + Del (NumLk)
 };
 const BYTE ss2_9C[] =  // Numpad 7 or 7&
 {
@@ -599,56 +597,56 @@ const BYTE ss2_B5[] =  // F9
 {
     0x01,  // Normal
     0xD8,  // Fn
-           // 0x01,   // Normal
+    // 0x01,   // Normal
 };
 const BYTE ss2_B6[] =  // F10
 {
     0x09,  // Normal
-           // 0x09,   // Fn
-    0xD9,  // Fn
-           // 0x09,   // Normal
+    // 0x09,   // Fn
+0xD9,  // Fn
+// 0x09,   // Normal
 };
 const BYTE ss2_B7[] =  // F11
 {
     0x78,  // Normal
     0xDA,  // Fn
-           // 0x78,   // Normal
+    // 0x78,   // Normal
 };
 const BYTE ss2_B8[] =  // F12
 {
     0x07,  // Normal
     0xDB,  // Fn
-           // 0x07,
+    // 0x07,
 };
 const BYTE ss2_B9[] =  // esc
 {
     0x76,  // Normal
     0xDC,  // Fn
-            // 0x76,
+    // 0x76,
 };
 const BYTE ss2_BA[] =  // Up arrow
 {
     0x75,  // Normal
     0xDD,  // Fn
-            // 0x76,
+    // 0x76,
 };
 const BYTE ss2_BB[] =  // Down arrow
 {
     0x72,  // Normal
     0xDE,  // Fn
-            // 0x76,
+    // 0x76,
 };
 const BYTE ss2_BC[] =  // Left arrow
 {
     0x6B,  // Normal
     0xDF,  // Fn
-            // 0x76,
+    // 0x76,
 };
 const BYTE ss2_BD[] =  // Right arrow
 {
     0x74,  // Normal
     0xE0,  // Fn
-            // 0x76,
+    // 0x76,
 };
 
 // Reserved
@@ -958,42 +956,42 @@ const A2_TABLE sskey2_A2_table[] = {
  * FUNCTION: sskey2_overlay_table
  * ------------------------------------------------------------------------- */
 const BYTE sskey2_overlay_table[] = {
-//	Normal  Fn   // Keyboard matrix index
-    0x94, 0x94,  // 0xE0	Home	Home
-    0x95, 0x95,  // 0xE1	End	    End
-    0x96, 0x96,  // 0xE2	PGUP	PGUP
-    0x97, 0x97,  // 0xE3	PGDN	PGDN
+    //	Normal  Fn   // Keyboard matrix index
+        0x94, 0x94,  // 0xE0	Home	Home
+        0x95, 0x95,  // 0xE1	End	    End
+        0x96, 0x96,  // 0xE2	PGUP	PGUP
+        0x97, 0x97,  // 0xE3	PGDN	PGDN
 
-    0x98, 0x96,  // 0xE4	↑	PGUP
-    0x99, 0x97,  // 0xE5	↓	PGDN
-    0x9A, 0x94,  // 0xE6	←	Home
-    0x9B, 0x95,  // 0xE7	→ 	END
+        0x98, 0x96,  // 0xE4	↑	PGUP
+        0x99, 0x97,  // 0xE5	↓	PGDN
+        0x9A, 0x94,  // 0xE6	←	Home
+        0x9B, 0x95,  // 0xE7	→ 	END
 
-    0x9C, 0x9C,  // 0xE8	Next	Next
-    0x9D, 0x9D,  // 0xE9	Pre	    Pre
-    0x9E, 0x9E,  // 0xEA	Stop	Stop
-    0x9F, 0x9F,  // 0xEB	Play/Pause Play/Pause
-    0xA0, 0xA0,  // 0xEC	Mute    Mute
-    0xA1, 0xA1,  // 0xED	Volume Up   Volume Up
-    0xA2, 0xA2,  // 0xEE    Volume Down Volume Down
-    0xA3, 0xA3,  // 0xEF	Mail        Mail
-    0xA4, 0xA4,  // 0xF0    Search      Search
-    0xA5, 0xA5,  // 0xF1	Web/Home    Web/Home
-    0xA6, 0xA6,  // 0xF2	Back        Back
-    0xA7, 0xA7,  // 0xF3	Forward	    Forward
-    0xA8, 0xA8,  // 0xF4	wwwStop	    wwwStop
-    0xA9, 0xA9,  // 0xF5	Refresh	    Refresh
-    0xAA, 0xAA,  // 0xF6	Favorites   Favorites
-    0xAB, 0xAB,  // 0xF7	Caluator    Caluator
-    0xAC, 0xAC,  // 0xF8	My Computer My Computer
-    0xAD, 0xAD,  // 0xF9	Media       Media
+        0x9C, 0x9C,  // 0xE8	Next	Next
+        0x9D, 0x9D,  // 0xE9	Pre	    Pre
+        0x9E, 0x9E,  // 0xEA	Stop	Stop
+        0x9F, 0x9F,  // 0xEB	Play/Pause Play/Pause
+        0xA0, 0xA0,  // 0xEC	Mute    Mute
+        0xA1, 0xA1,  // 0xED	Volume Up   Volume Up
+        0xA2, 0xA2,  // 0xEE    Volume Down Volume Down
+        0xA3, 0xA3,  // 0xEF	Mail        Mail
+        0xA4, 0xA4,  // 0xF0    Search      Search
+        0xA5, 0xA5,  // 0xF1	Web/Home    Web/Home
+        0xA6, 0xA6,  // 0xF2	Back        Back
+        0xA7, 0xA7,  // 0xF3	Forward	    Forward
+        0xA8, 0xA8,  // 0xF4	wwwStop	    wwwStop
+        0xA9, 0xA9,  // 0xF5	Refresh	    Refresh
+        0xAA, 0xAA,  // 0xF6	Favorites   Favorites
+        0xAB, 0xAB,  // 0xF7	Caluator    Caluator
+        0xAC, 0xAC,  // 0xF8	My Computer My Computer
+        0xAD, 0xAD,  // 0xF9	Media       Media
 
-    0xC0, 0xC0,  // 0xFA	Delete       Delete
-    0xC1, 0x93,  // 0xFB	SysRq        (124) Alt-Case (SysRq)
-    0xC2, 0xC2,  // 0xFC	Insert       Insert
-    0xC3, 0xC3,  // 0xFD	Print Screen Print Screen
-    0xC4, 0xC4,  // 0xFE	Euro Sign    Euro Sign
-    0xC5, 0xC5,  // 0xFF	Dollar Sign  Dollar Sign
+        0xC0, 0xC0,  // 0xFA	Delete       Delete
+        0xC1, 0x93,  // 0xFB	SysRq        (124) Alt-Case (SysRq)
+        0xC2, 0xC2,  // 0xFC	Insert       Insert
+        0xC3, 0xC3,  // 0xFD	Print Screen Print Screen
+        0xC4, 0xC4,  // 0xFE	Euro Sign    Euro Sign
+        0xC5, 0xC5,  // 0xFF	Dollar Sign  Dollar Sign
 
 };
 // Reserved 0xEE ~ 0xFF
@@ -1006,10 +1004,10 @@ const BYTE sskey2_overlay_table[] = {
  * C0h - DFh   Pre-Index for PPK function
  * C0h - DFh   Pre-Index for SMI function
  * ------------------------------------------------------------------------- */
-/* ----------------------------------------------------------------------------
- * FUNCTION: sskey3_80_table - Sparkle Silicon Software Key Number 2
- * 80h - BFh   Pre-Index for generation Scan Code, Set2
- * ------------------------------------------------------------------------- */
+ /* ----------------------------------------------------------------------------
+  * FUNCTION: sskey3_80_table - Sparkle Silicon Software Key Number 2
+  * 80h - BFh   Pre-Index for generation Scan Code, Set2
+  * ------------------------------------------------------------------------- */
 const BYTE sskey3_80_table[] = {
     //-----------------------------------------------------------------
     // Index from keyboard matrix
@@ -1132,22 +1130,22 @@ const BYTE sskey3_80_table[] = {
 #define Crisiskey02 0xEC  // ESC
 void Check_HotKey_01(BYTE event)
 {
-    if(event == BREAK_EVENT)
+    if (event == BREAK_EVENT)
     {
         CRISIS_KEY_STATUS = 0x00;
     }
-    else if(event == MAKE_EVENT)
+    else if (event == MAKE_EVENT)
     {
         CRISIS_KEY_STATUS++;
     }
 }
 void Check_HotKey_02(BYTE event)
 {
-    if(event == BREAK_EVENT)
+    if (event == BREAK_EVENT)
     {
         CRISIS_KEY_STATUS = 0x00;
     }
-    else if(event == MAKE_EVENT)
+    else if (event == MAKE_EVENT)
     {
         CRISIS_KEY_STATUS++;
     }
@@ -1161,9 +1159,9 @@ const sBootHotKeyStruct asBootHotKeyStruct[] = {
 void Check_HotKey_Boot(BYTE matrix, BYTE event)
 {
     BYTE index;
-    for(index = 0x00; index < (sizeof(asBootHotKeyStruct) / sizeof(sBootHotKeyStruct)); index++)
+    for (index = 0x00; index < (sizeof(asBootHotKeyStruct) / sizeof(sBootHotKeyStruct)); index++)
     {
-        if(matrix == asBootHotKeyStruct[index].matrix)
+        if (matrix == asBootHotKeyStruct[index].matrix)
         {
             (asBootHotKeyStruct[index].pfunction)(event);
             return;
@@ -1176,7 +1174,7 @@ void Check_HotKey_Boot(BYTE matrix, BYTE event)
 //-----------------------------------------------------------------------------
 void Check_KB_Wake_S3(BYTE KSO, BYTE KSI)
 {
-    if(KB_S3WakeUP_Tables[KSO][KSI] == 0x55)
+    if (KB_S3WakeUP_Tables[KSO][KSI] == 0x55)
     {
         PowerSequence_Step = 1;
         PowerSequence_Delay = 0x00;
@@ -1190,7 +1188,7 @@ void Check_KB_Wake_S3(BYTE KSO, BYTE KSI)
 void Check_Send_Key(BYTE table_entry, BYTE event)
 {
 #if 0
-    if(SystemNotS0)
+    if (SystemNotS0)
     {
         Check_HotKey_Boot(table_entry, event);
     }

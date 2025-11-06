@@ -23,8 +23,8 @@
 #define I2C_FAST 1
 #define I2C_HIGH 2
 #define I2C_SPEED 0
-/*register offsets*/
-//all registers are 8 bits width
+ /*register offsets*/
+ //all registers are 8 bits width
 #define I2C_REG_PRERlo          0x00
 #define I2C_REG_PRERhi          0x01
 #define I2C_REG_CTR             0x02
@@ -109,12 +109,12 @@
 #define TX_EMPTY	0x10
 #define RX_FULL		0x4
 #define ACTIVITY    0x1
-/*
- *  * hardware abort codes from the I2C_TX_ABRT_SOURCE register
- *   *
- *    * only expected abort codes are listed here
- *     * refer to the datasheet for the full list
- *      */
+ /*
+  *  * hardware abort codes from the I2C_TX_ABRT_SOURCE register
+  *   *
+  *    * only expected abort codes are listed here
+  *     * refer to the datasheet for the full list
+  *      */
 #define ABRT_7B_ADDR_NOACK	0
 #define ABRT_10ADDR1_NOACK	1
 #define ABRT_10ADDR2_NOACK	2
@@ -142,7 +142,7 @@
 							 I2C_TX_ABRT_10ADDR2_NOACK | \
 							 I2C_TX_ABRT_TXDATA_NOACK | \
 							 I2C_TX_ABRT_GCALL_NOACK)
-//#define I2C_BASE	I2C_CTRL_ADDR            
+  //#define I2C_BASE	I2C_CTRL_ADDR            
 #define TAR_GC_OR_START_START	0x400
 #define TAR_SPECAIL_START	0x800
 #define I2C_STOP_DET        0x2
@@ -174,6 +174,12 @@
 #define SMUBUS_CLOCK  (HIGH_CHIP_CLOCK / (SYSCTL_CLKDIV_SMB+1)) //SMBUS clock
 #define I2CTimeOut	(SMUBUS_CLOCK/15/20)	//TimeOut set
 
+//I2C调试打印
+#if I2C_DEBUG 
+#define i2c_dprint dprint
+#else 
+#define i2c_dprint(fmt, args...)
+#endif
 
 //*****************************************************************************
 // extern functions
@@ -202,17 +208,17 @@ extern void I2c_Write16bit(WORD value, WORD regoffset, WORD i2c_channel);
 extern void I2c_Mux_set(BYTE modle);
 extern void I2c_Master_Set_Tar(WORD TAR, WORD BIT, WORD i2c_channel);
 extern void I2c_Master_Write_Byte(BYTE data, BYTE reg, WORD i2c_channel);
-extern void I2c_Master_Write_Word(BYTE *data, BYTE reg, WORD i2c_channel);
-extern void I2c_Master_Read_Word(BYTE *data, BYTE reg, WORD i2c_channel);
-extern void I2c_Master_Write_Block(BYTE *data, BYTE lenth, BYTE reg, WORD i2c_channel);
-extern void I2c_Master_Read_Block(BYTE *data, BYTE lenth, BYTE reg, WORD i2c_channel);
+extern void I2c_Master_Write_Word(BYTE* data, BYTE reg, WORD i2c_channel);
+extern void I2c_Master_Read_Word(BYTE* data, BYTE reg, WORD i2c_channel);
+extern void I2c_Master_Write_Block(BYTE* data, BYTE lenth, BYTE reg, WORD i2c_channel);
+extern void I2c_Master_Read_Block(BYTE* data, BYTE lenth, BYTE reg, WORD i2c_channel);
 extern void I2cM_Write_Byte(BYTE i2c_addr, BYTE reg, BYTE data, WORD i2c_channel);
-extern void I2cM_Write_Word(BYTE i2c_addr, BYTE *data, BYTE reg, WORD i2c_channel);
-extern void I2cM_Read_Word(BYTE i2c_addr, BYTE *data, BYTE reg, WORD i2c_channel);
-extern void I2cM_Write_Block(BYTE i2c_addr, BYTE *data, BYTE length, BYTE reg, WORD i2c_channel);
-extern void I2cM_Read_Block(BYTE i2c_addr, BYTE *data, BYTE length, BYTE reg, WORD i2c_channel);
+extern void I2cM_Write_Word(BYTE i2c_addr, BYTE* data, BYTE reg, WORD i2c_channel);
+extern void I2cM_Read_Word(BYTE i2c_addr, BYTE* data, BYTE reg, WORD i2c_channel);
+extern void I2cM_Write_Block(BYTE i2c_addr, BYTE* data, BYTE length, BYTE reg, WORD i2c_channel);
+extern void I2cM_Read_Block(BYTE i2c_addr, BYTE* data, BYTE length, BYTE reg, WORD i2c_channel);
 extern void I2c_Slave_Write_Byte(uint8_t data, WORD i2c_channel);
-extern void I2c_Slave_Write_Block(uint8_t *data, BYTE  length, WORD i2c_channel);
+extern void I2c_Slave_Write_Block(uint8_t* data, BYTE  length, WORD i2c_channel);
 extern void I2c_Master_Controller_Init(WORD i2c_channel, DWORD speed, BYTE spklen);
 extern void I2c_Slave_Init(WORD i2c_channel, DWORD speed, BYTE spklen);
 extern void I2c_Channel_Init(BYTE channel, DWORD speed, BYTE role, BYTE addr, BYTE spklen);

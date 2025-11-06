@@ -93,15 +93,11 @@ static BYTE Switch_Scan_Code(BYTE data_word, BYTE break_prefix_flag)
 }
 static BYTE Common_Send_To_HOST(BYTE data_word, BYTE break_prefix_flag)
 {
-#if KBS_DEBUG
-    dprint("Common_Send_To_HOST data is %#x\n", data_word);
-#endif
+    kbc_dprint("Common_Send_To_HOST data:%#x\n", data_word);
     BYTE send_it = FALSE;
     if (Host_Flag_XLATE_PC == 0) // Send data as is.
     {
-#if KBS_DEBUG
-        dprint("Host_Flag_XLATE_PC is 0\n");
-#endif
+        kbc_dprint("Host_Flag_XLATE_PC is 0\n");
         send_it = TRUE;
         break_prefix_flag = FALSE;
     }
@@ -122,12 +118,10 @@ static BYTE Common_Send_To_HOST(BYTE data_word, BYTE break_prefix_flag)
             send_it = TRUE;
         }
     }
-#if KBS_DEBUG
     if (send_it == FALSE)
-        dprint("send_it FALSE\n");
+        kbc_dprint("send_it FALSE\n");
     if (break_prefix_flag == FALSE)
-        dprint("break_prefix_flag FALSE\n");
-#endif
+        kbc_dprint("break_prefix_flag FALSE\n");
     if (send_it)
     {
         Transmit_Data_To_Host(data_word);
@@ -212,9 +206,7 @@ void Service_Send(void)
     if (KBPendingRXCount > KBPendingTXCount)
     {
         KBCmdAck = Release_KBC_Data_Suspend();
-#if KBS_DEBUG
-        dprint("Service Send. pending data is %#x\n", KBCmdAck);
-#endif
+        kbc_dprint("Service Send. pending data:%#x\n", KBCmdAck);
         Send_KB_Data_To_Host(KBCmdAck);
         return;
     }
@@ -237,9 +229,7 @@ void Service_Send(void)
         {
             Gen_Info_BREAK_SCAN = 1; // Break prefix code.
         }
-#if KBS_DEBUG
-        dprint("Service Send data is %#x\n", nKBData);
-#endif
+        kbc_dprint("Service Send data:%#x\n", nKBData);
     }
     //-------------------------------------------------------------------------
 #endif
@@ -268,9 +258,8 @@ void Transmit_Data_To_Host(BYTE data_byte)
     {
         CLEAR_BIT(KBC_CTL, KBC_OBFKIE);
     }
-#if KBC_DEBUG
-    dprint("dth:%x,icr:%x,isr:%x\n", data_byte, KBC_CTL, KBC_STA);
-#endif
+    kbc_dprint("dth:%x,icr:%x,isr:%x\n", data_byte, KBC_CTL, KBC_STA);
+
 #if SUPPORT_8042DEBUG_OUTPUT
     Write_Debug_Data_To_Sram(data_byte);
 #endif
@@ -286,9 +275,8 @@ void Transmit_Data_To_Host(BYTE data_byte)
 }
 void KBC_Data_Suspend(BYTE nPending)
 {
-#if KBC_DEBUG
-    dprint("KBPendingRXCount is %#x \n", KBPendingRXCount);
-#endif
+    kbc_dprint("KBPendingRXCount is %#x \n", KBPendingRXCount);
+
     if (KBPendingRXCount > 3)
         return;
     KBDataPending[(KBPendingRXCount & 0x03)] = nPending;
@@ -304,9 +292,8 @@ BYTE Release_KBC_Data_Suspend(void)
         KBPendingTXCount = 0;
         KBPendingRXCount = 0;
     }
-#if KBC_DEBUG
-    dprint("Release_KBC_Data_Suspend is %#x \n", buffer_data);
-#endif
+    kbc_dprint("Release_KBC_Data_Suspend is %#x \n", buffer_data);
+
     return buffer_data;
 }
 /* ----------------------------------------------------------------------------
@@ -333,9 +320,8 @@ void Mouse_Data_To_Host(BYTE data_byte)
 #if SUPPORT_8042DEBUG_OUTPUT
     Write_Debug_Data_To_Sram(data_byte);
 #endif
-#if KBC_DEBUG
-    dprint("adth1:%x,icr:%x,isr:%x\n", data_byte, KBC_CTL, KBC_STA);
-#endif
+    kbc_dprint("adth1:%x,icr:%x,isr:%x\n", data_byte, KBC_CTL, KBC_STA);
+
     KBC_MOB = data_byte;
 #if ENABLE_DEBUGGER_SUPPORT
     Debugger_KBC_PMC_Record(1, 0, data_byte);

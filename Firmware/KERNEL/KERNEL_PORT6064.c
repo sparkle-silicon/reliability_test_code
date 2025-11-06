@@ -105,9 +105,8 @@ void KB_Cmd_Handle(BYTE nKB60DAT)
     ack = 0x00;
     ack1 = 0x00;
     ack2 = 0x00;
-#if KBC_DEBUG
-    dprint("KB_Command is %#x,nKB60DAT is %#x\n", KB_Command, nKB60DAT);
-#endif
+    kbc_dprint("KB_Command:%#x,nKB60DAT:%#x\n", KB_Command, nKB60DAT);
+
     if (KB_Command)
     {
         cmdbk = KB_Command;
@@ -196,10 +195,9 @@ void KB_Cmd_Handle(BYTE nKB60DAT)
         }
         return;
     }
-#if KBC_DEBUG
-    dprint("Before nKB60DAT is %#x ,ack is %#x,ack1 is %#x,akc2 is %#x\n", nKB60DAT, ack, ack1, ack2);
-#endif
-    KB_Command = 0x00; // zb 10.27 edit
+    kbc_dprint("nKB60DAT:%#x,ack:%#x,ack1:%#x,ack2:%#x\n", nKB60DAT, ack, ack1, ack2);
+
+    KB_Command = 0x00;
     switch (nKB60DAT)
     {
     case 0xED: /* Update LEDs command. */
@@ -273,11 +271,9 @@ void KB_Cmd_Handle(BYTE nKB60DAT)
         ack = 0xFE;
         break;
     }
-#if KBC_DEBUG
-    dprint("ack is %#x\n", ack);
-    dprint("ack1 is %#x\n", ack1);
-    dprint("ack2 is %#x\n", ack2);
-#endif
+    kbc_dprint("ack:%#x\n", ack);
+    kbc_dprint("ack1:%#x\n", ack1);
+    kbc_dprint("ack2:%#x\n", ack2);
     if (KB_Main_CHN == 0)
     {
         int kb_timeout = WaitKBCIdle;
@@ -386,15 +382,10 @@ BYTE Loop_Wait_Get_Port60_Data(void)
 //-----------------------------------------------------------------------------
 void Command_00_3F(void) // Command_00_3F: Read KBC RAM Control Bytes
 {
-#if KBC_DEBUG
-    dprint("Command_00_3F \n");
-#endif
     switch (KBHICmd & 0x1F)
     {
     case 0x00: // Cmd_0x00 & Cmd_0x20
-#if KBC_DEBUG
-        dprint("Host_Flag is %#x\n", Host_Flag);
-#endif
+        kbc_dprint("Host_Flag:%#x\n", Host_Flag);
         Transmit_Data_To_Host(Host_Flag);
         break;
     case 0x13: // Cmd_0x13 & Cmd_0x33 Send Security Code On byte to host
@@ -553,9 +544,6 @@ void Command_A5X(BYTE data)
 //-----------------------------------------------------------------------------
 void Command_40_7F(void) // Command_40_7F: Write KBC RAM Control Bytes
 {
-#if KBC_DEBUG
-    dprint("Command_40_7F \n");
-#endif
     if (KBHICmd == 0x60)
     {
         while (!(KBC_STA & KBC_STA_IBF));
@@ -576,9 +564,7 @@ void Command_40_7F(void) // Command_40_7F: Write KBC RAM Control Bytes
         switch (KBHICmd & 0x1F)
         {
         case 0x00: // Cmd_0x40 & Cmd_0x60
-#if KBC_DEBUG
-            dprint("Write_KCCB KBHIData is %#x\n", KBHIData);
-#endif
+            kbc_dprint("Write_KCCB:%#x\n", KBHIData);
             Write_KCCB(KBHIData);
             break;
         case 0x12: // Cmd_0x52 & Cmd_0x72
@@ -624,9 +610,7 @@ const FUNCT_PTR_V_V Cmd8X_table[16] =
 //-----------------------------------------------------------------------------
 static void Command_8X(void)
 {
-#if KBC_DEBUG
-    dprint("Command_8X \n");
-#endif
+    kbc_dprint("Cmd_8X\n");
     (Cmd8X_table[KBHICmd & 0x0F])();
 }
 //-----------------------------------------------------------------------------
@@ -651,9 +635,7 @@ const FUNCT_PTR_V_V Cmd9X_table[16] =
 };
 static void Command_9X(void)
 {
-#if KBC_DEBUG
-    dprint("Command_9X \n");
-#endif
+    kbc_dprint("Cmd_9X\n");
     (Cmd9X_table[KBHICmd & 0x0F])();
 }
 //-----------------------------------------------------------------------------
@@ -678,9 +660,7 @@ const FUNCT_PTR_V_V CmdAX_table[16] =
 };
 static void Command_AX(void)
 {
-#if KBC_DEBUG
-    dprint("Command_AX \n");
-#endif
+    kbc_dprint("Cmd_AX\n");
     (CmdAX_table[KBHICmd & 0x0F])();
 }
 //-----------------------------------------------------------------------------
@@ -705,9 +685,7 @@ const FUNCT_PTR_V_V CmdBX_table[16] =
 };
 static void Command_BX(void)
 {
-#if KBC_DEBUG
-    dprint("Command_BX \n");
-#endif
+    kbc_dprint("Cmd_BX\n");
     (CmdBX_table[KBHICmd & 0x0F])();
 }
 //-----------------------------------------------------------------------------
@@ -732,9 +710,7 @@ const FUNCT_PTR_V_V CmdCX_table[16] =
 };
 static void Command_CX(void)
 {
-#if KBC_DEBUG
-    dprint("Command_CX\n");
-#endif
+    kbc_dprint("Cmd_CX\n");
     (CmdCX_table[KBHICmd & 0x0F])();
 }
 void Command_91(void)
@@ -951,9 +927,7 @@ const FUNCT_PTR_V_V CmdDX_table[16] =
 };
 static void Command_D4(void)
 {
-#if KBC_DEBUG
-    dprint("Command_D4 \n");
-#endif
+    kbc_dprint("Cmd_D4\n");
 #if !(PS2_0_CLOCK_EN & PS2_1_CLOCK_EN)
     dprint("PS2 CLOCK NOT ENABLE\n");
     return;
@@ -1009,9 +983,7 @@ const FUNCT_PTR_V_V CmdEX_table[16] =
 #endif
 static void Command_EX(void)
 {
-#if KBC_DEBUG
-    dprint("Command_EX \n");
-#endif
+    kbc_dprint("Cmd_EX\n");
 #if SUPPORTED_KBC_EX
     (CmdEX_table[KBHICmd & 0x0F])();
 #endif
@@ -1070,9 +1042,7 @@ void Service_PCI_Main(void)
 #if SUPPORT_8042DEBUG_OUTPUT
         Write_Debug_Data_To_Sram(KBHICmd);
 #endif
-#if KBC_DEBUG
-        dprint("KBHICmd is %#x \n", KBHICmd);
-#endif
+        kbc_dprint("KBHICmd:%#x\n", KBHICmd);
         (Port64_Table[(KBHICmd >> 4)])(); // use Transmit_Data_To_Host() to send data
     }
     else // Data
@@ -1087,9 +1057,7 @@ void Service_PCI_Main(void)
             /* Debugger record */
             Debugger_KBC_PMC_Record(0, 0, KBHIData);
 #endif
-#if KBC_DEBUG
-            dprint("KBHIData is %#x \n", KBHIData);
-#endif
+            kbc_dprint("KBHIData:%#x\n", KBHIData);
 #if CONTROL_A20_WAY3
             if (FastA20)
             {
@@ -1106,16 +1074,14 @@ void Service_PCI_Main(void)
             }
 #endif
             (Port64_Table[(KBHICmd >> 4)])(); // use Transmit_Data_To_Host() to send data
-            }
+        }
         else
         {
             KBHIData = KBC_IB;
 #if SUPPORT_8042DEBUG_OUTPUT
             Write_Debug_Data_To_Sram(KBHIData);
 #endif
-#if KBC_DEBUG
-            dprint("KB_Cmd_Handle is %#x \n", KBHIData);
-#endif
+            kbc_dprint("KBHIData:%#x\n", KBHIData);
 #if ENABLE_DEBUGGER_SUPPORT
             /* Debugger record */
             Debugger_KBC_PMC_Record(0, 0, KBHIData);
@@ -1123,9 +1089,9 @@ void Service_PCI_Main(void)
             Command_AE();
             KB_Cmd_Handle(KBHIData); // Keyboard Command
         }
-        }
-    // irqc_enable_interrupt(KBC_IBF_INTERRUPT_OFFSET); //enable kbc ibf int
     }
+    // irqc_enable_interrupt(KBC_IBF_INTERRUPT_OFFSET); //enable kbc ibf int
+}
 //----------------------------------------------------------------------------
 // FUNCTION: Service_PCI
 // KBC PORT service function
@@ -1163,7 +1129,7 @@ void __weak Service_PCI(void)
     }
 #endif
 #endif
-    }
+}
 //----------------------------------------------------------------------------
 // FUNCTION: Write_Debug_Data_To_Sram
 // Output port6064 data to sram for debug 8042 initial process

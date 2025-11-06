@@ -51,6 +51,8 @@
 #define IRQC_INT_DEVICE_TIMER3 29
 #define IRQC_INT_DEVICE_INTR0 30
 #define IRQC_INT_DEVICE_INTR1 31
+
+ //IRQ中断打印
 #if IRQC_DEBUG
 #define irqprint(fmt, args...) dprint(fmt, ##args)
 #else

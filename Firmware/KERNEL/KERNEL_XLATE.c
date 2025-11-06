@@ -60,9 +60,8 @@ void KBS_Xlate_Code2(uKEY key, BYTE event)
     // Hardware KBD_SCAN keyboard
     //*******************************************************
     _R4 = Cr_KBD_Tables[key.index.kso][key.index.ksi];
-#if KBS_DEBUG
-    dprint("code1 is %#x\n", _R4);
-#endif
+    kbs_dprint("code1:%#x\n", _R4);
+
     /*2： Keyboard wake up system 唤醒系统的操作*/
     if (SystemIsS3 && (event == MAKE_EVENT))
     {
@@ -154,7 +153,7 @@ void Transmit_Key(BYTE table_entry, BYTE event)
         **********************************************************************/
         temp = table_entry - SSKEY2_SPE_CODE;
         table_entry = sskey2_A2_table[temp].comb;
-        BYTE *pntr = (BYTE *)sskey2_A2_table[temp].pntr;
+        BYTE* pntr = (BYTE*)sskey2_A2_table[temp].pntr;
         pntr += Get_Comb_Index(table_entry, temp_table_entry, event);
         table_entry = *pntr;
     }
@@ -185,10 +184,8 @@ void Process_Sskey3(BYTE kbd_code2, BYTE event)
             相关键位：...
             相关键码：0x00~0x7F
         **********************************************************************/
-/*普通按键的处理，传递给buffer缓存*/
-    #if KBS_DEBUG
-        dprint(" code2 = %#x,event = %#x\n", kbd_code2, event);
-    #endif
+        /*普通按键的处理，传递给buffer缓存*/
+        kbs_dprint("code2:%#x,event:%#x\n", kbd_code2, event);
         Single_Code(kbd_code2, event); // 01h through 7Fh = KBD_SCAN code.
     }
     else // 80h through FFh.
@@ -216,9 +213,7 @@ void Process_Sskey3(BYTE kbd_code2, BYTE event)
         */
         BYTE code_byte = sskey3_80_table[kbd_code2 + 0];
         BYTE index = sskey3_80_table[kbd_code2 + 1];
-    #if KBS_DEBUG
-        dprint(" code2 = %#x,event = %#x\n", code_byte, event);
-    #endif
+        kbs_dprint("code2:%#x,event:%#x\n", code_byte, event);
         (kcp_vector_table[index])(code_byte, event); // Do procedure
     }
 }
@@ -525,7 +520,7 @@ void Generate_Scan_Code(BYTE state, BYTE event)
     /*发送这些按键的按键码*/
     if ((event == MAKE_EVENT) || (event == BREAK_EVENT))
     {
-            /*根据不同的事件，将相应的flag置位*/
+        /*根据不同的事件，将相应的flag置位*/
         if (state & LShift)
             Single_Code(0x12, event);
         else if (state & LAlt)
@@ -628,32 +623,32 @@ BYTE Get_Comb_Index(BYTE comb, BYTE table_entry, BYTE event)
     }
     if (comb & BIT(4))
     {   // Combination has Num Lock.
-    #if 1//NumLock_Key lock state wait break code ,unlock state wait last break code
+#if 1//NumLock_Key lock state wait break code ,unlock state wait last break code
         if (NumLockKey)
         { // Fn is pressed.
             offset |= (1 << bit_num);
         }
-    #else//NumLock_Key lock state wait Make code  ,unlock state wait break code
+#else//NumLock_Key lock state wait Make code  ,unlock state wait break code
         if (KBD_SCAN_STATE.index.num_lock)
         {   								// NumLock has been pressed.
             offset |= (1 << bit_num);
         }
-    #endif
+#endif
         bit_num++; 	 						// Increment bit position.
     }
     if (comb & BIT(5))
     { // Combination has Fn.
-    #if 1
+#if 1
         if (Check_FnKey_Related_Flag(table_entry, event) == 0x01)
         {
             offset |= (1 << bit_num);
         }
-    #else
+#else
         if (KBD_SCAN_STATE.index.Fn)
         {   								// Fn is pressed.
             offset |= (1 << bit_num);
         }
-    #endif
+#endif
         bit_num++; // Increment bit position.
     }
     if (comb & BIT(6))

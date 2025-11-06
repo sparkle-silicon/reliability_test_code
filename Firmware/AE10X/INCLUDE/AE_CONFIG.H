@@ -474,7 +474,7 @@
 #define DEBUG 1                                       // 0:close printf   1:open printf
 #define KBS_DEBUG 0 & DEBUG                           // 0:close printf   1:open printf
 #define KBC_DEBUG 0 & DEBUG                           // 0:close printf   1:open printf
-#define I2C_DEBUG 1 & DEBUG                           // 0:close printf   1:open printf
+#define I2C_DEBUG 0 & DEBUG                           // 0:close printf   1:open printf
 #define IRQC_DEBUG 1 & DEBUG                          // 0:close printf   1:open printf
 #define ANX7447_UCSI_DEBUG 1 & DEBUG &SUPPORT_ANX7447 // 0:close printf   1:open printf
 #define I3C_DEBUG 0 & DEBUG                           // 0:close printf   1:open printf

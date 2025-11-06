@@ -2105,8 +2105,8 @@ void intr1_uart1(void)
 			UART1_RX;					 // 读出异常值
 			irqprint("Receive error\n"); // 报错
 			SYSCTL_PIOB_UPCFG |= BIT3;
-} // 接收错误
-}
+		} // 接收错误
+	}
 #if (ENABLE_COMMAND_SUPPORT && COMMAND_UART_SWITCH == 1)
 	if (F_Service_CMD == 1)
 	{
@@ -2158,7 +2158,7 @@ void intr1_null49(void)
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[145]++;
 #endif
-	}
+}
 void intr1_spim(void)
 {
 #if TEST_INTC
@@ -2192,7 +2192,7 @@ void intr1_spim(void)
 				SPIM_DA = 0xff;
 			}
 		}
-			}
+	}
 	if (SPIM_ISR & 0X8) // fifo接收溢出中断
 	{
 		SPIM_ISR |= 0x8; // 清除中断
@@ -2207,7 +2207,7 @@ void intr1_spim(void)
 		SPI_IRQ_Config(txeim, DISABLE);
 		SPI_Read_Start = 1; // 写入完成判断可以读
 	}
-	}
+}
 void intr1_smbus0(void)
 {
 #if TEST_INTC
@@ -2245,7 +2245,7 @@ void intr1_smbus0(void)
 #if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
 		Debugger_Cmd_IRQ(I2c_Slave_Read_Byte(DEBUGGER_I2C_CHANNEL));
 #endif
-}
+	}
 	else if (intr_stat & I2C_INTR_TX_OVER)
 		SMBUS0_CLR_TX_OVER0;
 	else if (intr_stat & I2C_INTR_TX_EMPTY)
@@ -2300,7 +2300,7 @@ void intr1_smbus0(void)
 	// 	else if(status & I2C_STATUS_MST_ACTIVITY)
 	// 	{
 	// 	}
-		}
+}
 void intr1_smbus1(void)
 {
 #if TEST_INTC
@@ -2337,7 +2337,7 @@ void intr1_smbus1(void)
 #if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
 		Debugger_Cmd_IRQ(I2c_Slave_Read_Byte(DEBUGGER_I2C_CHANNEL));
 #endif
-}
+	}
 	else if (intr_stat & I2C_INTR_TX_OVER)
 		SMBUS1_CLR_TX_OVER0;
 	else if (intr_stat & I2C_INTR_TX_EMPTY)
@@ -2392,7 +2392,7 @@ void intr1_smbus1(void)
 	// 	else if(status & I2C_STATUS_MST_ACTIVITY)
 	// 	{
 	// 	}
-	}
+}
 void intr1_smbus2(void)
 {
 #if TEST_INTC
@@ -2429,7 +2429,7 @@ void intr1_smbus2(void)
 #if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
 		Debugger_Cmd_IRQ(I2c_Slave_Read_Byte(DEBUGGER_I2C_CHANNEL));
 #endif
-}
+	}
 	else if (intr_stat & I2C_INTR_TX_OVER)
 		SMBUS2_CLR_TX_OVER0;
 	else if (intr_stat & I2C_INTR_TX_EMPTY)
@@ -2521,7 +2521,7 @@ void intr1_smbus3(void)
 #if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
 		Debugger_Cmd_IRQ(I2c_Slave_Read_Byte(DEBUGGER_I2C_CHANNEL));
 #endif
-}
+	}
 	else if (intr_stat & I2C_INTR_TX_OVER)
 		SMBUS3_CLR_TX_OVER0;
 	else if (intr_stat & I2C_INTR_TX_EMPTY)
@@ -2719,7 +2719,7 @@ void intr1_espi(void)
 					/* 1: Detected Hi */
 					eSPI_PLTRST_TAG = F_PLTRST_HI_LEVEL;
 				}
-}
+			}
 			else
 			{
 				/* VWire PLTRST Status - Lo */
@@ -2729,8 +2729,8 @@ void intr1_espi(void)
 					eSPI_PLTRST_TAG = F_PLTRST_HI_TO_LO;
 				}
 			}
-}
-}
+		}
+	}
 #endif
 	VWCTRL1 = 0xFF;
 	/*OOB-ERPMC Interrupt*/

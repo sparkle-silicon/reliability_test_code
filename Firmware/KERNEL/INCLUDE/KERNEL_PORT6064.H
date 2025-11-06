@@ -34,7 +34,7 @@
 #define KBC_STA_SAOBF                           HEX20 //May be "receive time-out" or "second PS/2 port output buffer full"
 #define KBC_STA_TOE                             HEX40 //Timeout error
 #define KBC_STA_PE                              HEX80 //Parity error
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #define KBC_Int_Enable(type)	    (KBC_CTL |= (0x1<<(type)))
 #define KBC_Int_Disable(type)	    (KBC_CTL &= ~(0x1<<(type)))
 #define KBC_Int_Enable_Read(type)	((KBC_CTL & (0x1<<(type)))!=0)
@@ -46,16 +46,23 @@
 #define WaitECDataDelay         0x200
 #define WaitPM2DataDelay        0x200
 #define WaitKBCIdle             30000
-/*-----------------------------------------------------------------------------
- * Command Parameter
- *---------------------------------------------------------------------------*/
+ /*-----------------------------------------------------------------------------
+  * Command Parameter
+  *---------------------------------------------------------------------------*/
 #define _CMD_BYTE1              0x02
 #define _CMD_BYTE2              0x03
 #define _CMD_BYTE3              0x04
 #define _CMD_BYTE4              0x05
-/*-----------------------------------------------------------------------------
- * External Calling Prototype
- *---------------------------------------------------------------------------*/
+
+  //KBC调试打印
+#if KBC_DEBUG 
+#define kbc_dprint dprint
+#else 
+#define kbc_dprint(fmt, args...)
+#endif
+  /*-----------------------------------------------------------------------------
+   * External Calling Prototype
+   *---------------------------------------------------------------------------*/
 extern void Service_PCI(void);
 extern void KB_Cmd_Handle(BYTE data_byte);
 extern void Write_Debug_Data_To_Sram(uint8_t Data);
@@ -75,6 +82,6 @@ extern void KBC_Variable_Clear(void);
  * Internal Process Prototype
  *---------------------------------------------------------------------------*/
 
-//-----------------------------------------------------------------------------
+ //-----------------------------------------------------------------------------
 #include "CUSTOM_KBC6064.H"
 #endif

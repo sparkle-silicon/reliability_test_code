@@ -31,10 +31,10 @@ const BYTE KBS_delay_tbl[] = { 25, 50, 75, 100 };
  * ------------------------------------------------------------------------- */
 BYTE KBS_Buffer_Get(BYTEP buffp)
 {
-    if(KBD_SCAN.head != KBD_SCAN.tail)
+    if (KBD_SCAN.head != KBD_SCAN.tail)
     {
         *buffp = KBD_BUFF[KBD_SCAN.head];
-        if(KBD_SCAN.head == (KBF_SIZE - 1))
+        if (KBD_SCAN.head == (KBF_SIZE - 1))
             KBD_SCAN.head = 0;
         else
             KBD_SCAN.head++;
@@ -53,25 +53,23 @@ BYTE KBS_Buffer_Get(BYTEP buffp)
  * ------------------------------------------------------------------------- */
 BYTE KBS_Buffer_Input(BYTE code)
 {
-    if(code == 0)
+    if (code == 0)
     {
         return FALSE;
     }
     KBD_BUFF[KBD_SCAN.tail] = code; /* Store Data to Buffer Tail */
-    if(KBD_SCAN.tail == (KBF_SIZE - 1))
+    if (KBD_SCAN.tail == (KBF_SIZE - 1))
         KBD_SCAN.tail = 0; /* Wrap pointer if too large. */
     else
         KBD_SCAN.tail++;
     /* Check Overflow */
-    if(KBD_SCAN.tail == KBD_SCAN.head)
+    if (KBD_SCAN.tail == KBD_SCAN.head)
     {                                  /* Overflow */
         KBD_SCAN.tail = KBD_SCAN.mark; /* Restore buffer marker. */
         KBD_BUFF[KBD_SCAN.tail] = 0;   /* Set OverFlow Mark. */
         return FALSE;                 /* Overflow Indication !!! */
     }
-#if KBS_DEBUG
-    dprint("code3 = %#x\n", code);
-#endif
+    kbs_dprint("code3:%#x\n", code);
     return TRUE;
 }
 /* ----------------------------------------------------------------------------
@@ -85,8 +83,8 @@ BYTE KBS_Buffer_Input(BYTE code)
  * ------------------------------------------------------------------------- */
 BYTE KBS_Buffer_puts(const BYTEP str)
 {
-    while((*str != 0))
-        if(KBS_Buffer_Input(*str++) == FALSE)
+    while ((*str != 0))
+        if (KBS_Buffer_Input(*str++) == FALSE)
             return FALSE;  /* Indicate Overflow */
     return TRUE;
 }
@@ -102,37 +100,37 @@ static BYTE KBS_Find_Paths(BYTE key, BYTE base_addr)
 {
     BYTE paths, temp, bits;
     BYTE scan_addr = base_addr;
-    if(key == 0)
+    if (key == 0)
         return (FALSE);
     paths = KBS_matrix[scan_addr] | key;
-    if(paths == 0)
+    if (paths == 0)
         return (FALSE);
-    while(1)
+    while (1)
     {
         scan_addr++;
-        if(scan_addr >= MAX_SCAN_LINES)
+        if (scan_addr >= MAX_SCAN_LINES)
             scan_addr = 0; /* Wrap around */
-        if(scan_addr == base_addr)
+        if (scan_addr == base_addr)
             return FALSE;
         temp = KBS_matrix[scan_addr]; /* Any paths? */
-        if(temp != 0)
+        if (temp != 0)
         {                  /* Paths found */
             temp &= paths; /* Do paths line up? */
         }
-        if(temp != 0)
+        if (temp != 0)
         {                    /* Paths line up */
-            if(key != temp) /* Only 1 bit set? */
+            if (key != temp) /* Only 1 bit set? */
             {                /* No, ghost exists. */
                 return TRUE;
             }
             bits = paths; /* Only 1 bit set? */
-            while(!(bits & 0x01))
+            while (!(bits & 0x01))
             {
                 /* Shift bit out (and a zero bit in) to check next bit. */
                 bits >>= 1;
             }
             bits >>= 1;
-            if(bits != 0)
+            if (bits != 0)
             { /* No, more than 1 bit set. */
                 return TRUE;
             }
@@ -149,25 +147,25 @@ void KBS_Run(void)
     // Pre-clear variables
     KBD_SCAN.keys = 0;
     // Scan KSO0 ~ 15, 16, or 17
-    for(kso_index = 0x00; kso_index < (KBD_8_n_SWITCH); kso_index++)
+    for (kso_index = 0x00; kso_index < (KBD_8_n_SWITCH); kso_index++)
     {
         ksitemp = ~(*ksolsd); // Read KSI and inverse
         ksolsd = ksolsd + 1;
         ksitemp ^= KBS_matrix[kso_index];
-        if(ksitemp != 0x00)
+        if (ksitemp != 0x00)
         {
             //-----------------------------------------------------
             // Check KSI0 ~ 7
             //-----------------------------------------------------
-            for(ksi_index = 0x00; ksi_index < 8; ksi_index++)
+            for (ksi_index = 0x00; ksi_index < 8; ksi_index++)
             {
-                if((ksitemp & BIT(ksi_index)))
+                if ((ksitemp & BIT(ksi_index)))
                 {
                     KBS_INFO.index.kso = kso_index;                // Save KSO for type uKEY
                     KBS_INFO.index.ksi = ksi_index;                // Save KSI for type uKEY
-                    if(!(KBS_matrix[kso_index] & BIT(ksi_index))) // Make
+                    if (!(KBS_matrix[kso_index] & BIT(ksi_index))) // Make
                     {
-                        if(KBS_Find_Paths(ksitemp, kso_index) == FALSE) // No ghost key
+                        if (KBS_Find_Paths(ksitemp, kso_index) == FALSE) // No ghost key
                         {
                             KBS_Xlate_Code2(KBS_INFO, MAKE_EVENT); // Key make
                             KBD_SCAN.scale = TM_SCALE;             // Repeat time
@@ -177,9 +175,7 @@ void KBS_Run(void)
                         else // ghost key found
                         {
                             KBS_INFO.byte = 0;
-                        #if KBS_DEBUG
-                            dprint("ghost key found \n");
-                        #endif
+                            kbs_dprint("ghost key!\n");
                             return; /*Fix ghost*/
                         }
                     }
@@ -192,20 +188,20 @@ void KBS_Run(void)
             }
         }
         // Here, if current still active.
-        if(KBS_matrix[kso_index])
+        if (KBS_matrix[kso_index])
             KBD_SCAN.keys = 1; // Set keys active bits. Check all key release.
     }
     //-----------------------------------------------------
     // All key break
     //-----------------------------------------------------
-    if((KBD_SCAN.keys) == 0x00) // all key break
+    if ((KBD_SCAN.keys) == 0x00) // all key break
     {
         KBS_Clear_Break();
     }
     //-----------------------------------------------------
     // Start sending keyboard data
     //-----------------------------------------------------
-    if(KBD_SCAN.head != KBD_SCAN.tail)
+    if (KBD_SCAN.head != KBD_SCAN.tail)
     {
         // F_Service_Send = 1;         // Post service request
     }
@@ -229,8 +225,8 @@ void KBS_Set_KBS_INFO(VBYTE type_rate)
  * ------------------------------------------------------------------------- */
 void KBD_CLear_Buffer(void)
 {
-    memset((void *)KBS_matrix, 0, MAX_SCAN_LINES);
-    memset((void *)KBD_BUFF, 0, KBF_SIZE);
+    memset((void*)KBS_matrix, 0, MAX_SCAN_LINES);
+    memset((void*)KBD_BUFF, 0, KBF_SIZE);
     KBD_SCAN.head = 0; // Clear keyboard buffer head
     KBD_SCAN.tail = 0; // Clear keyboard buffer tail
     KBD_SCAN.keys = 0; // Clear Scan activity flag - keys active.
@@ -268,7 +264,7 @@ void KBS_Init(void)
 //-----------------------------------------------------------------
 void KBS_Clear_Break(void)
 {
-    memset((void *)Fn_BUNDLED_FLAG, 0, 16);
+    memset((void*)Fn_BUNDLED_FLAG, 0, 16);
     Scanner_State = 0;//清空按下状态
     NumLockKey = 1;//如果是锁的话NumLock默认开启
 }
@@ -278,14 +274,14 @@ void KBS_Clear_Break(void)
  * ------------------------------------------------------------------------- */
 void Service_KBS(void)
 {
-    if(F_Service_KBS == 1)
+    if (F_Service_KBS == 1)
     {
         F_Service_KBS = 0;
-    #if !(KBS_CLOCK_EN)
+#if !(KBS_CLOCK_EN)
         dprint("KBS CLOCK NOT ENABLE\n");
         return;
-    #endif
-        if(((KB_Scan_Flag == 0) || ((Host_Flag & PS2_PORT1_KEY_EN) != 0)))
+#endif
+        if (((KB_Scan_Flag == 0) || ((Host_Flag & PS2_PORT1_KEY_EN) != 0)))
         {
         }
         else
@@ -300,21 +296,21 @@ void Service_KBS(void)
 void KBD_Check_Repeat(void)
 {
     BYTE ksi_index = KBS_INFO.index.ksi;
-    if(KBS_INFO.byte)
+    if (KBS_INFO.byte)
     {
-        if((BIT(ksi_index) & KBS_matrix[KBS_INFO.index.kso]) == 0)//  KBS NO BREAK? 
+        if ((BIT(ksi_index) & KBS_matrix[KBS_INFO.index.kso]) == 0)//  KBS NO BREAK? 
         {
             KBS_INFO.byte = 0;	    // Clear KBS_INFO. 
             return;
         }
         KBD_SCAN.scale--;		    // Count down Prescale. 10ms
-        if(KBD_SCAN.scale != 0)
+        if (KBD_SCAN.scale != 0)
         {
             return;
         }
         KBD_SCAN.scale = TM_SCALE;// Reload prescale counter. 
         KBS_COUNT--;             // Count down TMcount.//0cnt delay 600 ms,last count 30ms
-        if(KBS_COUNT != 0)
+        if (KBS_COUNT != 0)
         {
             return;
         }

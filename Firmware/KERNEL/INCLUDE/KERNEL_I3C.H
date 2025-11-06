@@ -357,6 +357,8 @@
 #define DMATB_TX_ENABLE HEX01
 
 #define I3C_TIMEOUT I2CTimeOut
+
+//I3C调试打印
 #if I3C_DEBUG 
 #define i3c_dprint dprint
 #else 
