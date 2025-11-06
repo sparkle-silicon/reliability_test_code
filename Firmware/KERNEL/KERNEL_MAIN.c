@@ -274,7 +274,7 @@ const FUNCT_PTR_V_V service_table[] =
 	//低优先级
 	Service_PCI3,             // PMC2 Host Command/Data service
 	Service_PCI4,             // PMC3 Host Command/Data service
-	Service_HOST_RST,         //  lpc reset and espi reset Service
+	Service_HOST_RST,         // LPC reset and espi reset Service
 	Service_PCI5,             // PMC4 Host Command/Data service
 	Service_PCI6,             // PMC5 Host Command/Data service
 	Service_LowPower,         // CPU LowPower Service

@@ -132,40 +132,40 @@ void Default_Freq(void)
 	//Oscillator Calibration时钟校准
 	if ((SYSCTL_OSCTRIM & 0x007FEFFF) == 0x00338880)
 	{
-	#if SOFTWARE_TRIM_CONTROL
-	#define TEST_CHIPNUMBER 0
-	#if (TEST_CHIPNUMBER!=0)&&0
+#if SOFTWARE_TRIM_CONTROL
+#define TEST_CHIPNUMBER 0
+#if (TEST_CHIPNUMBER!=0)&&0
 		{//Bypass OSC Output	
 			sysctl_iomux_config(GPIOB, 31, 0x0);//将GPH7设置为GPIO，即设置为默认不输出
 			GPIO_Input_EN(GPIOB, 31, DISABLE);  //GPH[7]的IE配为0
 			SYSCTL_PMU_CFG |= ((1 << 0) | (1 << 9)); //寄存器0x3_0518(PMU test enable )的bit0和bit9(PMU BUF enable)均置1 
 			sysctl_iomux_config(GPIOA, 15, 0x3);//将GPB7设置为BYPASS OSC32K
 		}
-	#endif
+#endif
 		{
-		#if (TEST_CHIPNUMBER==1)	//1号片
-		#define LOW_32K_FTRIM_DVAL 0x69
-		#define LOW_32K_TTRIM_DVAL 0x8
-		#define HIGH_24M_FTRIM_DVAL 0x1d
-		#define HIGH_24M_TTRIM_DVAL 0x8
-		#elif TEST_CHIPNUMBER==2	//2号片
-		#define LOW_32K_FTRIM_DVAL 0x6A
-		#define LOW_32K_TTRIM_DVAL 0x8
-		#define HIGH_24M_FTRIM_DVAL 0x1d
-		#define HIGH_24M_TTRIM_DVAL 0x9
-		#else//默认值(不推荐改变该值)
-		#define LOW_32K_FTRIM_DVAL 0x80
-		#define LOW_32K_TTRIM_DVAL 0x8
-		#define HIGH_24M_FTRIM_DVAL 0x1C
-		#define HIGH_24M_TTRIM_DVAL 0x6
-		#endif
+#if (TEST_CHIPNUMBER==1)	//1号片
+#define LOW_32K_FTRIM_DVAL 0x69
+#define LOW_32K_TTRIM_DVAL 0x8
+#define HIGH_24M_FTRIM_DVAL 0x1d
+#define HIGH_24M_TTRIM_DVAL 0x8
+#elif TEST_CHIPNUMBER==2	//2号片
+#define LOW_32K_FTRIM_DVAL 0x6A
+#define LOW_32K_TTRIM_DVAL 0x8
+#define HIGH_24M_FTRIM_DVAL 0x1d
+#define HIGH_24M_TTRIM_DVAL 0x9
+#else//默认值(不推荐改变该值)
+#define LOW_32K_FTRIM_DVAL 0x80
+#define LOW_32K_TTRIM_DVAL 0x8
+#define HIGH_24M_FTRIM_DVAL 0x1C
+#define HIGH_24M_TTRIM_DVAL 0x6
+#endif
 			{//进行trim值填入
 				SYSCTL_OSCTRIM = (SYSCTL_OSCTRIM & (~(0x007FEFFF))) | \
 					((((LOW_32K_FTRIM_DVAL) & 0xFF) << 0) | (((LOW_32K_TTRIM_DVAL) & 0x0F) << 8) | \
 						(((HIGH_24M_FTRIM_DVAL) & 0x3F) << 13) | (((HIGH_24M_TTRIM_DVAL) & 0x0F) << 19));
 			}
 		}
-	#endif
+#endif
 	}
 	else
 	{
@@ -187,8 +187,8 @@ void Default_Vector(void)
 {
 	if (SYSCTL_PIO_CFG & BIT1)//使用外部FLASH
 	{
-		uint32_t *vector = (uint32_t *)&vector_base;
-		uint32_t *ivt = (uint32_t *)IVT_BASE_ADDR;
+		uint32_t* vector = (uint32_t*)&vector_base;
+		uint32_t* ivt = (uint32_t*)IVT_BASE_ADDR;
 		for (size_t i = 0; i < 33; i++)//32个中断向量表+1个异常中断跳转指令
 		{
 			ivt[i] = vector[i];
@@ -205,8 +205,8 @@ void Default_Iram0(void)
 {
 	if (SYSCTL_PIO_CFG & BIT1)//使用外部FLASH
 	{
-		uint32_t *iram_cache = (uint32_t *)NULL;//0xC0000
-		uint32_t *iram0 = (uint32_t *)IRAM0_BASE_ADDR;
+		uint32_t* iram_cache = (uint32_t*)NULL;//0xC0000
+		uint32_t* iram0 = (uint32_t*)IRAM0_BASE_ADDR;
 		{//数据搬运
 			if (iram_cache != NULL)
 			{
@@ -299,7 +299,7 @@ void SECTION(".init.Default") Default_Config()
 //----------------------------------------------------------------------------
 void Device_init(void)
 {
-	// 0.Devoce's Function Init Of Modules
+	//1.Devices Function Init Of Modules
 #if (PWM_MODULE_EN)
 #if (SUPPORT_FAN1&&(FAN1_PWM_CHANNEL_SWITCH<=7))
 	FAN_Init(FAN1_PWM_CHANNEL_SWITCH, PWM_CLK0, PWM_CTR0);
@@ -307,10 +307,9 @@ void Device_init(void)
 #if SUPPORT_FAN2&&(FAN1_PWM_CHANNEL_SWITCH<=7)
 	FAN_Init(FAN2_PWM_CHANNEL_SWITCH, PWM_CLK0, PWM_CTR0);
 #endif
-	//LED_Init();
 #endif
 
-//1.Host Device Init
+	//2.Host Device Init
 #if SUPPORT_LD_PNP_DEVBOARD
 	LogicalDevice_PNP_Config();
 #endif
@@ -318,20 +317,7 @@ void Device_init(void)
 	ShareMem_PNP_Config();
 #endif
 
-	//3.Devoce's Driver Init
-		//MOUSE_Init();
-		//KEYBOARD_Init();
-		//TOUCH_Init();
-		//Temp_Init();//
-	// #if SUPPORT_ANX7447//PD
-	// 	u8 ret = ucsi_init();
-	// 	if(ret != UCSI_COMMAND_SUCC)
-	// 	{
-	// 		assert_print("ucsi_init failed.\n");
-	// 		// return UCSI_COMMAND_FAIL;
-	// 	}
-	// #endif
-	//4.Service Timer 1ms Init
+	//3.Service Timer 1ms Init
 #if TIMER_MODULE_EN
 	TIMER_Init(TIMER2, TIMER2_1ms, 0x1, 0x0); // 1ms service计时函数
 #endif

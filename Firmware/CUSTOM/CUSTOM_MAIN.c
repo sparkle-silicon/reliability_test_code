@@ -28,9 +28,11 @@
 #include "KERNEL_I3C.H"
 #include "CUSTOM_PECI.H"
 
- //-----------------------------------------------------------------------------
- // Oem 1ms Events/Hook Here
- //-----------------------------------------------------------------------------
+u32 RunTimeStamp = 0;
+
+//-----------------------------------------------------------------------------
+// Oem 1ms Events/Hook Here
+//-----------------------------------------------------------------------------
 void __weak Hook_1msEvent(BYTE EventId)
 {
 #if SUPPORT_ANX7447
@@ -38,7 +40,6 @@ void __weak Hook_1msEvent(BYTE EventId)
 #endif
     Event_Center(EventId);    // Polling system event
     Sys_PowerState_Control(); // System Power Control
-    // KBD_ListeningEvent();
 
 #if SCI_POLLING_CONTROL
     SCI_Send();
@@ -102,7 +103,7 @@ void __weak Hook_50msEventA(void)
     }
 #endif
     //子系统dram更新测试用例
-#if 1
+#if SUPPORT_UPDATE_FUNCTION
     if (update_crypram_flag == 1)
     {
         Cryp_Update_Function();
@@ -136,8 +137,10 @@ void __weak Hook_100msEventB(void)
 //-----------------------------------------------------------------------------
 void __weak Hook_100msEventC(void)
 {
+    //led light control
     Service_LED_Indicator();
 
+    //service oob call
     if (xOOB_GET_CRASHLOG > 0)
     {
         return;
@@ -181,57 +184,27 @@ void __weak Hook_500msEventC(void)
 {
 #if SUPPORT_FIRMWARE_UPDATE
     Flash_Update_Function();
-    // printf("31000:%x\n", *((VDWORD *)(0x31000)));
 #endif
 }
 //-----------------------------------------------------------------------------
 // Oem 1sec Events/Hook Here
 //-----------------------------------------------------------------------------
-void I2c_Write_Short(WORD value, WORD regoffset, WORD i2c_channel);
 void __weak Hook_1secEventA(void) // get all temp
 {
 #if (I2C_MODULE_EN && SUPPORT_I2C_TEMPERATURE)
     get_temperature(2);
 #endif
-    // printf("MAILBOX_C2EINT:%x,MAILBOX_C2EINFO0:%x,MAILBOX_C2EINFO1:%x\n", MAILBOX_C2EINT, MAILBOX_C2EINFO0, MAILBOX_C2EINFO1);
 
-    /* Channel 1 of I2C is used to get the temperature */
-    // char temperature[3];
-    // uint8_t a0 = 0x00;
-    // uint8_t a1 = 0x01;
-    // uint8_t a2 = 0x10;
-    // {
-    //     /* read temperature */
-    //     // temperature[0] = I2c_Master_Read_Byte(0x4c, 0x0, i2c_channel);
-    //     I3C_Legacy_Master_Write(0x4c, &a0, 1, I3C_MASTER0);
-    //     I3C_Legacy_Master_Read(0x4c, (uint8_t*)temperature, 1, I3C_MASTER0);
-    //     printf("t0:%x\n", temperature[0]);
-    //     // temperature[1] = I2c_Master_Read_Byte(0x4c,0x1, i2c_channel);
-    //     I3C_Legacy_Master_Write(0x4c, &a1, 1, I3C_MASTER0);
-    //     I3C_Legacy_Master_Read(0x4c, ((uint8_t*)temperature + 1), 1, I3C_MASTER0);
-    //     printf("t1:%x\n", temperature[1]);
-    //     // temperature[2] = I2c_Master_Read_Byte(0x4c,0x10, i2c_channel);
-    //     I3C_Legacy_Master_Write(0x4c, &a2, 1, I3C_MASTER0);
-    //     I3C_Legacy_Master_Read(0x4c, (uint8_t*)(temperature + 2), 1, I3C_MASTER0);
-    //     printf("t2:%x\n", temperature[2]);
-    //     /* Write temp into ECSPACE_BASE_ADDR */
-    //     CPU_TEMP = temperature[0];
-    //     SYSTEM_TEMP = temperature[1];
-    //     Req_flag = 0;
-    //     dprint("I3C temperature=%d temp[1]=%d.%d\n", temperature[0], temperature[1], ((((BYTE)temperature[2]) >> 5) & 0x7) * 125);
-    // }
-
+#if 0       //erpmc test
     if (*((VBYTE*)(0x203B9)) == 1)
     {
-        // printf("0x203B9:%x\n", *((VBYTE *)(0x203B9)));
         *((VBYTE*)(0x203B9)) = 0;
-
         // Mailbox_Test();
         // Mailbox_FW_Extension_Trigger();
         // Mailbox_APB2_Source_Alloc_Trigger();
         // Mailbox_Update_Function(0x3, 0x8000, 0x70800); // 发起mailbox更新
         // Mailbox_Read_FLASHUID_Trigger();
-        //  Mailbox_Read_EFUSE_Trigger();
+        // Mailbox_Read_EFUSE_Trigger();
         Mailbox_WriteRootKey_Trigger();
     }
     if (*((VBYTE*)(0x203B9)) == 2)
@@ -239,39 +212,22 @@ void __weak Hook_1secEventA(void) // get all temp
         *((VBYTE*)(0x203B9)) = 0;
         Mailbox_UpdateHMACKey_Trigger();
     }
-
     if (*((VBYTE*)(0x203B9)) == 3)
     {
         *((VBYTE*)(0x203B9)) = 0;
         //Mailbox_IncrementCounter_Trigger(0x3FFE);
     }
-
     if (*((VBYTE*)(0x203B9)) == 4)
     {
         *((VBYTE*)(0x203B9)) = 0;
         Mailbox_RequestCounter_Trigger();
     }
-
     if (*((VBYTE*)(0x203B9)) == 5)
     {
         *((VBYTE*)(0x203B9)) = 0;
         Mailbox_ReadParameter_Trigger();
     }
-
-    if (*((VBYTE*)(0x203B9)) == 6)
-    {
-        *((VBYTE*)(0x203B9)) = 0;
-        SYSCTL_RST0 |= 0x40;
-        SYSCTL_RST0 &= (~0x40);
-        vDelayXms(1);
-        sysctl_iomux_slave0();
-        I3C_Slave_Init(SLAVE0_SET_STATICADDR, SLAVE0_SET_IDPARTNO, SLAVE0_SET_DCR, SLAVE0_SET_BCR, I3C_SLAVE0);
-        vDelayXms(10);
-        I3C_MASTER_ENTDAA(master0_dev_read_char_table, MASTER0_DEV_DYNAMIC_ADDR_TABLE, I3C_MASTER0); //specify a dynamic addr
-        vDelayXms(1);
-        printf("SLAVE0的动态地址为:%x\n", I3C_ReadREG_DWORD(DYNADDR_OFFSET, I3C_SLAVE0));
-        printf("SLAVE1的动态地址为:%x\n", I3C_ReadREG_DWORD(DYNADDR_OFFSET, I3C_SLAVE1));
-    }
+#endif
 }
 //-----------------------------------------------------------------------------
 void __weak Hook_1secEventB(void) // get fan rpm
@@ -284,32 +240,11 @@ void __weak Hook_1secEventB(void) // get fan rpm
         dprint("FAN2 RPM is %u\n", TACH0_Speed);
     }
 #endif
-    // GPIO1_DDR0 |=0x1; 
-    // GPIO1_DR0 |=0x1;
-    // GPIO1_DR0 &=~0x1;
 }
 //-----------------------------------------------------------------------------
-u32 RunTimeStamp = 0;
-char adc_cnt = 0;
-char mode_en = 0;
-char compare = 0;
-char counter = 0;
-char flag = 0;
-
-extern void ADC_Cont_Sample_Init_Single(uint8_t channelx, u_int8_t ADC_Databuffer_channelx, uint8_t mode);
-extern void ADC_Cont_Sample_Init_Multi(uint8_t mode, uint8_t Data_Select, uint8_t Chanal_8_mode);
-extern uint8_t MatchADCChannelToData(uint8_t channelx, uint16_t ADC_Databuffer_channelx);
-
-char cec_sdata[8] = { 1,2,3,4,5,6,7,8 };
-
 void __weak Hook_1secEventC(void) // update new rpm
 {
     RunTimeStamp++;
-    //printf("RunTimeStamp:%d\n", RunTimeStamp);
-    if (RunTimeStamp % 5 == 0)
-    {
-        //Enter_LowPower_Mode();
-    }
 
 #if FAN_Dynamic_Adj
     FAN_Dynamic(3);
@@ -324,11 +259,8 @@ void __weak Hook_1secEventC(void) // update new rpm
 //-----------------------------------------------------------------------------
 // 1 min events
 //-----------------------------------------------------------------------------
-
 void __weak Hook_1minEvent(void)
 {
-    // dprint("Service Run time stamp: %d \n", RunTimeStamp);
-
 #if SUPPORT_8042DEBUG_OUTPUT
     MinuteCnt++;
     if (MinuteCnt >= 2)
@@ -346,13 +278,6 @@ void __weak Hook_1minEvent(void)
 // End of Handle Timer Events
 //-----------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
-// FUNCTION: Service_WaitPS2_Handle
-//
-//-----------------------------------------------------------------------------
-void Service_WaitPS2_Handle(void)
-{
-}
 /* ----------------------------------------------------------------------------
  * FUNCTION: Service_HOST_RST
  * LPC RESET

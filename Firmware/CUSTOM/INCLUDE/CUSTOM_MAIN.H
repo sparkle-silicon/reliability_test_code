@@ -21,20 +21,10 @@
 #include "KERNEL_MEMORY.H"
 #include "KERNEL_HOST.H"
 
-/*-----------------------------------------------------------------------------
- * External Calling Process
- *---------------------------------------------------------------------------*/
+ /*-----------------------------------------------------------------------------
+  * External Calling Process
+  *---------------------------------------------------------------------------*/
 extern void Service_HOST_RST(void);
-extern void Service_WaitPS2_Handle(void);
-extern BYTE OemSetWakeUpSource(void);
-extern void InitWakeFromDeepSleep(void);
-extern void InitEnterDeepSleep(void);
-extern BYTE vCheckChipCanDeepSleep(void);
-extern void OEM_ColdResetInit(void);
-extern void OEM_Init_SMBus(void);
-extern void OEM_INIT_ACPI(void);
-extern void CAN_Printf_Receive(void);
-extern void A20GATE_ON(void);
 /*-----------------------------------------------------------------------------
  * Internal Process Definition
  *---------------------------------------------------------------------------*/

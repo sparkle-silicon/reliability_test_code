@@ -23,9 +23,9 @@ extern void CAN_Printf_Receive(void);
  * Local Parameter Definition
  *---------------------------------------------------------------------------*/
 #define SUPPORT_FAN2 0
-//-----------------------------------------------------------------------------
-// Oem 1ms Events/Hook Here
-//-----------------------------------------------------------------------------
+ //-----------------------------------------------------------------------------
+ // Oem 1ms Events/Hook Here
+ //-----------------------------------------------------------------------------
 void Hook_1msEvent(BYTE EventId)
 {
 #if SUPPORT_ANX7447
@@ -34,7 +34,6 @@ void Hook_1msEvent(BYTE EventId)
     // Custom_S5S0_Sequence();
     // Event_Center(EventId);          // Polling system event
     // Sys_PowerState_Control();       // System Power Control
-    // KBD_ListeningEvent();
 }
 //-----------------------------------------------------------------------------
 // Oem 5ms Events/Hook Here
@@ -64,21 +63,26 @@ void Hook_10msEventB(void)
 // Oem 50ms Events/Hook Here
 //-----------------------------------------------------------------------------
 void Hook_50msEventA(void)
-{}
+{
+}
 //-----------------------------------------------------------------------------
 void Hook_50msEventB(void)
-{}
+{
+}
 //-----------------------------------------------------------------------------
 void Hook_50msEventC(void)
-{}
+{
+}
 //-----------------------------------------------------------------------------
 // Oem 100ms Events/Hook Here
 //-----------------------------------------------------------------------------
 void Hook_100msEventA(void)
-{}
+{
+}
 //-----------------------------------------------------------------------------
 void Hook_100msEventB(void)
-{}
+{
+}
 //-----------------------------------------------------------------------------
 void Hook_100msEventC(void)
 {
@@ -88,33 +92,34 @@ void Hook_100msEventC(void)
 // Oem 500ms Events/Hook Here
 //-----------------------------------------------------------------------------
 void Hook_500msEventA(void)
-{}
+{
+}
 //-----------------------------------------------------------------------------
 void Hook_500msEventB(void)
 {
 #if CAN0_Receive
-    if(CAN0_ReadFlag == 1)
+    if (CAN0_ReadFlag == 1)
     {
         CAN0_ReadFlag = 0;
         CAN_Printf_Receive();
     }
 #endif
 #if CAN1_Receive
-    if(CAN1_ReadFlag == 1)
+    if (CAN1_ReadFlag == 1)
     {
         CAN1_ReadFlag = 0;
         CAN_Printf_Receive();
     }
 #endif
 #if CAN2_Receive
-    if(CAN2_ReadFlag == 1)
+    if (CAN2_ReadFlag == 1)
     {
         CAN2_ReadFlag = 0;
         CAN_Printf_Receive();
     }
 #endif
 #if CAN3_Receive
-    if(CAN3_ReadFlag == 1)
+    if (CAN3_ReadFlag == 1)
     {
         CAN3_ReadFlag = 0;
         CAN_Printf_Receive();
@@ -132,7 +137,8 @@ void Hook_500msEventC(void)
 // Oem 1sec Events/Hook Here
 //-----------------------------------------------------------------------------
 void Hook_1secEventA(void)
-{}
+{
+}
 //-----------------------------------------------------------------------------
 void Hook_1secEventB(void)
 {
@@ -166,5 +172,6 @@ void Hook_1secEventC(void)
 // 1 min events
 //-----------------------------------------------------------------------------
 void Hook_1minEvent(void)
-{}
+{
+}
 #endif

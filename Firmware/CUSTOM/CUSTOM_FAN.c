@@ -242,7 +242,7 @@ RE_LEVEL_ADD:
 		}
 	}
 RE_LEVEL_SUB:
-	if (Level > 0)/*如果风扇不是最低档转速的存在，就可以进入这个流程，处理降低风扇转???*/
+	if (Level > 0)/*如果风扇不是最低档转速的存在，就可以进入这个流程，处理降低风扇转速*/
 	{
 		if (temp < ThermalTalbe1[Level].CFanOff)
 		{

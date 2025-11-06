@@ -2566,7 +2566,7 @@ BYTE eSPI_OOBRPMC_Handler(void)
  * FUNCTION: Service_eSPI
  * Polling RSMRST high & vw channel enable then set vw channel ready
  * ------------------------------------------------------------------------- */
-void __weak Service_eSPI(void)
+void Service_eSPI(void)
 {
     //-----------------------------------
     // eSPI Interface Control

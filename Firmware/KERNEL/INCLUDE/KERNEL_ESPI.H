@@ -859,7 +859,7 @@ extern void OOB_PECI_ReadPowerLimit3(void);
 extern void OOB_PECI_WritePowerLimit3(BYTE SettingWatts);
 extern void OOB_PECI_ReadPowerLimit4(void);
 extern void OOB_PECI_WritePowerLimit4(BYTE SettingWatts);
-extern void __weak Service_eSPI(void);
+extern void Service_eSPI(void);
 extern BYTE EC_ACK_eSPI_Boot_Ready(void);
 extern BYTE SPK_CHECK_SUS_WARN(void);
 extern void ESPI_Init(void);

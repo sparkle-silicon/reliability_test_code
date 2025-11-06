@@ -27,22 +27,23 @@
 #define SCI_PIN_MODE_VW     0  // SCI切换为VW
 #define ACPI_SCI_Response 0    //ACPI EC SCI Interrupt Response Timing ( 8-16uSec).
 
-#define SOFTWARE_TRIM_CONTROL 0   //打开软件时钟校准(trim 32k/96m)
-#define FLASH_TO_IRAM0 0             // 打开crypto代码从flash搬运到IRAM0功能
-#define MAILBOX_SMS_UPDATE_SUPPORT 1 // 打开4K SMS方式验证更新
-#define secure_area 0x80000          // 不能更新的安全区域 512K
+#define SOFTWARE_TRIM_CONTROL 0       //打开软件时钟校准(trim 32k/96m)
+#define FLASH_TO_IRAM0 0              // 打开crypto代码从flash搬运到IRAM0功能
+#define MAILBOX_SMS_UPDATE_SUPPORT 1  // 打开4K SMS方式验证更新
+#define secure_area 0x80000           // 不能更新的安全区域 512K
 
  /****************************************************************************
  *  Functional support
  *****************************************************************************/
-#define SUPPORT_LOWPOWER 0    // 低功耗
-#define SUPPORT_GPIO_WAKEUP 1 // GPIO中断唤醒
-#define SUPPORT_RTC_WAKEUP 0 // RTC定时器唤醒
+#define SUPPORT_LOWPOWER 0        // 低功耗
+#define SUPPORT_GPIO_WAKEUP 1     // GPIO中断唤醒
+#define SUPPORT_RTC_WAKEUP 0      // RTC定时器唤醒
 #define SUPPORT_PWRSW_WAKEUP 0    // 长按GPIOB4唤醒
 #define SUPPORT_KBS_WAKEUP 0      // 键盘按键唤醒
 #define SUPPORT_KBS_REPEAT 0      // Enabled KBS REPEAT FUNCTION
 #define SUPPORT_MATRIX_UTILITY 0  // Enabled PMC Matrix Utility Support
-#define SUPPORT_OSC96MHZ_CHOPEN 0//时钟​斩波稳定使能​Chopper Stabilization Enable
+#define SUPPORT_OSC96MHZ_CHOPEN 0 //时钟​斩波稳定使能​Chopper Stabilization Enable
+#define SUPPORT_UPDATE_FUNCTION 1  //打开更新功能  
 
  //I3C Interface control
 #define I3C_MASTER0_MODE I3C_MASTER_I3C_MODE //i3c master0接口模式选择 I3C_MASTER_I3C_MODE/I3C_MASTER_I3C_MODE
@@ -55,7 +56,7 @@
 #define SUPPORT_I2C_TEMPERATURE 0 // I2C temp get
 
 // eSPI Function Support
-#define ITE_eSPI_LOW_FREQUENCY FALSE // TRUE: For Bring Up, LA Analyzer
+#define ITE_eSPI_LOW_FREQUENCY FALSE      // TRUE: For Bring Up, LA Analyzer
 #define SUPPORT_INTERFACE_eSPI TRUE
 #define ITE_eSPI_SAFS_MODE FALSE
 #define eSPI_RESET_FOR_DSW_PWROK TRUE     // TRUE: eSPI with None-DeepSx
@@ -159,15 +160,15 @@
 #warning "You want use KBSOUT[16:17] ,but SPIM Enable, They reuse the same pin"
 #endif
 #endif
-#define LPC_WAY_OPTION_SWITCH 1 // 1:polling way   0:interrupt way
-#define KBC_PNP_ONLY_SWITCH 0   // 0:all logicdevice 1:only open keyboard&mouse
+#define LPC_WAY_OPTION_SWITCH 1         // 1:polling way   0:interrupt way
+#define KBC_PNP_ONLY_SWITCH 0           // 0:all logicdevice 1:only open keyboard&mouse
 #define FAN1_PWM_CHANNEL_SWITCH 4
 #define FAN2_PWM_CHANNEL_SWITCH 0
 #define DEBUGGER_OUTPUT_SWITCH 0				// 0: uart  1: i2c  2: LCP
 
 #define CHIP_CLOCK_INT_HIGH 96000000
 #define CHIP_CLOCK_INT_LOW  32768
-#define CHIP_CLOCK_SWITCH 4     // 1(96) 2(48) 3(32) 4（24）5（19.2）分频数（时钟）
+#define CHIP_CLOCK_SWITCH 4             // 1(96) 2(48) 3(32) 4（24）5（19.2）分频数（时钟）
 #define LOW_CHIP_CLOCK CHIP_CLOCK_INT_LOW
 #define HIGHT_CHIP_CLOCK (CHIP_CLOCK_INT_HIGH / (SYSCTL_CLKDIV_OSC96M+1)) // 96M/CHIP_CLOCK_SWITCH
 #define CPU_TIMER_FREQ (LOW_CHIP_CLOCK)
@@ -179,10 +180,10 @@
 #if ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_OUTPUT_SWITCH==0)
 #define DEBUG_UART_SWITCH 1
 #else
-#define DEBUG_UART_SWITCH 4                  // >4 is debug off
+#define DEBUG_UART_SWITCH 4                     // >4 is debug off
 #endif
-#define PRINTF_UART_SWITCH 0                 // 串口引脚选择 uarta对应数值2 uartb对应数值3
-#define COMMAND_UART_SWITCH PRINTF_UART_SWITCH // It's aobut receive uart, comand send is printf.
+#define PRINTF_UART_SWITCH 0                    // 串口引脚选择 uarta对应数值2 uartb对应数值3
+#define COMMAND_UART_SWITCH PRINTF_UART_SWITCH  // It's aobut receive uart, comand send is printf.
 //GPIO
 #define GPIODB_CLOCK_DIVISION	0
 #define  GPIODB_CLOCK  (LOW_CHIP_CLOCK / (GPIODB_CLOCK_DIVISION+1)) 
@@ -481,7 +482,6 @@
  /****************************************************************************
   * Test enable
   *****************************************************************************/
-  // TEST为1是TEST_MAIN.c测试代码 0为KERNEL_MAIN.c下的主体代码
-#define TEST 0
+#define TEST 0  // TEST为1是TEST_MAIN.c测试代码 0为KERNEL_MAIN.c下的主体代码
 
 #endif /* AE_CONFIG_H */

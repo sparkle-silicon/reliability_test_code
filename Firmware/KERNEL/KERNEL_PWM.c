@@ -13,8 +13,8 @@
  * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
-//*****************************************************************************
-// Include all header file
+ //*****************************************************************************
+ // Include all header file
 #include "KERNEL_PWM.H"
 //
 //*****************************************************************************
@@ -71,63 +71,63 @@ BYTE  PWM_Disable(BYTE  channel)
 //			-1 : error
 //
 //*****************************************************************************
-BYTE  PWM_Get(spwm_str *pwm_ptr)
+BYTE  PWM_Get(spwm_str* pwm_ptr)
 {
-	if((pwm_ptr == NULL) || (pwm_ptr->pwm_no > 7))
+	if ((pwm_ptr == NULL) || (pwm_ptr->pwm_no > 7))
 	{
 		return -1;
 	}
 	pwm_ptr->prescale = (PWM_CTRL & (0x1 << (pwm_ptr->pwm_no))) >> (pwm_ptr->pwm_no);
-	pwm_ptr->pwm_polarity = PWM_MODE & (0x1 << (pwm_ptr->pwm_no + 0x8)) >> (pwm_ptr->pwm_no + 0x8);
+	pwm_ptr->pwm_polarity = (PWM_MODE & (0x1 << (pwm_ptr->pwm_no + 0x8))) >> (pwm_ptr->pwm_no + 0x8);
 	pwm_ptr->pwm_softmode = (PWM_MODE & (0x1 << (pwm_ptr->pwm_no))) >> (pwm_ptr->pwm_no);
 	/*scale*/
-	switch(pwm_ptr->pwm_clk_sel)
+	switch (pwm_ptr->pwm_clk_sel)
 	{
-		case 0:
-			pwm_ptr->pwm_scale = PWM_SCALER0;
-			break;
-		case 1:
-			pwm_ptr->pwm_scale = PWM_SCALER1;
-			break;
-		case 2:
-			pwm_ptr->pwm_scale = PWM_SCALER2;
-			break;
-		case 3:
-			pwm_ptr->pwm_scale = PWM_SCALER3;
-			break;
-		default:
-			return -1;
+	case 0:
+		pwm_ptr->pwm_scale = PWM_SCALER0;
+		break;
+	case 1:
+		pwm_ptr->pwm_scale = PWM_SCALER1;
+		break;
+	case 2:
+		pwm_ptr->pwm_scale = PWM_SCALER2;
+		break;
+	case 3:
+		pwm_ptr->pwm_scale = PWM_SCALER3;
+		break;
+	default:
+		return -1;
 	}
 	/*pwm_ctr*/
-	switch(pwm_ptr->pwm_ctr_sel)
+	switch (pwm_ptr->pwm_ctr_sel)
 	{
-		case 0:
-			pwm_ptr->pwm_ctr = (PWM_CTR0_1 & 0xFF);
-			break;
-		case 1:
-			pwm_ptr->pwm_ctr = (PWM_CTR0_1 & (0xFF << 8)) >> (8);
-			break;
-		case 2:
-			pwm_ptr->pwm_ctr = (PWM_CTR2_3 & 0xFF);
-			break;
-		case 3:
-			pwm_ptr->pwm_ctr = (PWM_CTR2_3 & (0xff << 8)) >> (8);
-			break;
-		default:
-			return -1;
+	case 0:
+		pwm_ptr->pwm_ctr = (PWM_CTR0_1 & 0xFF);
+		break;
+	case 1:
+		pwm_ptr->pwm_ctr = (PWM_CTR0_1 & (0xFF << 8)) >> (8);
+		break;
+	case 2:
+		pwm_ptr->pwm_ctr = (PWM_CTR2_3 & 0xFF);
+		break;
+	case 3:
+		pwm_ptr->pwm_ctr = (PWM_CTR2_3 & (0xff << 8)) >> (8);
+		break;
+	default:
+		return -1;
 	}
 	pwm_ptr->pwm_clk_sel = (PWM_CLK_SEL & (0x3 << (pwm_ptr->pwm_no * 2))) >> (pwm_ptr->pwm_no * 2);
 	pwm_ptr->pwm_ctr_sel = (PWM_CTR_SEL & (0x3 << (pwm_ptr->pwm_no * 2))) >> (pwm_ptr->pwm_no * 2);
 	/*pwm_dcdr*/
-	if(pwm_ptr->pwm_no < 2)
+	if (pwm_ptr->pwm_no < 2)
 	{
 		pwm_ptr->pwm_dcdr = (PWM_DCR0_1 & (0xff << (pwm_ptr->pwm_no * 8))) >> (pwm_ptr->pwm_no * 8);
 	}
-	else if(pwm_ptr->pwm_no < 4)
+	else if (pwm_ptr->pwm_no < 4)
 	{
 		pwm_ptr->pwm_dcdr = (PWM_DCR2_3 & (0xff << ((pwm_ptr->pwm_no - 2) * 8))) >> ((pwm_ptr->pwm_no - 2) * 8);
 	}
-	else if(pwm_ptr->pwm_no < 6)
+	else if (pwm_ptr->pwm_no < 6)
 	{
 		pwm_ptr->pwm_dcdr = (PWM_DCR4_5 & (0xff << ((pwm_ptr->pwm_no - 4) * 8))) >> ((pwm_ptr->pwm_no - 4) * 8);
 	}
@@ -136,7 +136,7 @@ BYTE  PWM_Get(spwm_str *pwm_ptr)
 		pwm_ptr->pwm_dcdr = (PWM_DCR6_7 & (0xff << ((pwm_ptr->pwm_no - 6) * 8))) >> ((pwm_ptr->pwm_no - 6) * 8);
 	}
 	/*step*/
-	if(pwm_ptr->pwm_no < 4)
+	if (pwm_ptr->pwm_no < 4)
 	{
 		pwm_ptr->pwm_step = (PWM_STEP3_0 & (0xf << (pwm_ptr->pwm_no * 4))) >> (pwm_ptr->pwm_no * 4);
 	}
@@ -177,7 +177,7 @@ BYTE  PWM_Init_channel(BYTE channel, BYTE polarity, BYTE clk, BYTE ctr, BYTE dcr
 	ctr &= 0x3;
 	polarity &= 0x1;
 	/* 极性选择 */
-	if(polarity)
+	if (polarity)
 		PWM_MODE |= (0x100 << channel);
 	else
 		PWM_MODE &= (~(0x100 << channel));
@@ -196,7 +196,7 @@ BYTE  PWM_Init_channel(BYTE channel, BYTE polarity, BYTE clk, BYTE ctr, BYTE dcr
 	/*step mode*/
 	offset = PWM_STEP3_0_OFFSET + ((channel & 0x4) >> 1);
 	shift = ((channel & 0x3) << 2);
-	if(step)
+	if (step)
 	{
 		PWM_MODE |= (0x1 << channel);
 		PWM_REG(offset) &= ~(0x000f << shift);
@@ -235,7 +235,7 @@ void  PWM_CLOCK_Init(void)
 	assert_print("prescale error\n");
 	return;
 #endif
-		/* pwm_scale */
+	/* pwm_scale */
 	PWM_SCALER0 = (PWM_CLK0_PRESCALE - 1);
 	PWM_SCALER1 = (PWM_CLK1_PRESCALE - 1);
 	PWM_SCALER2 = (PWM_CLK2_PRESCALE - 1);
@@ -352,7 +352,7 @@ BYTE  TACH_Init_Channel(BYTE channel, BYTE mode, BYTE tach_int)
 	BYTE shift = (channel << 1) + 8;
 	TACH_CTRL |= ((0x1 << channel) | (mode << shift));
 	printf("TACH_CTRL:%x\n", TACH_CTRL);
-	if(tach_int)
+	if (tach_int)
 		TACH_INT |= (0x11 << channel);//clear irq and en irq
 	else
 	{
@@ -418,14 +418,14 @@ WORD TACH_Get_Polling(BYTE  channel)
 {
 	WORD timeout = 1000;
 	channel &= 0x3;
-	while(--timeout)
+	while (--timeout)
 	{
-		if(TACH_INT & (0x10 << channel))
+		if (TACH_INT & (0x10 << channel))
 		{
 			break;
 		}
 	}
-	if(timeout == 0)
+	if (timeout == 0)
 	{
 		dprint("tach get error\n");
 		return -1;

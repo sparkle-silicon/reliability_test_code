@@ -119,10 +119,10 @@ static int PS2_PortN_Read_Data(BYTE channel)
 // FUNCTION: PS2_PortN_Wait_For_Input
 //
 //----------------------------------------------------------------------------
-static int PS2_PortN_Wait_For_Input(BYTE channel)
+static char PS2_PortN_Wait_For_Input(BYTE channel)
 {
 	unsigned long timeout;
-	int val;
+	char val;
 	timeout = KBD_TIMEOUT;
 	val = PS2_PortN_Read_Data(channel);
 	while (val < 0)
@@ -1107,6 +1107,8 @@ BYTE PS2_PinSelect(void)
 	case 2:
 		ret0 = IS_GPIOB27(HIGH);
 		break;
+	default:
+		break;
 	}
 	switch (PS2_0_DAT_SEL)
 	{
@@ -1114,10 +1116,12 @@ BYTE PS2_PinSelect(void)
 		ret0 = ret0 && IS_GPIOB9(HIGH);
 		break;
 	case 1:
-		ret0 |= ret0 && IS_GPIOB11(HIGH);
+		ret0 = ret0 && IS_GPIOB11(HIGH);
 		break;
 	case 2:
-		ret0 |= ret0 && IS_GPIOB28(HIGH);
+		ret0 = ret0 && IS_GPIOB28(HIGH);
+		break;
+	default:
 		break;
 	}
 	switch (PS2_1_CLK_SEL)
@@ -1128,6 +1132,8 @@ BYTE PS2_PinSelect(void)
 	case 1:
 		ret1 = IS_GPIOB10(HIGH);
 		break;
+	default:
+		break;
 	}
 	switch (PS2_1_DAT_SEL)
 	{
@@ -1136,6 +1142,8 @@ BYTE PS2_PinSelect(void)
 		break;
 	case 1:
 		ret1 = ret1 && IS_GPIOB11(HIGH);
+		break;
+	default:
 		break;
 	}
 	return (ret0 || ret1);
