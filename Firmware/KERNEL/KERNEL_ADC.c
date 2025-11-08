@@ -594,7 +594,7 @@ void ADC_HW_Sample_Init_Single(uint8_t channelx, u_int8_t ADC_Databuffer_channel
       ADC_TriggerMode_Config(HW_SAMPLE);                  // 再进入硬件模式
 
       // 单通道使能
-      ADC_CHAN_EN = (0x1 << channelx);
+      ADC_CHAN_EN |= (0x1 << channelx);
       ADC_CTRL |= 0x1; //使能adc模拟
 }
 

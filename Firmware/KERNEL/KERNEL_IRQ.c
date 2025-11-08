@@ -452,6 +452,7 @@ void __interrupt SECTION(".interrupt.ADC_HANDLER") ADC_HANDLER(void)
 	irqprint(irq_string, __FUNCTION__, 20);
 	BYTE ADC_ValidStatus_1 = ADC_INTSTAT & 0xff;
 	BYTE ADC_ValidStatus_2 = (ADC_INTSTAT >> 8) & 0xff;
+	float Volt=0; 
 	for (short i = 0; i < 8; i++)
 	{
 		if (ADC_ValidStatus_1 & (1 << i))
@@ -459,7 +460,8 @@ void __interrupt SECTION(".interrupt.ADC_HANDLER") ADC_HANDLER(void)
 			// printf("i:======%x\n",i);
 			(&ADC_Data0)[i] = ADC_ReadData(i);
 			ADC_INTSTAT |= 1 << i;		//清除中断
-			irqprint("ADC%d:0x%x\n", i, (&ADC_Data0)[i]);
+			Volt = (&ADC_Data0)[i] * 3.3 / 4095.0;
+			irqprint("ADC%d:0x%x Voltage:%.2f V\n", i, (&ADC_Data0)[i],Volt);
 		}
 		if (ADC_ValidStatus_2 & (1 << i))
 		{
