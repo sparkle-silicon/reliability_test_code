@@ -247,7 +247,7 @@
 #define NUM_OF_GPIOD 7
 #define NUM_OF_GPIOE 24
 /************GPIO Register define***************/
-struct GPIOPinState{
+struct GPIOPinState {
 	BYTE default_state_idx;	// default state is mux_state[default_state_idx]
 	BYTE mux_state[4]; // 0 is input, 1 is output
 };
@@ -348,6 +348,9 @@ extern void tach0_pull_up(uint32_t tach_sel);
 extern void tach1_pull_up(uint32_t tach_sel);
 extern void tach2_pull_up(void);
 extern void tach3_pull_up(uint32_t tach_sel);
+
+extern void ps2_0_pull_up(uint32_t clk_sel, uint32_t data_sel);
+extern void ps2_1_pull_up(uint32_t clk_sel, uint32_t data_sel);
 
 extern void kbs_pull_up(uint32_t kbsn_switch);
 extern BYTE  PIO_Pullup_Config(BYTE  GPIO, BYTE  Num);

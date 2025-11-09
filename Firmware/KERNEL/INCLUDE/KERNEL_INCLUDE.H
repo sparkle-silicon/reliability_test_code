@@ -17,9 +17,8 @@
 #define KERNEL_INCLUDE_H
 #include "AE_GLOBAL.H" //全局变量
 #include "AE_CONFIG.H"
-//-----------------------------------------------------------------------------
+ //-----------------------------------------------------------------------------
 #include "KERNEL_MAIN.H"
-//-----------------------------------------------------------------------------
 #include "KERNEL_SOC_FUNC.H"
 #include "KERNEL_MEMORY.H"
 #include "KERNEL_INIT.H"
@@ -53,6 +52,5 @@
 #include "KERNEL_MAILBOX.H"
 #include "KERNEL_DMA.H"
 #include "KERNEL_I3C.H"
-
 //-----------------------------------------------------------------------------
 #endif

@@ -110,14 +110,14 @@
 //DMA_Periph_Type
 #define Only_Memory   0
                       //  SEL      PER
-#define I3C0_DMA_RX   ((1 << 0)|(0 << 16))
-#define I3C0_DMA_TX   ((1 << 1)|(1 << 24))
-#define I3C1_DMA_RX   ((1 << 2)|(2 << 16))
-#define I3C1_DMA_TX   ((1 << 3)|(3 << 24))
-#define I3C2_DMA_RX   ((1 << 4)|(4 << 16))
-#define I3C2_DMA_TX   ((1 << 5)|(5 << 24))
-#define I3C3_DMA_RX   ((1 << 6)|(6 << 16))
-#define I3C3_DMA_TX   ((1 << 7)|(7 << 24))
+#define I3C0_DMA_RX   ((1 << 0)|(0 << 16))//MASTER0_RX
+#define I3C0_DMA_TX   ((1 << 1)|(1 << 24))//MASTER0_TX
+#define I3C1_DMA_RX   ((1 << 2)|(2 << 16))//MASTER1_RX
+#define I3C1_DMA_TX   ((1 << 3)|(3 << 24))//MASTER1_TX
+#define I3C2_DMA_RX   ((1 << 4)|(4 << 16))//SLAVE0_RX
+#define I3C2_DMA_TX   ((1 << 5)|(5 << 24))//SLAVE0_TX
+#define I3C3_DMA_RX   ((1 << 6)|(6 << 16))//SLAVE1_RX
+#define I3C3_DMA_TX   ((1 << 7)|(7 << 24))//SLAVE1_TX
 
 #define SUBUS3_DMA_RX  ((1 << 8)|(8 << 16))
 #define SUBUS3_DMA_TX  ((1 << 9)|(9 << 24))
@@ -170,4 +170,4 @@ typedef struct
 //function prototypes
 extern void DMA_INIT(BYTE TT_FC, BYTE BLK_TS, BYTE SRC_PER, BYTE DEST_PER, DWORD SAR0, DWORD DAR0, BYTE DmaCfgReg);
 extern void DMA_Init(DMA_InitTypeDef*DMA_Init_Struct);
-extern char DMA_Transfer_Done(void);
+extern char DMA_Transfer_Done(uint8_t DMA_Channal);
