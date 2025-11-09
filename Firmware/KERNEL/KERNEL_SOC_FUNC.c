@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-30 14:17:45
+ * @LastEditTime: 2025-11-08 16:09:53
  * @Description: This is about the  national crypto algorithm implementation
  *
  *
@@ -208,7 +208,7 @@ void spi_init(void)
 	requirements, it is possible to disable the reuse of unnecessary chip select signals.*/
 	sysctl_iomux_spim_cs(SPIM_CS0_SEL, SPIM_CS1_SEL);
 #endif
-	SPIM_Init(SPIM_DEFAULT_DLY, SPIM_DEFAULT_CPOL, SPIM_DEFAULT_CPHA, SPIM_DEFAULT_LSB, SPIM_DEFAULT_DSSP, SPIM_DEFAULT_CPSRR);
+	SPIM_Init(SPIM_MODE_STANDARD, SPIM_DEFAULT_CPHA, SPIM_DEFAULT_CPOL, SPIM_DEFAULT_DLY, SPIM_DEFAULT_DSSP, SPIM_DEFAULT_LSB, SPIM_DEFAULT_CPSRR, SPIM_DEFAULT_SAMDLY);
 #endif
 	dprint("SPI Master init done.\n");
 #if SPIFE_EN_Init

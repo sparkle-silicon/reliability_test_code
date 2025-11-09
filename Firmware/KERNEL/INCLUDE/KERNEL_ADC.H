@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-18 21:27:41
+ * @LastEditTime: 2025-11-09 20:55:34
  * @Description:
  *
  *
@@ -91,8 +91,6 @@
 #define  ADC_Cmp1fail_intrMask    0x200
 #define  ADC_Cmp2fail_intrMask    0x400
 #define  ADC_AllData_intrMask     0x7FF
-#define  ENABLE                   HEX01
-#define  DISABLE                  HEX00
 /******采样方式宏*******/
 #define  SINGLE_ENDED             0
 #define  DIFFERENTIAL             1

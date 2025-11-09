@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
- * @LastEditors: Iversu
- * @LastEditTime: 2023-04-02 21:28:55
+ * @LastEditors: daweslinyu daowes.ly@qq.com
+ * @LastEditTime: 2025-11-09 20:55:26
  * @Description:
  *
  *
@@ -25,8 +25,6 @@
 #define RING_EC_IRQ  HEX08
 #define SIRQ_EC_IRQ  HEX40
 #define MIRQ_EC_IRQ  HEX80
-#define DISABLE      HEX00
-#define ENABLE       HEX01
 /**传统模式或ACPI模式唤醒中断宏**/
 #define RTC_IRQ      HEX01
 #define ACPI_S1      HEX02

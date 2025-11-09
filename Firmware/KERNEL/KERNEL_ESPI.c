@@ -124,8 +124,8 @@ BYTE RPMC_OOB_TempArr[80];
 /*-----------------------------------------------------------------------------
  * eSPI array definition
  *---------------------------------------------------------------------------*/
-BYTE* OOB_Table_Pntr = NULL;
-BYTE* Peri_Table_Pntr = NULL;
+BYTE *OOB_Table_Pntr = NULL;
+BYTE *Peri_Table_Pntr = NULL;
 BYTE eSPI_PCH_TMPR[16];
 BYTE eSPI_RTC_DATA[12];
 BYTE OOB_PECI_Temper[2];
@@ -136,8 +136,7 @@ BYTE eSPI_Peri_MemRd64[4];
 /*-----------------------------------------------------------------------------
  * Data Structure Prototype
  *---------------------------------------------------------------------------*/
-enum intel_crashlog_step
-{
+enum intel_crashlog_step{
     _CRASHLOG_END = 0,
     _CRASHLOG_ERASE_DATA = 1,
     _CRASHLOG_GET_CPU_SIZES = 2,
@@ -223,12 +222,12 @@ void EC_ACK_eSPI_Reset(void)
         while (IS_MASK_SET(VWIDX7, F_IDX7_HOST_RST_WARN))
         {
             _C1--;
-#if 1 /* Timeout if need */
+        #if 1 /* Timeout if need */
             if (_C1 == 0)
             {
                 break;
             }
-#endif
+        #endif
         }
 
         VWIDX6 = (F_IDX6_HOST_RST_ACK_VALID +
@@ -261,12 +260,12 @@ void EC_ACK_eSPI_Reset(void)
         while (IS_MASK_SET(VWIDX3, F_IDX3_OOB_RST_WARN))
         {
             _C1--;
-#if 1 /* Timeout if need */
+        #if 1 /* Timeout if need */
             if (_C1 == 0)
             {
                 break;
             }
-#endif
+        #endif
         }
 
         _R5 = (VWIDX4 | F_IDX4_OOB_RST_ACK_VALID);
@@ -593,7 +592,7 @@ void Get_OOB_RTC_Time(void)
     if (xOOB_GetPCH_RTC_Timer > 0)
     {
         xOOB_GetPCH_RTC_Timer--;
-#if RTC_TIME_AUTO_COUNT
+    #if RTC_TIME_AUTO_COUNT
         xTIME_SS++;
         if (xTIME_SS > 59)
         {
@@ -609,7 +608,7 @@ void Get_OOB_RTC_Time(void)
                 }
             }
         }
-#endif
+    #endif
     }
     else
     {
@@ -830,7 +829,7 @@ BYTE Process_eSPI_OOB_Message(void)
     return TRUE;
 }
 
-BYTE eSPI_OOB_Receive(BYTE* OOB_Meg_Table)
+BYTE eSPI_OOB_Receive(BYTE *OOB_Meg_Table)
 {
     /* Check put_oob status */
     if (!OOB_Check_OOB_Status())
@@ -857,7 +856,7 @@ BYTE eSPI_OOB_Receive(BYTE* OOB_Meg_Table)
     return TRUE;
 }
 
-BYTE eSPI_OOB_Send(BYTE* OOB_Meg_Table)
+BYTE eSPI_OOB_Send(BYTE *OOB_Meg_Table)
 {
     /*check if upstream is busy*//* Check upstream authority enable */
     if ((ESUCTRL0 & Upstream_Busy) || (!OOB_Check_Upstream_Authority_EN()))
@@ -1019,7 +1018,7 @@ void Process_eSPI_OOB_CrashLog(void)
  * @note     - None
  */
 BYTE eSPI_Flash_Read(BYTE addr3, BYTE addr2, BYTE addr1, BYTE addr0,
-    BYTE length, VBYTE* bufferindex)
+    BYTE length, VBYTE *bufferindex)
 {
     if ((IS_MASK_CLEAR(REG_3117, F_FLASH_CHN_READY)) ||
         (IS_MASK_CLEAR(REG_3117, F_FLASH_CHN_ENABLE)))
@@ -1148,7 +1147,7 @@ BYTE eSPI_Flash_Erase(BYTE addr3, BYTE addr2, BYTE addr1, BYTE addr0, BYTE mode)
  * @note     - None
  */
 BYTE eSPI_Flash_Write(BYTE addr3, BYTE addr2, BYTE addr1, BYTE addr0,
-    BYTE length, VBYTE* bufferindex)
+    BYTE length, VBYTE *bufferindex)
 {
     if ((IS_MASK_CLEAR(REG_3117, F_FLASH_CHN_READY)) ||
         (IS_MASK_CLEAR(REG_3117, F_FLASH_CHN_ENABLE)))
@@ -1262,7 +1261,7 @@ void OOB_PECI_ReadPowerUnit(void)
  * @return   - 1 : done     0 : error
  * @note     - None
  */
-BYTE OOB_PECI_RdPkgConfig(BYTE addr, BYTE* ReadData,
+BYTE OOB_PECI_RdPkgConfig(BYTE addr, BYTE *ReadData,
     BYTE Domain, BYTE Retry, BYTE Index,
     BYTE LSB, BYTE MSB, BYTE ReadLen, BYTE WriteLen)
 {
@@ -1343,7 +1342,7 @@ BYTE OOB_PECI_RdPkgConfig(BYTE addr, BYTE* ReadData,
  * @return   - 1 : done     0 : error
  * @note     - None
  */
-BYTE OOB_PECI_WrPkgConfig(BYTE addr, BYTE* WriteData,
+BYTE OOB_PECI_WrPkgConfig(BYTE addr, BYTE *WriteData,
     BYTE Domain, BYTE Retry, BYTE Index,
     BYTE LSB, BYTE MSB, BYTE ReadLen, BYTE WriteLen)
 {
@@ -1664,12 +1663,12 @@ void OOB_PECI_WritePowerLimit4(BYTE SettingWatts)
  //         xOOB_CrashLogAddrM = _EFLASH_CRASHLOG_ERASE_ADDR >> 8;
  //     #if 1   /* 0: Debug */
  //         Do_SPI_Read_ID();
- //         Do_SPI_Write_Enable();
+ //         Do_SPIM_Write_Enable();
  //         Do_SPI_Write_Status(SPIStatus_UnlockAll);
  //         i = 0;
  //         while(1)
  //         {
- //             Do_SPI_Write_Enable();
+ //             Do_SPIM_Write_Enable();
  //             Do_SPI_Erase(SPICmd_SectorErase,
  //                          xOOB_CrashLogAddrH,
  //                          xOOB_CrashLogAddrM,
@@ -1755,9 +1754,9 @@ void OOB_PECI_WritePowerLimit4(BYTE SettingWatts)
  //     {
  //     #if 1   /* 0: Debug */
  //         Do_SPI_Read_ID();
- //         Do_SPI_Write_Enable();
+ //         Do_SPIM_Write_Enable();
  //         Do_SPI_Write_Status(SPIStatus_UnlockAll);
- //         Do_SPI_Write_Enable();
+ //         Do_SPIM_Write_Enable();
  //         Do_SPI_Write_256Bytes(&eSPI_OOB_DATA[0],
  //                               xOOB_CrashLogAddrH,
  //                               xOOB_CrashLogAddrM,
@@ -1820,9 +1819,9 @@ void OOB_PECI_WritePowerLimit4(BYTE SettingWatts)
  //             wOOB_CrashLogDataIndex = 0;
  //         #if 1   /* 0: Debug */
  //             Do_SPI_Read_ID();
- //             Do_SPI_Write_Enable();
+ //             Do_SPIM_Write_Enable();
  //             Do_SPI_Write_Status(SPIStatus_UnlockAll);
- //             Do_SPI_Write_Enable();
+ //             Do_SPIM_Write_Enable();
  //             Do_SPI_Write_256Bytes(&eSPI_OOB_DATA[0],
  //                                   xOOB_CrashLogAddrH,
  //                                   xOOB_CrashLogAddrM,
@@ -1859,9 +1858,9 @@ void OOB_PECI_WritePowerLimit4(BYTE SettingWatts)
  //             wOOB_CrashLogDataIndex = 0;
  //         #if 1   /* 0: Debug */
  //             Do_SPI_Read_ID();
- //             Do_SPI_Write_Enable();
+ //             Do_SPIM_Write_Enable();
  //             Do_SPI_Write_Status(SPIStatus_UnlockAll);
- //             Do_SPI_Write_Enable();
+ //             Do_SPIM_Write_Enable();
  //             Do_SPI_Write_256Bytes(&eSPI_OOB_DATA[0],
  //                                   xOOB_CrashLogAddrH,
  //                                   xOOB_CrashLogAddrM,
@@ -1912,9 +1911,9 @@ void OOB_PECI_WritePowerLimit4(BYTE SettingWatts)
  //             }
  //         }
  //     #if 1   /* 0: Debug */
- //         Do_SPI_Write_Enable();
+ //         Do_SPIM_Write_Enable();
  //         Do_SPI_Write_Status(SPIStatus_UnlockAll);
- //         Do_SPI_Write_Enable();
+ //         Do_SPIM_Write_Enable();
  //         Do_SPI_Write_256Bytes(&eSPI_OOB_DATA[0],
  //                               _EFLASH_CRASHLOG_INFO_ADRH,
  //                               _EFLASH_CRASHLOG_INFO_ADRM,
@@ -1950,137 +1949,137 @@ void Service_OOB_Message(void)
     xOOB_Scan++;
     switch (xOOB_Scan)
     {
-    case 1:
-#if SUPPORT_OOB_PCH_RTC_TIME
-        Get_OOB_RTC_Time();
-#else
-        /* Manual Debug Mode */
-        // if (xOOB_GET_RTC_DATA > 0)
-        // {
-        //     xOOB_GET_RTC_DATA = 0;
-        //     Get_OOB_RTC_Time();
-        // }
-#endif
-        break;
-    case 2:
-#if SUPPORT_OOB_PCH_TEMPERATURE
-        if (System_PowerState == SYSTEM_S0)
-        {
-            if (xOOB_GetPCH_Temper > 1)
+        case 1:
+        #if SUPPORT_OOB_PCH_RTC_TIME
+            Get_OOB_RTC_Time();
+        #else
+                /* Manual Debug Mode */
+                // if (xOOB_GET_RTC_DATA > 0)
+                // {
+                //     xOOB_GET_RTC_DATA = 0;
+                //     Get_OOB_RTC_Time();
+                // }
+        #endif
+            break;
+        case 2:
+        #if SUPPORT_OOB_PCH_TEMPERATURE
+            if (System_PowerState == SYSTEM_S0)
             {
-                xOOB_GetPCH_Temper--;
+                if (xOOB_GetPCH_Temper > 1)
+                {
+                    xOOB_GetPCH_Temper--;
+                }
+                else
+                {
+                    xOOB_GetPCH_Temper = PCH_TEMP_GET_OOB_SEC;
+                    Get_OOB_PCH_Temperature();
+                }
             }
-            else
+        #else
+                /* Manual Debug Mode */
+            if (xOOB_GET_PCH_TMPR > 0)
             {
-                xOOB_GetPCH_Temper = PCH_TEMP_GET_OOB_SEC;
+                xOOB_GET_PCH_TMPR = 0;
+                xOOB_GetPCH_Temper = 0;
                 Get_OOB_PCH_Temperature();
             }
-        }
-#else
-        /* Manual Debug Mode */
-        if (xOOB_GET_PCH_TMPR > 0)
-        {
-            xOOB_GET_PCH_TMPR = 0;
-            xOOB_GetPCH_Temper = 0;
-            Get_OOB_PCH_Temperature();
-        }
-#endif
-        break;
-    case 3:
-#if 0 // GET_FLASH TEST SAMPLE CODE
-        if (xOOB_GET_FLASH_ADR3 & 0x80)
-        {
-            eSPI_Flash_Read((xOOB_GET_FLASH_ADR3 & 0x7F),
-                xOOB_GET_FLASH_ADR2,
-                xOOB_GET_FLASH_ADR1,
-                xOOB_GET_FLASH_ADR0,
-                64,
-                &eSPI_FLASH_DATA[0]);
-            xOOB_GET_FLASH_ADR3 = 0;
-        }
-#endif
-        break;
-    case 4:
-        break;
-    case 5:
-#if 0 // OOB->PECI TEST SAMPLE CODE
-        if (xOOB_PECI_TEST == 1)
-        {
-            OOB_PECI_GetDIB();
-            xOOB_PECI_TEST = 0;
-        }
-#endif
-        break;
-    case 6:
-        break;
-    case 7:
-#if SUPPORT_OOB_PECI_GetTemp
-        if (System_PowerState == SYSTEM_S0)
-        {
-            if (xOOB_PeciGetCpuT_Timer > 1)
+        #endif
+            break;
+        case 3:
+        #if 0 // GET_FLASH TEST SAMPLE CODE
+            if (xOOB_GET_FLASH_ADR3 & 0x80)
             {
-                xOOB_PeciGetCpuT_Timer--;
+                eSPI_Flash_Read((xOOB_GET_FLASH_ADR3 & 0x7F),
+                    xOOB_GET_FLASH_ADR2,
+                    xOOB_GET_FLASH_ADR1,
+                    xOOB_GET_FLASH_ADR0,
+                    64,
+                    &eSPI_FLASH_DATA[0]);
+                xOOB_GET_FLASH_ADR3 = 0;
             }
-            else
+        #endif
+            break;
+        case 4:
+            break;
+        case 5:
+        #if 0 // OOB->PECI TEST SAMPLE CODE
+            if (xOOB_PECI_TEST == 1)
             {
-                xOOB_PeciGetCpuT_Timer = OOB_PECI_GetTemp_SEC;
-                OOB_PECI_GetTemp();
+                OOB_PECI_GetDIB();
+                xOOB_PECI_TEST = 0;
             }
-        }
-#endif
-        break;
-    case 8:
-        break;
-    case 9:
-#if 0 // OOB->PECI TEST SAMPLE CODE
-        if (xOOB_PECI_PLx_Index == 1)
-        {
-            xOOB_PECI_PLx_Index = 0;
-            OOB_PECI_ReadPowerLimit1();
-        }
-        if (xOOB_PECI_PLx_Index == 2)
-        {
-            xOOB_PECI_PLx_Index = 0;
-            OOB_PECI_ReadPowerLimit2();
-        }
-        if (xOOB_PECI_PLx_Index == 3)
-        {
-            xOOB_PECI_PLx_Index = 0;
-            OOB_PECI_ReadPowerLimit3();
-        }
-        if (xOOB_PECI_PLx_Index == 4)
-        {
-            xOOB_PECI_PLx_Index = 0;
-            OOB_PECI_ReadPowerLimit4();
-        }
-        if (xOOB_PECI_PLx_Index == 0x81)
-        {
-            xOOB_PECI_PLx_Index = 0;
-            OOB_PECI_WritePowerLimit1(xOOB_PECI_PLx_Data0, xOOB_PECI_PLx_Data1);
-        }
-        if (xOOB_PECI_PLx_Index == 0x82)
-        {
-            xOOB_PECI_PLx_Index = 0;
-            OOB_PECI_WritePowerLimit2(xOOB_PECI_PLx_Data0);
-        }
-        if (xOOB_PECI_PLx_Index == 0x83)
-        {
-            xOOB_PECI_PLx_Index = 0;
-            OOB_PECI_WritePowerLimit3(xOOB_PECI_PLx_Data0);
-        }
-        if (xOOB_PECI_PLx_Index == 0x84)
-        {
-            xOOB_PECI_PLx_Index = 0;
-            OOB_PECI_WritePowerLimit4(xOOB_PECI_PLx_Data0);
-        }
-#endif
-        break;
-    default:
-        if (xOOB_Scan > 9)
-        {
-            xOOB_Scan = 0;
-        }
-        break;
+        #endif
+            break;
+        case 6:
+            break;
+        case 7:
+        #if SUPPORT_OOB_PECI_GetTemp
+            if (System_PowerState == SYSTEM_S0)
+            {
+                if (xOOB_PeciGetCpuT_Timer > 1)
+                {
+                    xOOB_PeciGetCpuT_Timer--;
+                }
+                else
+                {
+                    xOOB_PeciGetCpuT_Timer = OOB_PECI_GetTemp_SEC;
+                    OOB_PECI_GetTemp();
+                }
+            }
+        #endif
+            break;
+        case 8:
+            break;
+        case 9:
+        #if 0 // OOB->PECI TEST SAMPLE CODE
+            if (xOOB_PECI_PLx_Index == 1)
+            {
+                xOOB_PECI_PLx_Index = 0;
+                OOB_PECI_ReadPowerLimit1();
+            }
+            if (xOOB_PECI_PLx_Index == 2)
+            {
+                xOOB_PECI_PLx_Index = 0;
+                OOB_PECI_ReadPowerLimit2();
+            }
+            if (xOOB_PECI_PLx_Index == 3)
+            {
+                xOOB_PECI_PLx_Index = 0;
+                OOB_PECI_ReadPowerLimit3();
+            }
+            if (xOOB_PECI_PLx_Index == 4)
+            {
+                xOOB_PECI_PLx_Index = 0;
+                OOB_PECI_ReadPowerLimit4();
+            }
+            if (xOOB_PECI_PLx_Index == 0x81)
+            {
+                xOOB_PECI_PLx_Index = 0;
+                OOB_PECI_WritePowerLimit1(xOOB_PECI_PLx_Data0, xOOB_PECI_PLx_Data1);
+            }
+            if (xOOB_PECI_PLx_Index == 0x82)
+            {
+                xOOB_PECI_PLx_Index = 0;
+                OOB_PECI_WritePowerLimit2(xOOB_PECI_PLx_Data0);
+            }
+            if (xOOB_PECI_PLx_Index == 0x83)
+            {
+                xOOB_PECI_PLx_Index = 0;
+                OOB_PECI_WritePowerLimit3(xOOB_PECI_PLx_Data0);
+            }
+            if (xOOB_PECI_PLx_Index == 0x84)
+            {
+                xOOB_PECI_PLx_Index = 0;
+                OOB_PECI_WritePowerLimit4(xOOB_PECI_PLx_Data0);
+            }
+        #endif
+            break;
+        default:
+            if (xOOB_Scan > 9)
+            {
+                xOOB_Scan = 0;
+            }
+            break;
     }
 #endif
 }
@@ -2408,22 +2407,22 @@ void eRPMC_RequestCounter_Response(void)
     eRPMC_RequestCounter_data.Counter_Addr = 0x00;
     eRPMC_RequestCounter_data.Extended_Status = MAILBOX_C2EINFO2 & 0xff;
     /*数组留有赋值接口*/
-    for (_R5 = 0;_R5 < 12;_R5++)
+    for (_R5 = 0; _R5 < 12; _R5++)
     {
         eRPMC_RequestCounter_data.Tag_Arr[_R5] = REG8(0x31800 + _R5);
     }
-    for (_R5 = 0;_R5 < 4;_R5++)
+    for (_R5 = 0; _R5 < 4; _R5++)
     {
         eRPMC_RequestCounter_data.CounterReadData[_R5] = REG8(0x3180c + _R5);
     }
-    for (_R5 = 0;_R5 < 32;_R5++)
+    for (_R5 = 0; _R5 < 32; _R5++)
     {
         eRPMC_RequestCounter_data.Signature[_R5] = REG8(0x31810 + _R5);
     }
     //eSPI_OOB_Send((BYTE *)&eRPMC_RequestCounter_data)
     RPMC_OOB_TempArr[13] = 0x9B;
     RPMC_OOB_TempArr[14] = 0x02;
-    for (_R5 = 0;_R5 < 4;_R5++)
+    for (_R5 = 0; _R5 < 4; _R5++)
     {
         RPMC_OOB_TempArr[17 + _R5] = eRPMC_RequestCounter_data.CounterReadData[_R5];
     }
@@ -2489,41 +2488,41 @@ BYTE eSPI_OOBRPMC_Handler(void)
         }
         switch (RPMC_OOB_TempArr[14]) // cmd type
         {
-        case 0x0:                            // WriteRootKey
-            if (RPMC_OOB_TempArr[2] == 0x48) // WriteRootKey message1
-            {
-            }
-            else if (RPMC_OOB_TempArr[2] == 0x0B) // WriteRootKey message2
-            {
-                /*mailbox WriteRootKey trigger*/
-                Mailbox_WriteRootKey_Trigger();
-            }
-            break;
-        case 0x1:                            // UpdateHMACKey
-            if (RPMC_OOB_TempArr[2] == 0x32) // UpdateHMACKey message
-            {
-                Mailbox_UpdateHMACKey_Trigger();
-            }
-            break;
-        case 0x2:                            // IncrementCounter
-            if (RPMC_OOB_TempArr[2] == 0x32) // IncrementCounter message
-            {
-                // Mailbox_IncrementCounter_Trigger();
-            }
-            break;
-        case 0x3:                            // RequestCounter
-            if (RPMC_OOB_TempArr[2] == 0x3A) // RequestCounter message
-            {
-                // Mailbox_RequestCounter_Trigger();
-            }
-            break;
-        case 0x4: // ReadParameters
-            if (RPMC_OOB_TempArr[2] == 0x0B)
-            {
-            }
-            break;
-        default:
-            break;
+            case 0x0:                            // WriteRootKey
+                if (RPMC_OOB_TempArr[2] == 0x48) // WriteRootKey message1
+                {
+                }
+                else if (RPMC_OOB_TempArr[2] == 0x0B) // WriteRootKey message2
+                {
+                    /*mailbox WriteRootKey trigger*/
+                    Mailbox_WriteRootKey_Trigger();
+                }
+                break;
+            case 0x1:                            // UpdateHMACKey
+                if (RPMC_OOB_TempArr[2] == 0x32) // UpdateHMACKey message
+                {
+                    Mailbox_UpdateHMACKey_Trigger();
+                }
+                break;
+            case 0x2:                            // IncrementCounter
+                if (RPMC_OOB_TempArr[2] == 0x32) // IncrementCounter message
+                {
+                    // Mailbox_IncrementCounter_Trigger();
+                }
+                break;
+            case 0x3:                            // RequestCounter
+                if (RPMC_OOB_TempArr[2] == 0x3A) // RequestCounter message
+                {
+                    // Mailbox_RequestCounter_Trigger();
+                }
+                break;
+            case 0x4: // ReadParameters
+                if (RPMC_OOB_TempArr[2] == 0x0B)
+                {
+                }
+                break;
+            default:
+                break;
         }
         eRPMC_Handler_Force = 0;
     }
@@ -2531,29 +2530,29 @@ BYTE eSPI_OOBRPMC_Handler(void)
     {
         switch (RMPC_ResType)
         {
-        case 0x1: // WriteRootKey
-            if (eSPI_OOB_Send((BYTE*)&eRPMC_WriteRootKey_data))
-                eRPMC_Handler_Res = 0;
-            break;
-        case 0x2: // UpdateHMACKey
-            if (eSPI_OOB_Send((BYTE*)&eRPMC_UpdateHMACKey_data))
-                eRPMC_Handler_Res = 0;
-            break;
-        case 0x3: // IncrementCounter
-            if (eSPI_OOB_Send((BYTE*)&eRPMC_IncrementCounter_data))
-                eRPMC_Handler_Res = 0;
-            break;
-        case 0x4: // RequestCounter
-            if (eSPI_OOB_Send((BYTE*)&eRPMC_RequestCounter_data))
-                eRPMC_Handler_Res = 0;
-            break;
-        case 0x5: // ReadParameters
-            if (eSPI_OOB_Send((BYTE*)&eRPMC_ReadParameters_data))
-                eRPMC_Handler_Res = 0;
-            break;
-        default:
-            RMPC_ResType = 0;
-            break;
+            case 0x1: // WriteRootKey
+                if (eSPI_OOB_Send((BYTE *)&eRPMC_WriteRootKey_data))
+                    eRPMC_Handler_Res = 0;
+                break;
+            case 0x2: // UpdateHMACKey
+                if (eSPI_OOB_Send((BYTE *)&eRPMC_UpdateHMACKey_data))
+                    eRPMC_Handler_Res = 0;
+                break;
+            case 0x3: // IncrementCounter
+                if (eSPI_OOB_Send((BYTE *)&eRPMC_IncrementCounter_data))
+                    eRPMC_Handler_Res = 0;
+                break;
+            case 0x4: // RequestCounter
+                if (eSPI_OOB_Send((BYTE *)&eRPMC_RequestCounter_data))
+                    eRPMC_Handler_Res = 0;
+                break;
+            case 0x5: // ReadParameters
+                if (eSPI_OOB_Send((BYTE *)&eRPMC_ReadParameters_data))
+                    eRPMC_Handler_Res = 0;
+                break;
+            default:
+                RMPC_ResType = 0;
+                break;
         }
     }
     return TRUE;
@@ -2583,13 +2582,13 @@ void Service_eSPI(void)
             EC_ACK_eSPI_SUS_WARN(); // if SUS_WARN vw wire support
             EC_ACK_eSPI_Reset(); // if HOST_RST_WARN vw wire support
 
-#if SUPPORT_HOOK_WARMBOOT
+        #if SUPPORT_HOOK_WARMBOOT
             if (eSPI_PLTRST_TAG == F_PLTRST_DETECTED)
             {
                 eSPI_PLTRST_TAG = F_PLTRST_HI_LEVEL;
                 SystemWarmBoot();
             }
-#endif
+        #endif
         }
         else
         {

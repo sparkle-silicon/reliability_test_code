@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-18 21:52:56
+ * @LastEditTime: 2025-11-08 16:09:42
  * @Description:
  *
  *
@@ -350,14 +350,15 @@
 //SPI初始化
 #define SPIM_CLOCK_DIVISION 0
 
-#define SPIM_EN_Init 0&SPIM_CLOCK_EN
+#define SPIM_EN_Init 1&SPIM_CLOCK_EN
 #define SPIM_CS_EN 1&SPIM_CLOCK_EN
 #define SPIM_DEFAULT_DLY 0
-#define SPIM_DEFAULT_CPOL SPIM_CPOL_LOW
-#define SPIM_DEFAULT_CPHA SPIM_CPHA_FE
-#define SPIM_DEFAULT_LSB SPIM_MSB
+#define SPIM_DEFAULT_CPOL SPIM_CTRL_CPOL_LOW
+#define SPIM_DEFAULT_CPHA SPIM_CTRL_CPHA_LOW
+#define SPIM_DEFAULT_LSB SPIM_CTRL_MSB
 #define SPIM_DEFAULT_DSSP 0x7
 #define SPIM_DEFAULT_CPSRR 1
+#define SPIM_DEFAULT_SAMDLY 0
 #define SPIM_CS0_SEL 0
 #define SPIM_CS1_SEL 0
 #define SPIM_MOSI_SEL 0

@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-22 16:13:33
+ * @LastEditTime: 2025-11-08 17:44:25
  * @Description:
  *              define base reg addr
  *              define reg size
@@ -6207,7 +6207,7 @@
 #define SPIM_CSN1_OFFSET 0x16
 #define SPIM_MODE_OFFSET 0x18
 #define SPIM_RDNUM_OFFSET 0x1A
-#define SPIM_SIMPDELAY_OFFSET 0x1C
+#define SPIM_SAMPDELAY_OFFSET 0x1C
 
 #define SPIM_REG_ADDR(offset) REG_ADDR(SPIM_BASE_ADDR, offset)
 #define SPIM_REG(offset) REG16(SPIM_REG_ADDR(offset))
@@ -6226,7 +6226,7 @@
 #define SPIM_CSN1 SPIM_REG(SPIM_CSN1_OFFSET)
 #define SPIM_MODE SPIM_REG(SPIM_MODE_OFFSET)
 #define SPIM_RDNUM SPIM_REG(SPIM_RDNUM_OFFSET)
-#define SPIM_SIMPDELAY SPIM_REG(SPIM_SIMPDELAY_OFFSET)
+#define SPIM_SAMPDELAY SPIM_REG(SPIM_SAMPDELAY_OFFSET)
 #endif
 /***********************************PECI  Register Set**********************************/
 #ifndef PECI_BASE_ADDR_DEFINE

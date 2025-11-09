@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-18 21:48:10
+ * @LastEditTime: 2025-11-07 20:52:08
  * @Description: This file is used for INTC interrupt
  *
  *
@@ -1671,30 +1671,30 @@ void intr1_smbus4(void) // 27
 		SMBUS4_CLR_RX_OVER0;
 	else if (intr_stat & I2C_INTR_RX_FULL)
 	{
-#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
+	#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
 		Debugger_Cmd_IRQ(I2c_Slave_Read_Byte(DEBUGGER_I2C_CHANNEL));
-#endif
+	#endif
 	}
 	else if (intr_stat & I2C_INTR_TX_OVER)
 		SMBUS4_CLR_TX_OVER0;
 	else if (intr_stat & I2C_INTR_TX_EMPTY)
 	{
-#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
+	#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
 		Debugger_I2c_Send(DEBUGGER_I2C_CHANNEL);
-#endif
+	#endif
 	}
 	else if (intr_stat & I2C_INTR_RD_REQ)
 	{
 		SMBUS4_CLR_RD_REQ0;
 		SMBUS4_INTR_MASK0 &= (~I2C_INTR_RD_REQ);
-#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
-#if 1//irq 
+	#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
+	#if 1//irq 
 		Debugger_I2c_Req(DEBUGGER_I2C_CHANNEL);
 		SMBUS4_INTR_MASK0 |= (I2C_INTR_RD_REQ);
-#else//service
+	#else//service
 		F_Service_Debugger_Rrq = 1;
-#endif
-#endif
+	#endif
+	#endif
 	}
 	else if (intr_stat & I2C_INTR_RX_DONE)
 		SMBUS4_CLR_RX_DONE0;
@@ -1739,31 +1739,31 @@ void intr1_smbus5(void) // 28
 	else if (intr_stat & I2C_INTR_RX_FULL)
 	{
 		// dprint("SMBUS5 RX FULL\n");//相当于延时
-#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
+	#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
 		Debugger_Cmd_IRQ(I2c_Slave_Read_Byte(DEBUGGER_I2C_CHANNEL));
-#endif
+	#endif
 	}
 	else if (intr_stat & I2C_INTR_TX_OVER)
 		SMBUS5_CLR_TX_OVER0;
 	else if (intr_stat & I2C_INTR_TX_EMPTY)
 	{
 		// dprint("SMBUS5 TX EMPTY\n");//相当于延时
-#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
+	#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
 		Debugger_I2c_Send(DEBUGGER_I2C_CHANNEL);
-#endif
+	#endif
 	}
 	else if (intr_stat & I2C_INTR_RD_REQ)
 	{
 		SMBUS5_CLR_RD_REQ0;
 		SMBUS5_INTR_MASK0 &= (~I2C_INTR_RD_REQ);
-#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
-#if 1//irq 
+	#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
+	#if 1//irq 
 		Debugger_I2c_Req(DEBUGGER_I2C_CHANNEL);
 		SMBUS5_INTR_MASK0 |= (I2C_INTR_RD_REQ);
-#else//service
+	#else//service
 		F_Service_Debugger_Rrq = 1;
-#endif
-#endif
+	#endif
+	#endif
 	}
 	else if (intr_stat & I2C_INTR_RX_DONE)
 		SMBUS5_CLR_RX_DONE0;
@@ -2111,9 +2111,9 @@ void intr1_uart1(void)
 	if (F_Service_CMD == 1)
 	{
 		char temp = UART1_RX;
-#if (!IRQC_DEBUG)
+	#if (!IRQC_DEBUG)
 		UNUSED_VAR(temp);
-#endif
+	#endif
 		irqprint("erro of CMD_RUN:%#x,%c\n", temp, temp);
 		return;
 	}
@@ -2202,10 +2202,6 @@ void intr1_spim(void)
 	}
 	if ((SPIM_ISR & 0x1) && (!(SPIM_IMSR & 0x1))) // 发送fifo空中断
 	{
-		SPI_Block_Erase(0x0, 0);					 // 擦除
-		SPI_Page_Program(0, 256, SPI_Write_Buff, 0); // 写入
-		SPI_IRQ_Config(txeim, DISABLE);
-		SPI_Read_Start = 1; // 写入完成判断可以读
 	}
 }
 void intr1_smbus0(void)
@@ -2242,31 +2238,31 @@ void intr1_smbus0(void)
 	else if (intr_stat & I2C_INTR_RX_FULL)
 	{
 		// dprint("SMBUS0 RX FULL\n");//相当于延时
-#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
+	#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
 		Debugger_Cmd_IRQ(I2c_Slave_Read_Byte(DEBUGGER_I2C_CHANNEL));
-#endif
+	#endif
 	}
 	else if (intr_stat & I2C_INTR_TX_OVER)
 		SMBUS0_CLR_TX_OVER0;
 	else if (intr_stat & I2C_INTR_TX_EMPTY)
 	{
 		// dprint("SMBUS0 TX EMPTY\n");//相当于延时
-#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
+	#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
 		Debugger_I2c_Send(DEBUGGER_I2C_CHANNEL);
-#endif
+	#endif
 	}
 	else if (intr_stat & I2C_INTR_RD_REQ)
 	{
 		SMBUS0_CLR_RD_REQ0;
 		SMBUS0_INTR_MASK0 &= (~I2C_INTR_RD_REQ);
-#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
-#if 1//irq 
+	#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
+	#if 1//irq 
 		Debugger_I2c_Req(DEBUGGER_I2C_CHANNEL);
 		SMBUS0_INTR_MASK0 |= (I2C_INTR_RD_REQ);
-#else//service
+	#else//service
 		F_Service_Debugger_Rrq = 1;
-#endif
-#endif
+	#endif
+	#endif
 	}
 	else if (intr_stat & I2C_INTR_RX_DONE)
 		SMBUS0_CLR_RX_DONE0;
@@ -2334,31 +2330,31 @@ void intr1_smbus1(void)
 	else if (intr_stat & I2C_INTR_RX_FULL)
 	{
 		// dprint("SMBUS1 RX FULL\n");//相当于延时
-#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
+	#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
 		Debugger_Cmd_IRQ(I2c_Slave_Read_Byte(DEBUGGER_I2C_CHANNEL));
-#endif
+	#endif
 	}
 	else if (intr_stat & I2C_INTR_TX_OVER)
 		SMBUS1_CLR_TX_OVER0;
 	else if (intr_stat & I2C_INTR_TX_EMPTY)
 	{
 		// dprint("SMBUS1 TX EMPTY\n");//相当于延时
-#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
+	#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
 		Debugger_I2c_Send(DEBUGGER_I2C_CHANNEL);
-#endif
+	#endif
 	}
 	else if (intr_stat & I2C_INTR_RD_REQ)
 	{
 		SMBUS1_CLR_RD_REQ0;
 		SMBUS1_INTR_MASK0 &= (~I2C_INTR_RD_REQ);
-#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
-#if 1//irq 
+	#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
+	#if 1//irq 
 		Debugger_I2c_Req(DEBUGGER_I2C_CHANNEL);
 		SMBUS1_INTR_MASK0 |= (I2C_INTR_RD_REQ);
-#else//service
+	#else//service
 		F_Service_Debugger_Rrq = 1;
-#endif
-#endif
+	#endif
+	#endif
 	}
 	else if (intr_stat & I2C_INTR_RX_DONE)
 		SMBUS1_CLR_RX_DONE0;
@@ -2426,31 +2422,31 @@ void intr1_smbus2(void)
 	else if (intr_stat & I2C_INTR_RX_FULL)
 	{
 		// dprint("SMBUS2 RX FULL\n");//相当于延时
-#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
+	#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
 		Debugger_Cmd_IRQ(I2c_Slave_Read_Byte(DEBUGGER_I2C_CHANNEL));
-#endif
+	#endif
 	}
 	else if (intr_stat & I2C_INTR_TX_OVER)
 		SMBUS2_CLR_TX_OVER0;
 	else if (intr_stat & I2C_INTR_TX_EMPTY)
 	{
 		// dprint("SMBUS2 TX EMPTY\n");//相当于延时
-#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
+	#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
 		Debugger_I2c_Send(DEBUGGER_I2C_CHANNEL);
-#endif
+	#endif
 	}
 	else if (intr_stat & I2C_INTR_RD_REQ)
 	{
 		SMBUS2_CLR_RD_REQ0;
 		SMBUS2_INTR_MASK0 &= (~I2C_INTR_RD_REQ);
-#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
-#if 1//irq 
+	#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
+	#if 1//irq 
 		Debugger_I2c_Req(DEBUGGER_I2C_CHANNEL);
 		SMBUS2_INTR_MASK0 |= (I2C_INTR_RD_REQ);
-#else//service
+	#else//service
 		F_Service_Debugger_Rrq = 1;
-#endif
-#endif
+	#endif
+	#endif
 	}
 	else if (intr_stat & I2C_INTR_RX_DONE)
 		SMBUS2_CLR_RX_DONE0;
@@ -2518,31 +2514,31 @@ void intr1_smbus3(void)
 	else if (intr_stat & I2C_INTR_RX_FULL)
 	{
 		// dprint("SMBUS3 RX FULL\n");//相当于延时
-#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
+	#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
 		Debugger_Cmd_IRQ(I2c_Slave_Read_Byte(DEBUGGER_I2C_CHANNEL));
-#endif
+	#endif
 	}
 	else if (intr_stat & I2C_INTR_TX_OVER)
 		SMBUS3_CLR_TX_OVER0;
 	else if (intr_stat & I2C_INTR_TX_EMPTY)
 	{
 		// dprint("SMBUS3 TX EMPTY\n");//相当于延时
-#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
+	#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
 		Debugger_I2c_Send(DEBUGGER_I2C_CHANNEL);
-#endif
+	#endif
 	}
 	else if (intr_stat & I2C_INTR_RD_REQ)
 	{
 		SMBUS3_CLR_RD_REQ0;
 		SMBUS3_INTR_MASK0 &= (~I2C_INTR_RD_REQ);
-#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
-#if 1//irq 
+	#if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
+	#if 1//irq 
 		Debugger_I2c_Req(DEBUGGER_I2C_CHANNEL);
 		SMBUS3_INTR_MASK0 |= (I2C_INTR_RD_REQ);
-#else//service
+	#else//service
 		F_Service_Debugger_Rrq = 1;
-#endif
-#endif
+	#endif
+	#endif
 	}
 	else if (intr_stat & I2C_INTR_RX_DONE)
 		SMBUS3_CLR_RX_DONE0;
@@ -2672,7 +2668,8 @@ void intr1_mailbox(void)
 	{
 		MAILBOX_C2EINT = MAILBOX_C2EINT;
 		nop;
-	} while (MAILBOX_C2EINT); // 清除中断
+	}
+	while (MAILBOX_C2EINT); // 清除中断
 	F_Service_Mailbox = 1;
 }
 
@@ -2749,61 +2746,61 @@ void intr1_espi(void)
 		}
 		switch (RPMC_OOB_TempArr[14]) // cmd type
 		{
-		case 0x0:                            // WriteRootKey
-			if (RPMC_OOB_TempArr[2] == 0x48) // WriteRootKey message1
-			{
-				memcpy(&eRPMC_WriteRootKey_m1, RPMC_OOB_TempArr, sizeof(eRPMC_WriteRootKey_m1));
-			}
-			else if (RPMC_OOB_TempArr[2] == 0x0B) // WriteRootKey message2
-			{
-				memcpy(&eRPMC_WriteRootKey_m2, RPMC_OOB_TempArr, sizeof(eRPMC_WriteRootKey_m2));
-				/*mailbox WriteRootKey trigger*/
-				task_head = Add_Task((TaskFunction)Mailbox_WriteRootKey_Trigger, params, &task_head);
-			}
-			else//payload length error
-			{
-				eRPMC_WriteRootKey_data.Extended_Status = 0x04;
-				eSPI_OOB_Send((BYTE*)&eRPMC_WriteRootKey_data);
-			}
-			break;
-		case 0x1:                            // UpdateHMACKey
-			if (RPMC_OOB_TempArr[2] == 0x32) // UpdateHMACKey message
-			{
-				memcpy(&eRPMC_UpdateHMACKey, RPMC_OOB_TempArr, sizeof(eRPMC_UpdateHMACKey));
-				task_head = Add_Task((TaskFunction)Mailbox_UpdateHMACKey_Trigger, params, &task_head);
-			}
-			else//payload length error
-			{
-				eRPMC_UpdateHMACKey_data.Extended_Status = 0x04;
-				eSPI_OOB_Send((BYTE*)&eRPMC_UpdateHMACKey_data);
-			}
-			break;
-		case 0x2:                            // IncrementCounter
-			if (RPMC_OOB_TempArr[2] == 0x32) // IncrementCounter message
-			{
-				memcpy(&eRPMC_IncrementCounter, RPMC_OOB_TempArr, sizeof(eRPMC_IncrementCounter));
-				task_head = Add_Task((TaskFunction)Mailbox_IncrementCounter_Trigger, params, &task_head);
-			}
-			else//payload length error
-			{
-				eRPMC_IncrementCounter_data.Extended_Status = 0x04;
-				eSPI_OOB_Send((BYTE*)&eRPMC_IncrementCounter_data);
-			}
-			break;
-		case 0x3:                            // RequestCounter
-			if (RPMC_OOB_TempArr[2] == 0x3A) // RequestCounter message
-			{
-				memcpy(&eRPMC_RequestCounter, RPMC_OOB_TempArr, sizeof(eRPMC_RequestCounter));
-				task_head = Add_Task((TaskFunction)Mailbox_RequestCounter_Trigger, params, &task_head);
-			}
-			else//payload length error
-			{
-				eRPMC_RequestCounter_data.Extended_Status = 0x04;
-				eSPI_OOB_Send((BYTE*)&eRPMC_RequestCounter_data);
-			}
-			break;
-		default:
-			break;
+			case 0x0:                            // WriteRootKey
+				if (RPMC_OOB_TempArr[2] == 0x48) // WriteRootKey message1
+				{
+					memcpy(&eRPMC_WriteRootKey_m1, RPMC_OOB_TempArr, sizeof(eRPMC_WriteRootKey_m1));
+				}
+				else if (RPMC_OOB_TempArr[2] == 0x0B) // WriteRootKey message2
+				{
+					memcpy(&eRPMC_WriteRootKey_m2, RPMC_OOB_TempArr, sizeof(eRPMC_WriteRootKey_m2));
+					/*mailbox WriteRootKey trigger*/
+					task_head = Add_Task((TaskFunction)Mailbox_WriteRootKey_Trigger, params, &task_head);
+				}
+				else//payload length error
+				{
+					eRPMC_WriteRootKey_data.Extended_Status = 0x04;
+					eSPI_OOB_Send((BYTE *)&eRPMC_WriteRootKey_data);
+				}
+				break;
+			case 0x1:                            // UpdateHMACKey
+				if (RPMC_OOB_TempArr[2] == 0x32) // UpdateHMACKey message
+				{
+					memcpy(&eRPMC_UpdateHMACKey, RPMC_OOB_TempArr, sizeof(eRPMC_UpdateHMACKey));
+					task_head = Add_Task((TaskFunction)Mailbox_UpdateHMACKey_Trigger, params, &task_head);
+				}
+				else//payload length error
+				{
+					eRPMC_UpdateHMACKey_data.Extended_Status = 0x04;
+					eSPI_OOB_Send((BYTE *)&eRPMC_UpdateHMACKey_data);
+				}
+				break;
+			case 0x2:                            // IncrementCounter
+				if (RPMC_OOB_TempArr[2] == 0x32) // IncrementCounter message
+				{
+					memcpy(&eRPMC_IncrementCounter, RPMC_OOB_TempArr, sizeof(eRPMC_IncrementCounter));
+					task_head = Add_Task((TaskFunction)Mailbox_IncrementCounter_Trigger, params, &task_head);
+				}
+				else//payload length error
+				{
+					eRPMC_IncrementCounter_data.Extended_Status = 0x04;
+					eSPI_OOB_Send((BYTE *)&eRPMC_IncrementCounter_data);
+				}
+				break;
+			case 0x3:                            // RequestCounter
+				if (RPMC_OOB_TempArr[2] == 0x3A) // RequestCounter message
+				{
+					memcpy(&eRPMC_RequestCounter, RPMC_OOB_TempArr, sizeof(eRPMC_RequestCounter));
+					task_head = Add_Task((TaskFunction)Mailbox_RequestCounter_Trigger, params, &task_head);
+				}
+				else//payload length error
+				{
+					eRPMC_RequestCounter_data.Extended_Status = 0x04;
+					eSPI_OOB_Send((BYTE *)&eRPMC_RequestCounter_data);
+				}
+				break;
+			default:
+				break;
 		}
 		if (RPMC_OOB_TempArr[13] == 0x9F)// ReadParameters
 		{
@@ -2815,7 +2812,7 @@ void intr1_espi(void)
 			else//payload length error
 			{
 				eRPMC_ReadParameters_data.Extended_Status = 0x04;
-				eSPI_OOB_Send((BYTE*)&eRPMC_ReadParameters_data);
+				eSPI_OOB_Send((BYTE *)&eRPMC_ReadParameters_data);
 			}
 		}
 	}

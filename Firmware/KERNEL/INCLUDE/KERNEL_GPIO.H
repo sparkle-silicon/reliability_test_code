@@ -241,8 +241,6 @@
 #define GPIOC HEX03
 #define GPIOD HEX04
 #define GPIOE HEX05
-#define ENABLE      HEX01
-#define DISABLE     HEX00
 #define NUM_OF_GPIOA 32
 #define NUM_OF_GPIOB 27
 #define NUM_OF_GPIOC 14

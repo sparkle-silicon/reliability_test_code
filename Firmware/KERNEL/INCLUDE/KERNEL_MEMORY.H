@@ -356,7 +356,7 @@
 /*SPIM interface*/
 #define SPI_MemBase (SMB_MemBase + MEMORY_008SIZE)   // 0x20200
 #define SPI_FLAHS_ID (*(VDWORDP)(SPI_MemBase + 0x0)) // 存放flashid
-#define SPI_Timeout (*(VDWORDP)(SPI_MemBase + 0x4))  // 超时跳出
+#define SPIM_Timeout (*(VDWORDP)(SPI_MemBase + 0x4))  // 超时跳出
 #define SPI_WriteDATA (*(VWORDP)(SPI_MemBase + 0x8))  // 存放准备往里写数据
 #define SPI_Read_Start (*(VBYTEP)(SPI_MemBase + 0xc)) // 判断读过程情况
 #define FLASH_SR (*(VBYTEP)(SPI_MemBase + 0xd))       // flash状态

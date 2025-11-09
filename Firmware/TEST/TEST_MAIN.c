@@ -1,7 +1,7 @@
 /*
  * @Author: Maple
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-18 18:26:40
+ * @LastEditTime: 2025-11-09 20:49:53
  * @Description:
  *
  *
@@ -87,9 +87,9 @@ void Service_PCI(void)
 		F_Service_PCI = 0;
 		if (Is_FLAG_CLEAR(KBC_STA, KBC_STA_IBF))
 			return;
-#if LPC_PRESSURE_TEST && (defined(AE102) || defined(AE103))
+	#if LPC_PRESSURE_TEST && (defined(AE102) || defined(AE103))
 		AUTO_TEST_PORT(0);
-#endif
+	#endif
 	}
 #endif
 #endif
@@ -113,9 +113,9 @@ void Service_PCI2(void)
 		F_Service_PCI2 = 0;
 		if (Is_FLAG_CLEAR(PMC1_STR, IBF1))
 			return;
-#if LPC_PRESSURE_TEST && (defined(AE102) || defined(AE103))
+	#if LPC_PRESSURE_TEST && (defined(AE102) || defined(AE103))
 		AUTO_TEST_PORT(1);
-#endif
+	#endif
 	}
 #endif
 #endif
@@ -139,9 +139,9 @@ void Service_PCI3(void)
 		F_Service_PCI3 = 0;
 		if (Is_FLAG_CLEAR(PMC2_STR, IBF2))
 			return;
-#if LPC_PRESSURE_TEST && (defined(AE102) || defined(AE103))
+	#if LPC_PRESSURE_TEST && (defined(AE102) || defined(AE103))
 		AUTO_TEST_PORT(2);
-#endif
+	#endif
 	}
 #endif
 #endif
@@ -165,9 +165,9 @@ void Service_PCI4(void)
 		F_Service_PCI4 = 0;
 		if (Is_FLAG_CLEAR(PMC3_STR, IBF3))
 			return;
-#if LPC_PRESSURE_TEST && (defined(AE102) || defined(AE103))
+	#if LPC_PRESSURE_TEST && (defined(AE102) || defined(AE103))
 		AUTO_TEST_PORT(3);
-#endif
+	#endif
 	}
 #endif
 #endif
@@ -191,9 +191,9 @@ void Service_PCI5(void)
 		F_Service_PCI5 = 0;
 		if (Is_FLAG_CLEAR(PMC4_STR, IBF4))
 			return;
-#if LPC_PRESSURE_TEST && (defined(AE102) || defined(AE103))
+	#if LPC_PRESSURE_TEST && (defined(AE102) || defined(AE103))
 		AUTO_TEST_PORT(4);
-#endif
+	#endif
 	}
 #endif
 #endif
@@ -217,9 +217,9 @@ void Service_PCI6(void)
 		F_Service_PCI6 = 0;
 		if (Is_FLAG_CLEAR(PMC5_STR, IBF5))
 			return;
-#if LPC_PRESSURE_TEST && (defined(AE102) || defined(AE103))
+	#if LPC_PRESSURE_TEST && (defined(AE102) || defined(AE103))
 		AUTO_TEST_PORT(5);
-#endif
+	#endif
 	}
 #endif
 #endif
@@ -237,7 +237,7 @@ void test_service(void)
 			_R1 = 0;
 		(service_table[_R1])();
 		_R1++;
-#if LPC_MODULE_EN
+	#if LPC_MODULE_EN
 		if (LPC_EOF == 1)
 		{
 			dprint("Cycle Type:%s\n", lpc_stat.cyctpe_dir);
@@ -245,7 +245,7 @@ void test_service(void)
 			dprint("Data:%#x\n", lpc_stat.data);
 			LPC_EOF = 0;
 		}
-#endif
+	#endif
 	}
 }
 //----------------------------------------------------------------------------
@@ -275,7 +275,7 @@ unsigned char hexCharToValue(char c)
 }
 
 // 将十六进制字符串转换为字节数组
-void hexStringToByteArray(const char* hexString, unsigned char* byteArray, int byteArraySize)
+void hexStringToByteArray(const char *hexString, unsigned char *byteArray, int byteArraySize)
 {
 	for (int i = 0; i < byteArraySize; i++)
 	{
@@ -385,21 +385,23 @@ int main()
 #endif
 
 	// 定义指向起始地址的volatile指针（防止编译器优化写操作）
-	volatile unsigned char* base_addr = (volatile unsigned char*)0x29000;
+	volatile unsigned char *base_addr = (volatile unsigned char *)0x29000;
 	// 定义起始地址的volatile指针（防止编译器优化，确保实际读取内存）
-	volatile  unsigned char* base_addr0 = (volatile  unsigned char*)0x2a000;
+	volatile  unsigned char *base_addr0 = (volatile  unsigned char *)0x2a000;
 	// 计算地址范围大小：0x2a000 - 0x29000 = 0x1000（共4096个字节）
 	const uint32_t range_size = 0x2b000 - 0x2a000;
 
 	// 循环写入0到0xff（共256个值，对应0x29000到0x290ff）
-	for (uint16_t i = 0; i < 256; i++) {
-		// base_addr[i] 等价于访问地址 0x29000 + i
+	for (uint16_t i = 0; i < 256; i++)
+	{
+// base_addr[i] 等价于访问地址 0x29000 + i
 		base_addr[i] = i;
 		printf("0x%x : %x\n", 0x29000 + i, base_addr[i]);
 	}
 
-	for (uint32_t i = 0; i < range_size; i++) {
-		//清零
+	for (uint32_t i = 0; i < range_size; i++)
+	{
+//清零
 		*(base_addr0 + i) = 0;
 	}
 	printf("dma test start\n");
@@ -419,10 +421,12 @@ int main()
 	vDelayXms(10);
 
 	// 遍历每个地址并打印
-	for (uint32_t i = 0; i < range_size; i++) {
-		// 每16个字节换行，并在行首打印当前起始地址
-		if (i % 16 == 0) {
-			// 地址格式：0x29000 这样的8位十六进制（前导0补齐）
+	for (uint32_t i = 0; i < range_size; i++)
+	{
+// 每16个字节换行，并在行首打印当前起始地址
+		if (i % 16 == 0)
+		{
+// 地址格式：0x29000 这样的8位十六进制（前导0补齐）
 			printf("\n0x%08x:  ", (uint32_t)(base_addr0 + i));
 		}
 		// 打印当前字节值（两位十六进制，前导0补齐）
@@ -942,12 +946,12 @@ int main()
 	// }
 	// sysctl_iomux_spim();
 	// sysctl_iomux_spim_cs();
-	// SPI_Init(0, SPIM_CPOL_LOW, SPIM_CPHA_FE, SPIM_MSB, 0x7, 1);
+	// SPI_Init(0, SPIM_CTRL_CPOL_LOW, SPIM_CTRL_CPHA_LOW, SPIM_CTRL_MSB, 0x7, 1);
 	// SPIM_CTRL&=~(0x3<<6);
 	// SPIM_CTRL|=1<<7;
 	// //擦除FLASH
-	// SPI_Block_Erase(0x0, 0);
-	// SPI_Send_Cmd_Addr(read_buff, 0, 256, 0);
+	// SPIM_Erase_FLASH_Data(0x0, 0);
+	// SPIM_Send_FLASH_Cmd_Addr(read_buff, 0, 256, 0);
 	// for (int i = 0; i < 30; i++)
 	// {
 	// 	dprint("Erased data[%d]:0x%x\n",i,read_buff[i]);
@@ -982,7 +986,7 @@ int main()
 
 	// SPIM_CTRL&=~(0x3<<6);
 	// vDelayXms(10);
-	// SPI_Send_Cmd_Addr(read_buff, 0, 256, 0);
+	// SPIM_Send_FLASH_Cmd_Addr(read_buff, 0, 256, 0);
 	// vDelayXms(1);
 	// for (int i = 0; i < 64; i++)
 	// {
@@ -991,7 +995,7 @@ int main()
 	// printf("\n");
 	// printf("spim rx->iram test\n");
 	// SPI_Flash_CS_Low(0);
-	// SPI_Send_Byte(CMD_READ_DATA); // 读命令
+	// SPI_Send_Byte(SPI_FLASH_CMD_READ_DATA); // 读命令
 	// SPI_Send_Byte((0 & 0xFF0000) >> 16);//set addr:0
 	// SPI_Send_Byte((0 & 0xFF00) >> 8);
 	// SPI_Send_Byte(0 & 0xFF);
@@ -1014,22 +1018,22 @@ int main()
 	// vDelayXms(1);
 	// for(int j=0;j<31;j++)
 	// {
-	// 	SPI_Timeout = 100000;
-	// 	while (!((SPIM_SR)&SPI_TFE)) // 等待发送fifo空
+	// 	SPIM_Timeout = 100000;
+	// 	while (!((SPIM_SR)&SPIM_SR_TFE)) // 等待发送fifo空
 	// 	{
-	// 		SPI_Timeout--;
-	// 		if (SPI_Timeout == 0)
+	// 		SPIM_Timeout--;
+	// 		if (SPIM_Timeout == 0)
 	// 		{
 	// 		dprint("spi等待发送超时\n");
 	// 		return 0;
 	// 		}
 	// 	}
 	// 	SPIM_DA = 0xff; // 发送数据
-	// 	SPI_Timeout = 1000000;
-	// 	while (!((SPIM_SR)&SPI_RFNE)) // 等待接收fifo不空
+	// 	SPIM_Timeout = 1000000;
+	// 	while (!((SPIM_SR)&SPIM_SR_RFNE)) // 等待接收fifo不空
 	// 	{
-	// 		SPI_Timeout--;
-	// 		if (SPI_Timeout == 0)
+	// 		SPIM_Timeout--;
+	// 		if (SPIM_Timeout == 0)
 	// 		{
 	// 		dprint("spi等待接收超时\n");
 	// 		return 0;
@@ -1083,7 +1087,7 @@ int main()
 	// #endif
 
 	// SPIM_CTRL&=~(0x3<<6);
-	// SPI_Send_Cmd_Addr(read_buff, 0, 256, 0);
+	// SPIM_Send_FLASH_Cmd_Addr(read_buff, 0, 256, 0);
 	// vDelayXms(1);
 	// for (int i = 0; i < 256; i++)
 	// {
@@ -2165,7 +2169,7 @@ uint8_t ccc_dr_rdata1[10] = { 0,0,0,0,0,0,0,0,0,0 };
 //     s_data[i] = (((i + 0x01) << 8) | (i + 0x10));
 //   printf("SPIM_MODE:%x\n", SPIM_MODE);
 //   SPI_Quad_enable(csn);//设置quad模式,quad enable
-//   SPI_Block_Erase(ADDRess, csn);
+//   SPIM_Erase_FLASH_Data(ADDRess, csn);
 //   SPI_Quad_Program(ADDRess, s_data, no, csn);
 //   SPI_Quad_Read(ADDRess, d_data, no, csn);
 //   printf("SPIM_MODE:%x\n", SPIM_MODE);
@@ -2204,7 +2208,7 @@ uint8_t ccc_dr_rdata1[10] = { 0,0,0,0,0,0,0,0,0,0 };
 //   printf("SPIM_MODE:%x\n", SPIM_MODE);
 
 //   //擦除还是标准四线模式
-//   SPI_Block_Erase(ADDRess, csn);
+//   SPIM_Erase_FLASH_Data(ADDRess, csn);
 //   SPI_Quad_Program(ADDRess, s_data, no, csn);
 //   SPI_Dual_Read(ADDRess, d_data, no, csn);
 
@@ -2292,3 +2296,5 @@ uint8_t ccc_dr_rdata1[10] = { 0,0,0,0,0,0,0,0,0,0 };
 // 	SWUC_PNP_Config();
 // 	SWUC_ACPIIRQ_Config(PWRSLY | PWRBT, ENABLE);
 // }
+
+

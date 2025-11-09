@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-10-08 20:27:06
+ * @LastEditTime: 2025-11-09 20:54:56
  * @Description:
  *               define chip_type
  *               define identifier
@@ -288,6 +288,10 @@ typedef union _Dword{
 /*-------------------------------------set level val-------------------------------------*/
 #define LOW 0
 #define HIGH 1
+/*-------------------------------------set enable disable-----------------------------------*/
+#define ENABLE              1
+#define DISABLE             0
+
 //-----------------------------------------------------------------------------
 //  Function Pointers
 //-----------------------------------------------------------------------------
