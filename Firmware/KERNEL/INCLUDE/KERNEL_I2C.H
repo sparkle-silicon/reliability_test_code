@@ -202,7 +202,8 @@ extern char I2c_Check_RFNE(WORD i2c_channel);
 extern char I2c_Check_Stop_Det(WORD i2c_channel);
 extern char I2c_Check_Active(WORD i2c_channel);
 extern uint8_t I2c_Slave_Read_Byte(WORD i2c_channel);
-
+extern void I2c_Write_Short(WORD value, WORD regoffset, WORD i2c_channel);
+extern WORD I2c_Read_Short(WORD regoffset, WORD i2c_channel);
 extern void I2c_Writeb(BYTE value, WORD regoffset, WORD i2c_channel);
 extern void I2c_Write16bit(WORD value, WORD regoffset, WORD i2c_channel);
 extern void I2c_Mux_set(BYTE modle);

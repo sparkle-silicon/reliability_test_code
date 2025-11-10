@@ -15,19 +15,19 @@
  */
 #include "KERNEL_BRAM.H"
 #include "KERNEL_TIMER.H"
- /**
-  * @brief 此函数用于配置BRAM逻辑设备，并初始化其相关参数。
-  *
-  * @param 无
-  *
-  * @return 无
-  */
-void BRAM_Config(void)
+/**
+ * @brief 此函数用于配置BRAM逻辑设备，并初始化其相关参数。
+ *
+ * @param 无
+ *
+ * @return 无
+ */
+void BRAM_SIOConfig(void)
 {
 #if !(BRAM_CLOCK_EN)
   return;
 #endif
-  // Enable BRAM logic device
+// Enable BRAM logic device
 #if (SYSCTL_CLOCK_EN)
   SYSCTL_HDEVEN |= HBRAM_EN;      //host侧BRAM使能
 #endif
@@ -49,10 +49,10 @@ void BRAM_Config(void)
  */
 void BRAM_EC_Write(void)
 {
-  for (int i = 0; i < 48; i++)
+  int i;
+  for(i = 0; i < 48; i++)
   {
-    BATTERY_BRAM8(i) = 0xec;
-    vDelayXms(1);
+    *((volatile uint8_t *)(BRAM_BASE_ADDR + i)) = 0xff;
   }
   dprint("bram data is writen!\n");
 }
@@ -67,10 +67,33 @@ void BRAM_EC_Write(void)
  */
 void BRAM_EC_Read(void)
 {
-  for (int i = 0; i < 48; i++)
+  uint8_t i;
+  for(i = 0; i <= 96; i++)
   {
-    BRAM_ReadBuff[i] = *((volatile uint8_t*)(BRAM_BASE_ADDR + i));
-    dprint("bram data is %#x\n", BRAM_ReadBuff[i]);
+    BRAM_ReadBuff[i] = *((volatile uint8_t *)(BRAM_BASE_ADDR + i));
+    dprint("bd[%d]:%#x\n", i, BRAM_ReadBuff[i]);
   }
-  dprint("bram data read end!\n");
+}
+/**
+ * @brief BRAM配置函数,BRAM映射到例如0x270端口，如果主机对0x270端口填数会被当做一个index
+ * 如果index_0<index<index_1,0x271端口写将会触发intr1_36中断，0x271端口读将会触发intr1_37中断，
+ * 可设置mask屏蔽intr1_36和intr1_37中断。并会将270 index，271端口的操作写到bram对应index的位置。
+ *
+ * @param index_0 索引0
+ * @param index_1 索引1
+ * @param mask 中断屏蔽位
+ *
+ * @return 无
+ *
+ */
+void BRAM_Config(uint8_t index_0, uint8_t index_1, uint8_t mask)
+{
+    REG32(0x3051C)&=~0xff;
+    REG32(0x3051C)|=index_0;
+    REG32(0x3051C)&=(~0xff)<<8;
+    REG32(0x3051C)|=(index_1<<8);
+    if(mask)
+        REG32(0x3051C)|=0x30000;
+    else
+        REG32(0x3051C)&=~0x30000;
 }

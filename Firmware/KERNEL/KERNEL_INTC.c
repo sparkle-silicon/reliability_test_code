@@ -1928,6 +1928,7 @@ void intr1_null36(void) // 36
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[132]++;
 #endif
+	REG32(0x3051C)|=BIT(18);
 	irqprint("null 36\n");
 }
 void intr1_null37(void) // 37
@@ -1935,6 +1936,7 @@ void intr1_null37(void) // 37
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[133]++;
 #endif
+	REG32(0x3051C)|=BIT(19);
 	irqprint("null 37\n");
 }
 void intr1_pmc2_ibf_ec(void) // 38

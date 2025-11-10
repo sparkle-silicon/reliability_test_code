@@ -812,9 +812,6 @@ void I2c_Slave_Write_Block(uint8_t* data, BYTE length, WORD i2c_channel)
 //  return :
 //      none
 //*****************************************************************************
-extern void I2c_Write_Short(WORD value, WORD regoffset, WORD i2c_channel);
-extern WORD I2c_Read_Short(WORD regoffset, WORD i2c_channel);
-
 void I2c_Master_Controller_Init(WORD i2c_channel, DWORD speed, BYTE spklen)
 {
 	uint16_t hcnt, lcnt;
