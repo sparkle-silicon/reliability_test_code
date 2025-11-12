@@ -184,7 +184,7 @@ void i3c_init(void)
 		I3C_MASTER_ENTDAA(I3C_MASTER1_DEFAULT_DCT, I3C_MASTER1_DEFAULT_DYNAMICADDR, I3C_MASTER1);//specify a dynamic addr
 		dprint("i3c master1 as i3c mode init\n");
 	}
-	else if (I3C_MASTER0_MODE == I3C_MASTER_I2C_MODE)
+	else if (I3C_MASTER1_MODE == I3C_MASTER_I2C_MODE)
 	{
 		I3C_Legacy_Master_Init(I3C_LEGACY_SPEED, I3C_MASTER1);
 		dprint("i3c master1 as i2c mode init\n");
