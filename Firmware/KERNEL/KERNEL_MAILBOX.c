@@ -146,18 +146,6 @@ void Mailbox_ExecuteFirmwareUpdate(void* param)
     MAILBOX_SET_IRQ(MAILBOX_Firmware_IRQ_NUMBER);                                 // 触发对应中断
 }
 
-// void Mailbox_FW_Extension_Trigger(void)
-// {
-//     MAILBOX_SELF_CMD = MAILBOX_CMD_FIRMWARE_EXTENSION;       // 命令字
-//     MAILBOX_SELF_INFO1 = 0x1070800; // 扩展固件信息
-//     MAILBOX_SET_IRQ(MAILBOX_Control_IRQ_NUMBER);         // 触发子系统中断
-// }
-
-// void Mailbox_Read_EFUSE_Trigger(void)
-// {
-//     MAILBOX_SELF_CMD = MAILBOX_CMD_READ_EFUSE; // 命令字
-//     MAILBOX_SET_IRQ(MAILBOX_Efuse_IRQ_NUMBER);    // 触发子系统中断
-// }
 
 void Mailbox_Read_FLASHID_Trigger(void) //mailbox 5
 {
@@ -1121,14 +1109,7 @@ void Mailbox_Firmware(void)
     }
 }
 
-void Mailbox_Efuse(void)
-{
-    if (C2E_CMD == MAILBOX_CMD_READ_EFUSE)
-    {
-        EFUSE_Avail = 1;
-        dprint("efuse:%x,%x,%x,%x,%x,%x,%x\n", MAILBOX_OTHER_INFO1, MAILBOX_OTHER_INFO2, MAILBOX_OTHER_INFO3, MAILBOX_OTHER_INFO4, MAILBOX_OTHER_INFO5, MAILBOX_OTHER_INFO6, MAILBOX_OTHER_INFO7);
-    }
-}
+
 
 void Mailbox_eRPMC(void)
 {
@@ -1277,9 +1258,6 @@ void Mailbox_C2E_Service(void)
             break;
         case 0x02:
             Mailbox_Firmware();
-            break;
-        case 0x04:
-            Mailbox_Efuse();
             break;
         case 0x08:
             Mailbox_eRPMC();

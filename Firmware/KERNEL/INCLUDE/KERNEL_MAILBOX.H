@@ -150,7 +150,6 @@ while(MAILBOX_OTHER_INT&MAILBOX_IRQ_BIT(irq_number)); \
 #define MAILBOX_CMD_FIRMWARE_MIRROR 0x10//固件更新
 #define MAILBOX_CMD_PAGE_DATA_CHANGE 0x11//固件页数据更改
 #define MAILBOX_CMD_DRAM0_FIRMWARE_UPDATE 0x14//读EFUSE锁定状态
-#define MAILBOX_CMD_READ_EFUSE 0x20//读EFUSE数据
 #define MAILBOX_CMD_WRITE_ROOTKEY 0x30//RPMC写根密钥
 #define MAILBOX_CMD_UPDATE_HMACKEY 0x31//RPMC更新HMAC密钥
 #define MAILBOX_CMD_INCREMENT_COUNTER 0x32//RPMC增加单调计数器
@@ -207,7 +206,6 @@ extern void Default_Mailbox_SetClockFrequency(BYTE ClockDiv);
 extern void Mailbox_Init(void);
 void Mailbox_Control();
 void Mailbox_Firmware();
-void Mailbox_Efuse();
 void Mailbox_eRPMC();
 void Mailbox_SecretKey();
 void Mailbox_Crypto();
@@ -216,8 +214,6 @@ extern void Process_Tasks(void);
 extern Task *Add_Task(TaskFunction function, TaskParams params, Task **head);
 extern void Mailbox_C2E_Service(void);
 extern void Mailbox_Read_FLASHID_Trigger(void);
-// extern void Mailbox_Read_EFUSE_Trigger(void);
-// extern void Mailbox_FW_Extension_Trigger(void);
 extern void Mailbox_APB2_Source_Alloc_Trigger(void *param);
 extern void Mailbox_Read_FLASHUID_Trigger(void);
 extern void Malibox_Switch_Flash_Quad_Dual(void *param);
@@ -246,9 +242,7 @@ extern void Mailbox_KeyDerivation(void *param);
 extern void Mailbox_Diffie_Hellman(void *param);//密钥交换
 extern void Mailbox_RandomNumber_Generator(void *param);//随机数生成
 extern void Mailbox_Set_Used_RandomNumber(void *param);//设置随机数
-// extern void Task_FillRand(void *param);
-// extern void Task_Encrypt(void *param);
-// extern void Task_Decrypt(void *param);
+
 extern void Mailbox_Cryp_Selfcheck(void *param);
 extern void Mailbox_SetClockFrequency(void *param);
 extern void Mailbox_Generate_Key(void *param);
