@@ -1,6 +1,6 @@
 /*
  * @Author: Yangxiaolong
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2024-02-07 11:43:27
  * @Description:
  *
@@ -60,9 +60,7 @@
 //the bit of EOM in block
 #define CEC_send_EOM                         0x100
 
-// void CEC_Write(WORD value, BYTE offset);
-// WORD CEC_Read(BYTE offset);
 extern void CEC_initiator_init(BYTE channel);
 extern void CEC_follower_init(BYTE channel);
-extern void CEC_Frame_send(BYTE channel, char *data, BYTE len, BYTE broadcast);
+extern void CEC_Frame_send(BYTE channel, char* data, BYTE len, BYTE broadcast);
 #endif

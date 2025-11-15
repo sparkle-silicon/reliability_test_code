@@ -19,12 +19,10 @@
 #include "AE_REG.H"
 #include "AE_CONFIG.H"
 #include "KERNEL_MEMORY.H"
-extern VBYTE *Tmp_XPntr;
-extern VBYTE *Tmp_XPntr1;
-//-----------------------------------------------------------------------------
-// Function prototype
-//-----------------------------------------------------------------------------
-extern void Event_Center(BYTE Count_id);
+
+extern VBYTE* Tmp_XPntr;
+extern VBYTE* Tmp_XPntr1;
+
 //---------------------------------------------------------------------------------
 //Debounce Time Setting
 //---------------------------------------------------------------------------------
@@ -35,12 +33,18 @@ extern void Event_Center(BYTE Count_id);
 #define T_EXTEVT_DEBOUNCE 	    10      // 100 ms (timebase: 10 ms)
 struct sEvent
 {
-	VBYTE *REG_Evt;
+	VBYTE* REG_Evt;
 	BYTE	Flag_Evt;
-	VBYTE *Cunter_Evt;
+	VBYTE* Cunter_Evt;
 	BYTE	Time_Evt;
 	FUNCT_PTR_V_V	press_evt;
 	FUNCT_PTR_V_V	release_evt;
 	FUNCT_PTR_V_V	nochange_evt;
 };
+
+//-----------------------------------------------------------------------------
+// Function prototype
+//-----------------------------------------------------------------------------
+extern void Event_Center(BYTE Count_id);
+
 #endif

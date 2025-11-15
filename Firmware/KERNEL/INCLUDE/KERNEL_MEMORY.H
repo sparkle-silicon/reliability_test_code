@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2025-10-21 17:34:54
  * @Description: Memory Definition for extern all code base reference
  *
@@ -21,6 +21,8 @@
 #include "AE_GLOBAL.H"
 #include "AE_REG.H"
 #include "AE_CONFIG.H"
+#include "CUSTOM_MEMORY.H"
+
 // DRAM BASE ADDRESS DEFINITION
 #define MEMORY_BASE0_ADDR DRAM_BASE_ADDR
 #define MEMORY_BASE1_ADDR 0x20100UL
@@ -588,9 +590,7 @@
 #define DEFAULT_BASE_ADDR2 (Mailbox_MemBase + MEMORY_064SIZE) // 0x203C0
 #define DEFAULT_BASE_SIZE 0x2A8
 
-
 /*--------------------------------------ALL DEFINITION END----------------------------------------------*/
 extern void Specific_Mem_init(void);
 
-#include "CUSTOM_MEMORY.H"
 #endif

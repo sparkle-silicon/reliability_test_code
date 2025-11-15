@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2023-11-06 17:02:52
  * @Description:
  *
@@ -19,14 +19,8 @@
 #include "AE_REG.H"
 #include "AE_CONFIG.H"
 #include "KERNEL_MEMORY.H"
-/*--------------------------------------------------------------------------*/
-/*--------------------INTC1 Register Address definition---------------------*/
-/*--------------------------------------------------------------------------*/
-/*IRQC relevant functions*/
-extern void disable_intc(int index, int num);
-extern void enable_intc(int index, int num);
-extern void intc_init();
-/*----------------------------------LINE--------------------------------*/
+
+ /*----------------------------------LINE--------------------------------*/
 #define INTC_ICTL_INTEN_L 0x00       // IRQ interrupt source enable register (low)
 #define INTC_ICTL_INTEN_H 0x04       // IRQ interrupt source enable register (high)
 #define INTC_ICTL_INTMASK_L 0x08     // IRQ interrupt source mask register (low).
@@ -64,6 +58,10 @@ extern void intc_init();
 #define Mon_Int_Status(type) ((MON_INTR_STS & (0x1 << (type))) != 0)
 extern const FUNCT_PTR_V_V intr0_service[];
 extern const FUNCT_PTR_V_V intr1_service[];
+
+extern void disable_intc(int index, int num);
+extern void enable_intc(int index, int num);
+extern void intc_init();
 void Handle_Kbd(BYTE channel);
 extern BYTE Int_Control0_Enable(BYTE int_number);
 extern BYTE Int_Control1_Enable(BYTE int_num);

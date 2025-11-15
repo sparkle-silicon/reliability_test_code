@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2024-02-07 15:57:07
  * @Description:
  *
@@ -861,7 +861,6 @@ extern void OOB_PECI_ReadPowerLimit4(void);
 extern void OOB_PECI_WritePowerLimit4(BYTE SettingWatts);
 extern void Service_eSPI(void);
 extern BYTE EC_ACK_eSPI_Boot_Ready(void);
-extern BYTE SPK_CHECK_SUS_WARN(void);
 extern void ESPI_Init(void);
 extern void EC_ACK_eSPI_SUS_WARN(void);
 extern BYTE Process_Peripheral_Message_Send(void);

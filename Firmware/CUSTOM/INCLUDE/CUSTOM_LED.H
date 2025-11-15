@@ -20,9 +20,10 @@
 #include "AE_CONFIG.H"
 #include "KERNEL_MEMORY.H"
 #include "KERNEL_PWM.H"
-/*-----------------------------------------------------------------------------
- * External Calling Process
- *---------------------------------------------------------------------------*/
+
+ /*-----------------------------------------------------------------------------
+  * External Calling Process
+  *---------------------------------------------------------------------------*/
 extern void OEM_Write_Leds(void);
 extern void Service_LED_Indicator(void);
 extern BYTE  Breathing_LED_Switch(BYTE  channel, BYTE step);
@@ -30,5 +31,5 @@ extern BYTE  Breathing_LED_Switch(BYTE  channel, BYTE step);
  * Internal Process Definition
  *---------------------------------------------------------------------------*/
 
-//-----------------------------------------------------------------------------
+ //-----------------------------------------------------------------------------
 #endif

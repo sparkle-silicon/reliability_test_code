@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-11-15 18:43:12
+ * @LastEditTime: 2025-11-15 18:48:30
  * @Description:
  *
  *
@@ -19,9 +19,16 @@
 #include "AE_REG.H"
 #include "AE_CONFIG.H"
 #include "KERNEL_MEMORY.H"
+#include "CUSTOM_PMC1.H"
+#include "CUSTOM_PMC2.H"
+#include "CUSTOM_PMC3.H"
+#include "CUSTOM_PMC4.H"
+#include "CUSTOM_PMC5.H"
+#include "CUSTOM_GPIO.H"
+
 #define T_Burst_Loop 250
 
-/*-----------------------------------------------------------------------------
+ /*-----------------------------------------------------------------------------
  * CUSTOM SCI/SMI Event Code Define
  *---------------------------------------------------------------------------*/
 #define _SCIEVT_NULL 0x00    // Can't use
@@ -49,7 +56,7 @@
 #define _SCIEVT_SLEEP 0x31
 #define _SCIEVT_LCD 0x32
 
-/*-----------------------------------------------------------------------------
+ /*-----------------------------------------------------------------------------
  * 标志位
  *---------------------------------------------------------------------------*/
 #define PMC_OBF                 0
@@ -59,7 +66,6 @@
 #define BURST_Mode              4
 #define SCI_EVENT               5
 #define SMI_EVENT               6
-
 
 #define PMC1_Int_Enable(type) (PMC1_CTL |= (0x1 << (type)))
 #define PMC2_Int_Enable(type) (PMC2_CTL |= (0x1 << (type)))
@@ -76,9 +82,9 @@
 #define PMC3_Int_Enable_Read(type) ((PMC3_CTL & (0x1 << (type))) != 0)
 #define PMC4_Int_Enable_Read(type) ((PMC4_CTL & (0x1 << (type))) != 0)
 #define PMC5_Int_Enable_Read(type) ((PMC5_CTL & (0x1 << (type))) != 0)
-/*-----------------------------------------------------------------------------
- * Code Parameter
- *---------------------------------------------------------------------------*/
+ /*-----------------------------------------------------------------------------
+  * Code Parameter
+  *---------------------------------------------------------------------------*/
 #define _PM1_STEP_1 1
 #define _PM1_STEP_2 2
 #define _PM1_STEP_3 3
@@ -91,9 +97,9 @@
 #define SCIMode_Pending 0x01
 #define SCIMode_Force 0x02
 #define SCIMode_ACPI_SMBus 0x03
-/*-----------------------------------------------------------------------------
- * External Calling Process
- *---------------------------------------------------------------------------*/
+  /*-----------------------------------------------------------------------------
+   * External Calling Process
+   *---------------------------------------------------------------------------*/
 #define EVENT_BUFFER_SIZE 9
 #define PENDING_BUFFER 8
 
@@ -110,7 +116,7 @@ extern void EC6266_Cmd_83(void);
 extern void EC6266_Cmd_84(void);
 extern void EC_Cmd_8X(void);
 extern void Service_Event_Center(void);
-void SCI_Response(BYTE sci_count);
+extern void SCI_Response(BYTE sci_count);
 extern void SCI_Interrupt(void);
 extern void SMI_Interrupt(void);
 extern void Loop_Delay(BYTE delay);
@@ -133,10 +139,4 @@ extern BYTE Read_Map_ECSPACE_BASE_ADDR(BYTE MapIndex);
 extern void Write_Map_ECSPACE_BASE_ADDR(BYTE MapIndex, BYTE data1);
 extern void SCI_Send(void);
 //-----------------------------------------------------------------------------
-#include "CUSTOM_PMC1.H"
-#include "CUSTOM_PMC2.H"
-#include "CUSTOM_PMC3.H"
-#include "CUSTOM_PMC4.H"
-#include "CUSTOM_PMC5.H"
-#include "CUSTOM_GPIO.H"
 #endif

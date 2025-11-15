@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2025-06-04 17:58:58
  * @Description: GPIO custom configuration
  *
@@ -14,15 +14,15 @@
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
 #include "CUSTOM_GPIO.H"
-/*-----------------------------------------------------------------------------
- * Data Structure
- *---------------------------------------------------------------------------*/
-typedef struct InitGPIOReg{
-    VBYTE *reg;
+ /*-----------------------------------------------------------------------------
+  * Data Structure
+  *---------------------------------------------------------------------------*/
+typedef struct InitGPIOReg {
+    VBYTE* reg;
     BYTE value;
 } sInitGPIOReg;
-typedef struct InitGPIORegXWORD{
-    VDWORD *reg;
+typedef struct InitGPIORegXWORD {
+    VDWORD* reg;
     DWORD value;
 } sInitGPIORegXWORD;
 const sInitGPIOReg InitGPIORegXBYTE[] =
@@ -41,19 +41,16 @@ const sInitGPIOReg InitGPIORegXBYTE[] =
     {&GPIO1_DDR1, PinB8_15_InOut},
     {&GPIO1_DR2, PinB16_23_Init},
     {&GPIO1_DDR2, PinB16_23_InOut},
-
     {&GPIO1_DR3, PinB24_31_Init},
     {&GPIO1_DDR3, PinB24_31_InOut},
     {&GPIO2_DR0, PinC0_7_Init},
     {&GPIO2_DDR0, PinC0_7_InOut},
-
-        {&GPIO2_DR1, PinC8_15_Init},
+    {&GPIO2_DR1, PinC8_15_Init},
     {&GPIO2_DDR1, PinC8_15_InOut},
     {&GPIO2_DR2, PinD0_7_Init},
     {&GPIO2_DDR2, PinD0_7_InOut},
     {&GPIO2_DR3, PinD8_Init},
     {&GPIO2_DDR3, PinD8_InOut},
-
     {&GPIO3_DR0, PinE0_7_Init},
     {&GPIO3_DDR0, PinE0_7_InOut},
     {&GPIO3_DR1, PinE8_15_Init},
@@ -63,7 +60,6 @@ const sInitGPIOReg InitGPIORegXBYTE[] =
 };
 const sInitGPIORegXWORD InitGPIORegXWORD[] =
 {
-
     {&SYSCTL_PIO0_CFG, PinA0_15_IoMux},
     {&SYSCTL_PIO1_CFG, PinA16_31_IoMux},
     {&SYSCTL_PIOA_UPCFG, PinA0_31_PullUp},
@@ -74,16 +70,15 @@ const sInitGPIORegXWORD InitGPIORegXWORD[] =
     {&SYSCTL_PIO5_CFG, PinDE_IoMux},
     {&SYSCTL_PIOCD_UPCFG, PinCD_PullUp},
     {&SYSCTL_PIOE_UPCFG, PinE0_23_PullUp},
-
 };
-typedef struct GetGPIORegInfo{
-    VBYTE *reg;
-    VBYTE *Membase;
+typedef struct GetGPIORegInfo {
+    VBYTE* reg;
+    VBYTE* Membase;
 }sGetGPIORegInfo;
 
-typedef struct GetGPIOMuxInfo{
-    VDWORD *reg;
-    VDWORD *Membase;
+typedef struct GetGPIOMuxInfo {
+    VDWORD* reg;
+    VDWORD* Membase;
 }sGetGPIOMuxInfo;
 sGetGPIORegInfo aGetGPIORegInfo[] =
 {
@@ -130,7 +125,6 @@ sGetGPIOMuxInfo aGetGPIOMuxInfo[] =
     {&SYSCTL_PIOE_UPCFG, &SYSCTL_PIOE_UPCFG_Value},
     {&SYSCTL_PIO4_CFG, &SYSCTL_PIO4_CFG_Value},
     {&SYSCTL_PIO5_CFG, &SYSCTL_PIO5_CFG_Value},
-
 };
 //-----------------------------------------------------------------------------
 // The function of pin register init.
@@ -138,13 +132,13 @@ sGetGPIOMuxInfo aGetGPIOMuxInfo[] =
 void pin_DefaultConfig(void)
 {
     BYTE Index = 0x00;
-    while(Index < (sizeof(InitGPIORegXWORD) / sizeof(sInitGPIORegXWORD)))
+    while (Index < (sizeof(InitGPIORegXWORD) / sizeof(sInitGPIORegXWORD)))
     {
         *InitGPIORegXWORD[Index].reg = InitGPIORegXWORD[Index].value;
         Index++;
     }
     Index = 0x00;
-    while(Index < (sizeof(aGetGPIOMuxInfo) / sizeof(sGetGPIOMuxInfo)))
+    while (Index < (sizeof(aGetGPIOMuxInfo) / sizeof(sGetGPIOMuxInfo)))
     {
         *aGetGPIOMuxInfo[Index].Membase = *aGetGPIOMuxInfo[Index].reg;
         Index++;
@@ -156,13 +150,13 @@ void pin_DefaultConfig(void)
 void gpio_DefaultConfig(void)
 {
     BYTE iTemp = 0x00;
-    while(iTemp < (sizeof(InitGPIORegXBYTE) / sizeof(sInitGPIOReg)))
+    while (iTemp < (sizeof(InitGPIORegXBYTE) / sizeof(sInitGPIOReg)))
     {
         *InitGPIORegXBYTE[iTemp].reg = InitGPIORegXBYTE[iTemp].value;
         iTemp++;
     }
     iTemp = 0x00;
-    while(iTemp < (sizeof(aGetGPIORegInfo) / sizeof(sGetGPIORegInfo)))
+    while (iTemp < (sizeof(aGetGPIORegInfo) / sizeof(sGetGPIORegInfo)))
     {
         *aGetGPIORegInfo[iTemp].Membase = *aGetGPIORegInfo[iTemp].reg;
         iTemp++;

@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-11-15 18:30:40
+ * @LastEditTime: 2025-11-15 18:49:05
  * @Description:
  *
  *
@@ -20,6 +20,10 @@
 #include <AE_CONFIG.H>
 #include <AE_PRINTF.H>
 #include <AE_FUNC.H>
+#include <KERNEL_XLATE.H>
+#include <KERNEL_MEMORY.H>
+#include <KERNEL_GPIO.H>
+
 #define KBD_Int_Enable	(KBS_KSDC1R |= (0x1<<5))
 #define KBD_Int_Disable	(KBS_KSDC1R &= ~(0x1<<5))
 #define KBD_Int_Enable_Read	((KBS_KSDC1R & (0x1<<5)) != 0)
@@ -169,8 +173,6 @@ extern BYTE KBS_Buffer_Input(BYTE   row_column);
 extern BYTE  KBS_Buffer_puts(const BYTE *pntr);
 extern void KBS_Clear_Break(void);
 extern void KBD_Check_Repeat(void);
-#include <KERNEL_XLATE.H>
-#include <KERNEL_MEMORY.H>
-#include <KERNEL_GPIO.H>
+
 //-----------------------------------------------------------------------------
 #endif

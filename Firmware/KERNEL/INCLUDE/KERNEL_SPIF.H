@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2025-10-20 17:41:33
  * @Description:
  *
@@ -21,7 +21,7 @@
 #include "AE_MALLOC.H"
 #include "KERNEL_MEMORY.H"
 
-/*FLASH COMMANDS*/
+ /*FLASH COMMANDS*/
 #define FLASH_ID_CMD 0x90
 #define FLASH_SECT_ERASE_CMD 0x20
 #define FLASH_PAGE_PROGRAM_CMD 0x02
@@ -34,11 +34,13 @@
 #define Spif_Int_Mask (SPIFE_INTMASK &= ~(0x1))
 #define Spif_Int_Unmask (SPIFE_INTMASK |= 0x1)
 #define Spif_Int_Mask_Read ((SPIFE_INTMASK & 0x1) != 0)
+
 extern FUNCT_PTR_V_D_BP_L Spif_Ptr;
 extern BYTE Write_buff[256];
 extern BYTE Read_buff[256];
-extern VBYTE *Tmp_code_pointer;
-extern VBYTE *Tmp_XPntr;
+extern VBYTE* Tmp_code_pointer;
+extern VBYTE* Tmp_XPntr;
+
 extern void SPIFI_Init(void);
 extern void SPIFE_Init(void);
 extern uint32_t SPIFE_READ_ID(void);
@@ -55,5 +57,4 @@ extern ALIGNED(4) void SPIFE_Read(DWORD addr, BYTEP read_buff, WORD length);
 extern void RunSPIFE_WriteFromRAM(DWORD addr, BYTEP write_buff, WORD lentgh);
 extern void RunSPIFE_ReadFromRAM(DWORD addr, BYTEP read_buff, WORD lentgh);
 extern void Smfi_Ram_Code(void);
-extern void Flash_Update_Utility(void);
 #endif

@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2023-11-03 16:40:12
  * @Description:
  *
@@ -48,6 +48,7 @@
 #define SMFSR_EC_IE     HEX08
 #define SMFSR_EC_IR     HEX02
 #define PNPCNST_SETEN   BIT(27)
+
 extern void SMS_Init(VBYTE windows, VBYTE baseaddr, VBYTE aas);
 extern void SMF_Init(void);
 extern void SHAREMEM_PNP(void);

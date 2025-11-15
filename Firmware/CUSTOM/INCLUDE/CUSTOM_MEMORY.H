@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2024-03-07 15:18:41
  * @Description:
  *
@@ -13,15 +13,16 @@
  * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
-//-----------------------------------------------------------------------------
-// Include Definition
-//-----------------------------------------------------------------------------
+ //-----------------------------------------------------------------------------
+ // Include Definition
+ //-----------------------------------------------------------------------------
 #ifndef CUSTOM_MEMORY_H
 #define CUSTOM_MEMORY_H
 #include "AE_GLOBAL.H"
 #include "AE_REG.H"
 #include "AE_CONFIG.H"
 #include "KERNEL_MEMORY.H"
+
 /****************************************************************
 --------------------- MEMORY SECTION 3 --------------------------
 -------------------- EC SPACE DEFINITION ------------------------

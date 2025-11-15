@@ -1,6 +1,6 @@
 /*
  * @Author: Linyu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2025-11-08 16:09:42
  * @Description:
  *
@@ -472,18 +472,18 @@
 
 /****************************************************************************
  * Debug enable
- *****************************************************************************/
+*****************************************************************************/
 #define DEBUG 1                                       // 0:close printf   1:open printf
 #define KBS_DEBUG 0 & DEBUG                           // 0:close printf   1:open printf
 #define KBC_DEBUG 0 & DEBUG                           // 0:close printf   1:open printf
-#define I2C_DEBUG 1 & DEBUG                           // 0:close printf   1:open printf
+#define I2C_DEBUG 0 & DEBUG                           // 0:close printf   1:open printf
 #define IRQC_DEBUG 0 & DEBUG                          // 0:close printf   1:open printf
-#define ANX7447_UCSI_DEBUG 1 & DEBUG &SUPPORT_ANX7447 // 0:close printf   1:open printf
+#define ANX7447_UCSI_DEBUG 0 & DEBUG &SUPPORT_ANX7447 // 0:close printf   1:open printf
 #define I3C_DEBUG 0 & DEBUG                           // 0:close printf   1:open printf
 
- /****************************************************************************
-  * Test enable
-  *****************************************************************************/
+/****************************************************************************
+* Test enable
+*****************************************************************************/
 #define TEST 0  // TEST为1是TEST_MAIN.c测试代码 0为KERNEL_MAIN.c下的主体代码
 
 #endif /* AE_CONFIG_H */

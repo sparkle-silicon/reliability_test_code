@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2025-07-03 18:10:26
  * @Description: Platform battery & battery charger control code
  *
@@ -18,9 +18,9 @@
 #include "KERNEL_MEMORY.H"
 #include "CUSTOM_POWER.H"
 
-/*-----------------------------------------------------------------------------
- * Local Parameter Definition
- *---------------------------------------------------------------------------*/
+ /*-----------------------------------------------------------------------------
+  * Local Parameter Definition
+  *---------------------------------------------------------------------------*/
 BYTE BAT_CtrlStep;
 BYTE BAT_ID_Step;
 BYTE BAT_10MsTCunt;
@@ -69,7 +69,7 @@ const BatteryData BAT_PollingDataTable[] =
 {
 	/*发给电池的命令    电池数据暂存的16位全局变量  电池数据存入ecspace地址*/
 	{BATCmd_RSOC,		&BAT_RSOC,				{&BATTERY_RSOC,NULL}						},
-	{BATCmd_current, 	(VWORD *)&BAT_CURRENT,			{&BATTERY_CURRENT_L,&BATTERY_CURRENT_H}	},
+	{BATCmd_current, 	(VWORD*)&BAT_CURRENT,			{&BATTERY_CURRENT_L,&BATTERY_CURRENT_H}	},
 	{BATCmd_volt, 		&BAT_VOLT,				{&BATTERY_VOL_L,&BATTERY_VOL_H}			},
 	{BATCmd_RMcap, 		&BAT_RCAP,				{&BATTERY_RMCAP_L,&BATTERY_RMCAP_H}		},
 	{BATCmd_BatStatus, 	&BAT_ALARM,			{NULL,NULL}									},
@@ -83,7 +83,6 @@ const BatteryData BAT_PollingDataTable[] =
 	{BATCmd_SerialNo, 	&BAT_SN,				{&BATTERY_SN_L,&BATTERY_SN_H}				},
 	{BATCmd_mode, 		&BAT_MODE,				{NULL,NULL}									},
 };
-
 
 void BAT_Var_Clear(void)
 {
@@ -147,7 +146,7 @@ void ChargerTARSetup(void)
 
 void BAT_ChargePinControl(BYTE enable)
 {
-	if(enable)
+	if (enable)
 	{
 		CE_OFF();
 	}
@@ -180,11 +179,11 @@ VWORD BatteryRead(BYTE addr)
 	BYTE i = 2;
 	word_read temp;
 	BatteryTARSetup();
-	while(I2c_Check_TFE(BAT_I2C_CHANNEL));
+	while (I2c_Check_TFE(BAT_I2C_CHANNEL));
 	SMBUSn_DATA_CMD0(BAT_I2C_CHANNEL) = (I2C_WRITE) | addr;
 	SMBUSn_DATA_CMD0(BAT_I2C_CHANNEL) = I2C_READ;
 	SMBUSn_DATA_CMD0(BAT_I2C_CHANNEL) = I2C_READ | I2C_STOP;
-	while((i--) && (0 == (I2c_Check_RFNE(BAT_I2C_CHANNEL))))
+	while ((i--) && (0 == (I2c_Check_RFNE(BAT_I2C_CHANNEL))))
 	{
 		temp.data0[1 - i] = SMBUSn_DATA_CMD0(BAT_I2C_CHANNEL) & 0xff;
 	}
@@ -196,11 +195,11 @@ VWORD ChargerRead(BYTE addr)
 	BYTE i = 2;
 	word_read temp;
 	ChargerTARSetup();
-	while(I2c_Check_TFE(CHG_I2C_CHANNEL));
+	while (I2c_Check_TFE(CHG_I2C_CHANNEL));
 	SMBUSn_DATA_CMD0(CHG_I2C_CHANNEL) = (I2C_WRITE) | addr;
 	SMBUSn_DATA_CMD0(CHG_I2C_CHANNEL) = I2C_READ;
 	SMBUSn_DATA_CMD0(CHG_I2C_CHANNEL) = I2C_READ | I2C_STOP;
-	while((i--) && (0 == I2c_Check_RFNE(CHG_I2C_CHANNEL)))
+	while ((i--) && (0 == I2c_Check_RFNE(CHG_I2C_CHANNEL)))
 	{
 		temp.data0[1 - i] = SMBUSn_DATA_CMD0(CHG_I2C_CHANNEL) & 0xff;
 	}
@@ -209,10 +208,10 @@ VWORD ChargerRead(BYTE addr)
 
 void Battery_Static_Mode_Judge(void)
 {
-	if((SystemIsS5) && IS_MASK_CLEAR(CTRL_FLAG1, bat_in))
+	if ((SystemIsS5) && IS_MASK_CLEAR(CTRL_FLAG1, bat_in))
 	{
 		noac_1s_cnt++;
-		if(noac_1s_cnt >= 180)
+		if (noac_1s_cnt >= 180)
 		{
 			noac_1s_cnt = 0;
 			Enter_LowPower_Mode();
@@ -233,52 +232,52 @@ void SetBATCtrlStep(BYTE ctrlstep)
 {
 	BAT_CtrlStep = ctrlstep;
 	Charger_TimeOut = 0x00;
-	switch(BAT_CtrlStep)
+	switch (BAT_CtrlStep)
 	{
-		case BAT_Step_ID:
-			SetBATIDTimeOutCNT();
-			BAT_ID_Step = BATID_Step_GetDV;
-			break;
-		case BAT_Step_WC:
-			BATTERY_STATUS1 &= ~(bat_InCharge + bat_Dischg + bat_Full);
-			BATTERY_STATUS2 = 0x00;
-			WakeUpChrCunt = 0x0000;
-			WakeUpChrCunt_Min = 0x00;
-			CLEAR_MASK(BATTERY_STATUS1, bat_valid);
-			PF_CHARGE_FULL_LED_OFF();
-			SET_MASK(BATTERY_STATUS2, bat_WC);
-			break;
-		case BAT_Step_PC:
-			BATTERY_STATUS1 &= ~(bat_InCharge + bat_Dischg + bat_Full);
-			BATTERY_STATUS2 = 0x00;
-			PreChrCunt = 0x0000;
-			PreChrCunt_Min = 0x0000;
-			PF_CHARGE_FULL_LED_OFF();
-			SET_MASK(BATTERY_STATUS2, bat_PC);
-			break;
-		case BAT_Step_NC:
-			BATTERY_STATUS1 &= ~(bat_InCharge + bat_Dischg + bat_Full);
-			BATTERY_STATUS2 = 0x00;
-			NormalChrCunt = 0x0000;
-			NormalChrCunt_Min = 0x0000;
-			NearFullChrCunt = 0;
-			CHARGE_CURRENT_BK = 0x00;
-			CHARGE_VOLTAGE_BK = 0x00;
-			PF_CHARGE_FULL_LED_OFF();
-			SET_MASK(BATTERY_STATUS2, bat_NC);
-			break;
-		case BAT_Step_DC:
-			BATTERY_STATUS1 &= ~(bat_InCharge + bat_Dischg + bat_Full);
-			BATTERY_STATUS2 = 0x00;
-			PF_CHARGE_FULL_LED_OFF();
-			SET_MASK(BATTERY_STATUS2, bat_DC);
-			SET_MASK(BATTERY_STATUS1, bat_Dischg);
-			break;
-		case BAT_Step_FullyChg:
-			BATTERY_STATUS1 &= ~(bat_InCharge + bat_Dischg + bat_Full);
-			SET_MASK(BATTERY_STATUS1, bat_Full);
-			BATTERY_STATUS2 = 0x00;
-			break;
+	case BAT_Step_ID:
+		SetBATIDTimeOutCNT();
+		BAT_ID_Step = BATID_Step_GetDV;
+		break;
+	case BAT_Step_WC:
+		BATTERY_STATUS1 &= ~(bat_InCharge + bat_Dischg + bat_Full);
+		BATTERY_STATUS2 = 0x00;
+		WakeUpChrCunt = 0x0000;
+		WakeUpChrCunt_Min = 0x00;
+		CLEAR_MASK(BATTERY_STATUS1, bat_valid);
+		PF_CHARGE_FULL_LED_OFF();
+		SET_MASK(BATTERY_STATUS2, bat_WC);
+		break;
+	case BAT_Step_PC:
+		BATTERY_STATUS1 &= ~(bat_InCharge + bat_Dischg + bat_Full);
+		BATTERY_STATUS2 = 0x00;
+		PreChrCunt = 0x0000;
+		PreChrCunt_Min = 0x0000;
+		PF_CHARGE_FULL_LED_OFF();
+		SET_MASK(BATTERY_STATUS2, bat_PC);
+		break;
+	case BAT_Step_NC:
+		BATTERY_STATUS1 &= ~(bat_InCharge + bat_Dischg + bat_Full);
+		BATTERY_STATUS2 = 0x00;
+		NormalChrCunt = 0x0000;
+		NormalChrCunt_Min = 0x0000;
+		NearFullChrCunt = 0;
+		CHARGE_CURRENT_BK = 0x00;
+		CHARGE_VOLTAGE_BK = 0x00;
+		PF_CHARGE_FULL_LED_OFF();
+		SET_MASK(BATTERY_STATUS2, bat_NC);
+		break;
+	case BAT_Step_DC:
+		BATTERY_STATUS1 &= ~(bat_InCharge + bat_Dischg + bat_Full);
+		BATTERY_STATUS2 = 0x00;
+		PF_CHARGE_FULL_LED_OFF();
+		SET_MASK(BATTERY_STATUS2, bat_DC);
+		SET_MASK(BATTERY_STATUS1, bat_Dischg);
+		break;
+	case BAT_Step_FullyChg:
+		BATTERY_STATUS1 &= ~(bat_InCharge + bat_Dischg + bat_Full);
+		SET_MASK(BATTERY_STATUS1, bat_Full);
+		BATTERY_STATUS2 = 0x00;
+		break;
 	}
 }
 
@@ -290,13 +289,13 @@ void BAT1_SetFail(BYTE failcause)
 
 void PollingBATInfo(void)
 {
-	if(BAT_PollingIndex < (sizeof(BAT_PollingDataTable) / sizeof(BatteryData)))
+	if (BAT_PollingIndex < (sizeof(BAT_PollingDataTable) / sizeof(BatteryData)))
 	{
-		if((BAT_PollingDataTable[BAT_PollingIndex].Var) != NULL)
+		if ((BAT_PollingDataTable[BAT_PollingIndex].Var) != NULL)
 		{
 			*(BAT_PollingDataTable[BAT_PollingIndex].Var) = BatteryRead(BAT_PollingDataTable[BAT_PollingIndex].Cmd);
 		}
-		if((BAT_PollingDataTable[BAT_PollingIndex].Bat_Ecsapce.Var_L) != NULL)
+		if ((BAT_PollingDataTable[BAT_PollingIndex].Bat_Ecsapce.Var_L) != NULL)
 		{
 			*(BAT_PollingDataTable[BAT_PollingIndex].Bat_Ecsapce.Var_L) = (VBYTE)((*(BAT_PollingDataTable[BAT_PollingIndex].Var)) & 0xff);
 		}
@@ -304,7 +303,7 @@ void PollingBATInfo(void)
 		{
 			//处理空指针的情况
 		}
-		if((BAT_PollingDataTable[BAT_PollingIndex].Bat_Ecsapce.Var_H) != NULL)
+		if ((BAT_PollingDataTable[BAT_PollingIndex].Bat_Ecsapce.Var_H) != NULL)
 		{
 			*(BAT_PollingDataTable[BAT_PollingIndex].Bat_Ecsapce.Var_H) = (VBYTE)(((*(BAT_PollingDataTable[BAT_PollingIndex].Var)) >> 8) & 0xff);
 		}
@@ -313,7 +312,7 @@ void PollingBATInfo(void)
 			//处理空指针的情况
 		}
 		BAT_PollingIndex++;
-		if(BAT_PollingIndex >= (sizeof(BAT_PollingDataTable) / sizeof(BatteryData)))
+		if (BAT_PollingIndex >= (sizeof(BAT_PollingDataTable) / sizeof(BatteryData)))
 		{
 			BAT_PollingIndex = 0;
 			//可做特殊处理例如：BATTERY1_TEMP_H = (VBYTE)(((BAT_TEMP - 2730) >> 8) & 0xFF);
@@ -324,9 +323,9 @@ void PollingBATInfo(void)
 void CheckBatteryProtection(void)
 {
 	WORD voltage;
-	if(IS_MASK_SET(BAT_ALARM, OverTemp_alarm))
+	if (IS_MASK_SET(BAT_ALARM, OverTemp_alarm))
 	{
-		if(++BAT_OTCnt > BatOTTimeOut)
+		if (++BAT_OTCnt > BatOTTimeOut)
 		{
 			BAT1_SetFail(Bat_OverTemperature);
 		}
@@ -336,9 +335,9 @@ void CheckBatteryProtection(void)
 		BAT_OTCnt = 0x00;
 	}
 	voltage = BATTERY_VOL_L;
-	if(voltage > BATOverVoltage)
+	if (voltage > BATOverVoltage)
 	{
-		if(++BAT_OVCnt > BatOVTimeOut)
+		if (++BAT_OVCnt > BatOVTimeOut)
 		{
 			BAT1_SetFail(Bat_OverVoltage);
 		}
@@ -351,21 +350,21 @@ void CheckBatteryProtection(void)
 
 void BATForceStep(void)
 {
-	if(IS_MASK_SET(BATTERY_STATUS3, bat_ForceChg))
+	if (IS_MASK_SET(BATTERY_STATUS3, bat_ForceChg))
 	{
-		if(IS_MASK_SET(CTRL_FLAG1, adapter_in))
+		if (IS_MASK_SET(CTRL_FLAG1, adapter_in))
 		{
-			if(IS_MASK_SET(BATTERY_STATUS1, bat_Dischg))
+			if (IS_MASK_SET(BATTERY_STATUS1, bat_Dischg))
 			{
 				SetBATCtrlStep(BAT_Step_PC);
 			}
 		}
 	}
-	else if(IS_MASK_SET(BATTERY_STATUS3, bat_ForceDischg))
+	else if (IS_MASK_SET(BATTERY_STATUS3, bat_ForceDischg))
 	{
-		if(IS_MASK_SET(CTRL_FLAG1, adapter_in))
+		if (IS_MASK_SET(CTRL_FLAG1, adapter_in))
 		{
-			if(IS_MASK_SET(BATTERY_STATUS1, bat_InCharge))
+			if (IS_MASK_SET(BATTERY_STATUS1, bat_InCharge))
 			{
 				SetBATCtrlStep(BAT_Step_DC);
 			}
@@ -377,15 +376,15 @@ BYTE DisableCharger(void)
 {
 	BYTE result;
 	result = 0x00;
-	if(SmartCharger_Support)
+	if (SmartCharger_Support)
 	{
 		CHARGE_CURRENT = 00;
 		CHARGE_VOLTAGE = 00;
 		INPUT_CURRENT = 00;
-		if(SetSmartCharger() != 0x00)//set charger fail
+		if (SetSmartCharger() != 0x00)//set charger fail
 		{
 			Charger_TimeOut++;
-			if(Charger_TimeOut > ChargerSettingTimeOut)
+			if (Charger_TimeOut > ChargerSettingTimeOut)
 			{
 				SetBATCtrlStep(BAT_Step_ChargerFail);
 			}
@@ -393,9 +392,9 @@ BYTE DisableCharger(void)
 		}
 		else//set charger success
 		{
-			if(IS_MASK_SET(CTRL_FLAG1, adapter_in))
+			if (IS_MASK_SET(CTRL_FLAG1, adapter_in))
 			{
-				if(IS_MASK_SET(BATTERY_STATUS3, bat_ForceDischg))
+				if (IS_MASK_SET(BATTERY_STATUS3, bat_ForceDischg))
 				{
 					BAT_ChargePinControl(0);
 				}
@@ -416,9 +415,9 @@ BYTE DisableCharger(void)
 	}
 	else
 	{
-		if(IS_MASK_SET(CTRL_FLAG1, adapter_in))
+		if (IS_MASK_SET(CTRL_FLAG1, adapter_in))
 		{
-			if(IS_MASK_SET(BATTERY_STATUS3, bat_ForceDischg))
+			if (IS_MASK_SET(BATTERY_STATUS3, bat_ForceDischg))
 			{
 				BAT_ChargePinControl(0);
 			}
@@ -440,35 +439,35 @@ BYTE DisableCharger(void)
 
 void BAT_FullChargeCheck(void)
 {
-	if((BAT_CtrlStep == BAT_Step_PC) || (BAT_CtrlStep == BAT_Step_NC))
+	if ((BAT_CtrlStep == BAT_Step_PC) || (BAT_CtrlStep == BAT_Step_NC))
 	{
-		if(IS_MASK_SET(BAT_ALARM, FullyChg))//FullyChg_alarm
+		if (IS_MASK_SET(BAT_ALARM, FullyChg))//FullyChg_alarm
 		{
-			if(DisableCharger() == 0x01)
+			if (DisableCharger() == 0x01)
 			{
 				SetBATCtrlStep(BAT_Step_FullyChg);
 				PF_CHARGE_FULL_LED_ON();
 				PF_CHARGE_LED_OFF();
 			}
 		}
-		else if(BAT_RSOC >= 95)
+		else if (BAT_RSOC >= 95)
 		{
-			if(BAT_CC == 0)//The charging current required for the battery
+			if (BAT_CC == 0)//The charging current required for the battery
 			{
-				if(DisableCharger() == 0x01)
+				if (DisableCharger() == 0x01)
 				{
 					SetBATCtrlStep(BAT_Step_FullyChg);
 					PF_CHARGE_FULL_LED_ON();
 					PF_CHARGE_LED_OFF();
 				}
 			}
-			else if(BAT_CURRENT < 0x64)//measuring current
+			else if (BAT_CURRENT < 0x64)//measuring current
 			{
 				NearFullChrCunt++;
-				if(NearFullChrCunt == 6000)
+				if (NearFullChrCunt == 6000)
 				{
 					NearFullChrCunt = 0;
-					if(DisableCharger() == 0x01)
+					if (DisableCharger() == 0x01)
 					{
 						SetBATCtrlStep(BAT_Step_FullyChg);
 						PF_CHARGE_FULL_LED_ON();
@@ -486,9 +485,9 @@ void BAT_FullChargeCheck(void)
 
 void BAT_FullDischargeCheck(void)
 {
-	if(BAT_CtrlStep == BAT_Step_DC)
+	if (BAT_CtrlStep == BAT_Step_DC)
 	{
-		if(IS_MASK_SET(BAT_ALARM, FullyDsg))
+		if (IS_MASK_SET(BAT_ALARM, FullyDsg))
 		{
 			SetBATCtrlStep(BAT_Step_FullyDisChg);
 		}
@@ -498,7 +497,7 @@ void BAT_FullDischargeCheck(void)
 void BATIdentifyNextStep(void)
 {
 	BAT_ID_Step++;
-	if(BAT_ID_Step == BATID_Step_FirstData)
+	if (BAT_ID_Step == BATID_Step_FirstData)
 	{
 		BAT_FirstDataIndex = 0x00;
 	}
@@ -517,14 +516,14 @@ void BATID_GetDesignVoltage(void)
 {
 	WORD DVTemp;
 	ByteTemp01 = BatteryRead(BATCmd_DVolt);
-	if(ByteTemp01)
+	if (ByteTemp01)
 	{
 		DVTemp = ByteTemp01;
-		if(DVTemp < 8400)
+		if (DVTemp < 8400)
 		{
 			BAT_SNumber = 0x02;
 		}
-		else if(DVTemp < 12600)
+		else if (DVTemp < 12600)
 		{
 			BAT_SNumber = 0x03;
 		}
@@ -539,7 +538,7 @@ void BATID_GetDesignVoltage(void)
 	else
 	{
 		BAT_ID_TimeOut--;
-		if(BAT_ID_TimeOut == 0x00)
+		if (BAT_ID_TimeOut == 0x00)
 		{
 			SetBATCtrlStep(BAT_Step_WC);
 		}
@@ -557,28 +556,28 @@ void BATID_CheckDeviceName(void)
 	BYTE index = 0;
 	BYTE Temp_Name[20] = { 1 };
 	BYTE i = 0;
-	for(index = 0; index < (sizeof(BatDevNameTable) / sizeof(BatteryDeviceName)); index++)
+	for (index = 0; index < (sizeof(BatDevNameTable) / sizeof(BatteryDeviceName)); index++)
 	{
 		BYTE sLength = strlen(BatDevNameTable[index].DeviceName);
 		BatteryTARSetup();
 		I2c_Master_Read_Block(Temp_Name, sLength, BATCmd_Dname, BAT_I2C_CHANNEL);
-		for(i = 0; i < sLength; i++)
+		for (i = 0; i < sLength; i++)
 		{
-			if(Temp_Name[i] != BatDevNameTable[index].DeviceName[i])
+			if (Temp_Name[i] != BatDevNameTable[index].DeviceName[i])
 			{
 				break;
 			}
 		}
-		if(i == sLength)//match device name
+		if (i == sLength)//match device name
 		{
 			BATIdentifyNextStep();         // next step                  
 			return;
 		}
 	}
-	if(Temp_Name[0] == 0)
+	if (Temp_Name[0] == 0)
 	{
 		BAT_ID_TimeOut--;
-		if(BAT_ID_TimeOut == 0x00)           // time out
+		if (BAT_ID_TimeOut == 0x00)           // time out
 		{
 			dprint("Please check SMBUS settings and connections\n");
 			SetBATCtrlStep(BAT_Step_WC);       // Go to wake up charge
@@ -595,15 +594,15 @@ void BATID_CheckDeviceName(void)
 
 void BATID_GetAllInfo(void)
 {
-	for(BAT_FirstDataIndex = 0; BAT_FirstDataIndex < (sizeof(BAT_PollingDataTable) / sizeof(BatteryData)); BAT_FirstDataIndex++)
+	for (BAT_FirstDataIndex = 0; BAT_FirstDataIndex < (sizeof(BAT_PollingDataTable) / sizeof(BatteryData)); BAT_FirstDataIndex++)
 	{
-		if((BAT_PollingDataTable[BAT_FirstDataIndex].Var) != NULL)
+		if ((BAT_PollingDataTable[BAT_FirstDataIndex].Var) != NULL)
 		{
 			*(BAT_PollingDataTable[BAT_FirstDataIndex].Var) = BatteryRead(BAT_PollingDataTable[BAT_FirstDataIndex].Cmd);
 		}
-		if((BAT_PollingDataTable[BAT_FirstDataIndex].Bat_Ecsapce.Var_L) != NULL)
+		if ((BAT_PollingDataTable[BAT_FirstDataIndex].Bat_Ecsapce.Var_L) != NULL)
 		{
-			if((BAT_PollingDataTable[BAT_FirstDataIndex].Var) != NULL)
+			if ((BAT_PollingDataTable[BAT_FirstDataIndex].Var) != NULL)
 				*(BAT_PollingDataTable[BAT_FirstDataIndex].Bat_Ecsapce.Var_L) = (VBYTE)((*(BAT_PollingDataTable[BAT_FirstDataIndex].Var)) & 0xff);
 			else
 				*(BAT_PollingDataTable[BAT_FirstDataIndex].Bat_Ecsapce.Var_L) = (VBYTE)(BatteryRead(BAT_PollingDataTable[BAT_FirstDataIndex].Cmd) & 0xff);
@@ -612,9 +611,9 @@ void BATID_GetAllInfo(void)
 		{
 			//处理空指针的情况
 		}
-		if((BAT_PollingDataTable[BAT_FirstDataIndex].Bat_Ecsapce.Var_H) != NULL)
+		if ((BAT_PollingDataTable[BAT_FirstDataIndex].Bat_Ecsapce.Var_H) != NULL)
 		{
-			if((BAT_PollingDataTable[BAT_FirstDataIndex].Var) != NULL)
+			if ((BAT_PollingDataTable[BAT_FirstDataIndex].Var) != NULL)
 				*(BAT_PollingDataTable[BAT_FirstDataIndex].Bat_Ecsapce.Var_H) = (VBYTE)(((*(BAT_PollingDataTable[BAT_FirstDataIndex].Var)) >> 8) & 0xff);
 			else
 				*(BAT_PollingDataTable[BAT_FirstDataIndex].Bat_Ecsapce.Var_H) = (VBYTE)(((BatteryRead(BAT_PollingDataTable[BAT_FirstDataIndex].Cmd)) >> 8) & 0xff);
@@ -631,7 +630,7 @@ void BATID_GetAllInfo(void)
 void BATID_InitOK(void)
 {
 	SET_MASK(BATTERY_STATUS1, bat_valid);
-	if(IS_MASK_SET(CTRL_FLAG1, adapter_in))//adapter_in
+	if (IS_MASK_SET(CTRL_FLAG1, adapter_in))//adapter_in
 	{
 		SetBATCtrlStep(BAT_Step_PC);//PreCharge
 	}
@@ -643,39 +642,39 @@ void BATID_InitOK(void)
 
 void IdentifyBAT(void)
 {
-	switch(BAT_ID_Step)
+	switch (BAT_ID_Step)
 	{
-		case BATID_Step_GetDV:
-			BATID_GetDesignVoltage();//Get Design Voltage
-			break;
-		case BATID_Step_Auth:
-			BATID_CheckBatAuth();//Reserved for checking battery authentication 
-			break;
-		case BATID_Step_MFName:
-			BATID_CheckDeviceName();//Reserved for checking device name
-			break;
-		case BATID_Step_FirstData:
-			BATID_GetAllInfo();
-			break;
-		case BATID_Step_InitOK:
-			BATID_InitOK();
-			break;
-		default:
-			break;
+	case BATID_Step_GetDV:
+		BATID_GetDesignVoltage();//Get Design Voltage
+		break;
+	case BATID_Step_Auth:
+		BATID_CheckBatAuth();//Reserved for checking battery authentication 
+		break;
+	case BATID_Step_MFName:
+		BATID_CheckDeviceName();//Reserved for checking device name
+		break;
+	case BATID_Step_FirstData:
+		BATID_GetAllInfo();
+		break;
+	case BATID_Step_InitOK:
+		BATID_InitOK();
+		break;
+	default:
+		break;
 	}
 }
 
 void BAT_SetWakeUpCharge(void)
 {
-	if(SmartCharger_Support)
+	if (SmartCharger_Support)
 	{
 		CHARGE_CURRENT = BAT_CURR_WUCHG;
 		CHARGE_VOLTAGE = BAT_VOLT_WUCHG;
 		INPUT_CURRENT = IN_CURRENT;
-		if(SetSmartCharger() != 0x00)//set charger fail
+		if (SetSmartCharger() != 0x00)//set charger fail
 		{
 			Charger_TimeOut++;
-			if(Charger_TimeOut > ChargerSettingTimeOut)
+			if (Charger_TimeOut > ChargerSettingTimeOut)
 			{
 				SetBATCtrlStep(BAT_Step_ChargerFail);
 			}
@@ -698,29 +697,29 @@ void BAT_SetWakeUpCharge(void)
 
 void BATWakeUpCharge(void)
 {
-	if(IS_MASK_SET(CTRL_FLAG1, adapter_in))
+	if (IS_MASK_SET(CTRL_FLAG1, adapter_in))
 	{
-		if(IS_MASK_CLEAR(BATTERY_STATUS2, bat_WC_OK))
+		if (IS_MASK_CLEAR(BATTERY_STATUS2, bat_WC_OK))
 		{
 			BAT_SetWakeUpCharge();
 		}
 		else										//check if it is possible to stop wake-up charging
 		{
 			WakeUpChrCunt++;
-			if((WakeUpChrCunt % 6000) == 0)//1min
+			if ((WakeUpChrCunt % 6000) == 0)//1min
 			{
 				BAT_SetWakeUpCharge();
 				WakeUpChrCunt = 0x0000;
 				WakeUpChrCunt_Min++;
-				if(WakeUpChrCunt_Min > BatWCTimeOut)
+				if (WakeUpChrCunt_Min > BatWCTimeOut)
 				{
 					BAT1_SetFail(Bat_WakeUpChargeFail);
 				}
 			}
-			else if((WakeUpChrCunt % 600) == 0)//6s
+			else if ((WakeUpChrCunt % 600) == 0)//6s
 			{
 				BAT_RCAP = BatteryRead(BATCmd_RMcap);
-				if(BAT_RCAP != 0)//If SMBUS communication is successful, there is no need to perform wake-up charging
+				if (BAT_RCAP != 0)//If SMBUS communication is successful, there is no need to perform wake-up charging
 				{
 					SetBATCtrlStep(BAT_Step_ID);
 				}
@@ -736,16 +735,16 @@ void BATWakeUpCharge(void)
 
 void BAT_SetPreCharge(void)
 {
-	if(SmartCharger_Support)
+	if (SmartCharger_Support)
 	{
 		PF_CHARGE_LED_ON();
 		CHARGE_CURRENT = BAT_CURR_PRECHG;
 		CHARGE_VOLTAGE = BAT_VOLT_PRECHG;
 		INPUT_CURRENT = IN_CURRENT;
-		if(SetSmartCharger() != 0x00)
+		if (SetSmartCharger() != 0x00)
 		{
 			Charger_TimeOut++;
-			if(Charger_TimeOut > ChargerSettingTimeOut)
+			if (Charger_TimeOut > ChargerSettingTimeOut)
 			{
 				SetBATCtrlStep(BAT_Step_ChargerFail);
 			}
@@ -769,9 +768,9 @@ void BAT_SetPreCharge(void)
 void BAT_PreCharge(void)
 {
 	WORD cctemp;
-	if(IS_MASK_SET(CTRL_FLAG1, adapter_in))
+	if (IS_MASK_SET(CTRL_FLAG1, adapter_in))
 	{
-		if(IS_MASK_CLEAR(BATTERY_STATUS2, bat_PC_OK))//Perform pre charging
+		if (IS_MASK_CLEAR(BATTERY_STATUS2, bat_PC_OK))//Perform pre charging
 		{
 			PreChrCunt = 0x00;
 			BAT_SetPreCharge();
@@ -779,20 +778,20 @@ void BAT_PreCharge(void)
 		else//Check if it is possible to stop pre charging
 		{
 			PreChrCunt++;
-			if((PreChrCunt % 6000) == 0)//1min
+			if ((PreChrCunt % 6000) == 0)//1min
 			{
 				BAT_SetPreCharge();
 				PreChrCunt = 0x0000;
 				PreChrCunt_Min++;
-				if(PreChrCunt_Min > BatPCTimeOut)
+				if (PreChrCunt_Min > BatPCTimeOut)
 				{
 					BAT1_SetFail(Bat_PreChargeFail);
 				}
 			}
-			else if((PreChrCunt % 600) == 0)
+			else if ((PreChrCunt % 600) == 0)
 			{
 				cctemp = BAT_CC;
-				if(cctemp > Bat1_PC2NC_Cap)
+				if (cctemp > Bat1_PC2NC_Cap)
 				{
 					SetBATCtrlStep(BAT_Step_NC);
 				}
@@ -808,7 +807,7 @@ void BAT_PreCharge(void)
 void BAT_SetNormalCharge(void)
 {
 	WORD CC_temp;
-	if(SmartCharger_Support)
+	if (SmartCharger_Support)
 	{
 		PF_CHARGE_LED_ON();
 		CC_temp = BAT_CC;
@@ -816,10 +815,10 @@ void BAT_SetNormalCharge(void)
 		CHARGE_CURRENT = CC_temp;
 		CHARGE_VOLTAGE = BAT_CV;
 		INPUT_CURRENT = IN_CURRENT;
-		if(SetSmartCharger() != 0x00)
+		if (SetSmartCharger() != 0x00)
 		{
 			Charger_TimeOut++;
-			if(Charger_TimeOut > ChargerSettingTimeOut)
+			if (Charger_TimeOut > ChargerSettingTimeOut)
 			{
 				SetBATCtrlStep(BAT_Step_ChargerFail);
 			}
@@ -842,9 +841,9 @@ void BAT_SetNormalCharge(void)
 
 void BAT_NormalCharge(void)
 {
-	if(IS_MASK_SET(CTRL_FLAG1, adapter_in))
+	if (IS_MASK_SET(CTRL_FLAG1, adapter_in))
 	{
-		if(IS_MASK_CLEAR(BATTERY_STATUS2, bat_NC_OK))
+		if (IS_MASK_CLEAR(BATTERY_STATUS2, bat_NC_OK))
 		{
 			CHARGE_CURRENT_BK = BAT_CC;
 			NormalChrCunt = 0x0000;
@@ -853,17 +852,17 @@ void BAT_NormalCharge(void)
 		else
 		{
 			NormalChrCunt++;
-			if(CHARGE_CURRENT_BK != BAT_CC)//Update charging current, etc
+			if (CHARGE_CURRENT_BK != BAT_CC)//Update charging current, etc
 			{
 				CHARGE_CURRENT_BK = BAT_CC;
 				BAT_SetNormalCharge();
 			}
 			else
 			{
-				if((NormalChrCunt % 6000) == 0)//1min
+				if ((NormalChrCunt % 6000) == 0)//1min
 				{
 					NormalChrCunt_Min++;
-					if(NormalChrCunt_Min > BatNCTimeOut)//20h
+					if (NormalChrCunt_Min > BatNCTimeOut)//20h
 					{
 						BAT1_SetFail(Bat_NormalChargeFail);
 					}
@@ -881,11 +880,11 @@ void BAT_NormalCharge(void)
 
 void BATDisCharge(void)
 {
-	if(IS_MASK_SET(CTRL_FLAG1, adapter_in))
+	if (IS_MASK_SET(CTRL_FLAG1, adapter_in))
 	{
-		if(IS_MASK_SET(BATTERY_STATUS3, bat_ForceDischg))
+		if (IS_MASK_SET(BATTERY_STATUS3, bat_ForceDischg))
 		{
-			if(IS_MASK_CLEAR(BATTERY_STATUS2, bat_DC_OK))
+			if (IS_MASK_CLEAR(BATTERY_STATUS2, bat_DC_OK))
 			{
 				DisableCharger();
 			}
@@ -897,7 +896,7 @@ void BATDisCharge(void)
 	}
 	else
 	{
-		if(IS_MASK_CLEAR(BATTERY_STATUS2, bat_DC_OK))
+		if (IS_MASK_CLEAR(BATTERY_STATUS2, bat_DC_OK))
 		{
 			DisableCharger();
 		}
@@ -906,7 +905,7 @@ void BATDisCharge(void)
 
 void BATFullyCharged(void)
 {
-	if(IS_MASK_CLEAR(CTRL_FLAG1, adapter_in))
+	if (IS_MASK_CLEAR(CTRL_FLAG1, adapter_in))
 	{
 		SetBATCtrlStep(BAT_Step_DC);
 	}
@@ -914,7 +913,7 @@ void BATFullyCharged(void)
 
 void BATFullyDisharged(void)
 {
-	if(IS_MASK_SET(CTRL_FLAG1, adapter_in))
+	if (IS_MASK_SET(CTRL_FLAG1, adapter_in))
 	{
 		SetBATCtrlStep(BAT_Step_WC);
 	}
@@ -926,7 +925,7 @@ void BATFullyDisharged(void)
 
 void BATSetFail(void)
 {
-	if(DisableCharger() == 0x01)
+	if (DisableCharger() == 0x01)
 	{
 		BAT_Var_Clear();
 		SetBATCtrlStep(BAT_Step_Fail);
@@ -934,34 +933,37 @@ void BATSetFail(void)
 }
 
 void BATForceDischarge(void)
-{}
+{
+}
 
 void BATForceCharge(void)
-{}
+{
+}
 
 void BATAutoLearning(void)
-{}
+{
+}
 
 //Call once every 10 ms 
 void BatChgControlCenter(void)
 {
-	if(IS_MASK_CLEAR(CTRL_FLAG1, bat_in))//Battery not connected
+	if (IS_MASK_CLEAR(CTRL_FLAG1, bat_in))//Battery not connected
 	{
 		PF_CHARGE_LED_OFF();
 		PF_CHARGE_FULL_LED_OFF();
 		return;
 	}
-	if(IS_MASK_SET(BATTERY_STATUS1, bat_valid))//Battery valid
+	if (IS_MASK_SET(BATTERY_STATUS1, bat_valid))//Battery valid
 	{
 		BAT_10MsTCunt++;
-		if((BAT_10MsTCunt > 100))//1 Sec Timer
+		if ((BAT_10MsTCunt > 100))//1 Sec Timer
 		{
 			BAT_10MsTCunt = 0;
 			PollingBATInfo();		//Polling Battery Data
 			CheckBatteryProtection();		//Battery Protection
 		}
 		BATForceStep();			//Determine whether forced charging and discharging are necessary
-		if(IS_MASK_SET(CTRL_FLAG1, adapter_in))//Adapter in
+		if (IS_MASK_SET(CTRL_FLAG1, adapter_in))//Adapter in
 		{
 			BAT_FullChargeCheck();//Check if battery is fully charged
 		}
@@ -970,49 +972,49 @@ void BatChgControlCenter(void)
 			BAT_FullDischargeCheck();//Check if battery is fully discharged
 		}
 	}
-	switch(BAT_CtrlStep)
+	switch (BAT_CtrlStep)
 	{
-		case BAT_Step_ID:
-			IdentifyBAT();
-			break;
-		case BAT_Step_WC:
-			BATWakeUpCharge();
-			break;
-		case BAT_Step_PC:
-			BAT_PreCharge();
-			break;
-		case BAT_Step_NC:
-			BAT_NormalCharge();
-			break;
-		case BAT_Step_DC:
-			BATDisCharge();
-			break;
-		case BAT_Step_FullyChg:
-			BATFullyCharged();
-			break;
-		case BAT_Step_FullyDisChg:
-			BATFullyDisharged();
-			break;
-		case BAT_Step_SetFail:
-			BATSetFail();
-			break;
-		case BAT_Step_Fail:
-			break;
-		case BAT_Step_ForceDC:
-			BATForceDischarge();
-			break;
-		case BAT_Step_ForceC:
-			BATForceCharge();
-			break;
-		case BAT_Step_AutoLN:
-			BATAutoLearning();
-			break;
-		case BAT_Step_ChargerFail:
-			break;
-		case BAT_Step_Out:
-			break;
-		default:
-			break;
+	case BAT_Step_ID:
+		IdentifyBAT();
+		break;
+	case BAT_Step_WC:
+		BATWakeUpCharge();
+		break;
+	case BAT_Step_PC:
+		BAT_PreCharge();
+		break;
+	case BAT_Step_NC:
+		BAT_NormalCharge();
+		break;
+	case BAT_Step_DC:
+		BATDisCharge();
+		break;
+	case BAT_Step_FullyChg:
+		BATFullyCharged();
+		break;
+	case BAT_Step_FullyDisChg:
+		BATFullyDisharged();
+		break;
+	case BAT_Step_SetFail:
+		BATSetFail();
+		break;
+	case BAT_Step_Fail:
+		break;
+	case BAT_Step_ForceDC:
+		BATForceDischarge();
+		break;
+	case BAT_Step_ForceC:
+		BATForceCharge();
+		break;
+	case BAT_Step_AutoLN:
+		BATAutoLearning();
+		break;
+	case BAT_Step_ChargerFail:
+		break;
+	case BAT_Step_Out:
+		break;
+	default:
+		break;
 	}
 }
 

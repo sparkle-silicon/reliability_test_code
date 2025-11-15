@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2025-10-18 21:03:05
  * @Description:
  *
@@ -423,7 +423,7 @@ extern BYTE I3C_Legacy_Master_Write(uint8_t static_addr, uint8_t* data, uint16_t
 extern uint8_t I3C_Legacy_Master_Read(uint8_t static_addr, uint8_t* data, uint16_t bytelen, BYTE i3c_mux);
 extern BYTE I3C_Legacy_Master_W2R_Stream(BYTE static_addr, BYTE* w_var, WORD w_cnt, BYTE* r_var, WORD r_cnt, BYTE i3c_mux);
 extern BYTE I3C_MASTER_ENTDAA(sDEV_CHAR_TABLE* dct, BYTE* dynamic_addr, BYTE i3c_mux);
-extern BYTE I3C_MASTER_SETDASA(BYTE static_addr, BYTE dynamic_addr, BYTE i3c_mux);
+// extern BYTE I3C_MASTER_SETDASA(BYTE static_addr, BYTE dynamic_addr, BYTE i3c_mux);
 extern BYTE I3C_MASTER_BC_CCC_WRITE(uint8_t* data, uint16_t bytelen, BYTE cmd, uint8_t dbp, uint8_t db, BYTE i3c_mux);
 extern BYTE I3C_MASTER_DR_CCC_WRITE(uint8_t static_addr, uint8_t* data, uint16_t bytelen, BYTE cmd, uint8_t dbp, uint8_t db, BYTE i3c_mux);
 extern BYTE I3C_MASTER_DR_CCC_READ(uint8_t static_addr, uint8_t* data, uint16_t bytelen, BYTE cmd, uint8_t dbp, uint8_t db, BYTE i3c_mux);

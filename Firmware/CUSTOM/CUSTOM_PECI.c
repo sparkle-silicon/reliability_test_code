@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2025-09-12 15:04:50
  * @Description: This is about the  national crypto algorithm implementation
  *
@@ -13,7 +13,6 @@
  * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
-
 #include "KERNEL_PECI.H"
 #include "CUSTOM_PECI.H"
 #include "CUSTOM_GPIO.H"

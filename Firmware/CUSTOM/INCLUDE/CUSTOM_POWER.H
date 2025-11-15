@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2024-02-23 16:50:43
  * @Description:
  *
@@ -21,9 +21,9 @@
 #include "KERNEL_PORT6064.H"
 #include "KERNEL_PNP.H"
 #include "KERNEL_GPIO.H"
-//-----------------------------------------------------------------------------
-// Define
-//-----------------------------------------------------------------------------
+ //-----------------------------------------------------------------------------
+ // Define
+ //-----------------------------------------------------------------------------
 #define SYSTEM_S0 0x10
 #define SYSTEM_S3 0x33
 #define SYSTEM_S4 0x44
@@ -70,6 +70,21 @@
 //-----------------------------------------------------------------------------
 #define Wait_Time 500
 #define Wait_until_Correct 0
+
+typedef struct PowerSEQ
+{
+	FUNCT_PTR_B_V func; // Do step function
+	WORD delay;			// delay time (ms)
+	BYTE checkstatus;	// step function is check pin status (EX: slp_s3 HWPG ...)
+} sPowerSEQ;
+typedef struct PowSeq_Pin_Record
+{
+	BYTE pin_group : 3;
+	BYTE pin_location : 5;
+	BYTE pin_level : 1;
+	WORD pin_delay;
+} sPowSeq_Pin_Record;
+
 //-----------------------------------------------------------------------------
 // Function prototype
 //-----------------------------------------------------------------------------
@@ -112,17 +127,5 @@ extern BYTE PF_CHARGE_FULL_LED_ON(void);
 extern BYTE PF_CHARGE_FULL_LED_OFF(void);
 extern void PowerChange_Var_Clear(void);
 extern void Hook_EC_ACK_eSPI_Reset(void);
-typedef struct PowerSEQ
-{
-	FUNCT_PTR_B_V func; // Do step function
-	WORD delay;			// delay time (ms)
-	BYTE checkstatus;	// step function is check pin status (EX: slp_s3 HWPG ...)
-} sPowerSEQ;
-typedef struct PowSeq_Pin_Record
-{
-	BYTE pin_group : 3;
-	BYTE pin_location : 5;
-	BYTE pin_level : 1;
-	WORD pin_delay;
-} sPowSeq_Pin_Record;
+
 #endif
