@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2025-10-18 20:25:13
  * @Description:
  *
@@ -20,6 +20,8 @@
 #include "AE_CONFIG.H"
 #include "AE_FUNC.H"
 #include "KERNEL_MEMORY.H"
+#include "CUSTOM_GPIO.H"
+
  /*AE_API_GPIO_H*/
 #define OutputMode_High			0x01
 #define OutputMode_Inverse      0x02
@@ -364,5 +366,5 @@ extern void sysctl_mod_disable(DWORD module);
 extern void GPIO_Input_EN(int GPIO, int gpio_no, char sw);
 extern char GPIOAutoTest(void);
 char ReadGPIOLevel(BYTE port, BYTE pin);
-#include "CUSTOM_GPIO.H"
+
 #endif /* _NUCLEI_GPIO_H */

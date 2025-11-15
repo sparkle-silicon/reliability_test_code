@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2023-12-07 11:26:33
  * @Description:
  *
@@ -19,6 +19,9 @@
 #include <AE_REG.H>
 #include <AE_CONFIG.H>
 #include <KERNEL_KBS.H>
+#include <CUSTOM_SCANTABS.H>
+#include <KERNEL_PORT6064.H>
+
 #define NUM_LOCK 	(BIT0)
 #define LShift    	(BIT1)
 #define RShift   	(BIT2)
@@ -56,7 +59,6 @@ extern  void HotKey_Fn_Function(BYTE  code_byte, BYTE  event);
 extern void SetServiceSendFlag(void);
 extern void Clear_FnKeys(void);
 extern  BYTE  Get_Comb_Index(BYTE  comb, BYTE  table_entry, BYTE  event);
-#include <CUSTOM_SCANTABS.H>
 //-----------------------------------------------------------------------------
-#include "KERNEL_PORT6064.H"
+
 #endif

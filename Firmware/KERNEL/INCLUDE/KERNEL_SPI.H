@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2025-11-09 22:16:12
  * @Description:
  *
@@ -18,7 +18,7 @@
 #include "AE_GLOBAL.H"
 #include "AE_REG.H"
 #include "AE_CONFIG.H"
-/*********************************SPIM CONFIG CLOCK*********************************/
+ /*********************************SPIM CONFIG CLOCK*********************************/
 #define SPIM_CLOCK  (HIGH_CHIP_CLOCK / (SYSCTL_CLKDIV_SPIM+1)) 
 #define SPIM_DEFAULT_TIMEOUT 1000000 //(SPIM_CLOCK/(SPIM_CPSR+1)*32) // SPI超时时间
 /*********************************SPIM REGISTER DEFINE*********************************/
@@ -236,6 +236,11 @@
 
 #define SPI_FLASH_SR_QE		(SPI_FLASH_SR2_QE<<8)	//  QUAD ENABLE
 
+#define Spim_Int_Mask(type)			(SPIM_IMSR &= ~(0x1<<type))
+#define Spim_Int_Unmask(type)		(SPIM_IMSR |= (0x1<<type))
+#define	Spim_Int_Mask_Read(type)	((SPIM_IMSR & (0x1<<type)) == 0)
+#define Spim_Int_Status(type)		((SPIM_ISR & (0x1<<type)) != 0)
+
 //SPIM初始化
 extern void SPIM_Init(BYTE mode, BYTE cpha, BYTE cpol, BYTE dly, BYTE dssp, BYTE lsb, BYTE cpsr, BYTE sampdelay);
 extern void SPIM_DMA_Enable(BYTE wr_en, BYTE rd_en);
@@ -256,13 +261,13 @@ extern int32_t SPIM_CHIP_Select(uint8_t cs_select);
 extern int32_t SPIM_Wait_Busy(void);
 extern int32_t SPIM_Wait_Send(void);
 extern int32_t SPIM_Send_Data(uint16_t send_data);
-extern int32_t SPIM_Send_Datas(uint16_t *data, uint32_t len);
+extern int32_t SPIM_Send_Datas(uint16_t* data, uint32_t len);
 extern uint32_t SPIM_Receive_Data(void);
-extern int32_t SPIM_Receive_Datas(uint16_t *data, uint32_t len);
+extern int32_t SPIM_Receive_Datas(uint16_t* data, uint32_t len);
 extern uint32_t SPIM_Send_Receive_OnceData(uint16_t data);
-extern int32_t SPIM_Send_Receive_Datas(uint16_t *send, uint16_t *receive, uint32_t len);
+extern int32_t SPIM_Send_Receive_Datas(uint16_t* send, uint16_t* receive, uint32_t len);
 extern uint32_t SPIM_Only_Receive_OnceData(void);
-extern int32_t SPIM_Only_Receive_Datas(uint16_t *receive, uint32_t len);
+extern int32_t SPIM_Only_Receive_Datas(uint16_t* receive, uint32_t len);
 //SPIM-FLASH操作DEMO
 extern uint8_t SPIM_FLASH_Busy(uint8_t mode, uint8_t cs_select);
 extern int32_t SPIM_FLASH_WaitBusy(uint8_t mode, uint8_t cs_select);
@@ -271,11 +276,8 @@ extern void SPIM_FLASH_Wirte_Status(uint8_t mode, uint16_t data, uint8_t cs_sele
 extern void SPIM_Write_Enable(uint8_t mode, uint8_t cs_select);
 extern void SPIM_Write_Disable(uint8_t mode, uint8_t cs_select);
 extern uint32_t SPIM_Read_FLASH_ID(uint8_t mode, uint8_t cs_select);
-extern int32_t SPIM_Read_FLASH(uint8_t mode, uint8_t cs_select, uint32_t address, uint16_t bytes, uint16_t *data);
-extern int32_t SPIM_Write_FLASH(uint8_t mode, uint8_t cs_select, uint32_t addr, uint32_t bytes, uint16_t *data);
+extern int32_t SPIM_Read_FLASH(uint8_t mode, uint8_t cs_select, uint32_t address, uint16_t bytes, uint16_t* data);
+extern int32_t SPIM_Write_FLASH(uint8_t mode, uint8_t cs_select, uint32_t addr, uint32_t bytes, uint16_t* data);
 extern int32_t SPIM_Erase_FLASH(uint8_t mode, uint8_t cs_select, uint8_t cmd, uint32_t address);
-#define Spim_Int_Mask(type)			(SPIM_IMSR &= ~(0x1<<type))
-#define Spim_Int_Unmask(type)		(SPIM_IMSR |= (0x1<<type))
-#define	Spim_Int_Mask_Read(type)	((SPIM_IMSR & (0x1<<type)) == 0)
-#define Spim_Int_Status(type)		((SPIM_ISR & (0x1<<type)) != 0)
+
 #endif /* _SPI_FLASH_H_ */

@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2025-10-21 17:37:47
  * @Description:
  *
@@ -21,9 +21,9 @@
 
 #define PS2_CLOCK  (HIGH_CHIP_CLOCK / (SYSCTL_CLKDIV_PS2+1)) 
 #define PS2_WaitTime 3000
-//-----------------------------------------------------------------------------
-// PS2 CMD WORD
-//-----------------------------------------------------------------------------
+ //-----------------------------------------------------------------------------
+ // PS2 CMD WORD
+ //-----------------------------------------------------------------------------
 #define PS2M_CHANNEL 0
 #define PS2K_CHANNEL 1
 #define PS2_0_CHANNEL PS2M_CHANNEL
@@ -125,13 +125,13 @@
 /* KBD_MODE_MOUSE_INT 0x02 Mouse data generate */
 /* KBD_MODE_KBD_INT 0x01   kbd data generate  */
 extern VBYTE PS2_PortN_Data[];
-extern VBYTE *KBDataPending;
-extern VBYTE *MSDataPending;
+extern VBYTE* KBDataPending;
+extern VBYTE* MSDataPending;
+
 extern BYTE Handle_Kbd_Event(BYTE channel);
 extern BYTE Handle_Mouse_Event(BYTE channel);
 extern void Handle_Mouse(BYTE channel);
 extern BYTE PS2_DevScan(void);
-
 extern void MS_Data_Suspend(BYTE nPending);  // zb 11.8 add
 extern void Send_Cmd_To_PS2_Mouse(BYTE PortNum);
 extern void Send_Data_To_PS2(BYTE PortNum, BYTE PortData);

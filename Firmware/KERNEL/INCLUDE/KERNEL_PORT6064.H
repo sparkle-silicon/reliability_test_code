@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2023-11-03 12:01:25
  * @Description:
  *
@@ -21,6 +21,8 @@
 #include "AE_FUNC.H"
 #include "KERNEL_HOST.H"
 #include "KERNEL_PS2.H"
+#include "CUSTOM_KBC6064.H"
+
 #define KBC_CTL_OBFKIE                          HEX01
 #define KBC_CTL_OBFMIE                          HEX02
 #define KBC_CTL_OBEIE                           HEX04
@@ -81,6 +83,4 @@ extern void KBC_Variable_Clear(void);
  * Internal Process Prototype
  *---------------------------------------------------------------------------*/
 
- //-----------------------------------------------------------------------------
-#include "CUSTOM_KBC6064.H"
 #endif

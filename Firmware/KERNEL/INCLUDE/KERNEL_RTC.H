@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2024-01-25 17:02:33
  * @Description:
  *
@@ -20,7 +20,7 @@
 #include "AE_REG.H"    //寄存器
 #include "AE_CONFIG.H"
 
-// //如果开了预分频计数器，则会预分频跑到
+ // //如果开了预分频计数器，则会预分频跑到
 #define RTC_CCR_IEN BIT0//中断使能
 #define RTC_CCR_MASK BIT1//中断屏蔽
 #define RTC_CCR_EN BIT2//计数器使能
@@ -32,7 +32,6 @@ extern void Set_RTC_LoadVal(u32 count);
 extern void Set_RTC_PreScaler(u32 count);
 extern u32 Get_RTC_PrescalerCountVal(void);
 extern u32 Get_RTC_Status(void);
-
 extern void RTC_Deep_Sleep_Test(u32 sleep_time);
 extern void RTC_Init(u32 loadcnt, u32 match, u32 prescaler);
 #endif

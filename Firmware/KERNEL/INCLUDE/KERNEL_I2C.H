@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2025-10-18 20:56:44
  * @Description:
  *
@@ -19,6 +19,7 @@
 #include "AE_REG.H"
 #include "AE_CONFIG.H"
 #include "AE_DEBUGGER.H"
+
 #define I2C_STANDARD 0
 #define I2C_FAST 1
 #define I2C_HIGH 2
@@ -191,7 +192,6 @@ extern BYTE  I2c_Int_Mask_Read(BYTE  channel, BYTE  type);
 extern BYTE  I2c_Int_Status(BYTE  channel, BYTE  type);
 extern BYTE I2c_Master_Read_Byte(BYTE reg, WORD i2c_channel);
 extern BYTE I2cM_Read_Byte(BYTE i2c_addr, BYTE reg, WORD i2c_channel);
-
 extern int i2c_dw_read_clear_intrbits(WORD baseaddr);
 extern uint8_t I2c_Readb(WORD regoffset, WORD i2c_channel);
 extern char I2c_Check_TXE(WORD i2c_channel);

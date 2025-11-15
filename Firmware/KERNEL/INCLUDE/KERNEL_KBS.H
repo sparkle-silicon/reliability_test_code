@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2023-12-08 18:48:13
  * @Description:
  *
@@ -20,6 +20,10 @@
 #include <AE_CONFIG.H>
 #include <AE_PRINTF.H>
 #include <AE_FUNC.H>
+#include <KERNEL_XLATE.H>
+#include <KERNEL_MEMORY.H>
+#include <KERNEL_GPIO.H>
+
 #define KBD_Int_Enable	(KBS_KSDC1R |= (0x1<<5))
 #define KBD_Int_Disable	(KBS_KSDC1R &= ~(0x1<<5))
 #define KBD_Int_Enable_Read	((KBS_KSDC1R & (0x1<<5)) != 0)
@@ -170,8 +174,6 @@ extern BYTE  KBS_Buffer_puts(const BYTE* pntr);
 extern void KBD_Default_Typematic(void);
 extern void KBS_Clear_Break(void);
 extern void KBD_Check_Repeat(void);
-#include <KERNEL_XLATE.H>
-#include <KERNEL_MEMORY.H>
-#include <KERNEL_GPIO.H>
+
 //-----------------------------------------------------------------------------
 #endif

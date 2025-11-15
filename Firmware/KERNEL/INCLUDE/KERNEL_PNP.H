@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2023-09-20 18:23:10
  * @Description: This file is used for setting logical device relevant configuration
  *
@@ -21,7 +21,7 @@
 #include "KERNEL_MEMORY.H"
 
 #define PNP_Timeout 5000
-/*--------------------PNP bit definition-----------------*/
+ /*--------------------PNP bit definition-----------------*/
 #define E2PNP_RDY       0x1
 #define E2PNP_REQ       0x2
 #define EFIR_2E         0x2e000000
@@ -78,6 +78,7 @@
 #define HOST_CAN2_EN BIT(28)
 #define HOST_CAN3_EN BIT(29)
 #define HOST_CANx_EN (HOST_CAN0_EN | HOST_CAN1_EN | HOST_CAN2_EN | HOST_CAN3_EN)
+
 extern void Config_PNP_Access_Request(void);
 extern void Config_PNP_Access_Release(void);
 extern void Config_PNP_Write(BYTE idx, BYTE ldn, BYTE data);

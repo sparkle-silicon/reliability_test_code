@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2025-10-24 11:08:58
  * @Description:
  *
@@ -21,9 +21,9 @@
 #include "AE_CONFIG.H"
 #define MAX_TASK_COUNT 12  //最大任务数
 #define MAX_TASK_TIMEOUT 61 //设置超时时间至少（MAX_TASK_TIMEOUT-1）秒
-typedef void (*TaskFunction)(void *); // 定义任务函数类型，接受参数
+typedef void (*TaskFunction)(void*); // 定义任务函数类型，接受参数
 // 定义一个结构体来封装多个参数
-typedef struct{
+typedef struct {
     DWORD E2C_INFO1;
     DWORD E2C_INFO2;
     DWORD E2C_INFO3;
@@ -33,12 +33,12 @@ typedef struct{
     DWORD E2C_INFO7;
 } TaskParams;
 
-typedef struct Task{
+typedef struct Task {
     TaskFunction function; // 任务函数指针
     TaskParams params;     // 任务参数
-    struct Task *next;     // 指向下一个任务
+    struct Task* next;     // 指向下一个任务
 } Task;
-extern Task *task_head; // 任务链表头
+extern Task* task_head; // 任务链表头
 extern volatile bool command_processed;
 
 //设置宏过程，便携阅读
@@ -201,8 +201,8 @@ while(MAILBOX_OTHER_INT&MAILBOX_IRQ_BIT(irq_number)); \
 #define APB_ERR BIT(29)
 #define APB_REL BIT(30)
 #define APB_REQ BIT(31)
-extern void Default_Mailbox_SetClockFrequency(BYTE ClockDiv);
 
+extern void Default_Mailbox_SetClockFrequency(BYTE ClockDiv);
 extern void Mailbox_Init(void);
 void Mailbox_Control();
 void Mailbox_Firmware();
@@ -211,51 +211,47 @@ void Mailbox_SecretKey();
 void Mailbox_Crypto();
 void Mailbox_SecureStorage();
 extern void Process_Tasks(void);
-extern Task *Add_Task(TaskFunction function, TaskParams params, Task **head);
+extern Task* Add_Task(TaskFunction function, TaskParams params, Task** head);
 extern void Mailbox_C2E_Service(void);
 extern void Mailbox_Read_FLASHID_Trigger(void);
-extern void Mailbox_APB2_Source_Alloc_Trigger(void *param);
+extern void Mailbox_APB2_Source_Alloc_Trigger(void* param);
 extern void Mailbox_Read_FLASHUID_Trigger(void);
-extern void Malibox_Switch_Flash_Quad_Dual(void *param);
-extern void Mailbox_ExecuteFirmwareUpdate(void *param);
+extern void Malibox_Switch_Flash_Quad_Dual(void* param);
+extern void Mailbox_ExecuteFirmwareUpdate(void* param);
 extern void Mailbox_WriteRootKey_Trigger(void);
 extern void Mailbox_UpdateHMACKey_Trigger(void);
 extern void Mailbox_IncrementCounter_Trigger(void);
 extern void Mailbox_RequestCounter_Trigger(void);
 extern void Mailbox_ReadParameter_Trigger(void);
 extern void Mailbox_eRPMC_Trigger(void);
-
-extern void Mailbox_Flash_Page_Change(void *param);
-extern void Mailbox_SimilarDMA(void *param);
-extern void Mailbox_Generate_Key(void *param);
-extern void Mailbox_Get_Key(void *param);
-extern void Mailbox_Get_Key_Id(void *param);
-extern void Mailbox_Clear_Key(void *param);
-extern void Mailbox_Clear_All_Key(void *param);
-extern void Mailbox_Digest_Or_CrcVerify(void *param);
-extern void Mailbox_Symmetrric_Key(void *param);
-extern void Mailbox_Asymmetric_Key_Pair(void *param);
-extern void Mailbox_Key_Pair_Generate(void *param);
-extern void Mailbox_Signature_Verify(void *param); //签名函数
-extern void Mailbox_MessageAuthentication(void *param);
-extern void Mailbox_KeyDerivation(void *param);
-extern void Mailbox_Diffie_Hellman(void *param);//密钥交换
-extern void Mailbox_RandomNumber_Generator(void *param);//随机数生成
-extern void Mailbox_Set_Used_RandomNumber(void *param);//设置随机数
-
-extern void Mailbox_Cryp_Selfcheck(void *param);
-extern void Mailbox_SetClockFrequency(void *param);
-extern void Mailbox_Generate_Key(void *param);
+extern void Mailbox_Flash_Page_Change(void* param);
+extern void Mailbox_SimilarDMA(void* param);
+extern void Mailbox_Generate_Key(void* param);
+extern void Mailbox_Get_Key(void* param);
+extern void Mailbox_Get_Key_Id(void* param);
+extern void Mailbox_Clear_Key(void* param);
+extern void Mailbox_Clear_All_Key(void* param);
+extern void Mailbox_Digest_Or_CrcVerify(void* param);
+extern void Mailbox_Symmetrric_Key(void* param);
+extern void Mailbox_Asymmetric_Key_Pair(void* param);
+extern void Mailbox_Key_Pair_Generate(void* param);
+extern void Mailbox_Signature_Verify(void* param); //签名函数
+extern void Mailbox_MessageAuthentication(void* param);
+extern void Mailbox_KeyDerivation(void* param);
+extern void Mailbox_Diffie_Hellman(void* param);//密钥交换
+extern void Mailbox_RandomNumber_Generator(void* param);//随机数生成
+extern void Mailbox_Set_Used_RandomNumber(void* param);//设置随机数
+extern void Mailbox_Cryp_Selfcheck(void* param);
+extern void Mailbox_SetClockFrequency(void* param);
+extern void Mailbox_Generate_Key(void* param);
 extern void Transfer_Mailbox_Flash_Mirror(uint8_t mirror_mode, size_t dataSize, uint32_t destAddr, uint32_t srcAddr);
 extern void Service_Mailbox(void);
-
 extern void Transfer_Mailbox_Cryp_Selfcheck(uint8_t mode);
 extern void Transfer_Mailbox_APB2_Source_Alloc_Trigger(uint32_t module);
 extern void Transfer_Mailbox_SetClockFrequency(uint32_t value);
 extern void Transfer_Mailbox_Read_FLASHID_Trigger(void);
 extern void Transfer_Mailbox_Read_FLASHUID_Trigger(void);
 extern void Transfer_Mailbox_Switch_Flash_Quad_Dual(uint32_t value);
-
 extern void Transfer_Mailbox_Flash_Page_Change(uint32_t change_number, uint32_t start_addr,
     uint8_t addr1, uint8_t data1, uint8_t addr0, uint8_t data0,
     uint8_t addr3, uint8_t data3, uint8_t addr2, uint8_t data2,
@@ -263,14 +259,13 @@ extern void Transfer_Mailbox_Flash_Page_Change(uint32_t change_number, uint32_t 
     uint8_t addr7, uint8_t data7, uint8_t addr6, uint8_t data6,
     uint8_t addr9, uint8_t data9, uint8_t addr8, uint8_t data8,
     uint8_t addr12, uint8_t data11, uint8_t addr10, uint8_t data10);
-
 extern void Transfer_Mailbox_Crypto_Secure_Boot(uint32_t star_addr,
     uint32_t hash_mode,
     uint8_t switch_flash,
     uint8_t signature,
     uint32_t signature_addr,
     uint32_t publickey_addr);
-extern void Transfer_Mailbox_SimilarDMA( uint32_t switch_data_input, uint32_t srcAddr,
+extern void Transfer_Mailbox_SimilarDMA(uint32_t switch_data_input, uint32_t srcAddr,
     size_t dataSize,
     uint32_t switch_output, uint32_t destAddr);
 extern void Transfer_Mailbox_Generate_Key(uint32_t switch_key,
@@ -282,7 +277,7 @@ extern void Transfer_Mailbox_Get_Key(uint32_t switch_key, uint32_t key_num,
 extern void Transfer_Mailbox_Get_Key_Id(uint32_t switch_key, uint32_t key_num,
     uint32_t switch_input, uint32_t IDdata_addr);
 extern void Transfer_Mailbox_Clear_Key(uint32_t switch_key, uint32_t key_num);
-extern void Transfer_Mailbox_Clear_All_Key( void);
+extern void Transfer_Mailbox_Clear_All_Key(void);
 extern void Transfer_Mailbox_Digest_Or_CrcVerify(uint32_t switch_mode, uint32_t mode_lenth, uint32_t crc_init, uint32_t switch_code,
     uint32_t switch_input, uint32_t input_addr,
     uint32_t DATA_ByteLength,
@@ -312,7 +307,7 @@ extern void Transfer_Mailbox_Signature_Verify(uint32_t switch_mode, uint32_t swi
     uint32_t switch_key_input, uint32_t key_addr,
     uint32_t switch_ecc_r_output_and_switch_rsa_data_output, uint32_t ecc_r_addr_and_rsa_out_addr,
     uint32_t switch_ecc_s_output_and_switch_rsa_data_lenth_output, uint32_t ecc_output_lenth);
-extern void Transfer_Mailbox_MessageAuthentication(uint32_t switch_hash_mode, uint32_t mode_lenth,uint32_t hmac,
+extern void Transfer_Mailbox_MessageAuthentication(uint32_t switch_hash_mode, uint32_t mode_lenth, uint32_t hmac,
     uint32_t switch_key_input, uint32_t key_addr,
     uint32_t KEY_ByteLength,
     uint32_t switch_data_input, uint32_t data_input_addr,

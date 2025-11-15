@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2025-10-30 23:23:04
  * @Description:
  *
@@ -22,7 +22,7 @@
 #include "KERNEL_INCLUDE.H"
 #include "CUSTOM_INCLUDE.H"
 
-// Module init function
+ // Module init function
 extern void gpio_init(void);
 extern void mailbox_init(void);
 extern void uart_init(void);
@@ -36,8 +36,6 @@ extern void ps2_init(void);
 extern void cec_init(void);
 extern void adc_init(void);
 extern void time_init(void);
-//Init all modules
 extern void Module_init(void);
-//Exit function
 extern void exit(int __status);
 #endif

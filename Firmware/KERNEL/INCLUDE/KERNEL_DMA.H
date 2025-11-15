@@ -137,7 +137,6 @@
 #define UARTB_DMA_RX   (((2 << 16)))
 #define UARTB_DMA_TX   (((3 << 24)))
 
-
 #define SPIM_DMA_RX    (((8 << 16)))
 #define SPIM_DMA_TX    (((9 << 24))) 
 
@@ -147,7 +146,6 @@
 #define SUBUS1_DMA_TX  (((13 << 24)))
 #define SUBUS2_DMA_RX  (((14 << 16)))
 #define SUBUS2_DMA_TX  (((15 << 24)))
-
 
 //DMA INIT STRUCT
 typedef struct
@@ -168,6 +166,5 @@ typedef struct
 #endif
 
 //function prototypes
-extern void DMA_INIT(BYTE TT_FC, BYTE BLK_TS, BYTE SRC_PER, BYTE DEST_PER, DWORD SAR0, DWORD DAR0, BYTE DmaCfgReg);
-extern void DMA_Init(DMA_InitTypeDef*DMA_Init_Struct);
+extern void DMA_Init(DMA_InitTypeDef* DMA_Init_Struct);
 extern char DMA_Transfer_Done(uint8_t DMA_Channal);
