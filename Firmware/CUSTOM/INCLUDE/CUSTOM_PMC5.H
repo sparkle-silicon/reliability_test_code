@@ -18,7 +18,8 @@
 #include "AE_GLOBAL.H"
 #include "AE_REG.H"
 #include "AE_CONFIG.H"
-/*--------------------PMC5 Register Address definition-----------------*/
+
+ /*--------------------PMC5 Register Address definition-----------------*/
 #define OBF5            BIT(0x00)
 #define IBF5            BIT(0x01)
 /*--------------------------------------------------------------------------*/

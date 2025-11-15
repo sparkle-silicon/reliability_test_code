@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2023-09-18 13:57:34
  * @Description:
  *
@@ -22,6 +22,7 @@
 #include "KERNEL_ACPI.H"
 #include "KERNEL_PORT6064.H"
 #include "KERNEL_MAIN.H"
+
 #define OBF1 BIT(0x00)
 #define IBF1 BIT(0x01)
 #define Busy BIT(0x02)
@@ -29,10 +30,10 @@
 #define BURST BIT(0x04)
 #define SCIEVT BIT(0x05)
 #define SMIEVT BIT(0x06)
-/*--------------------------------------------------------------------------*/
-/*-----------------------------------------------------------------------------
- * External Calling Process
- *---------------------------------------------------------------------------*/
+ /*--------------------------------------------------------------------------*/
+ /*-----------------------------------------------------------------------------
+  * External Calling Process
+  *---------------------------------------------------------------------------*/
 extern BYTE OEM_Get_Port62_Data(void);
 /*-----------------------------------------------------------------------------
  * Internal Process Definition

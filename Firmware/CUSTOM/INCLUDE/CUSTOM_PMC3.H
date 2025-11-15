@@ -18,7 +18,8 @@
 #include "AE_GLOBAL.H"
 #include "AE_REG.H"
 #include "AE_CONFIG.H"
-/*--------------------PMC3 Register Address definition-----------------*/
+#include "AE_DEBUGGER.H"
+ /*--------------------PMC3 Register Address definition-----------------*/
 #define OBF3            BIT(0x00)
 #define IBF3            BIT(0x01)
 #define DBG_En3         BIT(0x02)
@@ -27,5 +28,5 @@
 #define C_D5            BIT(0x03)
 /*--------------------------------------------------------------------------*/
 extern void Service_PCI4(void);
-#include "AE_DEBUGGER.H"
+
 #endif

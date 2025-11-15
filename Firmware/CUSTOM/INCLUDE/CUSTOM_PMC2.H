@@ -20,7 +20,9 @@
 #include "AE_CONFIG.H"
 #include "KERNEL_MEMORY.H"
 #include "KERNEL_SPIF.H"
-/*--------------------PMC2 Register Address definition-----------------*/
+#include "AE_DEBUGGER.H"
+
+ /*--------------------PMC2 Register Address definition-----------------*/
 #define OBF2            BIT(0x00)
 #define IBF2            BIT(0x01)
 #define DBG_En          BIT(0x02)
@@ -35,6 +37,6 @@ extern BYTE OEM_GetPortPM2Data(void);
 /*-----------------------------------------------------------------------------
  * Internal Process Definition
  *---------------------------------------------------------------------------*/
-//-----------------------------------------------------------------------------
-#include "AE_DEBUGGER.H"
+ //-----------------------------------------------------------------------------
+
 #endif

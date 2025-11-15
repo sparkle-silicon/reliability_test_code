@@ -22,9 +22,9 @@
 #include "KERNEL_ACPI.H"
 #include "KERNEL_I2C.H"
 #include "KERNEL_TIMER.H"
-/*-----------------------------------------------------------------------------
- * Parameter Definition
- *---------------------------------------------------------------------------*/
+ /*-----------------------------------------------------------------------------
+  * Parameter Definition
+  *---------------------------------------------------------------------------*/
 #define SmartCharger_Support	TRUE   // True : using charger IC for battery charge control
 #define BAT1FuncSupport         TRUE   // True : support battery 1 management function
 #define BAT_I2C_CHANNEL		1		   //选择电池SMBUS通道
@@ -34,9 +34,9 @@
 #define DisablePower 0
 #define PDPowerMode	1
 #define ACPowerMode	2
-/*-----------------------------------------------------------------------------
- * Batttery Command Definition
- *---------------------------------------------------------------------------*/
+  /*-----------------------------------------------------------------------------
+   * Batttery Command Definition
+   *---------------------------------------------------------------------------*/
 #define BATCmd_access           0x00  	// manufacture access
 #define BATCmd_RCalarm          0x01 	// remaining capacity alarm
 #define BATCmd_RTalarm          0x02   	// remaining time alarm
@@ -70,9 +70,9 @@
 #define BATCmd_Dname            0x21  	// device name
 #define BATCmd_Dchem            0x22  	// device chemistry
 #define BATCmd_Mdata            0x23 	// manufacture data
-/*-----------------------------------------------------------------------------
- * Charger Parameter Definition
- *---------------------------------------------------------------------------*/
+   /*-----------------------------------------------------------------------------
+	* Charger Parameter Definition
+	*---------------------------------------------------------------------------*/
 #define BAT_VOLT_WUCHG         8400						//battery wake up charge voltage 8400mv
 #define BAT_CURR_WUCHG		   (128*SC_Current_Sense)	//battery wake up charge current 384mA
 
@@ -92,7 +92,7 @@
 #define I_150W  			    (7168/2)
 #define IN_CURRENT	            I_65W					//input current
 #define SC_Current_Sense 		1
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #define BATOverVoltage		    (4400*BAT_SNumber)
 #define ChargerSettingTimeOut   3       // re-try counter of setting of smart charger
 #define BatIDTimeOut            5       // battery 1 identify re-try counter
@@ -114,12 +114,12 @@
 
 #define ChargeDeviceID		    0x0008
 #define ChargeMFID			    0x004D
-/*-----------------------------------------------------------------------------
- * Internal Process Definition
- *---------------------------------------------------------------------------*/
+ /*-----------------------------------------------------------------------------
+  * Internal Process Definition
+  *---------------------------------------------------------------------------*/
 #define A_XBYTE  *(VBYTE *)
 #define A_XWORD  *(VWORD *)
-//-------------------------------------------------------------------------------
+  //-------------------------------------------------------------------------------
 #define BIT_BAT_MODE_IN_CTRL   BIT(8)    // Internal charge control enabled
 #define BIT_BAT_MODE_PRIMARY   BIT(9)    // Battery in its primary role
 #define BIT_BAT_MODE_DIS_ALARM BIT(13)   // Disable alarm warning broadcast
@@ -211,19 +211,19 @@ extern VWORD    BAT_ALARM;
 typedef struct BatDevName
 {
 	BYTE DeviceNum;
-	char *DeviceName;
+	char* DeviceName;
 } BatteryDeviceName;
 
 typedef struct Bat_ecsapce
 {
-	VBYTE *Var_L;
-	VBYTE *Var_H;
+	VBYTE* Var_L;
+	VBYTE* Var_H;
 }Battery_Ecsapce;
 
 typedef struct BatData
 {
 	VBYTE Cmd;
-	VWORD *Var;
+	VWORD* Var;
 	Battery_Ecsapce Bat_Ecsapce;
 }BatteryData;
 typedef union _word_read
@@ -236,7 +236,6 @@ extern BYTE BAT_FailCause;
 extern BYTE BAT_CtrlStep;
 extern BYTE Bat_Read_NWait_Flag;
 extern BYTE SetSmartCharger(void);
-
 extern void Battery_Static_Mode_Judge(void);
 extern void BatChgControlCenter(void);
 extern void PollingBATInfo(void);

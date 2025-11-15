@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2025-09-12 15:05:21
  * @Description: This is about the  national crypto algorithm implementation
  *
@@ -26,10 +26,4 @@ extern void Service_PECI_Command(void);
 extern void PECI_Init(void);
 extern void PECI_Set_Pad(u16 VTTlev, u8 PADsel);
 extern void Calc_CPU_Temperature(void);
-extern BYTE PECI_ReadDIB_TEST(void);
-extern BYTE PECI_PING_TEST(void);
-extern BYTE PECI_ReadTemp_TEST(void);
-extern BYTE PECI_RdPkgConfig_TEST(void);
-// extern void PECI_Init(u16 VTTlev, u8 PADsel);
-// extern void peci_test(void);
 #endif

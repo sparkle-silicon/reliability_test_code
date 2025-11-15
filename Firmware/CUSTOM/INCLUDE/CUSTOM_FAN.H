@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2024-01-03 09:56:22
  * @Description:
  *
@@ -20,7 +20,8 @@
 #include "AE_CONFIG.H"
 #include "KERNEL_MEMORY.H"
 #include "KERNEL_PWM.H"
-/*风扇扫描level等级结构???*/
+
+ /*风扇扫描level等级结构*/
 typedef struct thermalstruct
 {
 	BYTE  	CSTEP;    //风扇调速step,对应风扇的转速调节系数

@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2023-12-07 10:46:23
  * @Description:
  *
@@ -20,6 +20,7 @@
 #include "AE_CONFIG.H"
 #include "KERNEL_MEMORY.H"
 #include "KERNEL_XLATE.H"
+
 extern const BYTE  Cr_KBD_Tables[][8];
 extern void Check_KB_Wake_S3(BYTE  KSO, BYTE  KSI);
 extern void Check_Send_Key(BYTE  table_entry, BYTE  event);
@@ -31,5 +32,5 @@ extern void Scratch_Fn_Key_Break(void);
 extern void Scratch_Fn_Key_Make(void);
 extern void Scratch_NUMLK_Key_Break(void);
 extern void Scratch_NUMLK_Key_Make(void);
-extern VBYTE *Tmp_code_pointer;
+extern VBYTE* Tmp_code_pointer;
 #endif

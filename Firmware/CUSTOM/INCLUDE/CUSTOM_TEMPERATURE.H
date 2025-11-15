@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2023-12-29 19:15:49
  * @Description:
  *
@@ -20,5 +20,6 @@
 #include "AE_CONFIG.H"
 #include "KERNEL_MEMORY.H"
 #include "KERNEL_I2C.H"
+
 extern char get_temperature(WORD i2c_channel);
 #endif

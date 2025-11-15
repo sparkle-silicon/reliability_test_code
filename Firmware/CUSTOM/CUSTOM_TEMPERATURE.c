@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2023-12-29 19:18:09
  * @Description: Read temperature support
  *
@@ -15,40 +15,41 @@
  */
 #include "CUSTOM_TEMPERATURE.H"
 #include "AE_FUNC.H"
+
 char get_temperature(WORD i2c_channel)
 {
-    if(i2c_channel == 0)
+    if (i2c_channel == 0)
     {
-    #if !(SMBUS0_CLOCK_EN)
+#if !(SMBUS0_CLOCK_EN)
         dprint("SMBUS0 CLOCK NOT ENABLE\n");
         return 0;
-    #endif
+#endif
     }
-    else if(i2c_channel == 1)
+    else if (i2c_channel == 1)
     {
-    #if !(SMBUS1_CLOCK_EN)
+#if !(SMBUS1_CLOCK_EN)
         dprint("SMBUS1 CLOCK NOT ENABLE\n");
         return 0;
-    #endif
+#endif
     }
-    else if(i2c_channel == 2)
+    else if (i2c_channel == 2)
     {
-    #if !(SMBUS2_CLOCK_EN)
+#if !(SMBUS2_CLOCK_EN)
         dprint("SMBUS2 CLOCK NOT ENABLE\n");
         return 0;
-    #endif
+#endif
     }
-    else if(i2c_channel == 3)
+    else if (i2c_channel == 3)
     {
-    #if !(SMBUS3_CLOCK_EN)
+#if !(SMBUS3_CLOCK_EN)
         dprint("SMBUS3 CLOCK NOT ENABLE\n");
         return 0;
-    #endif
+#endif
     }
     /* Channel 1 of I2C is used to get the temperature */
     char temperature[3];
     /* read temperaturn only when Debugger not working and chip set as Master*/
-    if(Slave_flag == 0)
+    if (Slave_flag == 0)
     {
         /* read temperature */
         temperature[0] = I2c_Master_Read_Byte(0x0, i2c_channel);
