@@ -19,14 +19,13 @@
 \n\
 ************************************************************************************\n\
 *                    Embedded Controller  GDMEC01 Series Firmware                  *\n\
-* Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved. *\n\
+* Copyright ©2024-2025 GigaDevice Semiconductor Inc., Ltd. All Rights Reserved. *\n\
 ************************************************************************************\n\
 \n\
 "
-extern unsigned char iicFeedback, iic_flag, iic_int_flag;
-//------------------------------------------------------------
-// 1ms events
-//------------------------------------------------------------
+ //------------------------------------------------------------
+ // 1ms events
+ //------------------------------------------------------------
 void Event_1ms(void)
 {
 	Hook_1msEvent(timer_1ms_count);
@@ -254,8 +253,8 @@ void Service_MS_1(void)
 //  Function Pointers
 //-----------------------------------------------------------------------------
 /* FUNCT_PTR_V_V is a pointer to a function that returns nothing
-   (V for void) and takes nothing for a parameter (V for void). */
-   //-----------------------------------------------------------------------------
+(V for void) and takes nothing for a parameter (V for void). */
+//-----------------------------------------------------------------------------
 const FUNCT_PTR_V_V service_table[] =
 {
 	// Hi-Level Service
@@ -285,7 +284,7 @@ const FUNCT_PTR_V_V service_table[] =
 #endif
 #if ENABLE_DEBUGGER_SUPPORT
 	Service_Debugger,         // DEBUGGER service
-	Service_Debugger_Send_KBD,        // DEBUGGER
+	Service_Debugger_Send_KBD,// DEBUGGER
 #endif
 };
 //----------------------------------------------------------------------------

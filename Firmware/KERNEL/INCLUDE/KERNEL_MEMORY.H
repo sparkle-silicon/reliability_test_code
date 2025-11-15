@@ -481,7 +481,7 @@
 #define SYSCTL_PIO5_UDCFG_Value (*(DWORDP)(GPIO_InitInfo_MemBase + 76))
 
 #define eSPI_MemBase (GPIO_InitInfo_MemBase + MEMORY_128SIZE) // 0x203F8
-#define eSPI_BUF_VWCTRL1 (*(VBYTEP)(eSPI_MemBase + 0x0))
+#define eSPI_BUF_ESPI_VWCTRL1 (*(VBYTEP)(eSPI_MemBase + 0x0))
 #define eSPI_PLTRST_TAG (*(VBYTEP)(eSPI_MemBase + 0x1))
 #define xOOB_PacketMaxLength (*(VBYTEP)(eSPI_MemBase + 0x2))
 #define xOOB_PacketLength (*(VBYTEP)(eSPI_MemBase + 0x3))

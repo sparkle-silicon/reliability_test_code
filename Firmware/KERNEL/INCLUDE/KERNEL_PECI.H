@@ -108,26 +108,26 @@
 //*****************************************************************************
 // Star Reg BIT
 //*****************************************************************************
-#define PECI_HOSTAR_HOBY BIT0
-#define PECI_HOSTAR_FINISH BIT1
-#define PECI_HOSTAR_RD_FCS_ERR BIT2
-#define PECI_HOSTAR_WR_FCS_ERR BIT3
-#define PECI_HOSTAR_LSB_FIRST BIT4
-#define PECI_HOSTAR_EXTERR BIT5
-#define PECI_HOSTAR_BUSERR BIT6
-#define PECI_HOSTAR_RCV_ERRCODE BIT7
+#define PECI_STAR_HOBY BIT0
+#define PECI_STAR_FINISH BIT1
+#define PECI_STAR_RD_FCS_ERR BIT2
+#define PECI_STAR_WR_FCS_ERR BIT3
+#define PECI_STAR_LSB_FIRST BIT4
+#define PECI_STAR_EXTERR BIT5
+#define PECI_STAR_BUSERR BIT6
+#define PECI_STAR_RCV_ERRCODE BIT7
 
 //*****************************************************************************
 // Ctrl Reg BIT
 //*****************************************************************************
-#define PECI_HOCTLR_START BIT0
-#define PECI_HOCTLR_AWFCS_EN BIT1
-#define PECI_HOCTLR_CONCTRL BIT2
-#define PECI_HOCTLR_PECIHEN BIT3
-#define PECI_HOCTLR_FCSERR_ABT BIT4
-#define PECI_HOCTLR_FIFOCLR BIT5
-#define PECI_HOCTLR_AWFCS_FRC_CTRL BIT6
-#define PECI_HOCTLR_HHRAE BIT7
+#define PECI_CTRL1R_START BIT0
+#define PECI_CTRL1R_AWFCS_EN BIT1
+#define PECI_CTRL1R_CONCTRL BIT2
+#define PECI_CTRL1R_PECIHEN BIT3
+#define PECI_CTRL1R_FCSERR_ABT BIT4
+#define PECI_CTRL1R_FIFOCLR BIT5
+#define PECI_CTRL1R_AWFCS_FRC_CTRL BIT6
+#define PECI_CTRL1R_HHRAE BIT7
 //*****************************************************************************
 // Global variable (memory address allocation follow project )
 //*****************************************************************************
@@ -157,26 +157,26 @@ extern BYTE PECI_WriteBuffer[];
 //*****************************************************************************
 // Star Reg BIT
 //*****************************************************************************
-#define PECI_HOSTAR_HOBY            BIT0
-#define PECI_HOSTAR_FINISH          BIT1
-#define PECI_HOSTAR_RD_FCS_ERR      BIT2
-#define PECI_HOSTAR_WR_FCS_ERR      BIT3
-#define PECI_HOSTAR_LSB_FIRST       BIT4
-#define PECI_HOSTAR_EXTERR          BIT5
-#define PECI_HOSTAR_BUSERR          BIT6
-#define PECI_HOSTAR_RCV_ERRCODE     BIT7
+#define PECI_STAR_HOBY            BIT0
+#define PECI_STAR_FINISH          BIT1
+#define PECI_STAR_RD_FCS_ERR      BIT2
+#define PECI_STAR_WR_FCS_ERR      BIT3
+#define PECI_STAR_LSB_FIRST       BIT4
+#define PECI_STAR_EXTERR          BIT5
+#define PECI_STAR_BUSERR          BIT6
+#define PECI_STAR_RCV_ERRCODE     BIT7
 
 //*****************************************************************************
 // Ctrl Reg BIT
 //*****************************************************************************
-#define PECI_HOCTLR_START           BIT0
-#define PECI_HOCTLR_AWFCS_EN        BIT1
-#define PECI_HOCTLR_CONCTRL         BIT2
-#define PECI_HOCTLR_PECIHEN         BIT3
-#define PECI_HOCTLR_FCSERR_ABT      BIT4
-#define PECI_HOCTLR_FIFOCLR         BIT5
-#define PECI_HOCTLR_AWFCS_FRC_CTRL  BIT6
-#define PECI_HOCTLR_HHRAE           BIT7
+#define PECI_CTRL1R_START           BIT0
+#define PECI_CTRL1R_AWFCS_EN        BIT1
+#define PECI_CTRL1R_CONCTRL         BIT2
+#define PECI_CTRL1R_PECIHEN         BIT3
+#define PECI_CTRL1R_FCSERR_ABT      BIT4
+#define PECI_CTRL1R_FIFOCLR         BIT5
+#define PECI_CTRL1R_AWFCS_FRC_CTRL  BIT6
+#define PECI_CTRL1R_HHRAE           BIT7
 //*****************************************************************************
 // Global variable (memory address allocation follow project )
 //*****************************************************************************

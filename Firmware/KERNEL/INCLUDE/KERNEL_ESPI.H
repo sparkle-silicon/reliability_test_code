@@ -33,12 +33,12 @@
  /* Device Identification 00h-03h */
 #define eSPI_Version_ID REG_3103 // REG_3103
 /* General Capabilities and Configurations     04h-07h */
-#define F_CRC_Checking_Enable BIT(7) // REG_3104
+#define F_CRC_Checking_Enable BIT(7) // ESPI_GCC0
 #define F_Response_Modifier_Enable BIT(6)
 #define F_ALERT_MODE BIT(4) // 0b: EIO1 (I/O[1] ) pin is used to
                             //     signal the Alert event
 
-#define _eSPI_MAX_FREQ_20MHZ 0x00 // REG_3105
+#define _eSPI_MAX_FREQ_20MHZ 0x00 // ESPI_GCC1
 #define _eSPI_MAX_FREQ_25MHZ 0x01
 #define _eSPI_MAX_FREQ_33MHZ 0x02
 #define _eSPI_MAX_FREQ_50MHZ 0x03
@@ -49,26 +49,26 @@
 #define _eSPI_OP_FREQ_50MHZ 0x30
 #define _eSPI_OP_FREQ_66MHZ 0x40
 
-#define F_Flash_Access_Channel BIT(3) // REG_3107
+#define F_Flash_Access_Channel BIT(3) // ESPI_GCC3
 #define F_OOB_Message_Channel BIT(2)
 #define F_Virtual_Wire_Channel BIT(1)
 #define F_Peripheral_Channel BIT(0)
 
 /* Channel 0 Capabilities and Configurations   08h-0Bh */
-#define F_Bus_Master_Enable BIT(2) // REG_310B
+#define F_Bus_Master_Enable BIT(2) // ESPI_CH0_GCC3
 #define F_Peripheral_Channel_Ready BIT(1)
 #define F_PeripheralChannelEnable BIT(0)
 
 /* Channel 1 Capabilities and Configurations   0Ch-0Fh */
-#define F_VW_CHN_READY BIT(1) // REG_310F
+#define F_VW_CHN_READY BIT(1) // ESPI_CH1_GCC3
 #define F_VW_CHN_ENABLE BIT(0)
 
 /* Channel 2 Capabilities and Configurations   10h-13h */
-#define F_OOB_CHN_READY BIT(1) // REG_3113
+#define F_OOB_CHN_READY BIT(1) // ESPI_CH2_GCC3
 #define F_OOB_CHN_ENABLE BIT(0)
 
 /* Channel 3 Capabilities and Configurations   14h-17h */
-/* REG_3115: Flash Sharing Capability Supported
+/* ESPI_CH3_GCC1: Flash Sharing Capability Supported
    This field indicates the flash sharing capability supported by the slave.
    00b: MAFS supported.
    01b: MAFS supported.
@@ -80,7 +80,7 @@
 #define _SUPPORT_SAFS 0x02
 #define _SUPPORT_MAFS_SAFS 0x03
 
-#define F_FLASH_CHN_READY BIT(1) // REG_3117
+#define F_FLASH_CHN_READY BIT(1) // ESPI_CH3_GCC3
 #define F_FLASH_CHN_ENABLE BIT(0)
 
 #define SET_FAS_CHANNEL_READY BIT(3)
@@ -88,18 +88,18 @@
 #define SET_VW_CHANNEL_READY BIT(1)
 
 /* Channel 3 Capabilities and Configurations 2 18h-1Bh */
-#define F_PUT_PC_STATUS BIT(7) // ESPCTRL0  // PUT_PC Status
+#define F_PUT_PC_STATUS BIT(7)  // PUT_PC Status
 
-#define F_eSPI_INT_ENABLE BIT(7) // ESGCTRL1
+#define F_eSPI_INT_ENABLE BIT(7) // ESPI_GCTRL1
 
-#define F_ESPIQCSE BIT(7) // ESGCTRL2
+#define F_ESPIQCSE BIT(7) // ESPI_GCTRL2
 #define F_ESPIIPG BIT(6)
 #define F_eSPI_TO_WUC_ENABLE BIT(4)
 
-#define F_SESPIPC BIT(0)   // ESGCTRL3      // Suspend eSPI Peripheral Channel
+#define F_SESPIPC BIT(0)   // ESPI_GCTRL3      // Suspend eSPI Peripheral Channel
 #define CH0_not_RDY BIT(0) // Suspend eSPI Peripheral Channel
 //REG32(0x330B0)
-#define Upstream_EN 0x80 // ESUCTRL0
+#define Upstream_EN 0x80 // ESPI_UCTRL0
 #define Upstream_GO 0x40
 #define Upstream_INT_EN 0x20
 #define Upstream_Req_Authority 0x10
@@ -109,28 +109,28 @@
 #define Upstream_Busy 0x01
 
 // Upstream cycle Type
-#define OOB_Message 0x07 // ESUCTRL1
+#define OOB_Message 0x07 // ESPI_UCTRL1
 #define OOB_Flash_Read 0x08
 #define OOB_Flash_Write 0x09
 #define OOB_Flash_Erase 0x0A
 #define Peri_Message 0x05
 
-#define UpstreamLength ESUCTRL3 // ESUCTRL3
+#define UpstreamLength ESPI_UCTRL3 // ESPI_UCTRL3
 
 // PUT_FLASH_C cycle Type
-#define Successful_Completion_Without_Data 0x00 // ESUCTRL6
+#define Successful_Completion_Without_Data 0x00 // ESPI_UCTRL6
 #define Successful_Completion_With_Data_the_only_Completion 0x04
 #define Unsuccessful_Completion_Without_Data_the_last_Completion 0x05
 #define Unsuccessful_Completion_Without_Data_the_only_Completion 0x06
 #define Invalid_Cycle_Type 0x0F
 
 //REG32(0x330C0)
-#define PUT_OOB_STATUS 0x80 // ESOCTRL0
+#define PUT_OOB_STATUS 0x80 // ESPI_OCTRL0
 #define eRPMCSTS 0x10
 
-#define F_PUT_OOB_INT_ENABLE BIT(7) // ESOCTRL1
+#define F_PUT_OOB_INT_ENABLE BIT(7) // ESPI_OCTRL1
 
-#define PUT_FLASH_NP_STATUS BIT(7) // ESPISAFSC1
+#define PUT_FLASH_NP_STATUS BIT(7) // ESPI_SAFSC1
 
 //-----------------------------------------------------------------------------
 // (32xxh) eSPI VW Interface ()
@@ -140,7 +140,7 @@
    Reset: eSPI Reset#
    Direction: Master to Slave
 */
-#define F_IDX2_BIT7_RESERVED BIT(7) // VWIDX2
+#define F_IDX2_BIT7_RESERVED BIT(7) // ESPI_VWIDX2
 #define F_IDX2_SLP_S5_VALID BIT(6)
 #define F_IDX2_SLP_S4_VALID BIT(5)
 #define F_IDX2_SLP_S3_VALID BIT(4)
@@ -149,25 +149,25 @@
 #define F_IDX2_SLP_S4 BIT(1)
 #define F_IDX2_SLP_S3 BIT(0)
 
-#define IS_eSPI_SLP_S5_VALID() IS_MASK_SET(VWIDX2, F_IDX2_SLP_S5_VALID)
-#define IS_eSPI_SLP_S4_VALID() IS_MASK_SET(VWIDX2, F_IDX2_SLP_S4_VALID)
-#define IS_eSPI_SLP_S3_VALID() IS_MASK_SET(VWIDX2, F_IDX2_SLP_S3_VALID)
+#define IS_eSPI_SLP_S5_VALID() IS_MASK_SET(ESPI_VWIDX2, F_IDX2_SLP_S5_VALID)
+#define IS_eSPI_SLP_S4_VALID() IS_MASK_SET(ESPI_VWIDX2, F_IDX2_SLP_S4_VALID)
+#define IS_eSPI_SLP_S3_VALID() IS_MASK_SET(ESPI_VWIDX2, F_IDX2_SLP_S3_VALID)
 
-#define IS_eSPI_SLP_S5_HI() IS_MASK_SET(VWIDX2, F_IDX2_SLP_S5)
-#define IS_eSPI_SLP_S5_LO() IS_MASK_CLEAR(VWIDX2, F_IDX2_SLP_S5)
+#define IS_eSPI_SLP_S5_HI() IS_MASK_SET(ESPI_VWIDX2, F_IDX2_SLP_S5)
+#define IS_eSPI_SLP_S5_LO() IS_MASK_CLEAR(ESPI_VWIDX2, F_IDX2_SLP_S5)
 
-#define IS_eSPI_SLP_S4_HI() IS_MASK_SET(VWIDX2, F_IDX2_SLP_S4)
-#define IS_eSPI_SLP_S4_LO() IS_MASK_CLEAR(VWIDX2, F_IDX2_SLP_S4)
+#define IS_eSPI_SLP_S4_HI() IS_MASK_SET(ESPI_VWIDX2, F_IDX2_SLP_S4)
+#define IS_eSPI_SLP_S4_LO() IS_MASK_CLEAR(ESPI_VWIDX2, F_IDX2_SLP_S4)
 
-#define IS_eSPI_SLP_S3_HI() IS_MASK_SET(VWIDX2, F_IDX2_SLP_S3)
-#define IS_eSPI_SLP_S3_LO() IS_MASK_CLEAR(VWIDX2, F_IDX2_SLP_S3)
+#define IS_eSPI_SLP_S3_HI() IS_MASK_SET(ESPI_VWIDX2, F_IDX2_SLP_S3)
+#define IS_eSPI_SLP_S3_LO() IS_MASK_CLEAR(ESPI_VWIDX2, F_IDX2_SLP_S3)
 
 /* System Event Virtual Wires for Index=3
    Virtual Wire Group: System Event
    Reset: eSPI Reset#
    Direction: Master to Slave
 */
-#define F_IDX3_BIT7_RESERVED BIT(7) // VWIDX3
+#define F_IDX3_BIT7_RESERVED BIT(7) // ESPI_VWIDX3
 #define F_IDX3_OOB_RST_WARN_VALID BIT(6)
 #define F_IDX3_PLTRST_VALID BIT(5)
 #define F_IDX3_SUS_STAT_VALID BIT(4)
@@ -181,7 +181,7 @@
    Reset: eSPI Reset#
    Direction: Slave to Master
 */
-#define F_IDX4_PME_VALID BIT(7) // VWIDX4
+#define F_IDX4_PME_VALID BIT(7) // ESPI_VWIDX4
 #define F_IDX4_WAKE_VALID BIT(6)
 #define F_IDX4_BIT5_RESERVED BIT(5)
 #define F_IDX4_OOB_RST_ACK_VALID BIT(4)
@@ -195,7 +195,7 @@
    Reset: eSPI Reset#
    Direction: Slave to Master
 */
-#define F_IDX5_SLAVE_BOOT_LOAD_STATUS_VALID BIT(7) // VWIDX5
+#define F_IDX5_SLAVE_BOOT_LOAD_STATUS_VALID BIT(7) // ESPI_VWIDX5
 #define F_IDX5_ERROR_NONFATAL_VALID BIT(6)
 #define F_IDX5_ERROR_FATAL_VALID BIT(5)
 #define F_IDX5_SLAVE_BOOT_LOAD_DONE_VALID BIT(4)
@@ -209,7 +209,7 @@
    Reset: PLTRST#
    Direction: Slave to Master
 */
-#define F_IDX6_HOST_RST_ACK_VALID BIT(7) // VWIDX6
+#define F_IDX6_HOST_RST_ACK_VALID BIT(7) // ESPI_VWIDX6
 #define F_IDX6_RCIN_VALID BIT(6)
 #define F_IDX6_SMI_VALID BIT(5)
 #define F_IDX6_SCI_VALID BIT(4)
@@ -223,7 +223,7 @@
    Reset: PLTRST#
    Direction: Master to Slave
 */
-#define F_IDX7_BIT7_RESERVED BIT(7) // VWIDX7
+#define F_IDX7_BIT7_RESERVED BIT(7) // ESPI_VWIDX7
 #define F_IDX7_NMIOUT_VALID BIT(6)
 #define F_IDX7_SMIOUT_VALID BIT(5)
 #define F_IDX7_HOST_RST_WARN_VALID BIT(4)
@@ -232,7 +232,7 @@
 #define F_IDX7_SMIOUT BIT(1)
 #define F_IDX7_HOST_RST_WARN BIT(0)
 
-#define F_INTR1_SMIOUT BIT(7)    //VWINTRSTA0
+#define F_INTR1_SMIOUT BIT(7)    //ESPI_VWISTA0
 #define F_INTR0_HOST_RST_WARN BIT(6)
 #define F_INTR0_OOB_RST_WARN BIT(5)
 #define F_INTR0_PLT_RST_WARN BIT(4)
@@ -241,7 +241,7 @@
 #define F_INTR0_SLP_S4 BIT(1)
 #define F_INTR0_SLP_S3 BIT(0)
 
-#define F_INTR1_SLP_WLAN BIT(6)    //VWINTRSTA1
+#define F_INTR1_SLP_WLAN BIT(6)    //ESPI_VWISTA1
 #define F_INTR1_SLP_LAN BIT(5) 
 #define F_INTR1_SLP_A BIT(4) 
 #define F_INTR1_SUS_PWRDN_ACK BIT(3) 
@@ -249,7 +249,7 @@
 #define F_INTR1_HOST_C10 BIT(1) 
 #define F_INTR1_NMIOUT BIT(0)
 
-#define F_INTR1_GENERIC7 BIT(7)    //VWINTRSTA2
+#define F_INTR1_GENERIC7 BIT(7)    //ESPI_VWISTA2
 #define F_INTR1_GENERIC6 BIT(6)
 #define F_INTR1_GENERIC5 BIT(5)
 #define F_INTR1_GENERIC4 BIT(4)
@@ -258,45 +258,45 @@
 #define F_INTR1_GENERIC1 BIT(1)
 #define F_INTR1_GENERIC0 BIT(0)
 
-#define F_IDX40_SUSACK BIT(0) // VWIDX40
+#define F_IDX40_SUSACK BIT(0) // ESPI_VWIDX40
 #define F_IDX40_VALID BIT(4)
 
-#define F_IDX41_SUS_WARN BIT(0) // VWIDX41
+#define F_IDX41_SUS_WARN BIT(0) // ESPI_VWIDX41
 #define F_IDX41_VALID BIT(4)
 
-#define F_VW_INT_ENABLE BIT(7)  // VWCTRL0   // VW Interrupt Enable
+#define F_VW_INT_ENABLE BIT(7)  // ESPI_VWCTRL0   // VW Interrupt Enable
 #define F_VW_UPDATE_FLAG_SEL BIT(2)
-#define F_ASVWSIE_ENABLE BIT(1) // VWCTRL0   // Auto Send VW SUS_ACK# Interrupt Enable
-#define F_ASVWBIE_ENABLE BIT(0) // VWCTRL0   // Auto Send VW Boot_Load_Done/Status Interrupt Enable
+#define F_ASVWSIE_ENABLE BIT(1) // ESPI_VWCTRL0   // Auto Send VW SUS_ACK# Interrupt Enable
+#define F_ASVWBIE_ENABLE BIT(0) // ESPI_VWCTRL0   // Auto Send VW Boot_Load_Done/Status Interrupt Enable
 
-#define F_VWIDX47_UPDATED BIT(7) // VWCTRL1
-#define F_VWIDX44_UPDATED BIT(6)
-#define F_VWIDX43_UPDATED BIT(5)
-#define F_VWIDX42_UPDATED BIT(4)
-#define F_VWIDX41_UPDATED BIT(3)
-#define F_VWIDX7_UPDATED BIT(2)
-#define F_VWIDX3_UPDATED BIT(1)
-#define F_VWIDX2_UPDATED BIT(0)
+#define F_ESPI_VWIDX47_UPDATED BIT(7) // ESPI_VWCTRL1
+#define F_ESPI_VWIDX44_UPDATED BIT(6)
+#define F_ESPI_VWIDX43_UPDATED BIT(5)
+#define F_ESPI_VWIDX42_UPDATED BIT(4)
+#define F_ESPI_VWIDX41_UPDATED BIT(3)
+#define F_ESPI_VWIDX7_UPDATED BIT(2)
+#define F_ESPI_VWIDX3_UPDATED BIT(1)
+#define F_ESPI_VWIDX2_UPDATED BIT(0)
 
-#define F_DSW_PWROK_SOURCE BIT(7) // VWCTRL2
+#define F_DSW_PWROK_SOURCE BIT(7) // ESPI_VWCTRL2
 #define F_SW_DSW_PWROK BIT(6)
 #define F_PLATFORM_RESET_CONTROL BIT(5)
 
-#define F_VW_INDEX_46_RESEND BIT(5) // VWCTRL3
+#define F_VW_INDEX_46_RESEND BIT(5) // ESPI_VWCTRL3
 #define F_VW_INDEX_45_RESEND BIT(4)
 #define F_VW_INDEX_40_RESEND BIT(3)
 #define F_VW_INDEX_6_RESEND BIT(2)
 #define F_VW_INDEX_5_RESEND BIT(1)
 #define F_VW_INDEX_4_RESEND BIT(0)
 
-#define F_VWSS BIT(4)    // VWCTRL5   // VW SUS_WARN# Select
-#define EN_ASVWSE BIT(1) // VWCTRL5   // Auto Send VW SUS_ACK# Enable
-#define EN_ASVWBE BIT(0) // VWCTRL5   // Auto Send VW Boot_Load_Done/Status Enable
+#define F_VWSS BIT(4)    // ESPI_VWCTRL5   // VW SUS_WARN# Select
+#define EN_ASVWSE BIT(1) // ESPI_VWCTRL5   // Auto Send VW SUS_ACK# Enable
+#define EN_ASVWBE BIT(0) // ESPI_VWCTRL5   // Auto Send VW Boot_Load_Done/Status Enable
 
-#define F_ASVWSF BIT(1) // VWCTRL6   // Auto Send VW SUS_ACK# Flag
-#define F_ASVWBF BIT(0) // VWCTRL6   // Auto Send VW Boot_Load_Done/Status Flag
+#define F_ASVWSF BIT(1) // ESPI_VWCTRL6   // Auto Send VW SUS_ACK# Flag
+#define F_ASVWBF BIT(0) // ESPI_VWCTRL6   // Auto Send VW Boot_Load_Done/Status Flag
 
-#define F_ASVWSS BIT(0) // VWCTRL7   // Auto Send VW SUS_ACK# Select
+#define F_ASVWSS BIT(0) // ESPI_VWCTRL7   // Auto Send VW SUS_ACK# Select
 // 0b: If ASVWSE is 1, EC sends SUS_ACK# =0.
 // 1b: If ASVWSE is 1, EC sends SUS_ACK# =1.
 //-----------------------------------------------------------------------------
