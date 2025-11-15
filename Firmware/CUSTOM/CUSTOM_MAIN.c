@@ -93,19 +93,6 @@ void __weak Hook_10msEventB(void)
 //-----------------------------------------------------------------------------
 void __weak Hook_50msEventA(void)
 {
-    //子系统dram更新测试用例
-#if SUPPORT_UPDATE_FUNCTION
-    if (update_crypram_flag == 1)
-    {
-        Cryp_Update_Function();
-        update_crypram_flag = 0;
-    }
-    if (update_intflash_flag == 1)
-    {
-        ExtFlash_Update_Function();
-        update_intflash_flag = 0;
-    }
-#endif
 }
 //-----------------------------------------------------------------------------
 void __weak Hook_50msEventB(void)
@@ -173,9 +160,6 @@ void __weak Hook_500msEventB(void)
 //-----------------------------------------------------------------------------
 void __weak Hook_500msEventC(void)
 {
-#if SUPPORT_FIRMWARE_UPDATE
-    Flash_Update_Function();
-#endif
 }
 //-----------------------------------------------------------------------------
 // Oem 1sec Events/Hook Here
@@ -184,40 +168,6 @@ void __weak Hook_1secEventA(void) // get all temp
 {
 #if (I2C_MODULE_EN && SUPPORT_I2C_TEMPERATURE)
     get_temperature(2);
-#endif
-
-#if 0       //erpmc test
-    if (*((VBYTE*)(0x203B9)) == 1)
-    {
-        *((VBYTE*)(0x203B9)) = 0;
-        // Mailbox_Test();
-        // Mailbox_FW_Extension_Trigger();
-        // Mailbox_APB2_Source_Alloc_Trigger();
-        // Mailbox_Update_Function(0x3, 0x8000, 0x70800); // 发起mailbox更新
-        // Mailbox_Read_FLASHUID_Trigger();
-        // Mailbox_Read_EFUSE_Trigger();
-        Mailbox_WriteRootKey_Trigger();
-    }
-    if (*((VBYTE*)(0x203B9)) == 2)
-    {
-        *((VBYTE*)(0x203B9)) = 0;
-        Mailbox_UpdateHMACKey_Trigger();
-    }
-    if (*((VBYTE*)(0x203B9)) == 3)
-    {
-        *((VBYTE*)(0x203B9)) = 0;
-        //Mailbox_IncrementCounter_Trigger(0x3FFE);
-    }
-    if (*((VBYTE*)(0x203B9)) == 4)
-    {
-        *((VBYTE*)(0x203B9)) = 0;
-        Mailbox_RequestCounter_Trigger();
-    }
-    if (*((VBYTE*)(0x203B9)) == 5)
-    {
-        *((VBYTE*)(0x203B9)) = 0;
-        Mailbox_ReadParameter_Trigger();
-    }
 #endif
 }
 //-----------------------------------------------------------------------------

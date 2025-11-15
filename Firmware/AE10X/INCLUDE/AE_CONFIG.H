@@ -43,7 +43,6 @@
 #define SUPPORT_KBS_REPEAT 0      // Enabled KBS REPEAT FUNCTION
 #define SUPPORT_MATRIX_UTILITY 0  // Enabled PMC Matrix Utility Support
 #define SUPPORT_OSC96MHZ_CHOPEN 0 //时钟​斩波稳定使能​Chopper Stabilization Enable
-#define SUPPORT_UPDATE_FUNCTION 1  //打开更新功能  
 
  //I3C Interface control
 #define I3C_MASTER0_MODE I3C_MASTER_I3C_MODE //i3c master0接口模式选择 I3C_MASTER_I3C_MODE/I3C_MASTER_I3C_MODE
@@ -120,10 +119,10 @@
 #define GPIO_MODULE_EN 1
 #define IRQC_MODULE_EN 1
 #define ICTL_MODULE_EN 1
-#define I2C_MODULE_EN 1
+#define I2C_MODULE_EN 0
 #define PS2_MODULE_EN 0
 #define KBS_MODULE_EN 0
-#define SPIFE_MODULE_EN 1
+#define SPIFE_MODULE_EN 0
 #define SPIM_MODULE_EN 0
 #define SPI_MODULE_EN (SPIM_MODULE_EN||SPIFE_MODULE_EN)
 #define WDT_MODULE_EN 0

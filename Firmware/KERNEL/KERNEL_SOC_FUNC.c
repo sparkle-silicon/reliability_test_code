@@ -354,6 +354,7 @@ void kbs_init(void)
 	sysctl_iomux_kbs(KBD_8_n_SWITCH); // KBD_8_n_SWITCH
 	kbs_pull_up(KBD_8_n_SWITCH);
 	KBS_Init();
+	CSR_IRQC_CONFIG(IRQC_INT_DEVICE_KBS_PRESS, en, 1, 0);
 	dprint("KBS init done.\n");
 #endif
 }

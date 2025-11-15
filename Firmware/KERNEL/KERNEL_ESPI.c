@@ -21,7 +21,6 @@
 #include "KERNEL_MEMORY.H"
 #include "KERNEL_PECI.H"
 #include "KERNEL_MAILBOX.H"
-extern BYTE eRPMC_Busy_Status;
 /*-----------------------------------------------------------------------------
  * eSPI Module Proess Definition
  *---------------------------------------------------------------------------*/
@@ -2463,6 +2462,7 @@ void eRPMC_ReadParameter_Response(void)
 }
 
 #if 0
+extern BYTE eRPMC_Busy_Status;
 BYTE eSPI_OOBRPMC_Handler(void)
 {
     if ((eRPMC_Handler_Rec == 0) && (eRPMC_Handler_Res == 0) && (eRPMC_Handler_Force == 0))

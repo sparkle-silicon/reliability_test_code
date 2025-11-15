@@ -178,7 +178,7 @@ void DMA_Channal_EN(uint8_t DMA_Channal)
     DMA_ChEnReg  = ((0x1<<DMA_Channal)|((0x1<<DMA_Channal)<<8));
 }
 /**
- * @brief dma传输完成检测(需要确认)
+ * @brief dma传输完成检测函数
  * @param  none
  *
  * @return done return 1,not done return 0

@@ -96,16 +96,16 @@ void Process_Tasks(void)
 
 void Mailbox_Init(void)
 {
-    MAILBOX_SELF_CMD =
-        MAILBOX_SELF_INFO1 =
-        MAILBOX_SELF_INFO2 =
-        MAILBOX_SELF_INFO3 =
-        MAILBOX_SELF_INFO4 =
-        MAILBOX_SELF_INFO5 =
-        MAILBOX_SELF_INFO6 =
-        MAILBOX_SELF_INFO7 =
-        MAILBOX_SELF_INT =
-        MAILBOX_SELF_INTEN = 0x00000000;
+    MAILBOX_SELF_CMD = 0 ;
+    MAILBOX_SELF_INFO1 = 0;
+    MAILBOX_SELF_INFO2 = 0;
+    MAILBOX_SELF_INFO3 = 0;
+    MAILBOX_SELF_INFO4 = 0;
+    MAILBOX_SELF_INFO5 = 0;
+    MAILBOX_SELF_INFO6 = 0;
+    MAILBOX_SELF_INFO7 = 0;
+    MAILBOX_SELF_INT = 0;
+    MAILBOX_SELF_INTEN = 0;
     MAILBOX_SELF_INTEN = 0xffffffff; // 使能所有中断(后续改为有轮询效中断)
     do
     {

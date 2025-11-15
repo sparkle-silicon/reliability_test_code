@@ -58,10 +58,10 @@ void Port80_Config(uint16_t addr0, uint8_t addr1, uint32_t offset, uint8_t rgn_e
 	PNP_LD_EN |= HOST_P80_EN; //enable Port80 logic device
 	P80_Idx = 0; Current_P80_Idx = 0; Last_P80_Idx = 0; Total_P80_Idx = 0;
 	offset = offset >> 6;//base:sram+0ffset<<6
-	REG32(0x304e8) &= ~0xffffff;
-	REG32(0x304e8) |= (addr0) | (addr1 << 16) | BIT(24) | BIT(25);//bit24,25为同时使能addr0/1
-	REG32(0x304e8) &= ~BIT(26);
-	REG32(0x304e8) |= rgn_en << 26;//bit26为端口范围使能
+	SYSCTL_P80_ADDR_CFG &= ~0xffffff;
+	SYSCTL_P80_ADDR_CFG |= (addr0) | (addr1 << 16) | BIT(24) | BIT(25);//bit24,25为同时使能addr0/1
+	SYSCTL_P80_ADDR_CFG &= ~BIT(26);
+	SYSCTL_P80_ADDR_CFG |= rgn_en << 26;//bit26为端口范围使能
 	SYSCTL_ESPI_P80_CFG &= ~0x1f;
 	SYSCTL_ESPI_P80_CFG |= (offset & 0x1f);//配置存到sram的偏移sram+0ffset<<6
 	SYSCTL_ESPI_P80_CFG &= ~BIT(6);//interrupt enable

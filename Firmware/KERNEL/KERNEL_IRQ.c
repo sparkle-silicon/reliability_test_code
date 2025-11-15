@@ -23,7 +23,6 @@
 #include "KERNEL_MEMORY.H"
 #include "KERNEL_RTC.H"
 
-#define MOUDLE_TEST 0
 #if ENABLE_DEBUGGER_SUPPORT
 extern char Uart_buffer[UART_BUFFER_SIZE]; // An array of data transferred by the debugger
 #endif
@@ -122,7 +121,7 @@ void cpu_irq_en(void)
 	CSR_IRQC_CONFIG(IRQC_INT_DEVICE_PWRSW, en, 1, 0);
 	CSR_IRQC_CONFIG(IRQC_INT_DEVICE_PS2_0, en, 1, 0);
 	CSR_IRQC_CONFIG(IRQC_INT_DEVICE_KBS_SDV, en, 1, 0);
-	CSR_IRQC_CONFIG(IRQC_INT_DEVICE_KBS_PRESS, en, 1, 0);
+	CSR_IRQC_CONFIG(IRQC_INT_DEVICE_KBS_PRESS, dis, 1, 0);//kbs init enable
 	CSR_IRQC_CONFIG(IRQC_INT_DEVICE_TACH0, en, 1, 0);
 	CSR_IRQC_CONFIG(IRQC_INT_DEVICE_TACH1, en, 1, 0);
 	CSR_IRQC_CONFIG(IRQC_INT_DEVICE_TACH2, en, 1, 0);
@@ -457,7 +456,6 @@ void __interrupt SECTION(".interrupt.ADC_HANDLER") ADC_HANDLER(void)
 	{
 		if (ADC_ValidStatus_1 & (1 << i))
 		{
-			// printf("i:======%x\n",i);
 			(&ADC_Data0)[i] = ADC_ReadData(i);
 			ADC_INTSTAT |= 1 << i;		//清除中断
 			Volt = (&ADC_Data0)[i] * 3.3 / 4095.0;
@@ -607,37 +605,6 @@ void __interrupt SECTION(".interrupt.UARTA_HANDLER") UARTA_HANDLER(void)
 #endif
 #endif
 #endif
-#if 0	//此处代码需要后续功能继续完善，先暂时屏蔽
-	// uart_crtpram_updatebuffer[uart_crypram_updateindex] = UARTA_RX;
-	// printf("%d rx:%x\n", uart_crypram_updateindex, uart_crtpram_updatebuffer[uart_crypram_updateindex]);
-	// uart_crypram_updateindex++;
-	// if ((uart_crtpram_updatebuffer[0] == 0x64) && (uart_crypram_updateindex >= 12))
-	// {
-	// 	printf("crt update\n");
-	// 	if (memcmp(update_crypram_cmd, uart_crtpram_updatebuffer, sizeof(update_crypram_cmd)) == 0)
-	// 	{
-	// 		update_crypram_flag = 1;
-	// 		uart_crypram_updateindex = 0;
-	// 		uart_crtpram_updatebuffer[0] = 0;
-	// 	}
-	// }
-	// else if (uart_crtpram_updatebuffer[0] == 0x75 && (uart_crypram_updateindex >= 16))
-	// {
-	// 	printf("intf update\n");
-	// 	if (memcmp(update_extflash_cmd, uart_crtpram_updatebuffer, sizeof(update_extflash_cmd)) == 0)
-	// 	{
-	// 		update_intflash_flag = 1;
-	// 		uart_crypram_updateindex = 0;
-	// 		uart_crtpram_updatebuffer[0] = 0;
-	// 	}
-	// }
-	// else if ((uart_crtpram_updatebuffer[0] != 0x64) && (uart_crtpram_updatebuffer[0] != 0x75))
-	// {
-	// 	uart_crypram_updateindex = 0;
-	// 	update_crypram_flag = 0;
-	// 	update_intflash_flag = 0;
-	// }
-#endif
 
 }
 void __interrupt SECTION(".interrupt.UARTB_HANDLER") UARTB_HANDLER(void)
@@ -722,23 +689,6 @@ void __interrupt SECTION(".interrupt.TIMER0_HANDLER") TIMER0_HANDLER(void)
 	irqprint(irq_string, __FUNCTION__, 26);
 #endif
 
-#if MOUDLE_TEST
-	int static num = 0;
-	if ((GPIO1_DR0) & (0x1 << 0))//pb0翻转
-	{
-		GPIO1_DR0 &= (0x0 << 0);//GPIO输出寄存器原为1时清0
-	}
-	else
-	{
-		GPIO1_DR0 |= (0x1 << 0);//GPIO输出寄存器原为0时置1
-	}
-	if (num++ == 100)
-	{
-		num = 0;
-		printf("TIMER0\n");
-	}
-#endif
-
 	if ((TIMER0_TIS & 0x1) == 0x1)
 		TIMER0_TEOI; // clear int
 };
@@ -749,23 +699,6 @@ void __interrupt SECTION(".interrupt.TIMER1_HANDLER") TIMER1_HANDLER(void)
 #endif
 #if 0
 	irqprint(irq_string, __FUNCTION__, 27);
-#endif
-
-#if MOUDLE_TEST
-	int static num = 0;
-	if ((GPIO1_DR0) & (0x1 << 1))//pb1翻转
-	{
-		GPIO1_DR0 &= (0x0 << 1);//GPIO输出寄存器原为1时清0
-	}
-	else
-	{
-		GPIO1_DR0 |= (0x1 << 1);//GPIO输出寄存器原为0时置1
-	}
-	if (num++ == 100)
-	{
-		num = 0;
-		printf("TIMER1\n");
-	}
 #endif
 
 	if (TIMER1_TIS & 0x1) // read int status
@@ -782,19 +715,6 @@ void __interrupt SECTION(".interrupt.TIMER2_HANDLER") TIMER2_HANDLER(void)
 	irqprint(irq_string, __FUNCTION__, 28);
 #endif
 
-#if MOUDLE_TEST
-	// if((GPIO1_DR0)&(0x1<<2))//pb1翻转
-	// {
-	// 	GPIO1_DR0 &=(0x0<<2);//GPIO输出寄存器原为1时清0
-	// }
-	// else
-	// {
-	// 	GPIO1_DR0 |=(0x1<<2);//GPIO输出寄存器原为0时置1
-	// }
-	// printf("TIMER2\n");
-#endif
-
-	// irqprint ("%s","--------Begin TIMER2 handler----Vector mode\n");
 	if (TIMER2_TIS & 0x1)
 	{
 		TIMER2_TEOI;
@@ -813,24 +733,6 @@ void __interrupt SECTION(".interrupt.TIMER3_HANDLER") TIMER3_HANDLER(void)
 	irqprint(irq_string, __FUNCTION__, 29);
 #endif
 
-#if MOUDLE_TEST
-	int static num = 0;
-	if ((GPIO1_DR0) & (0x1 << 3))//pb1翻转
-	{
-		GPIO1_DR0 &= (0x0 << 3);//GPIO输出寄存器原为1时清0
-	}
-	else
-	{
-		GPIO1_DR0 |= (0x1 << 3);//GPIO输出寄存器原为0时置1
-	}
-	if (num++ == 100)
-	{
-		num = 0;
-		printf("TIMER3\n");
-	}
-#endif
-
-	// irqprint ("%s","--------Begin TIMER3 handler----Vector mode\n");
 	if (TIMER3_TIS & 0x1)
 	{
 		TIMER3_TEOI;

@@ -16,7 +16,6 @@
 #include "KERNEL_SWUC.H"
 #include "KERNEL_TIMER.H"
 #include "KERNEL_GPIO.H"
-/******SWUC_PNP初始化******/
 void SWUC_PNP_Config(void)
 {
 #if (!SWUC_CLOCK_EN)
