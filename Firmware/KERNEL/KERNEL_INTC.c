@@ -20,8 +20,6 @@
 #include "AE_DEBUGGER.H"
 #include "AE_COMMAND.H"
 #include "CUSTOM_POWER.H"
-#define TEST_INTC 0 //测试二级中断代码
-#define INTC_MODE 0 //1:mask 0:disable
 extern unsigned char iicFeedback, iic_flag, iic_int_flag;
 #if ENABLE_DEBUGGER_SUPPORT
 extern char Uart_buffer[UART_BUFFER_SIZE]; // An array of data transferred by the debugger
@@ -189,51 +187,21 @@ void intr0_gpio_a0(void)
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[32]++;
 #endif
-	if (GPIO0_INTSTATUS0 & (0x1 << 0)) // if int happened
-	{
-		// BRAM_EC_Read();
-		// BRAM_EC_Write();
-		GPIO0_EOI0 |= (0x1 << 0); // clear int
-	}
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_a0 mask\n");
-	ICTL0_INTMASK0 |= 0x1 << 0;
-#else
-	printf("intr0_gpio_a0 disable\n");
-	ICTL0_INTEN0 &= ~(0x1 << 0);
-#endif
-#endif
+	GPIO0_EOI0 |= (0x1 << 0); // clear int
 }
 void intr0_gpio_a1(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[33]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_a1 mask\n");
-	ICTL0_INTMASK0 |= 0x1 << 1;
-#else
-	printf("intr0_gpio_a1 disable\n");
-	ICTL0_INTEN0 &= ~(0x1 << 1);
-#endif
-#endif
+	GPIO0_EOI0 |= (0x1 << 1); // clear int
 }
 void intr0_gpio_a2(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[34]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_a2 mask\n");
-	ICTL0_INTMASK0 |= 0x1 << 2;
-#else
-	printf("intr0_gpio_a2 disable\n");
-	ICTL0_INTEN0 &= ~(0x1 << 2);
-#endif
-#endif
+	GPIO0_EOI0 |= (0x1 << 2); // clear int
 }
 void intr0_gpio_a3(void)
 {
@@ -241,137 +209,60 @@ void intr0_gpio_a3(void)
 	Intr_num[35]++;
 #endif
 	GPIO0_EOI0 |= (0x1 << 3); // clear int
-
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_a3 mask\n");
-	ICTL0_INTMASK0 |= 0x1 << 3;
-#else
-	printf("intr0_gpio_a3 disable\n");
-	ICTL0_INTEN0 &= ~(0x1 << 3);
-#endif
-#endif
 }
 void intr0_gpio_a4(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[36]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_a4 mask\n");
-	ICTL0_INTMASK0 |= 0x1 << 4;
-#else
-	printf("intr0_gpio_a4 disable\n");
-	ICTL0_INTEN0 &= ~(0x1 << 4);
-#endif
-#endif
+	GPIO0_EOI0 |= (0x1 << 4); // clear int
 }
 void intr0_gpio_a5(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[37]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_a5 mask\n");
-	ICTL0_INTMASK0 |= 0x1 << 5;
-#else
-	printf("intr0_gpio_a5 disable\n");
-	ICTL0_INTEN0 &= ~(0x1 << 5);
-#endif
-#endif
+	GPIO0_EOI0 |= (0x1 << 5); // clear int
 }
 void intr0_gpio_a6(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[38]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_a6 mask\n");
-	ICTL0_INTMASK0 |= 0x1 << 6;
-#else
-	printf("intr0_gpio_a6 disable\n");
-	ICTL0_INTEN0 &= ~(0x1 << 6);
-#endif
-#endif
+	GPIO0_EOI0 |= (0x1 << 6); // clear int
 }
 void intr0_gpio_a7(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[39]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_a7 mask\n");
-	ICTL0_INTMASK0 |= 0x1 << 7;
-#else
-	printf("intr0_gpio_a7 disable\n");
-	ICTL0_INTEN0 &= ~(0x1 << 7);
-#endif
-#endif
+	GPIO0_EOI0 |= (0x1 << 7); // clear int
 }
 void intr0_gpio_a8(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[40]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_a8 mask\n");
-	ICTL0_INTMASK1 |= 0x1 << 0;
-#else
-	printf("intr0_gpio_a8 disable\n");
-	ICTL0_INTEN1 &= ~(0x1 << 0);
-#endif
-#endif
+	GPIO0_EOI1 |= (0x1 << 0); // clear int
 }
 void intr0_gpio_a9(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[41]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_a9 mask\n");
-	ICTL0_INTMASK1 |= 0x1 << 1;
-#else
-	printf("intr0_gpio_a9 disable\n");
-	ICTL0_INTEN1 &= ~(0x1 << 1);
-#endif
-#endif
+	GPIO0_EOI1 |= (0x1 << 1); // clear int
 }
 void intr0_gpio_a10(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[42]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_a10 mask\n");
-	ICTL0_INTMASK1 |= 0x1 << 2;
-#else
-	printf("intr0_gpio_a10 disable\n");
-	ICTL0_INTEN1 &= ~(0x1 << 2);
-#endif
-#endif
+	GPIO0_EOI1 |= (0x1 << 2); // clear int
 }
 void intr0_gpio_a11(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[43]++;
-#endif
-
-
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_a11 mask\n");
-	ICTL0_INTMASK1 |= 0x1 << 3;
-#else
-	printf("intr0_gpio_a11 disable\n");
-	ICTL0_INTEN1 &= ~(0x1 << 3);
-#endif
 #endif
 	GPIO0_EOI1 |= (0x1 << 3); // clear int
 }
@@ -380,360 +271,168 @@ void intr0_gpio_a12(void)
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[44]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_a12 mask\n");
-	ICTL0_INTMASK1 |= 0x1 << 4;
-#else
-	printf("intr0_gpio_a12 disable\n");
-	ICTL0_INTEN1 &= ~(0x1 << 4);
-#endif
-#endif
+	GPIO0_EOI1 |= (0x1 << 4); // clear int
 }
 void intr0_gpio_a13(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[45]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_a13 mask\n");
-	ICTL0_INTMASK1 |= 0x1 << 5;
-#else
-	printf("intr0_gpio_a13 disable\n");
-	ICTL0_INTEN1 &= ~(0x1 << 5);
-#endif
-#endif
+	GPIO0_EOI1 |= (0x1 << 5); // clear int
 }
 void intr0_gpio_a14(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[46]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_a14 mask\n");
-	ICTL0_INTMASK1 |= 0x1 << 6;
-#else
-	printf("intr0_gpio_a14 disable\n");
-	ICTL0_INTEN1 &= ~(0x1 << 6);
-#endif
-#endif
+	GPIO0_EOI1 |= (0x1 << 6); // clear int
 }
 void intr0_gpio_a15(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[47]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_a15 mask\n");
-	ICTL0_INTMASK1 |= 0x1 << 7;
-#else
-	printf("intr0_gpio_a15 disable\n");
-	ICTL0_INTEN1 &= ~(0x1 << 7);
-#endif
-#endif
+	GPIO0_EOI1 |= (0x1 << 7); // clear int
 }
 void intr0_gpio_a16(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[48]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_a16 mask\n");
-	ICTL0_INTMASK2 |= 0x1 << 0;
-#else
-	printf("intr0_gpio_a16 disable\n");
-	ICTL0_INTEN2 &= ~(0x1 << 0);
-#endif
-#endif
+	GPIO0_EOI2 |= (0x1 << 0); // clear int
 }
 void intr0_gpio_a17(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[49]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_a17 mask\n");
-	ICTL0_INTMASK2 |= 0x1 << 1;
-#else
-	printf("intr0_gpio_a17 disable\n");
-	ICTL0_INTEN2 &= ~(0x1 << 1);
-#endif
-#endif
+	GPIO0_EOI2 |= (0x1 << 1); // clear int
 }
 void intr0_gpio_a18(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[50]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_a18 mask\n");
-	ICTL0_INTMASK2 |= 0x1 << 2;
-#else
-	printf("intr0_gpio_a18 disable\n");
-	ICTL0_INTEN2 &= ~(0x1 << 2);
-#endif
-#endif
+	GPIO0_EOI2 |= (0x1 << 2); // clear int
 }
 void intr0_gpio_a19(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[51]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_a19 mask\n");
-	ICTL0_INTMASK2 |= 0x1 << 3;
-#else
-	printf("intr0_gpio_a19 disable\n");
-	ICTL0_INTEN2 &= ~(0x1 << 3);
-#endif
-#endif
+	GPIO0_EOI2 |= (0x1 << 3); // clear int
 }
 void intr0_gpio_a20(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[52]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_a20 mask\n");
-	ICTL0_INTMASK2 |= 0x1 << 4;
-#else
-	printf("intr0_gpio_a20 disable\n");
-	ICTL0_INTEN2 &= ~(0x1 << 4);
-#endif
-#endif
+	GPIO0_EOI2 |= (0x1 << 4); // clear int
 }
 void intr0_gpio_a21(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[53]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_a21 mask\n");
-	ICTL0_INTMASK2 |= 0x1 << 5;
-#else
-	printf("intr0_gpio_a21 disable\n");
-	ICTL0_INTEN2 &= ~(0x1 << 5);
-#endif
-#endif
+	GPIO0_EOI2 |= (0x1 << 5); // clear int
 }
 void intr0_gpio_a22(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[54]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_a22 mask\n");
-	ICTL0_INTMASK2 |= 0x1 << 6;
-#else
-	printf("intr0_gpio_a22 disable\n");
-	ICTL0_INTEN2 &= ~(0x1 << 6);
-#endif
-#endif
+	GPIO0_EOI2 |= (0x1 << 6); // clear int
 }
 void intr0_gpio_a23(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[55]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_a23 mask\n");
-	ICTL0_INTMASK2 |= 0x1 << 7;
-#else
-	printf("intr0_gpio_a23 disable\n");
-	ICTL0_INTEN2 &= ~(0x1 << 7);
-#endif
-#endif
+	GPIO0_EOI2 |= (0x1 << 7); // clear int
 }
 void intr0_gpio_a24(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[56]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_a24 mask\n");
-	ICTL0_INTMASK3 |= 0x1 << 0;
-#else
-	printf("intr0_gpio_a24 disable\n");
-	ICTL0_INTEN3 &= ~(0x1 << 0);
-#endif
-#endif
+	GPIO0_EOI3 |= (0x1 << 0); // clear int
 }
 void intr0_gpio_a25(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[57]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_a25 mask\n");
-	ICTL0_INTMASK3 |= 0x1 << 1;
-#else
-	printf("intr0_gpio_a25 disable\n");
-	ICTL0_INTEN3 &= ~(0x1 << 1);
-#endif
-#endif
+	GPIO0_EOI3 |= (0x1 << 1); // clear int
 }
 void intr0_gpio_a26(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[58]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_a26 mask\n");
-	ICTL0_INTMASK3 |= 0x1 << 2;
-#else
-	printf("intr0_gpio_a26 disable\n");
-	ICTL0_INTEN3 &= ~(0x1 << 2);
-#endif
-#endif
+	GPIO0_EOI3 |= (0x1 << 2); // clear int
 }
 void intr0_gpio_a27(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[59]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_a27 mask\n");
-	ICTL0_INTMASK3 |= 0x1 << 3;
-#else
-	printf("intr0_gpio_a27 disable\n");
-	ICTL0_INTEN3 &= ~(0x1 << 3);
-#endif
-#endif
+	GPIO0_EOI3 |= (0x1 << 3); // clear int
 }
 void intr0_gpio_a28(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[60]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_a28 mask\n");
-	ICTL0_INTMASK3 |= 0x1 << 4;
-#else
-	printf("intr0_gpio_a28 disable\n");
-	ICTL0_INTEN3 &= ~(0x1 << 4);
-#endif
-#endif
+	GPIO0_EOI3 |= (0x1 << 4); // clear int
 }
 void intr0_gpio_a29(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[61]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_a29 mask\n");
-	ICTL0_INTMASK3 |= 0x1 << 5;
-#else
-	printf("intr0_gpio_a29 disable\n");
-	ICTL0_INTEN3 &= ~(0x1 << 5);
-#endif
-#endif
+	GPIO0_EOI3 |= (0x1 << 5); // clear int
 }
 void intr0_gpio_a30(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[62]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_a30 mask\n");
-	ICTL0_INTMASK3 |= 0x1 << 6;
-#else
-	printf("intr0_gpio_a30 disable\n");
-	ICTL0_INTEN3 &= ~(0x1 << 6);
-#endif
-#endif
+	GPIO0_EOI3 |= (0x1 << 6); // clear int
 }
 void intr0_gpio_a31(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[63]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_a31 mask\n");
-	ICTL0_INTMASK3 |= 0x1 << 7;
-#else
-	printf("intr0_gpio_a31 disable\n");
-	ICTL0_INTEN3 &= ~(0x1 << 7);
-#endif
-#endif
+	GPIO0_EOI3 |= (0x1 << 7); // clear int
 }
 void intr0_gpio_b0(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[64]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_b0 mask\n");
-	ICTL0_INTMASK4 |= 0x1 << 0;
-#else
-	printf("intr0_gpio_b0 disable\n");
-	ICTL0_INTEN4 &= ~(0x1 << 0);
-#endif
-#endif
+	GPIO1_EOI0 |= 0x1 << 0; // 清除中断
 }
 void intr0_gpio_b1(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[65]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_b1 mask\n");
-	ICTL0_INTMASK4 |= 0x1 << 1;
-#else
-	printf("intr0_gpio_b1 disable\n");
-	ICTL0_INTEN4 &= ~(0x1 << 1);
-#endif
-#endif
+	GPIO1_EOI0 |= 0x1 << 1; // 清除中断
 }
 void intr0_gpio_b2(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[66]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_b2 mask\n");
-	ICTL0_INTMASK4 |= 0x1 << 2;
-#else
-	printf("intr0_gpio_b2 disable\n");
-	ICTL0_INTEN4 &= ~(0x1 << 2);
-#endif
-#endif
+	GPIO1_EOI0 |= 0x1 << 2; // 清除中断
 }
 void intr0_gpio_b3(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[67]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_b3 mask\n");
-	ICTL0_INTMASK4 |= 0x1 << 3;
-#else
-	printf("intr0_gpio_b3 disable\n");
-	ICTL0_INTEN4 &= ~(0x1 << 3);
-#endif
-#endif
+	GPIO1_EOI0 |= 0x1 << 3; // 清除中断
 }
 void intr0_gpio_b4(void)
 {
@@ -741,195 +440,90 @@ void intr0_gpio_b4(void)
 	Intr_num[68]++;
 #endif
 	GPIO1_EOI0 |= 0x1 << 4; // 清除中断
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_b4 mask\n");
-	ICTL0_INTMASK4 |= 0x1 << 4;
-#else
-	printf("intr0_gpio_b4 disable\n");
-	ICTL0_INTEN4 &= ~(0x1 << 4);
-#endif
-#endif
 }
 void intr0_gpio_b5(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[69]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_b5 mask\n");
-	ICTL0_INTMASK4 |= 0x1 << 5;
-#else
-	printf("intr0_gpio_b5 disable\n");
-	ICTL0_INTEN4 &= ~(0x1 << 5);
-#endif
-#endif
+	GPIO1_EOI0 |= 0x1 << 5; // 清除中断
 }
 void intr0_gpio_b6(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[70]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_b6 mask\n");
-	ICTL0_INTMASK4 |= 0x1 << 6;
-#else
-	printf("intr0_gpio_b6 disable\n");
-	ICTL0_INTEN4 &= ~(0x1 << 6);
-#endif
-#endif
+	GPIO1_EOI0 |= 0x1 << 6; // 清除中断
 }
 void intr0_gpio_b7(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[71]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_b7 mask\n");
-	ICTL0_INTMASK4 |= 0x1 << 7;
-#else
-	printf("intr0_gpio_b7 disable\n");
-	ICTL0_INTEN4 &= ~(0x1 << 7);
-#endif
-#endif
+	GPIO1_EOI0 |= 0x1 << 7; // 清除中断
 }
 void intr0_gpio_b8(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[72]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_b8 mask\n");
-	ICTL0_INTMASK5 |= 0x1 << 0;
-#else
-	printf("intr0_gpio_b8 disable\n");
-	ICTL0_INTEN5 &= ~(0x1 << 0);
-#endif
-#endif
+	GPIO1_EOI1 |= 0x1 << 0; // 清除中断
 }
 void intr0_gpio_b9(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[73]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_b9 mask\n");
-	ICTL0_INTMASK5 |= 0x1 << 1;
-#else
-	printf("intr0_gpio_b9 disable\n");
-	ICTL0_INTEN5 &= ~(0x1 << 1);
-#endif
-#endif
+	GPIO1_EOI1 |= 0x1 << 1; // 清除中断
 }
 void intr0_gpio_b10(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[74]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_b10 mask\n");
-	ICTL0_INTMASK5 |= 0x1 << 2;
-#else
-	printf("intr0_gpio_b10 disable\n");
-	ICTL0_INTEN5 &= ~(0x1 << 2);
-#endif
-#endif
+	GPIO1_EOI1 |= 0x1 << 2; // 清除中断
 }
 void intr0_gpio_b11(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[75]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_b11 mask\n");
-	ICTL0_INTMASK5 |= 0x1 << 3;
-#else
-	printf("intr0_gpio_b11 disable\n");
-	ICTL0_INTEN5 &= ~(0x1 << 3);
-#endif
-#endif
+	GPIO1_EOI1 |= 0x1 << 3; // 清除中断
 }
 void intr0_gpio_b12(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[76]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_b12 mask\n");
-	ICTL0_INTMASK5 |= 0x1 << 4;
-#else
-	printf("intr0_gpio_b12 disable\n");
-	ICTL0_INTEN5 &= ~(0x1 << 4);
-#endif
-#endif
+	GPIO1_EOI1 |= 0x1 << 4; // 清除中断
 }
 void intr0_gpio_b13(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[77]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_b13 mask\n");
-	ICTL0_INTMASK5 |= 0x1 << 5;
-#else
-	printf("intr0_gpio_b13 disable\n");
-	ICTL0_INTEN5 &= ~(0x1 << 5);
-#endif
-#endif
+	GPIO1_EOI1 |= 0x1 << 5; // 清除中断
 }
 void intr0_gpio_b14(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[78]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_b14 mask\n");
-	ICTL0_INTMASK5 |= 0x1 << 6;
-#else
-	printf("intr0_gpio_b14 disable\n");
-	ICTL0_INTEN5 &= ~(0x1 << 6);
-#endif
-#endif
+	GPIO1_EOI1 |= 0x1 << 6; // 清除中断
 }
 void intr0_gpio_b15(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[79]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_b15 mask\n");
-	ICTL0_INTMASK5 |= 0x1 << 7;
-#else
-	printf("intr0_gpio_b15 disable\n");
-	ICTL0_INTEN5 &= ~(0x1 << 7);
-#endif
-#endif
+	GPIO1_EOI1 |= 0x1 << 7; // 清除中断
 }
 void intr0_gpio_b16(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[80]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_b16 mask\n");
-	ICTL0_INTMASK6 |= 0x1 << 0;
-#else
-	printf("intr0_gpio_b16 disable\n");
-	ICTL0_INTEN6 &= ~(0x1 << 0);
-#endif
-#endif
+	GPIO1_EOI2 |= 0x1 << 0; // 清除中断
 }
 void intr0_gpio_b17(void)
 {
@@ -937,587 +531,273 @@ void intr0_gpio_b17(void)
 	Intr_num[81]++;
 #endif
 	GPIO1_EOI2 |= 0x1 << 1; //clear interrupt
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_b17 mask\n");
-	ICTL0_INTMASK6 |= 0x1 << 1;
-#else
-	printf("intr0_gpio_b17 disable\n");
-	ICTL0_INTEN6 &= ~(0x1 << 1);
-#endif
-#endif
 }
 void intr0_gpio_b18(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[82]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_b18 mask\n");
-	ICTL0_INTMASK6 |= 0x1 << 2;
-#else
-	printf("intr0_gpio_b18 disable\n");
-	ICTL0_INTEN6 &= ~(0x1 << 2);
-#endif
-#endif
+	GPIO1_EOI2 |= 0x1 << 2; // 清除中断
 }
 void intr0_gpio_b19(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[83]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_b19 mask\n");
-	ICTL0_INTMASK6 |= 0x1 << 3;
-#else
-	printf("intr0_gpio_b19 disable\n");
-	ICTL0_INTEN6 &= ~(0x1 << 3);
-#endif
-#endif
+	GPIO1_EOI2 |= 0x1 << 3; // 清除中断
 }
 void intr0_gpio_b20(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[84]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_b20 mask\n");
-	ICTL0_INTMASK6 |= 0x1 << 4;
-#else
-	printf("intr0_gpio_b20 disable\n");
-	ICTL0_INTEN6 &= ~(0x1 << 4);
-#endif
-#endif
+	GPIO1_EOI2 |= 0x1 << 4; // 清除中断
 }
 void intr0_gpio_b21(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[85]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_b21 mask\n");
-	ICTL0_INTMASK6 |= 0x1 << 5;
-#else
-	printf("intr0_gpio_b21 disable\n");
-	ICTL0_INTEN6 &= ~(0x1 << 5);
-#endif
-#endif
+	GPIO1_EOI2 |= 0x1 << 5; // 清除中断
 }
 void intr0_gpio_b22(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[86]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_b22 mask\n");
-	ICTL0_INTMASK6 |= 0x1 << 6;
-#else
-	printf("intr0_gpio_b22 disable\n");
-	ICTL0_INTEN6 &= ~(0x1 << 6);
-#endif
-#endif
+	GPIO1_EOI2 |= 0x1 << 6; // 清除中断
 }
 void intr0_gpio_b23(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[87]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_b23 mask\n");
-	ICTL0_INTMASK6 |= 0x1 << 7;
-#else
-	printf("intr0_gpio_b23 disable\n");
-	ICTL0_INTEN6 &= ~(0x1 << 7);
-#endif
-#endif
+	GPIO1_EOI2 |= 0x1 << 7; // 清除中断
 }
 void intr0_gpio_b24(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[88]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_b24 mask\n");
-	ICTL0_INTMASK7 |= 0x1 << 0;
-#else
-	printf("intr0_gpio_b24 disable\n");
-	ICTL0_INTEN7 &= ~(0x1 << 0);
-#endif
-#endif
+	GPIO1_EOI3 |= 0x1 << 0; // 清除中断
 }
 void intr0_gpio_b25(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[89]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_b25 mask\n");
-	ICTL0_INTMASK7 |= 0x1 << 1;
-#else
-	printf("intr0_gpio_b25 disable\n");
-	ICTL0_INTEN7 &= ~(0x1 << 1);
-#endif
-#endif
+	GPIO1_EOI3 |= 0x1 << 1; // 清除中断
 }
 void intr0_gpio_b26(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[90]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_b26 mask\n");
-	ICTL0_INTMASK7 |= 0x1 << 2;
-#else
-	printf("intr0_gpio_b26 disable\n");
-	ICTL0_INTEN7 &= ~(0x1 << 2);
-#endif
-#endif
+	GPIO1_EOI3 |= 0x1 << 2; // 清除中断
 }
 void intr0_gpio_b27(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[91]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_b27 mask\n");
-	ICTL0_INTMASK7 |= 0x1 << 3;
-#else
-	printf("intr0_gpio_b27 disable\n");
-	ICTL0_INTEN7 &= ~(0x1 << 3);
-#endif
-#endif
+	GPIO1_EOI3 |= 0x1 << 3; // 清除中断
 }
 void intr0_gpio_b28(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[92]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_b28 mask\n");
-	ICTL0_INTMASK7 |= 0x1 << 4;
-#else
-	printf("intr0_gpio_b28 disable\n");
-	ICTL0_INTEN7 &= ~(0x1 << 4);
-#endif
-#endif
+	GPIO1_EOI3 |= 0x1 << 4; // 清除中断
 }
 void intr0_gpio_b29(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[93]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_b29 mask\n");
-	ICTL0_INTMASK7 |= 0x1 << 5;
-#else
-	printf("intr0_gpio_b29 disable\n");
-	ICTL0_INTEN7 &= ~(0x1 << 5);
-#endif
-#endif
+	GPIO1_EOI3 |= 0x1 << 5; // 清除中断
 }
 void intr0_gpio_b30(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[94]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_b30 mask\n");
-	ICTL0_INTMASK7 |= 0x1 << 6;
-#else
-	printf("intr0_gpio_b30 disable\n");
-	ICTL0_INTEN7 &= ~(0x1 << 6);
-#endif
-#endif
+	GPIO1_EOI3 |= 0x1 << 6; // 清除中断
 }
 void intr0_gpio_b31(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[95]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr0_gpio_b31 mask\n");
-	ICTL0_INTMASK7 |= 0x1 << 7;
-#else
-	printf("intr0_gpio_b31 disable\n");
-	ICTL0_INTEN7 &= ~(0x1 << 7);
-#endif
-#endif
+	GPIO1_EOI3 |= 0x1 << 7; // 清除中断
 }
 void intr1_gpio_c0(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[96]++;
 #endif
-
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_gpio_c0 mask\n");
-	ICTL1_INTMASK0 |= 0x1 << 0;
-#else
-	printf("intr1_gpio_c0 disable\n");
-	ICTL1_INTEN0 &= ~(0x1 << 0);
-#endif
-#endif
+	GPIO2_EOI0 |= 0x1 << 0; // 清除中断
 }
 void intr1_gpio_c1(void)
 {
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_gpio_c1 mask\n");
-	ICTL1_INTMASK0 |= 0x1 << 1;
-#else
-	printf("intr1_gpio_c1 disable\n");
-	ICTL1_INTEN0 &= ~(0x1 << 1);
-#endif
-#endif
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[97]++;
 #endif
+	GPIO2_EOI0 |= 0x1 << 1; // 清除中断
 }
 void intr1_gpio_c2(void)
 {
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_gpio_c2 mask\n");
-	ICTL1_INTMASK0 |= 0x1 << 2;
-#else
-	printf("intr1_gpio_c2 disable\n");
-	ICTL1_INTEN0 &= ~(0x1 << 2);
-#endif
-#endif
 
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[98]++;
 #endif
+	GPIO2_EOI0 |= 0x1 << 2; // 清除中断
 }
 void intr1_gpio_c3(void)
 {
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_gpio_c3 mask\n");
-	ICTL1_INTMASK0 |= 0x1 << 3;
-#else
-	printf("intr1_gpio_c3 disable\n");
-	ICTL1_INTEN0 &= ~(0x1 << 3);
-#endif
-#endif
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[99]++;
 #endif
+	GPIO2_EOI0 |= 0x1 << 3; // 清除中断
 }
 void intr1_gpio_c4(void)
 {
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_gpio_c4 mask\n");
-	ICTL1_INTMASK0 |= 0x1 << 4;
-#else
-	printf("intr1_gpio_c4 disable\n");
-	ICTL1_INTEN0 &= ~(0x1 << 4);
-#endif
-#endif
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[100]++;
 #endif
+	GPIO2_EOI0 |= 0x1 << 4; // 清除中断
 }
 void intr1_gpio_c5(void)
 {
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_gpio_c5 mask\n");
-	ICTL1_INTMASK0 |= 0x1 << 5;
-#else
-	printf("intr1_gpio_c5 disable\n");
-	ICTL1_INTEN0 &= ~(0x1 << 5);
-#endif
-#endif
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[101]++;
 #endif
+	GPIO2_EOI0 |= 0x1 << 5; // 清除中断
 }
 void intr1_gpio_c6(void)
 {
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_gpio_c6 mask\n");
-	ICTL1_INTMASK0 |= 0x1 << 6;
-#else
-	printf("intr1_gpio_c6 disable\n");
-	ICTL1_INTEN0 &= ~(0x1 << 6);
-#endif
-#endif
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[102]++;
 #endif
+	GPIO2_EOI0 |= 0x1 << 6; // 清除中断
 }
 void intr1_gpio_c7(void)
 {
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_gpio_c7 mask\n");
-	ICTL1_INTMASK0 |= 0x1 << 7;
-#else
-	printf("intr1_gpio_c7 disable\n");
-	ICTL1_INTEN0 &= ~(0x1 << 7);
-#endif
-#endif
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[103]++;
 #endif
+	GPIO2_EOI0 |= 0x1 << 7; // 清除中断
 }
 void intr1_gpio_c8(void)
 {
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_gpio_c8 mask\n");
-	ICTL1_INTMASK1 |= 0x1 << 0;
-#else
-	printf("intr1_gpio_c8 disable\n");
-	ICTL1_INTEN1 &= ~(0x1 << 0);
-#endif
-#endif
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[104]++;
 #endif
+	GPIO2_EOI1 |= 0x1 << 0; // 清除中断
 }
 void intr1_gpio_c9(void)
 {
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_gpio_c9 mask\n");
-	ICTL1_INTMASK1 |= 0x1 << 1;
-#else
-	printf("intr1_gpio_c9 disable\n");
-	ICTL1_INTEN1 &= ~(0x1 << 1);
-#endif
-#endif
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[105]++;
 #endif
+	GPIO2_EOI1 |= 0x1 << 1; // 清除中断
 }
 void intr1_gpio_c10(void)
 {
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_gpio_c10 mask\n");
-	ICTL1_INTMASK1 |= 0x1 << 2;
-#else
-	printf("intr1_gpio_c10 disable\n");
-	ICTL1_INTEN1 &= ~(0x1 << 2);
-#endif
-#endif
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[106]++;
 #endif
+	GPIO2_EOI1 |= 0x1 << 2; // 清除中断
 }
 void intr1_gpio_c11(void)
 {
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_gpio_c11 mask\n");
-	ICTL1_INTMASK1 |= 0x1 << 3;
-#else
-	printf("intr1_gpio_c11 disable\n");
-	ICTL1_INTEN1 &= ~(0x1 << 3);
-#endif
-#endif
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[107]++;
 #endif
+	GPIO2_EOI1 |= 0x1 << 3; // 清除中断
 }
 void intr1_gpio_c12(void)
 {
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_gpio_c12 mask\n");
-	ICTL1_INTMASK1 |= 0x1 << 4;
-#else
-	printf("intr1_gpio_c12 disable\n");
-	ICTL1_INTEN1 &= ~(0x1 << 4);
-#endif
-#endif
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[108]++;
 #endif
+	GPIO2_EOI1 |= 0x1 << 4; // 清除中断
 }
 void intr1_gpio_c13(void)
 {
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_gpio_c13 mask\n");
-	ICTL1_INTMASK1 |= 0x1 << 5;
-#else
-	printf("intr1_gpio_c13 disable\n");
-	ICTL1_INTEN1 &= ~(0x1 << 5);
-#endif
-#endif
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[109]++;
 #endif
+	GPIO2_EOI1 |= 0x1 << 5; // 清除中断
 }
 void intr1_gpio_c14(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[110]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_gpio_c14 mask\n");
-	ICTL1_INTMASK1 |= 0x1 << 6;
-#else
-	printf("intr1_gpio_c14 disable\n");
-	ICTL1_INTEN1 &= ~(0x1 << 6);
-#endif
-#endif
+	GPIO2_EOI1 |= 0x1 << 6; // 清除中断
 }
 void intr1_gpio_c15(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[111]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_gpio_c15 mask\n");
-	ICTL1_INTMASK1 |= 0x1 << 7;
-#else
-	printf("intr1_gpio_c15 disable\n");
-	ICTL1_INTEN1 &= ~(0x1 << 7);
-#endif
-#endif
+	GPIO2_EOI1 |= 0x1 << 7; // 清除中断
 }
 void intr1_gpio_e16(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[121]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_gpio_e16 mask\n");
-	ICTL1_INTMASK2 |= 0x1 << 0;
-#else
-	printf("intr1_gpio_e16 disable\n");
-	ICTL1_INTEN2 &= ~(0x1 << 0);
-#endif
-#endif
+	GPIO3_EOI2 |= 0x1 << 0; // 清除中断
 }
 void intr1_gpio_e17(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[122]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_gpio_e17 mask\n");
-	ICTL1_INTMASK2 |= 0x1 << 1;
-#else
-	printf("intr1_gpio_e17 disable\n");
-	ICTL1_INTEN2 &= ~(0x1 << 1);
-#endif
-#endif
+	GPIO3_EOI2 |= 0x1 << 1; // 清除中断
 }
 void intr1_gpio_e18(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[123]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_gpio_e18 mask\n");
-	ICTL1_INTMASK2 |= 0x1 << 2;
-#else
-	printf("intr1_gpio_e18 disable\n");
-	ICTL1_INTEN2 &= ~(0x1 << 2);
-#endif
-#endif
+	GPIO3_EOI2 |= 0x1 << 2; // 清除中断
 }
 void intr1_gpio_e19(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[124]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_gpio_e19 mask\n");
-	ICTL1_INTMASK2 |= 0x1 << 3;
-#else
-	printf("intr1_gpio_e19 disable\n");
-	ICTL1_INTEN2 &= ~(0x1 << 3);
-#endif
-#endif
+	GPIO3_EOI2 |= 0x1 << 3; // 清除中断
 }
 void intr1_gpio_e20(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[125]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_gpio_e20 mask\n");
-	ICTL1_INTMASK2 |= 0x1 << 4;
-#else
-	printf("intr1_gpio_e20 disable\n");
-	ICTL1_INTEN2 &= ~(0x1 << 4);
-#endif
-#endif
+	GPIO3_EOI2 |= 0x1 << 4; // 清除中断
 }
 void intr1_gpio_e21(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[126]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_gpio_e21 mask\n");
-	ICTL1_INTMASK2 |= 0x1 << 5;
-#else
-	printf("intr1_gpio_e21 disable\n");
-	ICTL1_INTEN2 &= ~(0x1 << 5);
-#endif
-#endif
+	GPIO3_EOI2 |= 0x1 << 5; // 清除中断
 }
 void intr1_gpio_e22(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[127]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_gpio_e22 mask\n");
-	ICTL1_INTMASK2 |= 0x1 << 6;
-#else
-	printf("intr1_gpio_e22 disable\n");
-	ICTL1_INTEN2 &= ~(0x1 << 6);
-#endif
-#endif
+	GPIO3_EOI2 |= 0x1 << 6; // 清除中断
 }
 void intr1_gpio_e23(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[128]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_gpio_e23 mask\n");
-	ICTL1_INTMASK2 |= 0x1 << 7;
-#else
-	printf("intr1_gpio_e23 disable\n");
-	ICTL1_INTEN2 &= ~(0x1 << 7);
-#endif
-#endif
+	GPIO3_EOI2 |= 0x1 << 7; // 清除中断
 }
 
 void intr1_dma(void) // 24
@@ -1525,31 +805,12 @@ void intr1_dma(void) // 24
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[120]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_dma mask\n");
-	ICTL1_INTMASK3 |= 0x1 << 0;
-#else
-	printf("intr1_dma disable\n");
-	ICTL1_INTEN3 &= ~(0x1 << 0);
-#endif
-#endif
 }
 
 void intr1_cec0(void) // 25
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[121]++;
-#endif
-
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_cec0 mask\n");
-	ICTL1_INTMASK3 |= 0x1 << 1;
-#else
-	printf("intr1_cec0 disable\n");
-	ICTL1_INTEN3 &= ~(0x1 << 1);
-#endif
 #endif
 
 	DWORD stat, int_stat;
@@ -1596,16 +857,6 @@ void intr1_cec1(void) // 26
 	Intr_num[122]++;
 #endif
 
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_cec1 mask\n");
-	ICTL1_INTMASK3 |= 0x1 << 2;
-#else
-	printf("intr1_cec1 disable\n");
-	ICTL1_INTEN3 &= ~(0x1 << 2);
-#endif
-#endif
-
 	DWORD stat, int_stat;
 	stat = CECn_SR(1);
 	if ((stat & (CEC_SR_Sackerr | CEC_SR_Lineerr | CEC_SR_Biterr | CEC_SR_Errder)) != 0)
@@ -1646,15 +897,6 @@ void intr1_cec1(void) // 26
 
 void intr1_smbus4(void) // 27
 {
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_smbus4 mask\n");
-	ICTL1_INTMASK3 |= 0x1 << 3;
-#else
-	printf("intr1_smbus4 disable\n");
-	ICTL1_INTEN3 &= ~(0x1 << 3);
-#endif
-#endif
 	uint16_t raw_intr_stat = SMBUS4_RAW_INTR_STAT0;
 	irqprint("raw_intr_stat : %#x\n", raw_intr_stat);
 	if (raw_intr_stat & I2C_INTR_TX_ABRT)
@@ -1711,15 +953,6 @@ void intr1_smbus4(void) // 27
 }
 void intr1_smbus5(void) // 28
 {
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_smbus5 mask\n");
-	ICTL1_INTMASK3 |= 0x1 << 4;
-#else
-	printf("intr1_smbus5 disable\n");
-	ICTL1_INTEN3 &= ~(0x1 << 4);
-#endif
-#endif
 	uint16_t raw_intr_stat = SMBUS5_RAW_INTR_STAT0;
 	irqprint("raw_intr_stat : %#x\n", raw_intr_stat);
 	if (raw_intr_stat & I2C_INTR_TX_ABRT)
@@ -1804,15 +1037,6 @@ void intr1_null29(void) // 29
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[125]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_null29 mask\n");
-	ICTL1_INTMASK3 |= 0x1 << 5;
-#else
-	printf("intr1_null29 disable\n");
-	ICTL1_INTEN3 &= ~(0x1 << 5);
-#endif
-#endif
 }
 
 void intr1_null30(void) // 30
@@ -1847,30 +1071,11 @@ void intr1_peci(void) // 31
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[127]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_peci mask\n");
-	ICTL1_INTMASK3 |= 0x1 << 7;
-#else
-	printf("intr1_peci disable\n");
-	ICTL1_INTEN3 &= ~(0x1 << 7);
-#endif
-#endif
 }
 void intr1_i3c0(void) // 32
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[128]++;
-#endif
-
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_i3c0 mask\n");
-	ICTL1_INTMASK4 |= 0x1 << 0;
-#else
-	printf("intr1_i3c0 disable\n");
-	ICTL1_INTEN4 &= ~(0x1 << 0);
-#endif
 #endif
 	I3C_Master_IntrStatus(I3C_MASTER0);
 }
@@ -1880,15 +1085,6 @@ void intr1_i3c1(void) // 33
 	Intr_num[129]++;
 #endif
 
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_i3c1 mask\n");
-	ICTL1_INTMASK4 |= 0x1 << 1;
-#else
-	printf("intr1_i3c1 disable\n");
-	ICTL1_INTEN4 &= ~(0x1 << 1);
-#endif
-#endif
 	I3C_Master_IntrStatus(I3C_MASTER1);
 }
 void intr1_i3c2(void) // 34
@@ -1897,15 +1093,6 @@ void intr1_i3c2(void) // 34
 	Intr_num[130]++;
 #endif
 
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_i3c2 mask\n");
-	ICTL1_INTMASK4 |= 0x1 << 2;
-#else
-	printf("intr1_i3c2 disable\n");
-	ICTL1_INTEN4 &= ~(0x1 << 2);
-#endif
-#endif
 }
 void intr1_i3c3(void) // 35
 {
@@ -1913,15 +1100,6 @@ void intr1_i3c3(void) // 35
 	Intr_num[131]++;
 #endif
 
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_i3c3 mask\n");
-	ICTL1_INTMASK4 |= 0x1 << 3;
-#else
-	printf("intr1_i3c3 disable\n");
-	ICTL1_INTEN4 &= ~(0x1 << 3);
-#endif
-#endif
 }
 void intr1_null36(void) // 36
 {
@@ -1944,15 +1122,6 @@ void intr1_pmc2_ibf_ec(void) // 38
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[134]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_pmc2_ibf_ec mask\n");
-	ICTL1_INTMASK4 |= 0x1 << 6;
-#else
-	printf("intr1_pmc2_ibf_ec disable\n");
-	ICTL1_INTEN4 &= ~(0x1 << 6);
-#endif
-#endif
 	PMC2_CTL &= ~IBF_INT_ENABLE; // 清除中断，读走以后再打开
 	F_Service_PCI3 = 1;
 }
@@ -1961,28 +1130,10 @@ void intr1_pmc2_obe_ec(void) // 39
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[135]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_pmc2_obe_ec mask\n");
-	ICTL1_INTMASK4 |= 0x1 << 7;
-#else
-	printf("intr1_pmc2_obe_ec disable\n");
-	ICTL1_INTEN4 &= ~(0x1 << 7);
-#endif
-#endif
 }
 
 void intr1_pmc3_ibf_ec(void)
 {
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_pmc3_ibf_ec mask\n");
-	ICTL1_INTMASK5 |= 0x1 << 0;
-#else
-	printf("intr1_pmc3_ibf_ec disable\n");
-	ICTL1_INTEN5 &= ~(0x1 << 0);
-#endif
-#endif
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[136]++;
 #endif
@@ -1991,30 +1142,12 @@ void intr1_pmc3_ibf_ec(void)
 }
 void intr1_pmc3_obe_ec(void)
 {
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_pmc3_obe_ec mask\n");
-	ICTL1_INTMASK5 |= 0x1 << 1;
-#else
-	printf("intr1_pmc3_obe_ec disable\n");
-	ICTL1_INTEN5 &= ~(0x1 << 1);
-#endif
-#endif
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[137]++;
 #endif
 }
 void intr1_pmc4_ibf_ec(void)
 {
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_pmc4_ibf_ec mask\n");
-	ICTL1_INTMASK5 |= 0x1 << 2;
-#else
-	printf("intr1_pmc4_ibf_ec disable\n");
-	ICTL1_INTEN5 &= ~(0x1 << 2);
-#endif
-#endif
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[138]++;
 #endif
@@ -2023,30 +1156,12 @@ void intr1_pmc4_ibf_ec(void)
 }
 void intr1_pmc4_obe_ec(void)
 {
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_pmc4_ibf_ec mask\n");
-	ICTL1_INTMASK5 |= 0x1 << 3;
-#else
-	printf("intr1_pmc4_ibf_ec disable\n");
-	ICTL1_INTEN5 &= ~(0x1 << 3);
-#endif
-#endif
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[139]++;
 #endif
 }
 void intr1_pmc5_ibf_ec(void)
 {
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_pmc5_ibf_ec mask\n");
-	ICTL1_INTMASK5 |= 0x1 << 4;
-#else
-	printf("intr1_pmc5_ibf_ec disable\n");
-	ICTL1_INTEN5 &= ~(0x1 << 4);
-#endif
-#endif
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[140]++;
 #endif
@@ -2055,30 +1170,12 @@ void intr1_pmc5_ibf_ec(void)
 }
 void intr1_pmc5_obe_ec(void)
 {
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_pmc5_obe_ec mask\n");
-	ICTL1_INTMASK5 |= 0x1 << 5;
-#else
-	printf("intr1_pmc5_obe_ec disable\n");
-	ICTL1_INTEN5 &= ~(0x1 << 5);
-#endif
-#endif
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[141]++;
 #endif
 }
 void intr1_ps2_1(void) // 46
 {
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_ps2_1 mask\n");
-	ICTL1_INTMASK5 |= 0x1 << 6;
-#else
-	printf("intr1_ps2_1 disable\n");
-	ICTL1_INTEN5 &= ~(0x1 << 6);
-#endif
-#endif
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[142]++;
 #endif
@@ -2089,15 +1186,6 @@ void intr1_ps2_1(void) // 46
 }
 void intr1_uart1(void)
 {
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_uart1 mask\n");
-	ICTL1_INTMASK5 |= 0x1 << 7;
-#else
-	printf("intr1_uart1 disable\n");
-	ICTL1_INTEN5 &= ~(0x1 << 7);
-#endif
-#endif
 	register u8 iir = (UART1_IIR & 0xf);
 	if (iir == UART_IIR_RLS) // 奇偶校验、溢出、格式错误、失效中断
 	{
@@ -2163,15 +1251,6 @@ void intr1_null49(void)
 }
 void intr1_spim(void)
 {
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_spim mask\n");
-	ICTL1_INTMASK6 |= 0x1 << 2;
-#else
-	printf("intr1_spim disable\n");
-	ICTL1_INTEN6 &= ~(0x1 << 2);
-#endif
-#endif
 	uint8_t data = 0;
 
 #if ENABLE_DEBUGGER_SUPPORT
@@ -2208,15 +1287,6 @@ void intr1_spim(void)
 }
 void intr1_smbus0(void)
 {
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_smbus0 mask\n");
-	ICTL1_INTMASK6 |= 0x1 << 3;
-#else
-	printf("intr1_smbus0 disable\n");
-	ICTL1_INTEN6 &= ~(0x1 << 3);
-#endif
-#endif
 
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[147]++;
@@ -2301,15 +1371,6 @@ void intr1_smbus0(void)
 }
 void intr1_smbus1(void)
 {
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_smbus1 mask\n");
-	ICTL1_INTMASK6 |= 0x1 << 4;
-#else
-	printf("intr1_smbus1 disable\n");
-	ICTL1_INTEN6 &= ~(0x1 << 4);
-#endif
-#endif
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[148]++;
 #endif
@@ -2393,15 +1454,6 @@ void intr1_smbus1(void)
 }
 void intr1_smbus2(void)
 {
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_smbus2 mask\n");
-	ICTL1_INTMASK6 |= 0x1 << 5;
-#else
-	printf("intr1_smbus2 disable\n");
-	ICTL1_INTEN6 &= ~(0x1 << 5);
-#endif
-#endif
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[149]++;
 #endif
@@ -2485,15 +1537,6 @@ void intr1_smbus2(void)
 }
 void intr1_smbus3(void)
 {
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_smbus3 mask\n");
-	ICTL1_INTMASK6 |= 0x1 << 6;
-#else
-	printf("intr1_smbus3 disable\n");
-	ICTL1_INTEN6 &= ~(0x1 << 6);
-#endif
-#endif
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[150]++;
 #endif
@@ -2581,44 +1624,17 @@ void intr1_smbus6(void)
 	Intr_num[151]++;
 #endif
 
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_smbus6 mask\n");
-	ICTL1_INTMASK6 |= 0x1 << 7;
-#else
-	printf("intr1_smbus6 disable\n");
-	ICTL1_INTEN6 &= ~(0x1 << 7);
-#endif
-#endif
 }
 void intr1_smbus7(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[152]++;
 #endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_smbus7 mask\n");
-	ICTL1_INTMASK7 |= 0x1 << 0;
-#else
-	printf("intr1_smbus7 disable\n");
-	ICTL1_INTEN7 &= ~(0x1 << 0);
-#endif
-#endif
 }
 void intr1_smbus8(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[153]++;
-#endif
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_smbus8 mask\n");
-	ICTL1_INTMASK7 |= 0x1 << 1;
-#else
-	printf("intr1_smbus8 disable\n");
-	ICTL1_INTEN7 &= ~(0x1 << 1);
-#endif
 #endif
 }
 void intr1_null58(void)
@@ -2635,30 +1651,12 @@ void intr1_null59(void)
 }
 void intr1_por_int(void)
 {
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_por_int mask\n");
-	ICTL1_INTMASK7 |= 0x1 << 4;
-#else
-	printf("intr1_por_int disable\n");
-	ICTL1_INTEN7 &= ~(0x1 << 4);
-#endif
-#endif
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[156]++;
 #endif
 }
 void intr1_mailbox(void)
 {
-#if TEST_INTC
-#if INTC_MODE
-	printf("i3c_master_int mask\n");
-	ICTL1_INTMASK7 |= 0x1 << 5;
-#else
-	printf("i3c_master_int disable\n");
-	ICTL1_INTEN7 &= ~(0x1 << 5);
-#endif
-#endif
 
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[157]++;
@@ -2677,15 +1675,6 @@ void intr1_mailbox(void)
 
 void intr1_espi(void)
 {
-#if TEST_INTC
-#if INTC_MODE
-	printf("intr1_espi mask\n");
-	ICTL1_INTMASK7 |= 0x1 << 6;
-#else
-	printf("intr1_espi disable\n");
-	ICTL1_INTEN7 &= ~(0x1 << 6);
-#endif
-#endif
 #if ENABLE_DEBUGGER_SUPPORT
 	Intr_num[158]++;
 #endif

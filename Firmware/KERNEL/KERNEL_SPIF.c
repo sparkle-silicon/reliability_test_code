@@ -101,7 +101,7 @@ VBYTEP OPTIMIZE0 USED SPIFE_Read_Interface(register DWORD size, register DWORD a
       while((SPIFE_FCNT & 0x3) == 0)
          ;
       // rom_wdt_feed();
-      // printf("TOP:%x", SPIFE_FTOP);
+      // dprint("TOP:%x", SPIFE_FTOP);
       (*((DWORDP)(&(read_buff[SPIFE_J << 2])))) = SPIFE_FTOP;
    }
    return read_buff;
@@ -275,7 +275,7 @@ ALIGNED(4) void SPIFE_Read(DWORD addr, BYTEP read_buff, WORD length)
 void ExtFlash_Deep_Power_Down(void)
 {
 #if (!SPIFE_CLOCK_EN)
-   printf("SPIFE_CLOCK is not enable\n");
+   dprint("SPIFE_CLOCK is not enable\n");
    return;
 #endif
    while(!(SPIFE_RDY & SPIF_RDY_READY));
@@ -293,7 +293,7 @@ void ExtFlash_Deep_Power_Down(void)
 void ExtFlash_Exit_Power_Down(void)
 {
 #if (!SPIFE_CLOCK_EN)
-   printf("SPIFE_CLOCK is not enable\n");
+   dprint("SPIFE_CLOCK is not enable\n");
    return;
 #endif
    while(!(SPIFE_RDY & SPIF_RDY_READY));
@@ -684,6 +684,6 @@ void RunSPIFE_ReadFromRAM(DWORD addr, BYTEP read_buff, WORD lentgh)
    Spif_Ptr = NULL; // 将指针设置为 NULL，以避免悬空指针问题
    for(short i = 0; i < lentgh; i++)
    {
-      printf("Read_buff:%d\n", read_buff[i]);
+      dprint("Read_buff:%d\n", read_buff[i]);
    }
 }

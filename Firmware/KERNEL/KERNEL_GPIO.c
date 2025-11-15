@@ -1374,19 +1374,16 @@ int GPIO_Config(int GPIO, int gpio_no, int mode, int op_val, int int_lv, int pol
 				GPIO0_REG((GPIO_INPUT_VAL + (gpio_no / 8))) |= (VBYTE)((0x1) << (gpio_no % 8)); // 配置输出值
 				GPIO0_REG((GPIO_INPUT_EN + (gpio_no / 8))) |= (VBYTE)((0x1) << (gpio_no % 8));	 // 配置输出模式
 				GPIO0_REG((GPIO_LOW_IE + (gpio_no / 8))) &= (VBYTE)(~((0x1) << (gpio_no % 8)));	 // 配置GPIO模式(非中断)
-				//dprint("set GPIO%d,%d over val %d\n", GPIO, gpio_no, op_val);
 			}
 			else
 			{
 				GPIO0_REG((GPIO_INPUT_VAL + (gpio_no / 8))) &= (VBYTE)(~((0x1) << (gpio_no % 8))); // 配置输出值
 				GPIO0_REG((GPIO_INPUT_EN + (gpio_no / 8))) |= (VBYTE)((0x1) << (gpio_no % 8));		// 配置输出模式
 				GPIO0_REG((GPIO_LOW_IE + (gpio_no / 8))) &= (VBYTE)(~((0x1) << (gpio_no % 8)));		// 配置GPIO模式(非中断)
-				//dprint("set GPIO%d,%d over val %d\n", GPIO, gpio_no, op_val);
 			}
 		}
 		else if (mode == 0) // input
 		{
-			//(*((BYTEP )(SYSCTL_PIOA_UPCFG)))|=((0x1)<<gpio_no);//配置上拉
 			GPIO0_REG(GPIO_INPUT_EN + (gpio_no / 8)) &= (VBYTE)(~((0x1) << (gpio_no % 8))); // 配置输入模式
 			GPIO0_REG(GPIO_LOW_IE + (gpio_no / 8)) &= (VBYTE)(~((0x1) << (gpio_no % 8)));   // 配置GPIO模式(非中断)
 		}
@@ -1394,12 +1391,12 @@ int GPIO_Config(int GPIO, int gpio_no, int mode, int op_val, int int_lv, int pol
 		{
 			GPIO0_REG((GPIO_INPUT_EN + (gpio_no / 8))) &= (VBYTE)(~((0x1) << (gpio_no % 8)));  // 设置为输入模式
 			GPIO0_REG((GPIO_LOW_IP + (gpio_no / 8))) &= (VBYTE)(~((0x1) << (gpio_no % 8)));	  // 禁止中断屏蔽
-			GPIO0_REG((GPIO_IOF_EN + (gpio_no / 8))) = (VBYTE)((int_lv) << (gpio_no % 8));	  // 设置触发模式
-			GPIO0_REG((GPIO_IOF_SEL + (gpio_no / 8))) = (VBYTE)((pol) << (gpio_no % 8));	  // 设置触发极性
-			GPIO0_REG((GPIO_DEBOUNCE_EN + (gpio_no / 8))) = (VBYTE)((0x1) << (gpio_no % 8)); // 设置消抖
+			GPIO0_REG((GPIO_IOF_EN + (gpio_no / 8))) &= (VBYTE)(~((0x1) << (gpio_no % 8)));	  // 设置触发模式
+			GPIO0_REG((GPIO_IOF_EN + (gpio_no / 8))) |= (VBYTE)((int_lv&0x1) << (gpio_no % 8));
+			GPIO0_REG((GPIO_IOF_SEL + (gpio_no / 8))) &= (VBYTE)(~((0x1) << (gpio_no % 8)));  // 设置触发极性
+			GPIO0_REG((GPIO_IOF_SEL + (gpio_no / 8))) |= (VBYTE)((pol&0x1) << (gpio_no % 8));	  
+			GPIO0_REG((GPIO_DEBOUNCE_EN + (gpio_no / 8))) |= (VBYTE)((0x1) << (gpio_no % 8)); // 设置消抖
 			GPIO0_REG((GPIO_LOW_IE + (gpio_no / 8))) |= (VBYTE)((0x1) << (gpio_no % 8));	  // 使能中断
-			//dprint("触发方式:%#x\n", GPIO0_REG((GPIO_IOF_EN + (gpio_no / 8))));
-			//dprint("触发极性:%#x\n", GPIO0_REG((GPIO_IOF_SEL + (gpio_no / 8))));
 		}
 	}
 	else if (GPIO == 2)
@@ -1421,7 +1418,6 @@ int GPIO_Config(int GPIO, int gpio_no, int mode, int op_val, int int_lv, int pol
 		}
 		else if (mode == 0) // input
 		{
-			//(*((BYTEP )(SYSCTL_PIOA_UPCFG)))|=((0x1)<<gpio_no);//配置上拉
 			GPIO1_REG(GPIO_INPUT_EN + (gpio_no / 8)) &= (~((0x1) << (gpio_no % 8))); // 配置输入模式
 			GPIO1_REG(GPIO_LOW_IE + (gpio_no / 8)) &= (~((0x1) << (gpio_no % 8)));   // 配置GPIO模式(非中断)
 		}
@@ -1429,12 +1425,12 @@ int GPIO_Config(int GPIO, int gpio_no, int mode, int op_val, int int_lv, int pol
 		{
 			GPIO1_REG((GPIO_INPUT_EN + (gpio_no / 8))) &= (~((0x1) << (gpio_no % 8)));  // 设置为输入模式
 			GPIO1_REG((GPIO_LOW_IP + (gpio_no / 8))) &= (~((0x1) << (gpio_no % 8)));	  // 禁止中断屏蔽
-			GPIO1_REG((GPIO_IOF_EN + (gpio_no / 8))) = ((int_lv) << (gpio_no % 8));	  // 设置触发模式
-			GPIO1_REG((GPIO_IOF_SEL + (gpio_no / 8))) = ((pol) << (gpio_no % 8));	  // 设置触发极性
-			GPIO1_REG((GPIO_DEBOUNCE_EN + (gpio_no / 8))) = ((0x1) << (gpio_no % 8)); // 设置消抖
+			GPIO1_REG((GPIO_IOF_EN + (gpio_no / 8))) &= (~((0x1) << (gpio_no % 8)));	  // 设置触发模式
+			GPIO1_REG((GPIO_IOF_EN + (gpio_no / 8))) |= ((int_lv&0x1) << (gpio_no % 8));
+			GPIO1_REG((GPIO_IOF_SEL + (gpio_no / 8))) &= (~((0x1) << (gpio_no % 8)));  // 设置触发极性
+			GPIO1_REG((GPIO_IOF_SEL + (gpio_no / 8))) |= ((pol&0x1) << (gpio_no % 8));	  
+			GPIO1_REG((GPIO_DEBOUNCE_EN + (gpio_no / 8))) |= ((0x1) << (gpio_no % 8)); // 设置消抖
 			GPIO1_REG((GPIO_LOW_IE + (gpio_no / 8))) |= ((0x1) << (gpio_no % 8));	  // 使能中断
-			//dprint("触发方式:%#x\n", GPIO1_REG((GPIO_IOF_EN + (gpio_no / 8))));
-			//dprint("触发极性:%#x\n", GPIO1_REG((GPIO_IOF_SEL + (gpio_no / 8))));
 		}
 	}
 	else
@@ -1479,7 +1475,6 @@ int GPIO_Config(int GPIO, int gpio_no, int mode, int op_val, int int_lv, int pol
 				}
 				else
 				{
-					//(*((BYTEP )(SYSCTL_PIOA_UPCFG)))|=((0x1)<<gpio_no);//配置上拉
 					GPIO2_REG(0x10) &= (~((0x1) << gpio_no)); // 配置输入模式					
 				}
 
@@ -1504,7 +1499,6 @@ int GPIO_Config(int GPIO, int gpio_no, int mode, int op_val, int int_lv, int pol
 			}
 			else if (mode == 0) // input
 			{
-				//(*((BYTEP )(SYSCTL_PIOA_UPCFG)))|=((0x1)<<gpio_no);//配置上拉
 				GPIO2_REG(GPIO_INPUT_EN + (gpio_no / 8)) &= (~((0x1) << (gpio_no % 8))); // 配置输入模式
 				GPIO2_REG(GPIO_LOW_IE + (gpio_no / 8)) &= (~((0x1) << (gpio_no % 8)));   // 配置GPIO模式(非中断)
 			}
@@ -1512,12 +1506,12 @@ int GPIO_Config(int GPIO, int gpio_no, int mode, int op_val, int int_lv, int pol
 			{
 				GPIO2_REG((GPIO_INPUT_EN + (gpio_no / 8))) &= (~((0x1) << (gpio_no % 8)));  // 设置为输入模式
 				GPIO2_REG((GPIO_LOW_IP + (gpio_no / 8))) &= (~((0x1) << (gpio_no % 8)));	  // 禁止中断屏蔽
-				GPIO2_REG((GPIO_IOF_EN + (gpio_no / 8))) = ((int_lv) << (gpio_no % 8));	  // 设置触发模式
-				GPIO2_REG((GPIO_IOF_SEL + (gpio_no / 8))) = ((pol) << (gpio_no % 8));	  // 设置触发极性
-				GPIO2_REG((GPIO_DEBOUNCE_EN + (gpio_no / 8))) = ((0x1) << (gpio_no % 8)); // 设置消抖
+				GPIO2_REG((GPIO_IOF_EN + (gpio_no / 8))) &= (~((0x1) << (gpio_no % 8)));	  // 设置触发模式
+				GPIO2_REG((GPIO_IOF_EN + (gpio_no / 8))) |= ((int_lv&0x1) << (gpio_no % 8));
+				GPIO2_REG((GPIO_IOF_SEL + (gpio_no / 8))) &= (~((0x1) << (gpio_no % 8)));  // 设置触发极性
+				GPIO2_REG((GPIO_IOF_SEL + (gpio_no / 8))) |= ((pol&0x1) << (gpio_no % 8));	  
+				GPIO2_REG((GPIO_DEBOUNCE_EN + (gpio_no / 8))) |= ((0x1) << (gpio_no % 8)); // 设置消抖
 				GPIO2_REG((GPIO_LOW_IE + (gpio_no / 8))) |= ((0x1) << (gpio_no % 8));	  // 使能中断
-				//dprint("触发方式:%#x\n", GPIO2_REG((GPIO_IOF_EN + (gpio_no / 8))));
-				//dprint("触发极性:%#x\n", GPIO2_REG((GPIO_IOF_SEL + (gpio_no / 8))));
 			}
 		}
 		else if ((GPIO == 5))
@@ -1539,7 +1533,6 @@ int GPIO_Config(int GPIO, int gpio_no, int mode, int op_val, int int_lv, int pol
 			}
 			else if (mode == 0) // input
 			{
-				//(*((BYTEP )(SYSCTL_PIOA_UPCFG)))|=((0x1)<<gpio_no);//配置上拉
 				GPIO3_REG(GPIO_INPUT_EN + (gpio_no / 8)) &= (~((0x1) << (gpio_no % 8))); // 配置输入模式
 				GPIO3_REG(GPIO_LOW_IE + (gpio_no / 8)) &= (~((0x1) << (gpio_no % 8)));   // 配置GPIO模式(非中断)
 			}
@@ -1547,12 +1540,12 @@ int GPIO_Config(int GPIO, int gpio_no, int mode, int op_val, int int_lv, int pol
 			{
 				GPIO3_REG((GPIO_INPUT_EN + (gpio_no / 8))) &= (~((0x1) << (gpio_no % 8)));  // 设置为输入模式
 				GPIO3_REG((GPIO_LOW_IP + (gpio_no / 8))) &= (~((0x1) << (gpio_no % 8)));	  // 禁止中断屏蔽
-				GPIO3_REG((GPIO_IOF_EN + (gpio_no / 8))) = ((int_lv) << (gpio_no % 8));	  // 设置触发模式
-				GPIO3_REG((GPIO_IOF_SEL + (gpio_no / 8))) = ((pol) << (gpio_no % 8));	  // 设置触发极性
-				GPIO3_REG((GPIO_DEBOUNCE_EN + (gpio_no / 8))) = ((0x1) << (gpio_no % 8)); // 设置消抖
+				GPIO3_REG((GPIO_IOF_EN + (gpio_no / 8))) &= (~((0x1) << (gpio_no % 8)));	  // 设置触发模式
+				GPIO3_REG((GPIO_IOF_EN + (gpio_no / 8))) |= ((int_lv&0x1) << (gpio_no % 8));
+				GPIO3_REG((GPIO_IOF_SEL + (gpio_no / 8))) &= (~((0x1) << (gpio_no % 8)));  // 设置触发极性
+				GPIO3_REG((GPIO_IOF_SEL + (gpio_no / 8))) |= ((pol&0x1) << (gpio_no % 8));	  
+				GPIO3_REG((GPIO_DEBOUNCE_EN + (gpio_no / 8))) |= ((0x1) << (gpio_no % 8)); // 设置消抖
 				GPIO3_REG((GPIO_LOW_IE + (gpio_no / 8))) |= ((0x1) << (gpio_no % 8));	  // 使能中断
-				//dprint("触发方式:%#x\n", GPIO3_REG((GPIO_IOF_EN + (gpio_no / 8))));
-				//dprint("触发极性:%#x\n", GPIO3_REG((GPIO_IOF_SEL + (gpio_no / 8))));
 			}
 		}
 	}
@@ -1812,7 +1805,7 @@ char GPIOAutoTest(void)//102
 		gpb2 |= 0x9;//pb16 pb19用作电源 
 		gpc1 |= 0x4;//pc10用作电源
 
-		printf("\n");
+		dprint("\n");
 		dprint("GPIO0: 0x%x 0x%x 0x%x 0x%x\n", gpa0, gpa1, gpa2, gpa3);
 		dprint("GPIO1: 0x%x 0x%x 0x%x 0x%x\n", gpb0, gpb1, gpb2, gpb3);
 		dprint("GPIO2: 0x%x 0x%x 0x%x 0x%x\n", gpc0, gpc1, gpc2, gpc3);
@@ -1834,12 +1827,12 @@ char GPIOAutoTest(void)//102
 		//如果全部加起来等于0
 		if ((gpa0z + gpa1z + gpa2z + gpa3z + gpb0z + gpb1z + gpb2z + gpb3z + gpc0z + gpc1z + gpc2z + gpd0z + gpd1z + gpd2z))
 		{
-			printf("Self-test failed\n");
+			dprint("Self-test failed\n");
 			return -1;
 		}
 		else
 		{
-			printf("Self-test successful\n");
+			dprint("Self-test successful\n");
 			return 1;
 		}
 	}
@@ -1850,7 +1843,7 @@ char GPIOAutoTest(void)//102
 		gpb2 &= (~0x09);//pb16 pb19用作电源 
 		gpc1 &= (~0x4);//pc10用作电源
 
-		printf("\n");
+		dprint("\n");
 		dprint("GPIO0: 0x%x 0x%x 0x%x 0x%x\n", gpa0, gpa1, gpa2, gpa3);
 		dprint("GPIO1: 0x%x 0x%x 0x%x 0x%x\n", gpb0, gpb1, gpb2, gpb3);
 		dprint("GPIO2: 0x%x 0x%x 0x%x 0x%x\n", gpc0, gpc1, gpc2, gpc3);
@@ -1858,12 +1851,12 @@ char GPIOAutoTest(void)//102
 		//gpa0 gpa1...全部加起来不等于0
 		if ((gpa0 + gpa1 + gpa2 + gpa3 + gpb0 + gpb1 + gpb2 + gpb3 + gpc0 + gpc1 + gpc2 + gpd0 + gpd1 + gpd2))
 		{
-			printf("Self-test failed\n");
+			dprint("Self-test failed\n");
 			return -1;
 		}
 		else
 		{
-			printf("Self-test successful\n");
+			dprint("Self-test successful\n");
 			return 1;
 		}
 	}
@@ -2110,7 +2103,7 @@ char ReadGPIOLevel(BYTE port, BYTE pin)
 	}
 	else
 	{
-		printf("GPIO group number input error\n");
+		dprint("GPIO group number input error\n");
 		return -1;
 	}
 }

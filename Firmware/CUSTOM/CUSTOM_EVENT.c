@@ -63,7 +63,7 @@ void PSWPressed(void)
 //-----------------------------------------------------------------------------
 void PSWReleased(void)
 {
-	printf("power button released\n");
+	dprint("power button released\n");
 }
 //-----------------------------------------------------------------------------
 // power button was overrided

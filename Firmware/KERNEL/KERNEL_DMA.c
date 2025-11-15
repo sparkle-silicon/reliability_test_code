@@ -153,12 +153,10 @@ void DMA_Init(DMA_InitTypeDef*DMA_Init_Struct)
     if (DMA_Init_Struct->DMA_Periph_Type & (0xff << 24))//tx
     {
         dest_per=(DMA_Init_Struct->DMA_Periph_Type>>24)&0xf;
-        //printf("dest_per:%d\n",dest_per);
     }
     else
     {
         src_per=(DMA_Init_Struct->DMA_Periph_Type>>16)&0xf;
-        //printf("src_per:%d\n",src_per);
     }
     rdata |= (dest_per << 11) | (src_per << 7);
     DMA_CFG0_H = rdata;
@@ -172,9 +170,7 @@ void DMA_Init(DMA_InitTypeDef*DMA_Init_Struct)
     // {
     //     wdata = (0x1 | (0x1<<8));
     //     DMA_ChEnReg  = wdata;
-    //     printf("DMA_Ch EN\n");
     // }
-    // printf("DMA_ChEnReg:0x%x\n",DMA_ChEnReg);
 }
 void DMA_Channal_EN(uint8_t DMA_Channal)
 {

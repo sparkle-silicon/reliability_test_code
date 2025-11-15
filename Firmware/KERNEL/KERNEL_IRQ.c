@@ -288,7 +288,7 @@ void __interrupt SECTION(".interrupt.PWRSW_HANDLER") PWRSW_HANDLER(void)
 	Intr_num[5]++;
 #endif
 	irqprint(irq_string, __FUNCTION__, 5);
-	printf("PWRSW\n");
+	dprint("PWRSW\n");
 };
 void __interrupt SECTION(".interrupt.PS2_0_HANDLER") PS2_0_HANDLER(void)
 {

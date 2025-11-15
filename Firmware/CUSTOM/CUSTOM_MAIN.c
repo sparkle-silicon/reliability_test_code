@@ -93,15 +93,6 @@ void __weak Hook_10msEventB(void)
 //-----------------------------------------------------------------------------
 void __weak Hook_50msEventA(void)
 {
-#if 0
-    //MAILBOX SMSha256 updata 测试用例
-    if (REG8((SRAM_BASE_ADDR + 0x100)) == 0xAB)
-    {
-        printf("准备更新固件\n");
-        TaskParams Params;
-        Add_Task((TaskFunction)Flash_Update_Function, Params, &task_head);//sms update
-    }
-#endif
     //子系统dram更新测试用例
 #if SUPPORT_UPDATE_FUNCTION
     if (update_crypram_flag == 1)

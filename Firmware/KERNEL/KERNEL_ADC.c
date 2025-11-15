@@ -550,7 +550,7 @@ void ADC_Cont_Sample_Init_Multi(uint8_t mode, uint8_t Data_Select, uint8_t Chana
       {
             if (Data_Select == 1)
             {
-                  printf("4-7 chanal has matched 0-3 buffer\n");
+                  dprint("4-7 chanal has matched 0-3 buffer\n");
             }
             else
             {
@@ -653,7 +653,7 @@ void ADC_HW_Sample_Init_Multi(uint8_t mode, uint32_t timercount, uint8_t Data_Se
       {
             if (Data_Select == 1)
             {
-                  printf("4-7 chanal has matched 0-3 buffer\n");
+                  dprint("4-7 chanal has matched 0-3 buffer\n");
             }
             else
             {

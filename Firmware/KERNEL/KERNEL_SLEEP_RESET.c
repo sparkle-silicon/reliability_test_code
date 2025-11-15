@@ -259,7 +259,7 @@ void CPU_Timer_Set()
 
 void Enter_LowPower_Mode(void)
 {
-	printf("enter lowpower mode\n");
+	dprint("enter lowpower mode\n");
 	//1.置位标志位，保护现场
 	Low_Power_Flag = 1;
 	Save_Context();
@@ -307,8 +307,8 @@ void Exit_LowPower_Mode(void)
 		//*(volatile uint32_t *)(0x2780) = 0x0;
 		Low_Power_Flag = 0;
 		Restore_Context();
-		printf("exit lowpower mode\n");
-		printf("trap test\n"); printf("trap test\n"); printf("trap test\n");
+		dprint("exit lowpower mode\n");
+		dprint("trap test\n"); dprint("trap test\n"); dprint("trap test\n");
 	}
 }
 void CHIP_Sleep(void)
@@ -452,7 +452,7 @@ void CHIP_Deep_Sleep2(void)
 	SYSCTL_PIOE_IECFG = 0xffffffff;
 	SYSCTL_CLKDIV_PECI = 0x0;
 	SYSCTL_SLEEPCFG = (0x1 << 5) | (0x1 << 4) | (0x1 << 3) | (0x0 << 2) | (0x1 << 1);//sleep mode=1,dlsp=1,disable_osc80m = 1,main_clk_sel = 0
-	printf("SYSCTL_SLEEPCFG:0x%x\n", SYSCTL_SLEEPCFG);
+	dprint("SYSCTL_SLEEPCFG:0x%x\n", SYSCTL_SLEEPCFG);
 	SYSCTL_MODEN0 = 0x1fffffff;
 	SYSCTL_MODEN1 = 0x1ffffff;
 	GPIO0_DEBOUNCE0 = 0x0;

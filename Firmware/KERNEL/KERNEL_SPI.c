@@ -45,7 +45,7 @@ void SPIM_Init(BYTE mode, BYTE cpha, BYTE cpol, BYTE dly, BYTE dssp, BYTE lsb, B
   //配置模式
   if (mode > SPIM_MODE_DW_MOD_MASK)
   {
-    printf("SPIM_Init: Invalid mode,Used default mode:SPIM_MODE_STANDARD\n");
+    dprint("SPIM_Init: Invalid mode,Used default mode:SPIM_MODE_STANDARD\n");
     mode = SPIM_MODE_STANDARD;
   }
   SPIM_MODE = SPIM_MODE_DW_MOD(mode);
@@ -61,12 +61,12 @@ void SPIM_Init(BYTE mode, BYTE cpha, BYTE cpol, BYTE dly, BYTE dssp, BYTE lsb, B
   //配置SPI控制寄存器
   if (SPIM_MODE == SPIM_MODE_QUAD && (dssp + 1) & 0x3)
   {
-    printf("SPIM_Init: Data width must be 4-bit in quad mode\n");
+    dprint("SPIM_Init: Data width must be 4-bit in quad mode\n");
     dssp = ((dssp + 5) & (0xC)) - 1; // 调整为4的倍数
   }
   if (SPIM_MODE == SPIM_MODE_DUAL && (dssp + 1) & 0x1)
   {
-    printf("SPIM_Init: Data width must be 1-bit in dual mode\n");
+    dprint("SPIM_Init: Data width must be 1-bit in dual mode\n");
     dssp = ((dssp + 3) & (0xE)) - 1; // 调整为4的倍数
   }
   if (dssp > 15)dssp = 15;
@@ -369,7 +369,7 @@ int32_t SPIM_Send_Datas(uint16_t *data, uint32_t len)
   {
     if (SPIM_Send_Data(*data++))
     {
-      printf("SPIM SendDatas Error\n");
+      dprint("SPIM SendDatas Error\n");
       return -1;
     }
   }

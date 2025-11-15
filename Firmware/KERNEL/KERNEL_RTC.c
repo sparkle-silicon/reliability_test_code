@@ -69,7 +69,7 @@ void RTC_Init(u32 loadcnt, u32 match, u32 prescaler)
 }
 void RTC_Deep_Sleep_Test(u32 sleep_time)
 {
-    printf("RTC SLEEP CONFIG\n");
+    dprint("RTC SLEEP CONFIG\n");
     SYSCTL_PMUCSR |= BIT(20);
     RTC_CCR0 &= ~RTC_CCR_EN;
     Set_RTC_MatchVal(sleep_time + Get_RTC_CountVal());
@@ -91,7 +91,7 @@ void RTC_Deep_Sleep_Test(u32 sleep_time)
 }
 void RTC_Sleep_Test(u32 sleep_time)
 {
-    printf("RTC SLEEP CONFIG\n");
+    dprint("RTC SLEEP CONFIG\n");
     SYSCTL_PMUCSR |= BIT(20);
     RTC_CCR0 &= ~RTC_CCR_EN;
     Set_RTC_MatchVal(sleep_time + Get_RTC_CountVal());

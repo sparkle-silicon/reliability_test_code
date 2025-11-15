@@ -157,7 +157,7 @@ BYTE S5S0_EXAMPLE_1(void)
 {
     /*仅为示例时序，需根据实际需求进行修改*/
     // This is S5S0 power sequence 1
-    printf("S5->S0\n");
+    dprint("S5->S0\n");
     ALW_ON();                                       // 操作GPIO的时序函数需要按照后缀为_ON、_OFF、_H、_L的格式来编写，以便调试器识别
     PowerSequence_Record_To_Array(GPIOA, 7, 1, 5); // record ALW_ON for debugger
     return 0;
@@ -198,7 +198,7 @@ BYTE S5S0_EXAMPLE_5(void)
 BYTE S0S5_EXAMPLE_1(void)
 {
     // This is S5S0_EXAMPLE 1
-    printf("S0->S5\n");
+    dprint("S0->S5\n");
     S3OK_L();
     PowerSequence_Record_To_Array(GPIOA, 4, 0, 0); // record HOT_LED_L for debugger
     return 0;

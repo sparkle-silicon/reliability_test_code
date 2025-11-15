@@ -671,7 +671,7 @@ void Get_OOB_PCH_Temperature(void)
     if (Process_eSPI_OOB_Message())
     {
         xOOB_PCH_Temperature = eSPI_PCH_TMPR[4];
-        printf("xOOB_PCH_Temperature = %d\n", xOOB_PCH_Temperature);
+        dprint("xOOB_PCH_Temperature = %d\n", xOOB_PCH_Temperature);
     }
 }
 

@@ -351,7 +351,7 @@ BYTE  TACH_Init_Channel(BYTE channel, BYTE mode, BYTE tach_int)
 	mode &= 0x3;
 	BYTE shift = (channel << 1) + 8;
 	TACH_CTRL |= ((0x1 << channel) | (mode << shift));
-	printf("TACH_CTRL:%x\n", TACH_CTRL);
+	dprint("TACH_CTRL:%x\n", TACH_CTRL);
 	if (tach_int)
 		TACH_INT |= (0x11 << channel);//clear irq and en irq
 	else
@@ -359,7 +359,7 @@ BYTE  TACH_Init_Channel(BYTE channel, BYTE mode, BYTE tach_int)
 		TACH_INT |= (0x10 << channel);//clear irq and en irq
 		TACH_INT &= ~(0x01 << channel);//clear irq and en irq
 	}
-	printf("TACH_INT:%x\n", TACH_INT);
+	dprint("TACH_INT:%x\n", TACH_INT);
 	return 0;
 }
 

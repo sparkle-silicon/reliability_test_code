@@ -457,14 +457,14 @@ void SECTION(".update.function") Flash_Update_Function(void)
     #endif
     {
         {
-            printf("jump mailbx update\n");
+            dprint("jump mailbx update\n");
 
             uint8_t Update_Addr0, Update_Addr1, Update_Addr2 = 0;
             uint32_t Update_Addr = 0;
             uint32_t FW_256byte_cnt = 0;
             Update_Addr = REG32((SRAM_BASE_ADDR + 0x108));
             FW_256byte_cnt = REG32((SRAM_BASE_ADDR + 0x104));
-            printf("%x,%x,%x,%x,%d\n", Update_Addr0, Update_Addr1, Update_Addr2, Update_Addr, FW_256byte_cnt);
+            dprint("%x,%x,%x,%x,%d\n", Update_Addr0, Update_Addr1, Update_Addr2, Update_Addr, FW_256byte_cnt);
             __nop__;
             __nop__;
             // Transport_Update_To_iram1(Mailbox_4KSMS_UPDATE, 0x100);
@@ -476,7 +476,7 @@ void SECTION(".update.function") Flash_Update_Function(void)
     else if(SHAREMEM_UPDATE && (*((volatile uint8_t *)(SRAM_BASE_ADDR + 0x100)) == 0xBB) && (eFlash_Forbid_Flag == 0))
     {
         mode = 0x1;
-        printf("SinglePage Write\n");
+        dprint("SinglePage Write\n");
         //Transport_Func_To_iram1(EC_SinglePage_Update, 0x100); // 加载func到dram
         *(volatile uint8_t *)(SRAM_BASE_ADDR + 0x100) = 0xCC;
         // FUNCT_PTR_V_V mailbox_singlepage_jump = (FUNCT_PTR_V_V)0x34000;
@@ -600,7 +600,6 @@ void ALIGNED(4) Mailbox_4KSMS_UPDATE(BYTE mode, DWORD fw_size, DWORD start_addr)
 void ALIGNED(4) Mailbox_Update_Function(BYTE mode, DWORD fwsize, DWORD update_addr)
 {
 
-    printf("a");
     BYTE mailbox_update_mode = 0x0; // mode=0x1：IRAM0模式，0x2：片外FLASH, 0x3:4K SHAREMEM，0x4~0x7:UART，0x8~0xD:I2C, 0x0/其他值无效
     // DWORD fw_size = fwsize;         // 测试初始化更新固件的大小 测试大小:32K
     // DWORD start_addr = update_addr; // 测试初始化更新起始地址   测试地址450K之后的32K
@@ -633,7 +632,7 @@ void ALIGNED(4) Mailbox_Update_Function(BYTE mode, DWORD fwsize, DWORD update_ad
     }
     else
     {
-        printf("无效更新模式，请确认更新命令\n");
+        dprint("无效更新模式，请确认更新命令\n");
         MAILBOX_C2EINFO1 = 0x2; // 固件更新不成功
         return;
     }
@@ -644,9 +643,9 @@ void Reset_Crypto_Cpu(void)
     SYSCTL_RST1 |= BIT(17);//crypto cpu reset
     __nop;
     SYSCTL_RST1 &= ~BIT(17);//release crypto cpu reset
-    printf("crypto cpu reset\n");
+    dprint("crypto cpu reset\n");
     //修改时钟频率
-    printf("modify clock frequency\n");
+    dprint("modify clock frequency\n");
     Clk_Div = SYSCTL_CLKDIV_OSC96M;
     if(SYSCTL_ESTAT & BIT(24))
     {
@@ -658,11 +657,11 @@ void Reset_Crypto_Cpu(void)
     }
 
     //等待子系统初始化完成
-    printf("wait crypto bootctrl\n");
+    dprint("wait crypto bootctrl\n");
     while(SYSCTL_ESTAT_CRYPTO_BOOTCTRL != 1);
 
     //恢复时钟频率
-    printf("modify clock frequency done\n");
+    dprint("modify clock frequency done\n");
     SYSCTL_CLKDIV_OSC96M = Clk_Div;
 }
 
@@ -688,6 +687,7 @@ void WaitCrypUpdate(void)
                 PRINTF_TX = 'E';
                 PRINTF_TX = 'S';
                 PRINTF_TX = '\n';
+                reportDone(0, 0xAA);//回复上位机一笔数据处理完毕
                 Reset_Crypto_Cpu();
                 return;
             }
@@ -789,7 +789,7 @@ uint8_t CRC8(const uint8_t *data, size_t length)
 
 void Cryp_Update_Function(void)
 {
-    printf("Cryp_Update_Function\n");
+    dprint("Cryp_Update_Function\n");
     /* 中断屏蔽 */
     Disable_Interrupt_Main_Switch();
 
@@ -807,7 +807,7 @@ void Cryp_Update_Function(void)
     while(MAILBOX_C2EINFO0 != 0x14);
     while(MAILBOX_C2EINFO1 != 0x00);//子系统回复处理完毕
     reportDone(0, 0xAA);//回复上位机芯片已经进入更新函数
-    printf("send 0xaa to host\n");
+    dprint("send 0xaa to host\n");
 
     uint32_t i = 0;
     uint8_t Temp_buffer[257];
@@ -819,7 +819,7 @@ void Cryp_Update_Function(void)
         if(CRC8(Temp_buffer, 256) != Temp_buffer[256])
         {
             reportDone(0, 0xEE);//回复上位机接收错误
-            printf("header crc error send 0xee to host\n");
+            dprint("header crc error send 0xee to host\n");
             while((UARTA_LSR & UART_LSR_DR))//清空接收缓存
             {
                 UARTA_RX;
@@ -837,13 +837,13 @@ void Cryp_Update_Function(void)
     }
 
     memcpy((void *)&CrypDramCodeinfo, (void *)Temp_buffer, sizeof(sCryptoFlashInfo));
-    printf("fm_size:%d CRC32:%08x\n", CrypDramCodeinfo.Crypto_CopySize, CrypDramCodeinfo.Crc32Data);
-    printf("hash:");
+    dprint("fm_size:%d CRC32:%08x\n", CrypDramCodeinfo.Crypto_CopySize, CrypDramCodeinfo.Crc32Data);
+    dprint("hash:");
     for(i = 0; i < 32; i++)
     {
-        printf("%02x", CrypDramCodeinfo.HASH_AES_ECB_RTL_KEY[i]);
+        dprint("%02x", CrypDramCodeinfo.HASH_AES_ECB_RTL_KEY[i]);
     }
-    printf("\n");
+    dprint("\n");
     memcpy((void *)((uint8_t *)(SRAM_BASE_ADDR + 0x100)), (void *)Temp_buffer, sizeof(sCryptoFlashInfo));
     MAILBOX_E2CINFO0 = 0x14;
     MAILBOX_E2CINFO1 = 0x1;//发送固件信息
@@ -859,7 +859,7 @@ void Cryp_Update_Function(void)
     while(MAILBOX_C2EINFO1 != 0x01);//子系统回复处理完毕
     MAILBOX_E2CINFO0 = 0; MAILBOX_E2CINFO1 = 0;//复位该寄存器值
     reportDone(0, 0xAA);//回复上位机获取固件信息命令处理完毕
-    printf("send 0xaa to host\n");
+    dprint("send 0xaa to host\n");
 
     //接收加密数据并拷贝到(SRAM_BASE_ADDR+0x100)地址上
     for(i = 0; i < CrypDramCodeinfo.Crypto_CopySize; i += 256)
@@ -875,23 +875,23 @@ void Cryp_Update_Function(void)
                 for(int i = 0; i < 256; i += 16)
                 {
 // 打印地址
-                    printf("%08X  ", i);
+                    dprint("%08X  ", i);
 
                     // 打印数据
                     for(int j = 0; j < 16; j++)
                     {
                         if(i + j < 256)
                         {
-                            printf("%02X ", Temp_buffer[i + j]);
+                            dprint("%02X ", Temp_buffer[i + j]);
                         }
                         else
                         {
-                            printf("   "); // 对于不足的地方，填充空格
+                            dprint("   "); // 对于不足的地方，填充空格
                         }
                     }
-                    printf("\n");
+                    dprint("\n");
                 }
-                printf("c crc:%02x  r crc:%02x  send 0xee to host\n", crc, Temp_buffer[256]);
+                dprint("c crc:%02x  r crc:%02x  send 0xee to host\n", crc, Temp_buffer[256]);
                 while((UARTA_LSR & UART_LSR_DR))//清空接收缓存
                 {
                     UARTA_RX;
@@ -922,8 +922,8 @@ void Cryp_Update_Function(void)
         while(MAILBOX_C2EINFO1 != 0x2);//子系统回复处理完毕
         MAILBOX_E2CINFO0 = 0; MAILBOX_E2CINFO1 = 0;//复位该寄存器值
         reportDone(0, 0xAA);//回复上位机一笔数据处理完毕
-        printf("send 0xaa to host\n");
-        printf("i:%d CopySize:%d\n", i + 256, CrypDramCodeinfo.Crypto_CopySize);
+        dprint("send 0xaa to host\n");
+        dprint("i:%d CopySize:%d\n", i + 256, CrypDramCodeinfo.Crypto_CopySize);
     }
     /* 进入ram跑代码 */
     WaitCrypUpdate();
@@ -933,7 +933,7 @@ void Cryp_Update_Function(void)
 
 char ExtFlash_Update_Function(void)
 {
-    printf("ExtFlash_Update_Function\n");
+    dprint("ExtFlash_Update_Function\n");
     Disable_Interrupt_Main_Switch();
     uint8_t Crc_fail_flag = 0;
     uint8_t Crc8_fail_cnt = 0;
@@ -948,14 +948,14 @@ char ExtFlash_Update_Function(void)
     uint8_t Temp_buffer[257];
     uint8_t Err_Sta = 0, Ack_Sta = 0;
     reportDone(0, 0xAA);//回复上位机进入更新函数
-    printf("chip enter update func send 0xaa to host\n");
+    dprint("chip enter update func send 0xaa to host\n");
     //先接收更新地址与文件大小信息
     for(int i = 0; i < 10; i++)
     {
         storeFirmwareSizeInMem(0, Temp_buffer);
         if(CRC8(Temp_buffer, 256) != Temp_buffer[256])
         {
-            printf("fifo crc8 error again\n");
+            dprint("fifo crc8 error again\n");
             reportDone(0, 0xEE);
             //清空接收缓存
             while(UARTA_LSR & UART_LSR_DR)
@@ -992,7 +992,7 @@ char ExtFlash_Update_Function(void)
     {
         Fw_Size = Fw_Size + (4096 - (Fw_Size % 4096));
     }
-    printf("Fw_Size:%d Copy_Addr:%08x Backup_Addr:%08x Backup_Fw_Size:%d Backup_En:%d Rest_Flag:%d\n", Fw_Size, Copy_Addr, Backup_Addr, Backup_Fw_Size, Backup_En, Rest_Flag);
+    dprint("Fw_Size:%d Copy_Addr:%08x Backup_Addr:%08x Backup_Fw_Size:%d Backup_En:%d Rest_Flag:%d\n", Fw_Size, Copy_Addr, Backup_Addr, Backup_Fw_Size, Backup_En, Rest_Flag);
 
     //将头信息传递给子系统
     MAILBOX_E2CINFO1 = 0x0;				//选择外部flash
@@ -1020,13 +1020,13 @@ char ExtFlash_Update_Function(void)
         if(Err_Sta < 4)
         {
             reportDone(0, 0xCC);
-            printf("Parameter input does not match the actual situation Err_Sta:0x%x\n", Err_Sta);
+            dprint("Parameter input does not match the actual situation Err_Sta:0x%x\n", Err_Sta);
             return 1;
         }
     }
     else
         reportDone(0, 0xAA);//回复上位机获取更新地址信息命令处理完毕
-    printf("s 0xaa\n");
+    dprint("s 0xaa\n");
 
     //接收固件数据并写入flash
     for(uint32_t i = 0; i < Fw_Size; i += 256)
@@ -1037,7 +1037,7 @@ char ExtFlash_Update_Function(void)
             if(CRC8(Temp_buffer, 256) != Temp_buffer[256])
             {
             #if ROM_DEBUG
-                printf("%d crc8 error again\n", i / 256);
+                dprint("%d crc8 error again\n", i / 256);
             #endif
                 reportDone(0, 0xEE);
                 //清空接收缓存
@@ -1116,13 +1116,13 @@ char ExtFlash_Update_Function(void)
     //主系统校验处理
     if(Crc_fail_flag)
     {
-        printf("update fail\n");
+        dprint("update fail\n");
         return 1;
     }
     else
     {
         for(volatile uint32_t counter = looplimit; (!(UARTA_LSR & UART_LSR_TEMP)) && counter; counter--);
-        printf("update success\n");
+        dprint("update success\n");
         //默认不复位CPU
         if(Rest_Flag)
             Reset_Crypto_Cpu();
