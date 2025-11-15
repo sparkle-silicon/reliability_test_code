@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
- * @LastEditTime: 2023-11-03 18:54:25
+ * @LastEditors: daweslinyu daowes.ly@qq.com
+ * @LastEditTime: 2025-11-15 18:43:39
  * @Description: This file is used for handling ACPI Commands
  *
  *
@@ -42,7 +42,7 @@ static BYTE ACPI_SMB_BLOCK_Call(void);
 //----------------------------------------------------------------------------
 BYTE Read_Map_ECSPACE_BASE_ADDR(BYTE MapIndex)
 {
-    Tmp_XPntr = (VBYTE*)(ECSPACE_BASE_ADDR | MapIndex);
+    Tmp_XPntr = (VBYTE *)(ECSPACE_BASE_ADDR | MapIndex);
     return (*Tmp_XPntr);
 }
 //----------------------------------------------------------------------------
@@ -50,7 +50,7 @@ BYTE Read_Map_ECSPACE_BASE_ADDR(BYTE MapIndex)
 //----------------------------------------------------------------------------
 void Write_Map_ECSPACE_BASE_ADDR(BYTE MapIndex, BYTE data1)
 {
-    Tmp_XPntr = (VBYTE*)(ECSPACE_BASE_ADDR | MapIndex);
+    Tmp_XPntr = (VBYTE *)(ECSPACE_BASE_ADDR | MapIndex);
     *Tmp_XPntr = data1;
     System_PowerState = SYSTEM_S0;
 }
@@ -60,7 +60,7 @@ void Write_Map_ECSPACE_BASE_ADDR(BYTE MapIndex, BYTE data1)
 //----------------------------------------------------------------------------
 void Read_Ext_RAMSpace(void)
 {
-    Tmp_XPntr = (VBYTE*)((PM1Data1 << 8) + PM1Data); //  address low
+    Tmp_XPntr = (VBYTE *)((PM1Data1 << 8) + PM1Data); //  address low
     PMC1_DOR = *Tmp_XPntr;
 #if ENABLE_DEBUGGER_SUPPORT
     /* Debugger record */
@@ -73,7 +73,7 @@ void Read_Ext_RAMSpace(void)
 //----------------------------------------------------------------------------
 void Write_Ext_RAMSpace(void)
 {
-    Tmp_XPntr = (VBYTE*)((PM1Data2 << 8) + PM1Data1);
+    Tmp_XPntr = (VBYTE *)((PM1Data2 << 8) + PM1Data1);
     *Tmp_XPntr = PM1Data;
 }
 //----------------------------------------------------------------------------
@@ -198,9 +198,9 @@ int CheckBurstMode(void)
         if ((TIMER3_TCR & TIMER_EN) || (BurstLoopOut == 0)) // Time-Out 退出突发模式
         {
             CLEAR_FLAG(PMC1_STR, BURST);
-#if ACPI_SCI_Response
+        #if ACPI_SCI_Response
             SCI_Response(1); // Generate Interrupt
-#endif
+        #endif
             TIMER_Disable(TIMER3);
             return (0);
         }
@@ -284,7 +284,7 @@ void SCI_Response(BYTE sci_count)
 #else
     for (BYTE i = 0; i < sci_count; i++)
     {
-#if SCI_PIN_MODE_VW
+    #if SCI_PIN_MODE_VW
         SET_MASK(ESPI_VWIDX6, F_IDX6_SCI_VALID);
         CLEAR_MASK(ESPI_VWIDX6, F_IDX6_SCI);     /* eSPI SCI# */
         ESPI_VWCTRL3 |= F_VW_INDEX_6_RESEND;
@@ -292,11 +292,11 @@ void SCI_Response(BYTE sci_count)
         SET_MASK(ESPI_VWIDX6, F_IDX6_SCI_VALID);
         SET_MASK(ESPI_VWIDX6, F_IDX6_SCI);       /* eSPI SCI# */
         ESPI_VWCTRL3 |= F_VW_INDEX_6_RESEND;
-#else 
+    #else 
         SCI_Low();
         Loop_Delay(16);
         SCI_High();
-#endif
+    #endif
     }
 #endif
 }
@@ -322,8 +322,7 @@ void Loop_Delay(BYTE delay)
 // Generate SMIs for Query event request
 //-----------------------------------------------------------------------------
 void SMI_Interrupt(void)
-{
-}
+{}
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 // Upon receipt of the QR_EC command byte, the embedded
@@ -463,12 +462,12 @@ void Service_Event_Center(void)
                 SCI_Interrupt();
                 return;
             }
-#if (SUPPORT_ACPI_SMI)
+        #if (SUPPORT_ACPI_SMI)
             else
             {
                 SMI_Interrupt();
             }
-#endif
+        #endif
         }
     }
     //------------------------------------------------------------------------
@@ -507,7 +506,6 @@ BYTE ACPI_SMB_NULL(void)
 void ACPI_SMB_Via_EC(void)
 {
 #if SUPPORT_ACPI_SMB_EC
-#define EC_SMB_SCI_Number 0x20 // ACPI EC SMBus Event
     BYTE RUNCODE;
     RUNCODE = Oem_ACPISMBusviaEC();
     if ((ACPI_SMB_PROTOCOL != 0x00) && (RUNCODE == 0x00))
@@ -730,26 +728,26 @@ void Service_PCI2_Main(void)
         if (PMC1_STR & C_D1) // CMD:1=Byte in data register is a command byte
         {
             PM1Cmd = PMC1_DIR; // Load command from Port Buffer
-#if ENABLE_DEBUGGER_SUPPORT
-            /* Debugger Record */
+        #if ENABLE_DEBUGGER_SUPPORT
+                    /* Debugger Record */
             Debugger_KBC_PMC_Record(0, 1, PM1Cmd);
-#endif
-#if !(LPC_WAY_OPTION_SWITCH)
+        #endif
+        #if !(LPC_WAY_OPTION_SWITCH)
             PMC1_CTL |= IBF_INT_ENABLE;
-#endif
+        #endif
             PM1Step = 0;
             (Port66_Table[PM1Cmd >> 4])(); // Handle command
         }
         else // CMD:0=Byte in data register is a data byte
         {
             PM1Data = PMC1_DIR; // Load data
-#if ENABLE_DEBUGGER_SUPPORT
-            /* Debugger Record */
+        #if ENABLE_DEBUGGER_SUPPORT
+                    /* Debugger Record */
             Debugger_KBC_PMC_Record(0, 1, PM1Data);
-#endif
-#if !(LPC_WAY_OPTION_SWITCH)
+        #endif
+        #if !(LPC_WAY_OPTION_SWITCH)
             PMC1_CTL |= IBF_INT_ENABLE;
-#endif
+        #endif
             if (PM1Step != 0x00)
             {
                 (Port62_Table[PM1Step & 0x07])(); // Handle command data
@@ -762,7 +760,8 @@ void Service_PCI2_Main(void)
                 }
             }
         }
-    } while (Is_FLAG_SET(PMC1_STR, BURST) && CheckBurstMode());
+    }
+    while (Is_FLAG_SET(PMC1_STR, BURST) && CheckBurstMode());
 }
 /* ----------------------------------------------------------------------------
  * FUNCTION: Service_PCI2

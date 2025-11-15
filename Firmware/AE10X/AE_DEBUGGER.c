@@ -1,11 +1,11 @@
 /*
  * @Author: Linyu
- * @LastEditors: daweslinyu 
- * @LastEditTime: 2025-10-20 19:17:15
+ * @LastEditors: daweslinyu daowes.ly@qq.com
+ * @LastEditTime: 2025-11-15 18:21:14
  * @Description:
  *
  *
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2023-09-18 16:57:45
  * @Description:
  *
@@ -57,12 +57,12 @@ BYTE dbg_int_buf[3];				 // Debugger interrupt function instruction array
 /*------------Only the slave debugger function is available-------------*/
 void Service_Debugger(void)
 {
-	if(F_Service_Debugger)
+	if (F_Service_Debugger)
 	{
 		Debug_Timeout_Count = 5000;
 		I2C0_INTR_MASK &= ~(0x1 << 2); // 屏蔽接收中断
 		// Uart_Int_Disable(UARTA_CHANNEL, 0);
-		while(F_Service_Debugger_Cmd != F_Service_Debugger_Cnt)
+		while (F_Service_Debugger_Cmd != F_Service_Debugger_Cnt)
 			Deubgger_Cmd_Parsing(Debugger_Cmd[F_Service_Debugger_Cnt++]);
 		F_Service_Debugger = 0;
 		// Uart_Int_Enable(UARTA_CHANNEL, 0);
@@ -71,7 +71,7 @@ void Service_Debugger(void)
 	else
 	{
 		Debug_Timeout_Count--;
-		if(Debug_Timeout_Count == 0)
+		if (Debug_Timeout_Count == 0)
 		{
 			Debug_Timeout_Count = 5000;
 			Buf_flag = 0;
@@ -85,12 +85,12 @@ void Service_Debugger(void)
 	// 	assert_print("iicFeedback %#x\n", iicFeedback);
 	// 	F_Service_Debugger_Send = 0;
 	// }
-	if(F_Service_Debugger_Rrq)
+	if (F_Service_Debugger_Rrq)
 	{
 		Debugger_I2c_Req(DEBUGGER_I2C_CHANNEL);
 		assert_print("iicFeedback %#x\n", iicFeedback);
 		F_Service_Debugger_Rrq = 0;
-		switch(DEBUGGER_I2C_CHANNEL) // 打开RD_REQ中断
+		switch (DEBUGGER_I2C_CHANNEL) // 打开RD_REQ中断
 		{
 			case I2C_CHANNEL_0:
 				I2C0_INTR_MASK |= 0x20;
@@ -124,9 +124,9 @@ void Service_Debugger(void)
 //*****************************************************************************
 void KBC_PMC_DataPending(char *KBC_PMC_PendingData)
 {
-	if(KBC_PMC_PendingRXCount >= KBC_PMC_PendingTXCount)
+	if (KBC_PMC_PendingRXCount >= KBC_PMC_PendingTXCount)
 	{
-		if(((KBC_PMC_PendingRXCount - KBC_PMC_PendingTXCount) >= 2) && (KBC_PMC_Pending_Num >= 256))
+		if (((KBC_PMC_PendingRXCount - KBC_PMC_PendingTXCount) >= 2) && (KBC_PMC_Pending_Num >= 256))
 		{
 			dprint("KBC_PMC_Pending error\n");
 			return;
@@ -134,7 +134,7 @@ void KBC_PMC_DataPending(char *KBC_PMC_PendingData)
 	}
 	else
 	{
-		if(((KBC_PMC_PendingTXCount - KBC_PMC_PendingRXCount) == 1) && (KBC_PMC_Pending_Num >= 256))
+		if (((KBC_PMC_PendingTXCount - KBC_PMC_PendingRXCount) == 1) && (KBC_PMC_Pending_Num >= 256))
 		{
 			dprint("KBC_PMC_Pending error\n");
 			return;
@@ -143,9 +143,9 @@ void KBC_PMC_DataPending(char *KBC_PMC_PendingData)
 
 	KBC_PMC_Pending[KBC_PMC_PendingRXCount][KBC_PMC_Pending_Num] = KBC_PMC_PendingData[0]; // record direction and channel
 	KBC_PMC_Pending_Num++;
-	if(KBC_PMC_PendingRXCount >= KBC_PMC_PendingTXCount)
+	if (KBC_PMC_PendingRXCount >= KBC_PMC_PendingTXCount)
 	{
-		if(((KBC_PMC_PendingRXCount - KBC_PMC_PendingTXCount) >= 2) && (KBC_PMC_Pending_Num >= 256))
+		if (((KBC_PMC_PendingRXCount - KBC_PMC_PendingTXCount) >= 2) && (KBC_PMC_Pending_Num >= 256))
 		{
 			dprint("KBC_PMC_Pending error\n");
 			return;
@@ -153,7 +153,7 @@ void KBC_PMC_DataPending(char *KBC_PMC_PendingData)
 	}
 	else
 	{
-		if(((KBC_PMC_PendingTXCount - KBC_PMC_PendingRXCount) == 1) && (KBC_PMC_Pending_Num >= 256))
+		if (((KBC_PMC_PendingTXCount - KBC_PMC_PendingRXCount) == 1) && (KBC_PMC_Pending_Num >= 256))
 		{
 			dprint("KBC_PMC_Pending error\n");
 			return;
@@ -161,9 +161,9 @@ void KBC_PMC_DataPending(char *KBC_PMC_PendingData)
 	}
 	KBC_PMC_Pending[KBC_PMC_PendingRXCount][KBC_PMC_Pending_Num] = KBC_PMC_PendingData[1]; // record value
 	KBC_PMC_Pending_Num++;
-	if(KBC_PMC_PendingRXCount >= KBC_PMC_PendingTXCount)
+	if (KBC_PMC_PendingRXCount >= KBC_PMC_PendingTXCount)
 	{
-		if(((KBC_PMC_PendingRXCount - KBC_PMC_PendingTXCount) >= 2) && (KBC_PMC_Pending_Num >= 256))
+		if (((KBC_PMC_PendingRXCount - KBC_PMC_PendingTXCount) >= 2) && (KBC_PMC_Pending_Num >= 256))
 		{
 			dprint("KBC_PMC_Pending error\n");
 			return;
@@ -171,14 +171,14 @@ void KBC_PMC_DataPending(char *KBC_PMC_PendingData)
 	}
 	else
 	{
-		if(((KBC_PMC_PendingTXCount - KBC_PMC_PendingRXCount) == 1) && (KBC_PMC_Pending_Num >= 256))
+		if (((KBC_PMC_PendingTXCount - KBC_PMC_PendingRXCount) == 1) && (KBC_PMC_Pending_Num >= 256))
 		{
 			dprint("KBC_PMC_Pending error\n");
 			return;
 		}
 	}
 
-	if(KBC_PMC_Pending_Num >= 256)
+	if (KBC_PMC_Pending_Num >= 256)
 	{
 		KBC_PMC_PendingRXCount = (KBC_PMC_PendingRXCount + 1) % 3;
 		KBC_PMC_Pending_Num = 0;
@@ -198,9 +198,9 @@ void KBC_PMC_DataPending(char *KBC_PMC_PendingData)
 //*****************************************************************************
 void GetKBC_PMC_PendingData(void)
 {
-	if(KBC_PMC_Event_Num != 0)
+	if (KBC_PMC_Event_Num != 0)
 	{
-		if(KBC_PMC_Event_Num >= PMC_KBC_SendCnt)
+		if (KBC_PMC_Event_Num >= PMC_KBC_SendCnt)
 		{
 			buf[3] = PMC_KBC_SendCnt - 1;
 			KBC_PMC_Event_Num = KBC_PMC_Event_Num - PMC_KBC_SendCnt;
@@ -210,22 +210,22 @@ void GetKBC_PMC_PendingData(void)
 			buf[3] = KBC_PMC_Event_Num - 1;
 			KBC_PMC_Event_Num = 0;
 		}
-		for(short i = 0; i < (buf[3] + 1); i++)
+		for (short i = 0; i < (buf[3] + 1); i++)
 		{
 			Debugger_Data[i] = KBC_PMC_Event[i]; // get value
 		}
-		if(KBC_PMC_Event_Num != 0)
+		if (KBC_PMC_Event_Num != 0)
 		{
-			for(short i = 0; i < KBC_PMC_Event_Num; i++)
+			for (short i = 0; i < KBC_PMC_Event_Num; i++)
 			{
 				KBC_PMC_Event[i] = KBC_PMC_Event[i + (buf[3] + 1)];
 			}
 		}
 		else
 		{
-			if(KBC_PMC_PendingRXCount != KBC_PMC_PendingTXCount)
+			if (KBC_PMC_PendingRXCount != KBC_PMC_PendingTXCount)
 			{
-				for(short i = 0; i < 256; i++)
+				for (short i = 0; i < 256; i++)
 				{
 					KBC_PMC_Event[i] = KBC_PMC_Pending[KBC_PMC_PendingTXCount][i]; // Dumps the currently pending array to the output array
 				}
@@ -234,7 +234,7 @@ void GetKBC_PMC_PendingData(void)
 			}
 			else
 			{
-				for(short i = 0; i < KBC_PMC_Pending_Num; i++)
+				for (short i = 0; i < KBC_PMC_Pending_Num; i++)
 				{
 					KBC_PMC_Event[i] = KBC_PMC_Pending[KBC_PMC_PendingTXCount][i]; // Dumps the currently pending array to the output array
 				}
@@ -257,9 +257,9 @@ void GetKBC_PMC_PendingData(void)
 //*****************************************************************************
 BYTE Debugger_KBD_Record(BYTE value)
 {
-	if(F_Service_KBL)
+	if (F_Service_KBL)
 	{
-		if(KBD_Overflag == 1)
+		if (KBD_Overflag == 1)
 		{
 			dprint("kbd buffer is overflow!");
 			return 1;
@@ -267,11 +267,11 @@ BYTE Debugger_KBD_Record(BYTE value)
 		// dprint("kdb_event.tail: %x\n", kbd_event.tail);
 		kbd_event.data[kbd_event.tail++] = value;
 		// dprint("kdb_event write: %x\n", kbd_event.data[kbd_event.tail - 1]);
-		if(kbd_event.tail == KBD_BUFF_SIZE)
+		if (kbd_event.tail == KBD_BUFF_SIZE)
 		{
 			kbd_event.tail = 0;
 		}
-		if(kbd_event.tail == kbd_event.head)
+		if (kbd_event.tail == kbd_event.head)
 		{
 
 			KBD_Overflag = 1;
@@ -306,7 +306,7 @@ BYTE Debugger_KBD_Record(BYTE value)
 //****************************************************************************
 void Deubgger_Cmd_Parsing(BYTE data)
 {
-	if((!Buf_flag) && (data == READ_REQUEST || data == WRITE_REQUEST || data == GET_DEBUG_TEMP ||
+	if ((!Buf_flag) && (data == READ_REQUEST || data == WRITE_REQUEST || data == GET_DEBUG_TEMP ||
 		data == KBD_READ_REQUEST || data == CANCEL_KBD_READ_REQUEST || data == RECOARD_KBC_PMC_DATA ||
 		data == STOP_RECOARD_KBC_PMC_DATA || data == RESET_CHIP_USE_WATCHDOG || data == SLAVE_READ_DATA ||
 		data == SWITCH_KEYBOARD_CODE || data == FIRMWARE_UPDATE || data == INTERRUPT_FUNCTION || data == HANDSHAKE_REQUEST))
@@ -314,11 +314,11 @@ void Deubgger_Cmd_Parsing(BYTE data)
 	#if DEBUGGER_DEBUG
 		assert_print("cmd:%#x", data);
 	#endif
-		switch(data)
+		switch (data)
 		{
 			case GET_DEBUG_TEMP:
 				Slave_flag = 0;
-				if(DEBUGGER_OUTPUT_SWITCH == 1)
+				if (DEBUGGER_OUTPUT_SWITCH == 1)
 					I2C0_INTR_MASK &= ~(1 << 2);
 				break;
 			case SLAVE_READ_DATA:
@@ -336,7 +336,7 @@ void Deubgger_Cmd_Parsing(BYTE data)
 				assert_print();
 			#endif
 				F_Service_KBL = 0;
-				if(DEBUGGER_OUTPUT_SWITCH == 1)
+				if (DEBUGGER_OUTPUT_SWITCH == 1)
 				{
 					iicFeedback = 0;
 					pos = 0;
@@ -347,7 +347,7 @@ void Deubgger_Cmd_Parsing(BYTE data)
 				assert_print();
 			#endif
 				KBC_PMC_Flag = 1;
-				for(int i = 0; i < DEBUGGER_BUFF_SIZE; i++)
+				for (int i = 0; i < DEBUGGER_BUFF_SIZE; i++)
 					KBC_PMC_Event[i] = 0; // clear
 				KBC_PMC_Event_Num = 0;
 				KBC_PMC_Pending_Num = 0;
@@ -372,14 +372,14 @@ void Deubgger_Cmd_Parsing(BYTE data)
 				break;
 			case FIRMWARE_UPDATE:
 				update_reg_ptr = (VDWORD)DEBUGGER_UART;
-				while(Debugger_Cmd[F_Service_Debugger_Cmd - 1] != '\n')//0xa是换行符的十六进制
+				while (Debugger_Cmd[F_Service_Debugger_Cmd - 1] != '\n')//0xa是换行符的十六进制
 				{
-					if(Debugger_Cmd[F_Service_Debugger_Cmd - 1] == '-')
-						if(Debugger_Cmd[F_Service_Debugger_Cmd] == 'c' || Debugger_Cmd[F_Service_Debugger_Cmd] == 'C')
+					if (Debugger_Cmd[F_Service_Debugger_Cmd - 1] == '-')
+						if (Debugger_Cmd[F_Service_Debugger_Cmd] == 'c' || Debugger_Cmd[F_Service_Debugger_Cmd] == 'C')
 						{
 							uart_updata_flag |= 2;
 						}
-					if(Debugger_Cmd[F_Service_Debugger_Cmd - 1] == (char)0xEE)
+					if (Debugger_Cmd[F_Service_Debugger_Cmd - 1] == (char)0xEE)
 					{
 						F_Service_Debugger_Cmd = F_Service_Debugger_Cnt = 0;
 						return;
@@ -405,15 +405,15 @@ void Deubgger_Cmd_Parsing(BYTE data)
 				Debug_Temp = data;
 				return;
 		}
-		if(data != HANDSHAKE_REQUEST)
+		if (data != HANDSHAKE_REQUEST)
 			DEBUGER_putchar(data);
 	}
-	if(Buf_flag)
+	if (Buf_flag)
 	{
 	#if DEBUGGER_DEBUG
 		assert_print("data:0x%x", data);
 	#endif
-		switch(Debug_Temp)
+		switch (Debug_Temp)
 		{
 			case READ_REQUEST:
 			#if DEBUGGER_DEBUG
@@ -421,7 +421,7 @@ void Deubgger_Cmd_Parsing(BYTE data)
 			#endif
 				buf[Buf_num] = data; // store received addr
 				Buf_num++;
-				if(Buf_num == 4) // received addr finished
+				if (Buf_num == 4) // received addr finished
 				{
 					Buf_flag = 0; // clear flag
 					Debug_Temp = 0;
@@ -437,7 +437,7 @@ void Deubgger_Cmd_Parsing(BYTE data)
 			#endif
 				buf[Buf_num] = data;
 				Buf_num++;
-				if(Buf_num == 7)
+				if (Buf_num == 7)
 				{
 					Buf_flag = 0;
 					Debug_Temp = 0;
@@ -450,7 +450,7 @@ void Deubgger_Cmd_Parsing(BYTE data)
 			#endif
 				dbg_int_buf[int_buf_index] = data;
 				int_buf_index++;
-				if(int_buf_index == 3)
+				if (int_buf_index == 3)
 				{
 					int_buf_index = 0;
 					Buf_flag = 0; // clear flag
@@ -462,7 +462,7 @@ void Deubgger_Cmd_Parsing(BYTE data)
 			#if DEBUGGER_DEBUG
 				assert_print();
 			#endif
-				if(Debugger_Handshake(data))// handshake success
+				if (Debugger_Handshake(data))// handshake success
 				{
 					Buf_flag = 0; // clear flag
 					Debug_Temp = 0;
@@ -478,11 +478,11 @@ void Deubgger_Cmd_Parsing(BYTE data)
 }
 void Debugger_Cmd_IRQ(BYTE debug_data)
 {
-	if(F_Service_Debugger_Cmd == F_Service_Debugger_Cnt) // 代表结束
+	if (F_Service_Debugger_Cmd == F_Service_Debugger_Cnt) // 代表结束
 	{
 		F_Service_Debugger_Cmd = F_Service_Debugger_Cnt = 0;
 	}
-	if(F_Service_Debugger_Cmd >= 0xff)
+	if (F_Service_Debugger_Cmd >= 0xff)
 	{
 	#if DEBUGGER_DEBUG
 		assert_print("warring %#x", F_Service_Debugger_Cmd);
@@ -496,7 +496,7 @@ void Debugger_Cmd_IRQ(BYTE debug_data)
 	#endif
 		Debugger_Cmd[F_Service_Debugger_Cmd++] = debug_data;
 		F_Service_Debugger = 1;
-		if(DEBUGGER_OUTPUT_SWITCH == 1)
+		if (DEBUGGER_OUTPUT_SWITCH == 1)
 			I2C0_INTR_MASK &= ~(0x1 << 2); // 屏蔽接收中断
 	}
 }
@@ -516,7 +516,7 @@ void Debugger_I2c_Req(WORD channel)
 	// int data;
 	// char wdata[16];
 	Slave_flag = 1; // set slave
-	if(iic_flag == 1)
+	if (iic_flag == 1)
 	{ // if the feedback datas have been sent
 		// #if DEBUGGER_DEBUG
 		//assert_print();
@@ -532,7 +532,7 @@ void Debugger_I2c_Req(WORD channel)
 	else
 	{
 		// assert_print("iicFeedback %#x", iicFeedback);
-		switch(iicFeedback)
+		switch (iicFeedback)
 		{
 			case 0:
 				//  return "fe dd" mean the master read while slave does not recive any command
@@ -540,29 +540,29 @@ void Debugger_I2c_Req(WORD channel)
 				I2c_Slave_Write_Byte(0xDD, channel);
 				return;
 			case 1:
-			{
-				// return two byte data to indicate master the "255 +1" datas need to be read
-				I2c_Slave_Write_Byte(0x01, channel);
-				I2c_Slave_Write_Byte(buf[3], channel);
-				iic_count = Num_flag = 0; // clear the count num// the number of datas have send by iic
-			}
-			break;
+				{
+					// return two byte data to indicate master the "255 +1" datas need to be read
+					I2c_Slave_Write_Byte(0x01, channel);
+					I2c_Slave_Write_Byte(buf[3], channel);
+					iic_count = Num_flag = 0; // clear the count num// the number of datas have send by iic
+				}
+				break;
 			case 2:// int mode 
 			case 3:
-			{
-				// return two byte data to indicate master the "0 +1" datas need to be read
-				I2c_Slave_Write_Byte(0x00, channel);
-				I2c_Slave_Write_Byte(0x01, channel);
-			}
-			break;
+				{
+					// return two byte data to indicate master the "0 +1" datas need to be read
+					I2c_Slave_Write_Byte(0x00, channel);
+					I2c_Slave_Write_Byte(0x01, channel);
+				}
+				break;
 			case 4:
-			{					   // kbc send
-				F_Service_KBL = 0; // stop the kbd record until the datas have been sent
-				I2c_Slave_Write_Byte(0x00, channel);
-				I2c_Slave_Write_Byte(pos, channel);
-				iic_count = Num_flag = 0; // clear the count num// the number of datas have send by iic
-			}
-			break;
+				{					   // kbc send
+					F_Service_KBL = 0; // stop the kbd record until the datas have been sent
+					I2c_Slave_Write_Byte(0x00, channel);
+					I2c_Slave_Write_Byte(pos, channel);
+					iic_count = Num_flag = 0; // clear the count num// the number of datas have send by iic
+				}
+				break;
 			default:
 				return;
 		}
@@ -589,40 +589,53 @@ void Debugger_I2c_Send(WORD channel)
 	// int data;
 	uint8_t wdata[16];
 	volatile BYTE int_status;
-	switch(iicFeedback)
+	switch (iicFeedback)
 	{
 		case 0:
 			break;
 		case 1:
-		{
-			for(int i = 0; i < 8; i++)
 			{
-				wdata[i] = Debugger_Data[i + Num_flag * 8];
-				iic_count++;
-				if(iic_count == buf[3] + 1)
+				for (int i = 0; i < 8; i++)
 				{
-					char temp = iic_count % 8; // 计算剩余待发送字节
-					if(temp == 0)
+					wdata[i] = Debugger_Data[i + Num_flag * 8];
+					iic_count++;
+					if (iic_count == buf[3] + 1)
 					{
-						if(Num_flag == 31)
-							break;
-						temp = 8;
+						char temp = iic_count % 8; // 计算剩余待发送字节
+						if (temp == 0)
+						{
+							if (Num_flag == 31)
+								break;
+							temp = 8;
+						}
+						I2c_Slave_Write_Block(wdata, temp, channel);
+						int_status = SMBUSn_INTR_MASK0(channel);
+						int_status |= I2C_INTR_RD_REQ;
+						int_status &= (~I2C_INTR_TX_EMPTY);
+					   // enable the tx_empty irqc and mask the req irqc to star transmit datas
+						SMBUSn_INTR_MASK0(channel) = int_status;
+						iicFeedback = 0;
+						return;
 					}
-					I2c_Slave_Write_Block(wdata, temp, channel);
+				}
+				Num_flag++;
+				I2c_Slave_Write_Block(wdata, 8, channel); // i2c slave send data to fifo
+				/* Finish data send*/
+				if (Num_flag == 32)
+				{
 					int_status = SMBUSn_INTR_MASK0(channel);
 					int_status |= I2C_INTR_RD_REQ;
 					int_status &= (~I2C_INTR_TX_EMPTY);
 				   // enable the tx_empty irqc and mask the req irqc to star transmit datas
 					SMBUSn_INTR_MASK0(channel) = int_status;
 					iicFeedback = 0;
-					return;
 				}
 			}
-			Num_flag++;
-			I2c_Slave_Write_Block(wdata, 8, channel); // i2c slave send data to fifo
-			/* Finish data send*/
-			if(Num_flag == 32)
-			{
+			break;
+		case 2:
+			{ // int mode
+				// the real data master want to read
+				I2c_Slave_Write_Byte(0xFF, channel);
 				int_status = SMBUSn_INTR_MASK0(channel);
 				int_status |= I2C_INTR_RD_REQ;
 				int_status &= (~I2C_INTR_TX_EMPTY);
@@ -630,63 +643,65 @@ void Debugger_I2c_Send(WORD channel)
 				SMBUSn_INTR_MASK0(channel) = int_status;
 				iicFeedback = 0;
 			}
-		}
-		break;
-		case 2:
-		{ // int mode
-			// the real data master want to read
-			I2c_Slave_Write_Byte(0xFF, channel);
-			int_status = SMBUSn_INTR_MASK0(channel);
-			int_status |= I2C_INTR_RD_REQ;
-			int_status &= (~I2C_INTR_TX_EMPTY);
-		   // enable the tx_empty irqc and mask the req irqc to star transmit datas
-			SMBUSn_INTR_MASK0(channel) = int_status;
-			iicFeedback = 0;
-		}
-		break;
+			break;
 		case 3:
-		{
-			if(iic_int_flag == 1)
 			{
-				I2c_Slave_Write_Byte(0x01, channel);
-			}
-			else if(iic_int_flag == 2)
-			{
-				I2c_Slave_Write_Byte(0x00, channel);
-			}
-			else if(iic_int_flag == 3)
-			{
-				I2c_Slave_Write_Byte(0x11, channel);
-			}
-			else
-			{
-				I2c_Slave_Write_Byte(0xDD, channel);
-			}
-			int_status = SMBUSn_INTR_MASK0(channel);
-			int_status |= I2C_INTR_RD_REQ;
-			int_status &= (~I2C_INTR_TX_EMPTY);
-		   // enable the tx_empty irqc and mask the req irqc to star transmit datas
-			SMBUSn_INTR_MASK0(channel) = int_status;
-			iicFeedback = 0;
-		}
-		break;
-		case 4:
-		{ // kbc send
-			for(int i = 0; i < 16; i++)
-			{
-				wdata[i] = Debugger_Data[i + Num_flag * 16];
-				iic_count++;
-				if(iic_count == pos)
+				if (iic_int_flag == 1)
 				{
-					char temp = iic_count % 16; // 计算剩余待发送字节
-					if(temp == 0)
+					I2c_Slave_Write_Byte(0x01, channel);
+				}
+				else if (iic_int_flag == 2)
+				{
+					I2c_Slave_Write_Byte(0x00, channel);
+				}
+				else if (iic_int_flag == 3)
+				{
+					I2c_Slave_Write_Byte(0x11, channel);
+				}
+				else
+				{
+					I2c_Slave_Write_Byte(0xDD, channel);
+				}
+				int_status = SMBUSn_INTR_MASK0(channel);
+				int_status |= I2C_INTR_RD_REQ;
+				int_status &= (~I2C_INTR_TX_EMPTY);
+			   // enable the tx_empty irqc and mask the req irqc to star transmit datas
+				SMBUSn_INTR_MASK0(channel) = int_status;
+				iicFeedback = 0;
+			}
+			break;
+		case 4:
+			{ // kbc send
+				for (int i = 0; i < 16; i++)
+				{
+					wdata[i] = Debugger_Data[i + Num_flag * 16];
+					iic_count++;
+					if (iic_count == pos)
 					{
-						if(Num_flag == 15)
-							break;
-						temp = 16;
+						char temp = iic_count % 16; // 计算剩余待发送字节
+						if (temp == 0)
+						{
+							if (Num_flag == 15)
+								break;
+							temp = 16;
+						}
+						I2c_Slave_Write_Block(wdata, temp, channel);
+						/* Complete sending; Restore the Context*/
+						F_Service_KBL = 1;
+						iicFeedback = 0;
+						pos = 0;
+						int_status = SMBUSn_INTR_MASK0(channel);
+						int_status |= I2C_INTR_RD_REQ;
+						int_status &= (~I2C_INTR_TX_EMPTY);
+					   // enable the tx_empty irqc and mask the req irqc to star transmit datas
+						SMBUSn_INTR_MASK0(channel) = int_status;					return;
 					}
-					I2c_Slave_Write_Block(wdata, temp, channel);
-					/* Complete sending; Restore the Context*/
+				}
+				Num_flag++;
+				I2c_Slave_Write_Block(wdata, 16, channel); // i2c slave send data to fifo
+				/* Complete sending; Restore the Context*/
+				if (Num_flag == 16)
+				{
 					F_Service_KBL = 1;
 					iicFeedback = 0;
 					pos = 0;
@@ -694,25 +709,10 @@ void Debugger_I2c_Send(WORD channel)
 					int_status |= I2C_INTR_RD_REQ;
 					int_status &= (~I2C_INTR_TX_EMPTY);
 				   // enable the tx_empty irqc and mask the req irqc to star transmit datas
-					SMBUSn_INTR_MASK0(channel) = int_status;					return;
+					SMBUSn_INTR_MASK0(channel) = int_status;
 				}
 			}
-			Num_flag++;
-			I2c_Slave_Write_Block(wdata, 16, channel); // i2c slave send data to fifo
-			/* Complete sending; Restore the Context*/
-			if(Num_flag == 16)
-			{
-				F_Service_KBL = 1;
-				iicFeedback = 0;
-				pos = 0;
-				int_status = SMBUSn_INTR_MASK0(channel);
-				int_status |= I2C_INTR_RD_REQ;
-				int_status &= (~I2C_INTR_TX_EMPTY);
-			   // enable the tx_empty irqc and mask the req irqc to star transmit datas
-				SMBUSn_INTR_MASK0(channel) = int_status;
-			}
-		}
-		break;
+			break;
 		default:
 			return;
 	}
@@ -743,11 +743,11 @@ void DEBUGGER_DATA(void) // Debugger Function read
 	assert_print("data_base:%#x", data_base);
 #endif
 /* Register length conversion */
-	if(data_base >= 0x30000 && data_base <= 0x30FFF) // Different addr part has different lenth
+	if (data_base >= 0x30000 && data_base <= 0x30FFF) // Different addr part has different lenth
 	{
 		length = 4;
 	}
-	else if(data_base >= 0x4800 && data_base <= 0x4FFF) // register lenth change
+	else if (data_base >= 0x4800 && data_base <= 0x4FFF) // register lenth change
 		// else if(data_base >= 0x4000 && data_base <= 0x7BFF)
 	{
 		length = 2;
@@ -760,15 +760,15 @@ void DEBUGGER_DATA(void) // Debugger Function read
 	assert_print("length:%#x", length);
 #endif
 /* Cumulative number of interrupts */
-	if(data_base == 0x10000) // this addr will get int num
+	if (data_base == 0x10000) // this addr will get int num
 	{
-		for(int i = 0; i < DEBUGGER_BUFF_SIZE; i++)
+		for (int i = 0; i < DEBUGGER_BUFF_SIZE; i++)
 		{
 			Debugger_Data[i] = Intr_num[i];
 		}
 	}
 	/* KBD key code */
-	else if(data_base == 0x10001)
+	else if (data_base == 0x10001)
 	{
 		/*
 		 The command to read the keyboard code in the debugger,
@@ -778,15 +778,15 @@ void DEBUGGER_DATA(void) // Debugger Function read
 		/* Service_Debugger_Send_KBD */
 	}
 	/* KBC/PMC value */
-	else if(data_base == 0x10002) // this addr will get kbc/pmc value
+	else if (data_base == 0x10002) // this addr will get kbc/pmc value
 	{
-		if(((KBC_PMC_PendingRXCount != KBC_PMC_PendingTXCount)) || (KBC_PMC_Pending_Num > 0)) // get pending data if has
+		if (((KBC_PMC_PendingRXCount != KBC_PMC_PendingTXCount)) || (KBC_PMC_Pending_Num > 0)) // get pending data if has
 		{
 			GetKBC_PMC_PendingData();
 		}
 		else // pending no data
 		{
-			if(KBC_PMC_Event_Num == 0)//如果没有捕捉到PMC/KBC数据则回复两个字节0xff
+			if (KBC_PMC_Event_Num == 0)//如果没有捕捉到PMC/KBC数据则回复两个字节0xff
 			{
 				buf[3] = 1;
 				Debugger_Data[0] = 0xff;
@@ -794,7 +794,7 @@ void DEBUGGER_DATA(void) // Debugger Function read
 			}
 			else
 			{
-				if(KBC_PMC_Event_Num >= PMC_KBC_SendCnt)
+				if (KBC_PMC_Event_Num >= PMC_KBC_SendCnt)
 				{
 					buf[3] = PMC_KBC_SendCnt - 1;
 					KBC_PMC_Event_Num = KBC_PMC_Event_Num - PMC_KBC_SendCnt;
@@ -804,13 +804,13 @@ void DEBUGGER_DATA(void) // Debugger Function read
 					buf[3] = KBC_PMC_Event_Num - 1;
 					KBC_PMC_Event_Num = 0;
 				}
-				for(short i = 0; i < (buf[3] + 1); i++)
+				for (short i = 0; i < (buf[3] + 1); i++)
 				{
 					Debugger_Data[i] = KBC_PMC_Event[i]; // get value
 				}
-				if(KBC_PMC_Event_Num != 0)
+				if (KBC_PMC_Event_Num != 0)
 				{
-					for(short i = 0; i < KBC_PMC_Event_Num; i++)
+					for (short i = 0; i < KBC_PMC_Event_Num; i++)
 					{
 						KBC_PMC_Event[i] = KBC_PMC_Event[i + (buf[3] + 1)];
 					}
@@ -824,10 +824,10 @@ void DEBUGGER_DATA(void) // Debugger Function read
 	/* read value form addr */
 	else
 	{
-		switch(length)
+		switch (length)
 		{
 			case 1:
-				for(int i = 0; i < 256; i++)
+				for (int i = 0; i < 256; i++)
 				{
 					temp1 = (*((uint8_t *)(data_base)));
 					Debugger_Data[i] = temp1 & 0xff;
@@ -835,7 +835,7 @@ void DEBUGGER_DATA(void) // Debugger Function read
 				}
 				break;
 			case 2:
-				for(int i = 0; i < 128; i++)
+				for (int i = 0; i < 128; i++)
 				{
 					temp2 = (*((uint16_t *)(data_base)));
 					Debugger_Data[i * 2] = temp2 & 0xff;
@@ -844,7 +844,7 @@ void DEBUGGER_DATA(void) // Debugger Function read
 				}
 				break;
 			case 4:
-				for(int i = 0; i < 64; i++)
+				for (int i = 0; i < 64; i++)
 				{
 					temp4 = (*((uint32_t *)(data_base)));
 					Debugger_Data[i * 4] = temp4 & 0xff;
@@ -855,7 +855,7 @@ void DEBUGGER_DATA(void) // Debugger Function read
 				}
 				break;
 			default:
-				for(int i = 0; i < DEBUGGER_BUFF_SIZE; i++)
+				for (int i = 0; i < DEBUGGER_BUFF_SIZE; i++)
 				{
 					Debugger_Data[i] = i;
 				}
@@ -866,7 +866,7 @@ void DEBUGGER_DATA(void) // Debugger Function read
 	iicFeedback = 1; // enable the iic feedback
 #else
 	/*Output from UART */
-	for(int i = 0; i < buf[3] + 1; i++)
+	for (int i = 0; i < buf[3] + 1; i++)
 	{
 		DEBUGER_putchar(Debugger_Data[i]);
 	}
@@ -874,17 +874,17 @@ void DEBUGGER_DATA(void) // Debugger Function read
 }
 void Service_Debugger_Send_KBD(void)
 {
-	if(!F_Service_KBL)
+	if (!F_Service_KBL)
 		return;
-	if(kbd_event.head == kbd_event.tail)//没有数据
+	if (kbd_event.head == kbd_event.tail)//没有数据
 		return;
 	pos = 0;
 	//assert_print("iicFeedback 0x%x", iicFeedback);
-	while((((kbd_event.head) % KBD_BUFF_SIZE) != kbd_event.tail))
+	while ((((kbd_event.head) % KBD_BUFF_SIZE) != kbd_event.tail))
 	{
 		iicFeedback = 0; // disable the iic feedback
 		Debugger_Data[pos++] = kbd_event.data[kbd_event.head++];
-		if(kbd_event.head == KBD_BUFF_SIZE)
+		if (kbd_event.head == KBD_BUFF_SIZE)
 		{
 			kbd_event.head = 0;
 		}
@@ -894,7 +894,7 @@ void Service_Debugger_Send_KBD(void)
 	KBD_Overflag = 0;
 	//assert_print("iicFeedback 0x%x", iicFeedback);
 #if (DEBUGGER_OUTPUT_SWITCH == 0)
-	for(int i = 0; i < pos; i++)
+	for (int i = 0; i < pos; i++)
 	{
 		DEBUGER_putchar(Debugger_Data[i]);
 	}
@@ -920,7 +920,7 @@ void DEBUGGER_Change(void)
 	/* Addr sequence transformation */
 	data_base = (buf[0] << 16) | (buf[1] << 8) | buf[2];
 	/* Register write protection */
-	if(data_base >= 0x32000 || (data_base >= 0x30C00 && data_base <= 0x30FFF) ||
+	if (data_base >= 0x32000 || (data_base >= 0x30C00 && data_base <= 0x30FFF) ||
 	(data_base >= 0x28000 && data_base <= 0x2FFFF) || (data_base >= 0x7C00 && data_base <= 0x1FFFF)
 	|| (data_base >= 0x4400 && data_base <= 0x47FF) || data_base <= 0xFFF)
 	{
@@ -928,19 +928,19 @@ void DEBUGGER_Change(void)
 		return;
 	}
 	/* Register length conversion */
-	if(data_base >= 0x30000 && data_base <= 0x30FFF)
+	if (data_base >= 0x30000 && data_base <= 0x30FFF)
 	{
 		length = 4;
 	}
-	else if(data_base >= 0x32000 && data_base <= 0xBFFFF)
+	else if (data_base >= 0x32000 && data_base <= 0xBFFFF)
 	{
 		length = 4;
 	}
-	else if(data_base >= 0x20000 && data_base <= 0x27FFF)//配合web改为四字节读写
+	else if (data_base >= 0x20000 && data_base <= 0x27FFF)//配合web改为四字节读写
 	{
 		length = 4;
 	}
-	else if(data_base >= 0x4800 && data_base <= 0x4FFF)
+	else if (data_base >= 0x4800 && data_base <= 0x4FFF)
 	{
 		length = 2;
 	}
@@ -952,7 +952,7 @@ void DEBUGGER_Change(void)
 	assert_print("data_base:0x%x  length:0x%x", data_base, length);
 #endif
 /* write value to addr */
-	switch(length)
+	switch (length)
 	{
 		case 1:
 		#if DEBUGGER_DEBUG
@@ -964,7 +964,7 @@ void DEBUGGER_Change(void)
 		#if DEBUGGER_DEBUG
 			printf("vaule:0x%x\n", (buf[6] | (buf[5] << 8)));
 		#endif
-			if(data_base % 2 != 0)//2字节访问防止访问到奇数地址
+			if (data_base % 2 != 0)//2字节访问防止访问到奇数地址
 			{
 				*((uint16_t *)(data_base - 1)) = ((*((uint16_t *)(data_base - 1)) & 0xff) | (buf[6] << 8));
 			}
@@ -977,7 +977,7 @@ void DEBUGGER_Change(void)
 		#if DEBUGGER_DEBUG
 			printf("vaule:0x%x\n", (buf[6] | (buf[5] << 8) | (buf[4] << 16) | (buf[3] << 24)));
 		#endif
-			if(data_base % 4 != 0)//4字节访问防止访问到奇数地址
+			if (data_base % 4 != 0)//4字节访问防止访问到奇数地址
 			{
 				int Correct_address = data_base - (data_base % 4);
 				uint32_t temp_data = (*((uint32_t *)(Correct_address)));
@@ -1016,10 +1016,10 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 	BYTE value = 0;
 	BYTE read_flag = 0;
 	BYTE illegal_operation = 0;
-	if(dbg_int_buf[0] < 0x3)
+	if (dbg_int_buf[0] < 0x3)
 	{
 		int index = dbg_int_buf[0] - 0x0;
-		switch(dbg_int_buf[1])
+		switch (dbg_int_buf[1])
 		{
 			case 0x0:
 				CPU_Int_Enable(index);
@@ -1050,9 +1050,9 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(dbg_int_buf[0] == 0x3)
+	if (dbg_int_buf[0] == 0x3)
 	{
-		switch(dbg_int_buf[1])
+		switch (dbg_int_buf[1])
 		{
 			case 0x0:
 				SWUC_Int_Enable(dbg_int_buf[2]);
@@ -1073,9 +1073,9 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(dbg_int_buf[0] == 0x4)//LPC_RST中断
+	if (dbg_int_buf[0] == 0x4)//LPC_RST中断
 	{
-		switch(dbg_int_buf[1])
+		switch (dbg_int_buf[1])
 		{
 			case 0x0:
 				CPU_Int_Enable(4);
@@ -1112,9 +1112,9 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(dbg_int_buf[0] == 0x5)
+	if (dbg_int_buf[0] == 0x5)
 	{
-		switch(dbg_int_buf[1])
+		switch (dbg_int_buf[1])
 		{
 			case 0x0:
 				PWRSW_Config(0, 0);//enable
@@ -1124,7 +1124,7 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 			case 0x8:
 				value = 0;
-				if(((SYSCTL_PWRSWCSR & 0x1) != 0) && ((SYSCTL_PWRSWCSR & 0x10) == 0))
+				if (((SYSCTL_PWRSWCSR & 0x1) != 0) && ((SYSCTL_PWRSWCSR & 0x10) == 0))
 				{
 					value = 1;
 				}
@@ -1135,9 +1135,9 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(dbg_int_buf[0] == 0x6)
+	if (dbg_int_buf[0] == 0x6)
 	{
-		switch(dbg_int_buf[1])
+		switch (dbg_int_buf[1])
 		{
 			case 0x0:
 				PS2_PORT0_CR = CCMD_WRITE;
@@ -1157,9 +1157,9 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(dbg_int_buf[0] >= 0x7 && dbg_int_buf[0] <= 0x8)
+	if (dbg_int_buf[0] >= 0x7 && dbg_int_buf[0] <= 0x8)
 	{
-		switch(dbg_int_buf[1])
+		switch (dbg_int_buf[1])
 		{
 			case 0x0:
 				KBD_Int_Enable;
@@ -1176,10 +1176,10 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(dbg_int_buf[0] >= 0x9 && dbg_int_buf[0] <= 0xC)
+	if (dbg_int_buf[0] >= 0x9 && dbg_int_buf[0] <= 0xC)
 	{
 		int index = dbg_int_buf[0] - 0x9;
-		switch(dbg_int_buf[1])
+		switch (dbg_int_buf[1])
 		{
 			case 0x0:
 				Tach_Int_Enable(index);
@@ -1196,10 +1196,10 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(dbg_int_buf[0] >= 0xD && dbg_int_buf[0] <= 0xE)
+	if (dbg_int_buf[0] >= 0xD && dbg_int_buf[0] <= 0xE)
 	{
 		int index = dbg_int_buf[0] - 0xD;
-		switch(dbg_int_buf[1])
+		switch (dbg_int_buf[1])
 		{
 			case 0x0:
 				KBC_Int_Enable(3 - index);
@@ -1216,10 +1216,10 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(dbg_int_buf[0] >= 0xF && dbg_int_buf[0] <= 0x10)
+	if (dbg_int_buf[0] >= 0xF && dbg_int_buf[0] <= 0x10)
 	{
 		int index = dbg_int_buf[0] - 0xF;
-		switch(dbg_int_buf[1])
+		switch (dbg_int_buf[1])
 		{
 			case 0x0:
 				PMC1_Int_Enable(index);
@@ -1236,10 +1236,10 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(dbg_int_buf[0] >= 0x11 && dbg_int_buf[0] <= 0x12)
+	if (dbg_int_buf[0] >= 0x11 && dbg_int_buf[0] <= 0x12)
 	{
 		int index = dbg_int_buf[0] - 0x11;
-		switch(dbg_int_buf[1])
+		switch (dbg_int_buf[1])
 		{
 			case 0x0:
 				PMC2_Int_Enable(index);
@@ -1256,9 +1256,9 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(dbg_int_buf[0] == 0x13)//修改
+	if (dbg_int_buf[0] == 0x13)//修改
 	{
-		switch(dbg_int_buf[1])
+		switch (dbg_int_buf[1])
 		{
 			case 0x0:
 				WDT_Init(0x1, 0xa);
@@ -1281,9 +1281,9 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(dbg_int_buf[0] == 0x14)//修改
+	if (dbg_int_buf[0] == 0x14)//修改
 	{
-		switch(dbg_int_buf[1])
+		switch (dbg_int_buf[1])
 		{
 			case 0x2:
 				ADC_Int_Mask(dbg_int_buf[2]);
@@ -1304,9 +1304,9 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(dbg_int_buf[0] == 0x15)
+	if (dbg_int_buf[0] == 0x15)
 	{
-		switch(dbg_int_buf[1])
+		switch (dbg_int_buf[1])
 		{
 			case 0x0:
 				Uart_Int_Enable(0, dbg_int_buf[2]);
@@ -1327,10 +1327,10 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(dbg_int_buf[0] >= 0x16 && dbg_int_buf[0] <= 0x17)
+	if (dbg_int_buf[0] >= 0x16 && dbg_int_buf[0] <= 0x17)
 	{
 		int index = dbg_int_buf[0] - 0x16;
-		switch(dbg_int_buf[1])
+		switch (dbg_int_buf[1])
 		{
 			case 0x0:
 				Uart_Int_Enable(4 + index, dbg_int_buf[2]);
@@ -1351,9 +1351,9 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(dbg_int_buf[0] == 0x18)//修改
+	if (dbg_int_buf[0] == 0x18)//修改
 	{
-		switch(dbg_int_buf[1])
+		switch (dbg_int_buf[1])
 		{
 			case 0x0:
 				SMSEC_Int_Enable(dbg_int_buf[1]);
@@ -1368,9 +1368,9 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(dbg_int_buf[0] == 0x19)
+	if (dbg_int_buf[0] == 0x19)
 	{
-		switch(dbg_int_buf[1])
+		switch (dbg_int_buf[1])
 		{
 			// case 0x0:
 			// 	SMSHOST_Int_Enable(dbg_int_buf[1]);
@@ -1383,10 +1383,10 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(dbg_int_buf[0] >= 0x1A && dbg_int_buf[0] <= 0x1D)
+	if (dbg_int_buf[0] >= 0x1A && dbg_int_buf[0] <= 0x1D)
 	{
 		int index = dbg_int_buf[0] - 0x1A;
-		switch(dbg_int_buf[1])
+		switch (dbg_int_buf[1])
 		{
 			case 0x0:
 				Timer_Int_Enable(index);
@@ -1407,9 +1407,9 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(dbg_int_buf[0] == 0x1E)
+	if (dbg_int_buf[0] == 0x1E)
 	{
-		switch(dbg_int_buf[1])
+		switch (dbg_int_buf[1])
 		{
 			case 0x0:
 				ICTL0_INTEN0 = 0xff; ICTL0_INTEN1 = 0xff;
@@ -1436,7 +1436,7 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				ICTL0_INTMASK6 = 0x00; ICTL0_INTMASK7 = 0xf8;
 				break;
 			case 0x8:
-				if(ICTL0_INTEN0 == 0xff && ICTL0_INTEN1 == 0xff && ICTL0_INTEN2 == 0xff
+				if (ICTL0_INTEN0 == 0xff && ICTL0_INTEN1 == 0xff && ICTL0_INTEN2 == 0xff
 				&& ICTL0_INTEN3 == 0xff && ICTL0_INTEN4 == 0xff && ICTL0_INTEN5 == 0xff
 				&& ICTL0_INTEN6 == 0xff && ((ICTL0_INTEN7 & 0x7) == 0x7))
 				{
@@ -1449,7 +1449,7 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				read_flag = 1;
 				break;
 			case 0x9://是否屏蔽中断
-				if(ICTL0_INTMASK0 == 0xff && ICTL0_INTMASK1 == 0xff && ICTL0_INTMASK2 == 0xff
+				if (ICTL0_INTMASK0 == 0xff && ICTL0_INTMASK1 == 0xff && ICTL0_INTMASK2 == 0xff
 				&& ICTL0_INTMASK3 == 0xff && ICTL0_INTMASK4 == 0xff && ICTL0_INTMASK5 == 0xff
 				&& ICTL0_INTMASK6 == 0xff && ((ICTL0_INTMASK7 & 0x7) == 0x7))
 				{
@@ -1470,9 +1470,9 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(dbg_int_buf[0] == 0x1F)
+	if (dbg_int_buf[0] == 0x1F)
 	{
-		switch(dbg_int_buf[1])
+		switch (dbg_int_buf[1])
 		{
 			case 0x0:
 				ICTL1_INTEN0 = 0xff; ICTL1_INTEN1 = 0xff;
@@ -1499,7 +1499,7 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				ICTL1_INTMASK6 = 0x00; ICTL1_INTMASK7 = 0x00;
 				break;
 			case 0x8://是否使能
-				if(ICTL1_INTEN0 == 0xff && ICTL1_INTEN1 == 0xff && ICTL1_INTEN2 == 0xff
+				if (ICTL1_INTEN0 == 0xff && ICTL1_INTEN1 == 0xff && ICTL1_INTEN2 == 0xff
 				&& ICTL1_INTEN3 == 0xff && ICTL1_INTEN4 == 0xff && ICTL1_INTEN5 == 0xff
 				&& ICTL1_INTEN6 == 0xff && ((ICTL1_INTEN7 & 0x7) == 0x7))
 				{
@@ -1512,7 +1512,7 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				read_flag = 1;
 				break;
 			case 0x9:
-				if(ICTL1_INTMASK0 == 0xff && ICTL1_INTMASK1 == 0xff && ICTL1_INTMASK2 == 0xff
+				if (ICTL1_INTMASK0 == 0xff && ICTL1_INTMASK1 == 0xff && ICTL1_INTMASK2 == 0xff
 				&& ICTL1_INTMASK3 == 0xff && ICTL1_INTMASK4 == 0xff && ICTL1_INTMASK5 == 0xff
 				&& ICTL1_INTMASK6 == 0xff && ((ICTL1_INTMASK7 & 0x7) == 0x7))
 				{
@@ -1533,10 +1533,10 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(dbg_int_buf[0] >= 0x20 && dbg_int_buf[0] <= 0x27)
+	if (dbg_int_buf[0] >= 0x20 && dbg_int_buf[0] <= 0x27)
 	{
 		int index = dbg_int_buf[0] - 0x20;
-		switch(dbg_int_buf[1])
+		switch (dbg_int_buf[1])
 		{
 			case 0x0:
 				GPIOA0_7_Int_Enable(index);
@@ -1587,10 +1587,10 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(dbg_int_buf[0] >= 0x28 && dbg_int_buf[0] <= 0x2F)
+	if (dbg_int_buf[0] >= 0x28 && dbg_int_buf[0] <= 0x2F)
 	{
 		int index = dbg_int_buf[0] - 0x28;
-		switch(dbg_int_buf[1])
+		switch (dbg_int_buf[1])
 		{
 			case 0x0:
 				GPIOA8_15_Int_Enable(index);
@@ -1641,10 +1641,10 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(dbg_int_buf[0] >= 0x30 && dbg_int_buf[0] <= 0x37)
+	if (dbg_int_buf[0] >= 0x30 && dbg_int_buf[0] <= 0x37)
 	{
 		int index = dbg_int_buf[0] - 0x30;
-		switch(dbg_int_buf[1])
+		switch (dbg_int_buf[1])
 		{
 			case 0x0:
 				GPIOA16_23_Int_Enable(index);
@@ -1695,10 +1695,10 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(dbg_int_buf[0] >= 0x38 && dbg_int_buf[0] <= 0x3F)
+	if (dbg_int_buf[0] >= 0x38 && dbg_int_buf[0] <= 0x3F)
 	{
 		int index = dbg_int_buf[0] - 0x38;
-		switch(dbg_int_buf[1])
+		switch (dbg_int_buf[1])
 		{
 			case 0x0:
 				GPIOA24_31_Int_Enable(index);
@@ -1749,10 +1749,10 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(dbg_int_buf[0] >= 0x40 && dbg_int_buf[0] <= 0x47)
+	if (dbg_int_buf[0] >= 0x40 && dbg_int_buf[0] <= 0x47)
 	{
 		int index = dbg_int_buf[0] - 0x40;
-		switch(dbg_int_buf[1])
+		switch (dbg_int_buf[1])
 		{
 			case 0x0:
 				GPIOB0_7_Int_Enable(index);
@@ -1803,10 +1803,10 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(dbg_int_buf[0] >= 0x48 && dbg_int_buf[0] <= 0x4F)
+	if (dbg_int_buf[0] >= 0x48 && dbg_int_buf[0] <= 0x4F)
 	{
 		int index = dbg_int_buf[0] - 0x48;
-		switch(dbg_int_buf[1])
+		switch (dbg_int_buf[1])
 		{
 			case 0x0:
 				GPIOB8_15_Int_Enable(index);
@@ -1858,10 +1858,10 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 		}
 	}
 	// sws----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	if(dbg_int_buf[0] >= 0x50 && dbg_int_buf[0] <= 0x53)
+	if (dbg_int_buf[0] >= 0x50 && dbg_int_buf[0] <= 0x53)
 	{
 		int index = dbg_int_buf[0] - 0x50;
-		switch(dbg_int_buf[1])
+		switch (dbg_int_buf[1])
 		{
 			case 0x0:
 				GPIOB16_19_Int_Enable(index);
@@ -1912,10 +1912,10 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(dbg_int_buf[0] >= 0x54 && dbg_int_buf[0] <= 0x5A)
+	if (dbg_int_buf[0] >= 0x54 && dbg_int_buf[0] <= 0x5A)
 	{
 		int index = dbg_int_buf[0] - 0x54;
-		switch(dbg_int_buf[1])
+		switch (dbg_int_buf[1])
 		{
 			case 0x0:
 				GPIOB20_26_Int_Enable(index);
@@ -1966,10 +1966,10 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(dbg_int_buf[0] >= 0x5B && dbg_int_buf[0] <= 0x62)
+	if (dbg_int_buf[0] >= 0x5B && dbg_int_buf[0] <= 0x62)
 	{
 		int index = dbg_int_buf[0] - 0x5B;
-		switch(dbg_int_buf[1])
+		switch (dbg_int_buf[1])
 		{
 			case 0x0:
 				GPIOC0_7_Int_Enable(index);
@@ -2020,10 +2020,10 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(dbg_int_buf[0] >= 0x63 && dbg_int_buf[0] <= 0x68)
+	if (dbg_int_buf[0] >= 0x63 && dbg_int_buf[0] <= 0x68)
 	{
 		int index = dbg_int_buf[0] - 0x63;
-		switch(dbg_int_buf[1])
+		switch (dbg_int_buf[1])
 		{
 			case 0x0:
 				GPIOC8_13_Int_Enable(index);
@@ -2074,10 +2074,10 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(dbg_int_buf[0] >= 0x69 && dbg_int_buf[0] <= 0x70)
+	if (dbg_int_buf[0] >= 0x69 && dbg_int_buf[0] <= 0x70)
 	{
 		int index = dbg_int_buf[0] - 0x69;
-		switch(dbg_int_buf[1])
+		switch (dbg_int_buf[1])
 		{
 			case 0x0:
 				GPIOE0_7_Int_Enable(index);
@@ -2128,10 +2128,10 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(dbg_int_buf[0] >= 0x71 && dbg_int_buf[0] <= 0x78)
+	if (dbg_int_buf[0] >= 0x71 && dbg_int_buf[0] <= 0x78)
 	{
 		int index = dbg_int_buf[0] - 0x71;
-		switch(dbg_int_buf[1])
+		switch (dbg_int_buf[1])
 		{
 			case 0x0:
 				GPIOE8_15_Int_Enable(index);
@@ -2182,10 +2182,10 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(dbg_int_buf[0] >= 0x79 && dbg_int_buf[0] <= 0x80)
+	if (dbg_int_buf[0] >= 0x79 && dbg_int_buf[0] <= 0x80)
 	{
 		int index = dbg_int_buf[0] - 0x79;
-		switch(dbg_int_buf[1])
+		switch (dbg_int_buf[1])
 		{
 			case 0x0:
 				GPIOE16_23_Int_Enable(index);
@@ -2236,10 +2236,10 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(dbg_int_buf[0] >= 0x81 && dbg_int_buf[0] <= 0x82)
+	if (dbg_int_buf[0] >= 0x81 && dbg_int_buf[0] <= 0x82)
 	{
 		int index = dbg_int_buf[0] - 0x81;
-		switch(dbg_int_buf[1])
+		switch (dbg_int_buf[1])
 		{
 			case 0x0:
 				PMC3_Int_Enable(index);
@@ -2256,10 +2256,10 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(dbg_int_buf[0] >= 0x83 && dbg_int_buf[0] <= 0x84)
+	if (dbg_int_buf[0] >= 0x83 && dbg_int_buf[0] <= 0x84)
 	{
 		int index = dbg_int_buf[0] - 0x83;
-		switch(dbg_int_buf[1])
+		switch (dbg_int_buf[1])
 		{
 			case 0x0:
 				PMC4_Int_Enable(index);
@@ -2276,10 +2276,10 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(dbg_int_buf[0] >= 0x85 && dbg_int_buf[0] <= 0x86)
+	if (dbg_int_buf[0] >= 0x85 && dbg_int_buf[0] <= 0x86)
 	{
 		int index = dbg_int_buf[0] - 0x85;
-		switch(dbg_int_buf[1])
+		switch (dbg_int_buf[1])
 		{
 			case 0x0:
 				PMC5_Int_Enable(index);
@@ -2296,9 +2296,9 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(dbg_int_buf[0] == 0x87)
+	if (dbg_int_buf[0] == 0x87)
 	{
-		switch(dbg_int_buf[1])
+		switch (dbg_int_buf[1])
 		{
 			case 0x0:
 				PS2_PORT1_CR = CCMD_WRITE;
@@ -2318,10 +2318,10 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(dbg_int_buf[0] >= 0x88 && dbg_int_buf[0] <= 0x8A)
+	if (dbg_int_buf[0] >= 0x88 && dbg_int_buf[0] <= 0x8A)
 	{
 		int index = dbg_int_buf[0] - 0x87;
-		switch(dbg_int_buf[1])
+		switch (dbg_int_buf[1])
 		{
 			case 0x0:
 				Uart_Int_Enable(index, dbg_int_buf[2]);
@@ -2342,9 +2342,9 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(dbg_int_buf[0] == 0x8B)//修改
+	if (dbg_int_buf[0] == 0x8B)//修改
 	{
-		switch(dbg_int_buf[1])
+		switch (dbg_int_buf[1])
 		{
 			case 0x2:
 				Spim_Int_Mask(4);//接收满中断
@@ -2365,10 +2365,10 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(dbg_int_buf[0] >= 0x8C && dbg_int_buf[0] <= 0x8F)//修改
+	if (dbg_int_buf[0] >= 0x8C && dbg_int_buf[0] <= 0x8F)//修改
 	{
 		int index = dbg_int_buf[0] - 0x8C;
-		switch(dbg_int_buf[1])
+		switch (dbg_int_buf[1])
 		{
 			case 0x2:
 				I2c_Int_Mask(index, 2);//接收满
@@ -2389,16 +2389,16 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(dbg_int_buf[0] >= 0x90 && dbg_int_buf[0] <= 0x93)//修改
+	if (dbg_int_buf[0] >= 0x90 && dbg_int_buf[0] <= 0x93)//修改
 	{
-		switch(dbg_int_buf[1])
+		switch (dbg_int_buf[1])
 		{
 			default:
 				illegal_operation = 1;
 				break;
 		}
 	}
-	if(dbg_int_buf[0] == 0x94)
+	if (dbg_int_buf[0] == 0x94)
 	{
 		// switch(dbg_int_buf[1])
 		// {
@@ -2421,9 +2421,9 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 		// 		break;
 		// }
 	}
-	if(dbg_int_buf[0] == 0x95)
+	if (dbg_int_buf[0] == 0x95)
 	{
-		switch(dbg_int_buf[1])
+		switch (dbg_int_buf[1])
 		{
 			case 0x0:
 				Por_Int_Enable(dbg_int_buf[2]);
@@ -2444,9 +2444,9 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(dbg_int_buf[0] == 0x96)
+	if (dbg_int_buf[0] == 0x96)
 	{
-		switch(dbg_int_buf[1])
+		switch (dbg_int_buf[1])
 		{
 			// case 0x2:
 			// 	Mon_Int_Mask(dbg_int_buf[2]);
@@ -2467,18 +2467,18 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 				break;
 		}
 	}
-	if(!(dbg_int_buf[0] <= 0x96))
+	if (!(dbg_int_buf[0] <= 0x96))
 	{
 		illegal_operation = 1;
 	}
-	if(0 == illegal_operation)
+	if (0 == illegal_operation)
 	{
-		if(1 == read_flag)
+		if (1 == read_flag)
 		{
 		#if DEBUGGER_DEBUG
 			dprint("send back read value:0x%x \n", value);
 		#endif
-			if(value != 0)
+			if (value != 0)
 			{
 			#if (DEBUGGER_OUTPUT_SWITCH == 1)
 							/* Output from I2C */
@@ -2545,11 +2545,11 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 //*****************************************************************************
 BYTE Debugger_KBC_PMC_Record(BYTE direction, BYTE channel, BYTE value)
 {
-	if(KBC_PMC_Flag)
+	if (KBC_PMC_Flag)
 	{
 		/*first  0-input;1-output*/
 		/*second 0-KBC;1-PMC1;2-PMC2;3-PMC3;4-PMC4*/
-		if((KBC_PMC_Event_Num >= 256) || (KBC_PMC_Pending_Num > 0) || (KBC_PMC_PendingRXCount != KBC_PMC_PendingTXCount))
+		if ((KBC_PMC_Event_Num >= 256) || (KBC_PMC_Pending_Num > 0) || (KBC_PMC_PendingRXCount != KBC_PMC_PendingTXCount))
 		{
 			char KBC_PMC_Tempdata[2] = { 0 };
 			KBC_PMC_Tempdata[0] = (direction) << 4 | (channel); // record direction and channel
@@ -2580,11 +2580,11 @@ BYTE Debugger_KBC_PMC_Record(BYTE direction, BYTE channel, BYTE value)
 char Debugger_Master_Read_Byte(WORD i2c_channel)
 {
 	char data;
-	if(0 == I2c_Check_TFNF(i2c_channel))
+	if (0 == I2c_Check_TFNF(i2c_channel))
 	{
 		SMBUSn_DATA_CMD0(i2c_channel) = I2C_READ | I2C_STOP;
 	}
-	if(0 == I2c_Check_RFNE(i2c_channel))
+	if (0 == I2c_Check_RFNE(i2c_channel))
 	{
 		data = SMBUSn_DATA_CMD0(i2c_channel) & 0xff;
 	}
@@ -2604,7 +2604,7 @@ char Debugger_Master_Read_Byte(WORD i2c_channel)
 //*****************************************************************************
 void Debugger_Master_Write_Byte(char data, WORD i2c_channel)
 {
-	if(0 == I2c_Check_TFNF(i2c_channel))
+	if (0 == I2c_Check_TFNF(i2c_channel))
 	{
 		SMBUSn_DATA_CMD0(i2c_channel) = data | I2C_WRITE | I2C_STOP;
 	}
@@ -2627,7 +2627,7 @@ void I2c_Connect(void)
 {
 	Debugger_Master_Write_Byte(0xDD, 0);
 	BYTE data = Debugger_Master_Read_Byte(0);
-	if(data == 0xDD)
+	if (data == 0xDD)
 	{
 		DEBUGER_putchar(0xDD);
 	}
@@ -2650,7 +2650,7 @@ void I2c_Disconnect(void)
 	BYTE data;
 	Debugger_Master_Write_Byte(0x88, 0);
 	data = Debugger_Master_Read_Byte(0) & 0xFF;
-	if(data == 0x88)
+	if (data == 0x88)
 	{
 		DEBUGER_putchar(0x88);
 	}
@@ -2673,54 +2673,54 @@ void Debugger_Master_Read(short buf[], DWORD channel)
 {
 	int i, j;
 	int data[DEBUGGER_BUFF_SIZE];
-	if(0 == I2c_Check_TFE(channel))
+	if (0 == I2c_Check_TFE(channel))
 	{
 		SMBUSn_DATA_CMD0(channel) = 0x55 | I2C_WRITE;
 	}
-	if(0 == I2c_Check_TFNF(channel))
+	if (0 == I2c_Check_TFNF(channel))
 	{
 		SMBUSn_DATA_CMD0(channel) = buf[0] | I2C_WRITE;
 	}
-	if(0 == I2c_Check_TFNF(channel))
+	if (0 == I2c_Check_TFNF(channel))
 	{
 		SMBUSn_DATA_CMD0(channel) = buf[1] | I2C_WRITE;
 	}
-	if(0 == I2c_Check_TFNF(channel))
+	if (0 == I2c_Check_TFNF(channel))
 	{
 		SMBUSn_DATA_CMD0(channel) = buf[2] | I2C_WRITE | I2C_STOP;
 	}
-	for(j = 0; j < 32; j++)
+	for (j = 0; j < 32; j++)
 	{
-		for(i = 0; i < 7; i++)
+		for (i = 0; i < 7; i++)
 		{
-			if(0 == I2c_Check_TFNF(channel))
+			if (0 == I2c_Check_TFNF(channel))
 			{
 				SMBUSn_DATA_CMD0(channel) = I2C_READ;
 			}
 		}
-		if(j == 31)
+		if (j == 31)
 		{
-			if(0 == I2c_Check_TFNF(channel))
+			if (0 == I2c_Check_TFNF(channel))
 			{
 				SMBUSn_DATA_CMD0(channel) = I2C_READ | I2C_STOP;
 			}
 		}
 		else
 		{
-			if(0 == I2c_Check_TFNF(channel))
+			if (0 == I2c_Check_TFNF(channel))
 			{
 				SMBUSn_DATA_CMD0(channel) = I2C_READ;
 			}
 		}
-		for(i = 0; i < 8; i++)
+		for (i = 0; i < 8; i++)
 		{
-			if(0 == I2c_Check_RFNE(channel))
+			if (0 == I2c_Check_RFNE(channel))
 			{
 				data[i + j * 8] = SMBUSn_DATA_CMD0(channel) & 0xff;
 			}
 		}
 	}
-	for(j = 0; j < buf[3] + 1; j++)
+	for (j = 0; j < buf[3] + 1; j++)
 	{
 		DEBUGER_putchar(data[j]);
 	}
@@ -2743,26 +2743,26 @@ void Debugger_Master_Write(short buf[], DWORD channel)
 {
 	int get_data;
 	int i;
-	if(0 == I2c_Check_TFNF(channel))
+	if (0 == I2c_Check_TFNF(channel))
 	{
 		SMBUSn_DATA_CMD0(channel) = 0xFF | I2C_WRITE;
 	}
-	for(i = 0; i < 6; i++)
+	for (i = 0; i < 6; i++)
 	{
-		if(0 == I2c_Check_TFNF(channel))
+		if (0 == I2c_Check_TFNF(channel))
 		{
 			SMBUSn_DATA_CMD0(channel) = buf[i] | I2C_WRITE;
 		}
 	}
-	if(0 == I2c_Check_TFNF(channel))
+	if (0 == I2c_Check_TFNF(channel))
 	{
 		SMBUSn_DATA_CMD0(channel) = buf[i] | I2C_WRITE | I2C_STOP;
 	}
-	if(0 == I2c_Check_TFNF(channel))
+	if (0 == I2c_Check_TFNF(channel))
 	{
 		SMBUSn_DATA_CMD0(channel) = I2C_WRITE | I2C_STOP;
 	}
-	if(0 == I2c_Check_RFNE(channel))
+	if (0 == I2c_Check_RFNE(channel))
 	{
 		get_data = SMBUSn_DATA_CMD0(channel) & 0xFF;
 	}
@@ -2789,9 +2789,9 @@ void Debugger_Master_Retrans(BYTE debuger)
 #endif
 	Debuger_Cmd_Data = debuger & 0xff;
 	// dprint("uartdata = %#x\n", Debuger_Cmd_Data);
-	if((!Buf_Flag) && (Debuger_Cmd_Data == 0x55 || Debuger_Cmd_Data == 0xff || Debuger_Cmd_Data == 0xDD || Debuger_Cmd_Data == 0x88 || Debuger_Cmd_Data == 0xAA || Debuger_Cmd_Data == 0xBB))
+	if ((!Buf_Flag) && (Debuger_Cmd_Data == 0x55 || Debuger_Cmd_Data == 0xff || Debuger_Cmd_Data == 0xDD || Debuger_Cmd_Data == 0x88 || Debuger_Cmd_Data == 0xAA || Debuger_Cmd_Data == 0xBB))
 	{
-		switch(Debuger_Cmd_Data)
+		switch (Debuger_Cmd_Data)
 		{
 			case 0x88:
 				I2c_Disconnect();
@@ -2822,14 +2822,14 @@ void Debugger_Master_Retrans(BYTE debuger)
 				return;
 		}
 	}
-	if(Buf_Flag)
+	if (Buf_Flag)
 	{
-		switch(Debug_Temp)
+		switch (Debug_Temp)
 		{
 			case 0x55:
 				buf[Buf_Num] = Debuger_Cmd_Data;
 				Buf_Num++;
-				if(Buf_Num == 4)
+				if (Buf_Num == 4)
 				{
 					Buf_Flag = 0;
 					Debug_Temp = 0;
@@ -2839,7 +2839,7 @@ void Debugger_Master_Retrans(BYTE debuger)
 			case 0xFF:
 				buf[Buf_Num] = Debuger_Cmd_Data;
 				Buf_Num++;
-				if(Buf_Num == 7)
+				if (Buf_Num == 7)
 				{
 					Buf_Flag = 0;
 					Debug_Temp = 0;
@@ -2856,19 +2856,19 @@ void Debugger_Master_Retrans(BYTE debuger)
 char Check_Debugger_Data(const char *buffer, short write_index)
 {
 	// 在缓冲区中查找匹配的数据串
-	for(short i = 0; i < UART_BUFFER_SIZE; ++i)
+	for (short i = 0; i < UART_BUFFER_SIZE; ++i)
 	{
 		char matched = 1;
-		for(unsigned char j = 0; j < Handshake_length; ++j)
+		for (unsigned char j = 0; j < Handshake_length; ++j)
 		{
 			short index = (write_index - Handshake_length + j + UART_BUFFER_SIZE + i) % UART_BUFFER_SIZE;
-			if(buffer[index] != Handshake_data[j])
+			if (buffer[index] != Handshake_data[j])
 			{
 				matched = 0;
 				break;
 			}
 		}
-		if(matched)
+		if (matched)
 		{
 			return 1; // 找到匹配的数据串
 		}
@@ -2880,20 +2880,20 @@ char Check_Debugger_Data(const char *buffer, short write_index)
 
 char Debugger_Handshake(BYTE data)
 {
-	if(Handshake_Flag == 0)
+	if (Handshake_Flag == 0)
 	{
-		if(Check_Debugger_Data(Uart_buffer, Uart_Rx_index))
+		if (Check_Debugger_Data(Uart_buffer, Uart_Rx_index))
 		{
 			DEBUGER_putchar(0xA5);//第二次握手
 
 			//清除整个Uart_buffer和fifo
-			for(unsigned char i = 0; i < UART_BUFFER_SIZE; i++)
+			for (unsigned char i = 0; i < UART_BUFFER_SIZE; i++)
 			{
 				DEBUGGER_TX;
 				Uart_buffer[i] = 0;
 			}
 			//发送0x5A 以及版本号
-			for(unsigned char i = 4; i > 0; i--) // 第三次握手
+			for (unsigned char i = 4; i > 0; i--) // 第三次握手
 			{
 				DEBUGER_putchar(((SYSCTL_IDVER >> (8 * (i - 1))) & 0xff));
 			}
@@ -2902,16 +2902,16 @@ char Debugger_Handshake(BYTE data)
 		else//失败
 		{
 			Handshake_cunt++;
-			if(Handshake_cunt >= 36)//失败次数超过36次
+			if (Handshake_cunt >= 36)//失败次数超过36次
 			{
 
 			}
 			return -1;
 		}
 	}
-	if(Handshake_Flag != 0)
+	if (Handshake_Flag != 0)
 	{
-		if(data == 0xA5)//第四次握手
+		if (data == 0xA5)//第四次握手
 		{
 			dprint("Debugger handshake success!\n");
 			Handshake_Flag = 0;

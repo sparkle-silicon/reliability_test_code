@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
- * @LastEditTime: 2023-11-03 15:19:07
+ * @LastEditors: daweslinyu daowes.ly@qq.com
+ * @LastEditTime: 2025-11-15 18:43:12
  * @Description:
  *
  *
@@ -96,6 +96,8 @@
  *---------------------------------------------------------------------------*/
 #define EVENT_BUFFER_SIZE 9
 #define PENDING_BUFFER 8
+
+#define EC_SMB_SCI_Number 0x20 // ACPI EC SMBus Event
 extern VBYTE SCI_Event_Buffer[10];
 extern VBYTE SMI_Event_Buffer[10];
 extern VBYTE PD_SCI_Event_Buffer[10];
@@ -118,7 +120,6 @@ extern BYTE Read_SMI_Query_Value(void);
 extern BYTE Write_SMI_Query_Value(BYTE NewSMI);
 extern void Clear_Event_Buffer(void);
 extern int CheckBurstMode(void); // zb 10.26 add
-extern void vSetTotalBurstTime(void);
 extern void ACPI_SMB_Via_EC(void);
 /*-----------------------------------------------------------------------------
  * Internal Calling Prototype

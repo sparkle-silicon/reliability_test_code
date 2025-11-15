@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
- * @LastEditTime: 2025-10-18 20:56:06
+ * @LastEditors: daweslinyu daowes.ly@qq.com
+ * @LastEditTime: 2025-11-15 18:29:06
  * @Description:
  *
  *
@@ -79,8 +79,10 @@ extern BYTE Uart_Int_Disable(BYTE channel, BYTE type);
 extern BYTE Uart_Int_Enable_Read(BYTE channel, BYTE type);
 extern BYTE Uart_Int_Status(BYTE channel, BYTE type);
 extern int serial_init(DWORD uart_num, DWORD baudrate);
-int serial_deinit(DWORD uart_num);/*取消串口初始化（再次使用要重新init）*/
-int serial2gpio(DWORD uart_num);/*串口切换为GPIO，并关闭串口模块*/
-int gpio2serial(DWORD uart_num);/*GPIO切换为串口，并使能串口模块*/
+extern int serial_deinit(DWORD uart_num);/*取消串口初始化（再次使用要重新init）*/
+extern int serial2gpio(DWORD uart_num);/*串口切换为GPIO，并关闭串口模块*/
+extern int gpio2serial(DWORD uart_num);/*GPIO切换为串口，并使能串口模块*/
 extern void Service_PUTC(void);
+extern void DEBUGER_putchar(char ch);
+
 #endif

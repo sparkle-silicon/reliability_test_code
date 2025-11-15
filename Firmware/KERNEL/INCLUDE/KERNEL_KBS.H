@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
- * @LastEditTime: 2023-12-08 18:48:13
+ * @LastEditors: daweslinyu daowes.ly@qq.com
+ * @LastEditTime: 2025-11-15 18:30:40
  * @Description:
  *
  *
@@ -166,8 +166,7 @@ extern void KBS_Set_KBS_INFO(VBYTE type_rate);
 extern void KBD_CLear_Buffer(void);//zb 10.26 add
 extern void KBS_Init(void);
 extern BYTE KBS_Buffer_Input(BYTE   row_column);
-extern BYTE  KBS_Buffer_puts(const BYTE* pntr);
-extern void KBD_Default_Typematic(void);
+extern BYTE  KBS_Buffer_puts(const BYTE *pntr);
 extern void KBS_Clear_Break(void);
 extern void KBD_Check_Repeat(void);
 #include <KERNEL_XLATE.H>

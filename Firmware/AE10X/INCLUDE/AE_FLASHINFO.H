@@ -1,7 +1,7 @@
 /*
  * @Author: dejavuwdh
- * @LastEditors: daweslinyu 
- * @LastEditTime: 2025-10-04 16:24:55
+ * @LastEditors: daweslinyu daowes.ly@qq.com
+ * @LastEditTime: 2025-11-15 17:51:57
  * @Description:
  *
  *
@@ -269,9 +269,5 @@ extern spatch_typdef patch_array[];
 #define JAL_CODE_BYTE1(rd, imm) (((imm & 0xf000) | (JAL_RD(rd) & 0xf00)) >> 8) & 0xff
 #define JAL_CODE_BYTE2(imm) (((imm & 0xf0000) >> 16) | ((imm & 0x800) >> 7) | ((imm & 0xe) << 4)) & 0xff
 #define JAL_CODE_BYTE3(imm) ((((imm & 0x7f0) >> 4) | ((imm & 0x100000) >> 13))) & 0xff
-BYTE rom_patch_demo(BYTE, BYTE);
-void earse_internel_flash(void);
-
-
 
 #endif

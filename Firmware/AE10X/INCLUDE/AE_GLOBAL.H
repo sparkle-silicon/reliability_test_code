@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
- * @LastEditors: daweslinyu 
- * @LastEditTime: 2025-11-09 20:54:56
+ * @LastEditors: daweslinyu daowes.ly@qq.com
+ * @LastEditTime: 2025-11-15 17:10:16
  * @Description:
  *               define chip_type
  *               define identifier

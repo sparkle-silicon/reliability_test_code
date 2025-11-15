@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
- * @LastEditors: daweslinyu 
- * @LastEditTime: 2025-11-04 18:55:47
+ * @LastEditors: daweslinyu daowes.ly@qq.com
+ * @LastEditTime: 2025-11-15 18:08:25
  * @Description:
  *
  *
@@ -230,7 +230,6 @@ USED _off_t _lseek(int __fildes, _off_t __offset, int __whence)
 #if SUPPORT_MEM_MALLOC
 // 一下为其他事项方式，相互冲突
 static unsigned int sum = 0;
-#define DEBUG_EN 0
 #define MEM_START _heap_start
 #define MEM_END &_heap_end
 #define MEM_SIZE (&_heap_end - _heap_start)

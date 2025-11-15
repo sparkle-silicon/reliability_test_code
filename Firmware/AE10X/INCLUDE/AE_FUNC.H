@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
- * @LastEditors: daweslinyu 
- * @LastEditTime: 2025-10-17 15:03:02
+ * @LastEditors: daweslinyu daowes.ly@qq.com
+ * @LastEditTime: 2025-11-15 18:05:06
  * @Description:
  *
  *
@@ -199,11 +199,11 @@
 #define TMR3_RST           (1UL << 2)      // TIMER3模块复位控制
 #define KBS_RST            (1UL << 1)      // KBS模块复位控制
 #define PS2K_RST           (1UL << 0)      // PS2K模块复位控制
-void enable_mcycle_minstret();
-void disable_mcycle_minstret();
-void core_wfe();
-void pmp_open_all_space();
-void switch_m2u_mode();
+extern void enable_mcycle_minstret();
+extern void disable_mcycle_minstret();
+extern void core_wfe();
+extern void pmp_open_all_space();
+extern void switch_m2u_mode();
 uint32_t NOINLINE measure_cpu_freq(size_t n);
 uint32_t get_timer_value();
 uint32_t get_timer_freq();

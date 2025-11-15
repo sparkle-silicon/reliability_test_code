@@ -1,7 +1,7 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
- * @LastEditTime: 2025-10-18 20:56:44
+ * @LastEditors: daweslinyu daowes.ly@qq.com
+ * @LastEditTime: 2025-11-15 18:42:23
  * @Description:
  *
  *
@@ -174,6 +174,10 @@
 #define SMUBUS_CLOCK  (HIGH_CHIP_CLOCK / (SYSCTL_CLKDIV_SMB+1)) //SMBUS clock
 #define I2CTimeOut	(SMUBUS_CLOCK/15/20)	//TimeOut set
 
+#define SMBUS_BIT7_ADDR_MASK 0x7f
+#define SMBUS_BIT10_ADDR_MASK 0x3ff
+#define SMBUS_BITn_ADDR_MASK SMBUS_BIT7_ADDR_MASK
+
 //I2C调试打印
 #if I2C_DEBUG 
 #define i2c_dprint dprint
@@ -209,17 +213,17 @@ extern void I2c_Write16bit(WORD value, WORD regoffset, WORD i2c_channel);
 extern void I2c_Mux_set(BYTE modle);
 extern void I2c_Master_Set_Tar(WORD TAR, WORD BIT, WORD i2c_channel);
 extern void I2c_Master_Write_Byte(BYTE data, BYTE reg, WORD i2c_channel);
-extern void I2c_Master_Write_Word(BYTE* data, BYTE reg, WORD i2c_channel);
-extern void I2c_Master_Read_Word(BYTE* data, BYTE reg, WORD i2c_channel);
-extern void I2c_Master_Write_Block(BYTE* data, BYTE lenth, BYTE reg, WORD i2c_channel);
-extern void I2c_Master_Read_Block(BYTE* data, BYTE lenth, BYTE reg, WORD i2c_channel);
+extern void I2c_Master_Write_Word(BYTE *data, BYTE reg, WORD i2c_channel);
+extern void I2c_Master_Read_Word(BYTE *data, BYTE reg, WORD i2c_channel);
+extern void I2c_Master_Write_Block(BYTE *data, BYTE lenth, BYTE reg, WORD i2c_channel);
+extern void I2c_Master_Read_Block(BYTE *data, BYTE lenth, BYTE reg, WORD i2c_channel);
 extern void I2cM_Write_Byte(BYTE i2c_addr, BYTE reg, BYTE data, WORD i2c_channel);
-extern void I2cM_Write_Word(BYTE i2c_addr, BYTE* data, BYTE reg, WORD i2c_channel);
-extern void I2cM_Read_Word(BYTE i2c_addr, BYTE* data, BYTE reg, WORD i2c_channel);
-extern void I2cM_Write_Block(BYTE i2c_addr, BYTE* data, BYTE length, BYTE reg, WORD i2c_channel);
-extern void I2cM_Read_Block(BYTE i2c_addr, BYTE* data, BYTE length, BYTE reg, WORD i2c_channel);
+extern void I2cM_Write_Word(BYTE i2c_addr, BYTE *data, BYTE reg, WORD i2c_channel);
+extern void I2cM_Read_Word(BYTE i2c_addr, BYTE *data, BYTE reg, WORD i2c_channel);
+extern void I2cM_Write_Block(BYTE i2c_addr, BYTE *data, BYTE length, BYTE reg, WORD i2c_channel);
+extern void I2cM_Read_Block(BYTE i2c_addr, BYTE *data, BYTE length, BYTE reg, WORD i2c_channel);
 extern void I2c_Slave_Write_Byte(uint8_t data, WORD i2c_channel);
-extern void I2c_Slave_Write_Block(uint8_t* data, BYTE  length, WORD i2c_channel);
+extern void I2c_Slave_Write_Block(uint8_t *data, BYTE  length, WORD i2c_channel);
 extern void I2c_Master_Controller_Init(WORD i2c_channel, DWORD speed, BYTE spklen);
 extern void I2c_Slave_Init(WORD i2c_channel, DWORD speed, BYTE spklen);
 extern void I2c_Channel_Init(BYTE channel, DWORD speed, BYTE role, BYTE addr, BYTE spklen);

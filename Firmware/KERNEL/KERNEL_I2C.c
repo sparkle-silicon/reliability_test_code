@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2025-10-20 16:48:41
  * @Description:
  *
@@ -14,9 +14,6 @@
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
 #include "KERNEL_I2C.H"
-#define SMBUS_BIT7_ADDR_MASK 0x7f
-#define SMBUS_BIT10_ADDR_MASK 0x3ff
-#define SMBUS_BITn_ADDR_MASK SMBUS_BIT7_ADDR_MASK
  //*****************************************************************************
  //  I2C channel number and base address conversion function
  //
@@ -36,27 +33,27 @@ WORD I2c_Channel_Baseaddr(WORD i2c_channel)
 	// 根据通道选择基地址
 	switch (i2c_channel)
 	{
-	case I2C_CHANNEL_0:
-		return SMBUS0_BASE_ADDR;
-	case I2C_CHANNEL_1:
-		return SMBUS1_BASE_ADDR;
-	case I2C_CHANNEL_2:
-		return SMBUS2_BASE_ADDR;
-	case I2C_CHANNEL_3:
-		return SMBUS3_BASE_ADDR;
-	case I2C_CHANNEL_4:
-		return SMBUS4_BASE_ADDR;
-	case I2C_CHANNEL_5:
-		return SMBUS5_BASE_ADDR;
-	case I2C_CHANNEL_6:
-		return SMBUS6_BASE_ADDR;
-	case I2C_CHANNEL_7:
-		return SMBUS7_BASE_ADDR;
-	case I2C_CHANNEL_8:
-		return SMBUS8_BASE_ADDR;
-	default:
-		dprint("channel or baseaddr error \n");
-		return 0;
+		case I2C_CHANNEL_0:
+			return SMBUS0_BASE_ADDR;
+		case I2C_CHANNEL_1:
+			return SMBUS1_BASE_ADDR;
+		case I2C_CHANNEL_2:
+			return SMBUS2_BASE_ADDR;
+		case I2C_CHANNEL_3:
+			return SMBUS3_BASE_ADDR;
+		case I2C_CHANNEL_4:
+			return SMBUS4_BASE_ADDR;
+		case I2C_CHANNEL_5:
+			return SMBUS5_BASE_ADDR;
+		case I2C_CHANNEL_6:
+			return SMBUS6_BASE_ADDR;
+		case I2C_CHANNEL_7:
+			return SMBUS7_BASE_ADDR;
+		case I2C_CHANNEL_8:
+			return SMBUS8_BASE_ADDR;
+		default:
+			dprint("channel or baseaddr error \n");
+			return 0;
 	}
 }
 
@@ -525,7 +522,7 @@ BYTE I2cM_Read_Byte(BYTE i2c_addr, BYTE reg, WORD i2c_channel)
 //  return :
 //      none
 //*****************************************************************************
-void I2c_Master_Write_Word(BYTE* data, BYTE reg, WORD i2c_channel)
+void I2c_Master_Write_Word(BYTE *data, BYTE reg, WORD i2c_channel)
 {
 	/*write offset*/
 	if (0 == I2c_Check_TFE(i2c_channel))
@@ -560,7 +557,7 @@ void I2c_Master_Write_Word(BYTE* data, BYTE reg, WORD i2c_channel)
 //  return :
 //      none
 //*****************************************************************************
-void I2cM_Write_Word(BYTE i2c_addr, BYTE* data, BYTE reg, WORD i2c_channel)
+void I2cM_Write_Word(BYTE i2c_addr, BYTE *data, BYTE reg, WORD i2c_channel)
 {
 	I2c_Master_Set_Tar(i2c_addr, I2C_REGADDR_7BIT, i2c_channel);
 	I2c_Master_Write_Word(data, reg, i2c_channel);
@@ -577,7 +574,7 @@ void I2cM_Write_Word(BYTE i2c_addr, BYTE* data, BYTE reg, WORD i2c_channel)
 //  return :
 //		none
 //*****************************************************************************
-void I2c_Master_Read_Word(BYTE* data, BYTE reg, WORD i2c_channel)
+void I2c_Master_Read_Word(BYTE *data, BYTE reg, WORD i2c_channel)
 {
 	/*write offset*/
 	if (0 == I2c_Check_TFE(i2c_channel))
@@ -611,7 +608,7 @@ void I2c_Master_Read_Word(BYTE* data, BYTE reg, WORD i2c_channel)
 //  return :
 //		none
 //*****************************************************************************
-void I2cM_Read_Word(BYTE i2c_addr, BYTE* data, BYTE reg, WORD i2c_channel)
+void I2cM_Read_Word(BYTE i2c_addr, BYTE *data, BYTE reg, WORD i2c_channel)
 {
 	I2c_Master_Set_Tar(i2c_addr, I2C_REGADDR_7BIT, i2c_channel);
 	I2c_Master_Read_Word(data, reg, i2c_channel);
@@ -629,7 +626,7 @@ void I2cM_Read_Word(BYTE i2c_addr, BYTE* data, BYTE reg, WORD i2c_channel)
 //  return :
 //		none
 //*****************************************************************************
-void I2c_Master_Write_Block(BYTE* data, BYTE length, BYTE reg, WORD i2c_channel)
+void I2c_Master_Write_Block(BYTE *data, BYTE length, BYTE reg, WORD i2c_channel)
 {
 	WORD loop = 0;
 	if (length)
@@ -671,7 +668,7 @@ void I2c_Master_Write_Block(BYTE* data, BYTE length, BYTE reg, WORD i2c_channel)
 //  return :
 //		none
 //*****************************************************************************
-void I2cM_Write_Block(BYTE i2c_addr, BYTE* data, BYTE length, BYTE reg, WORD i2c_channel)
+void I2cM_Write_Block(BYTE i2c_addr, BYTE *data, BYTE length, BYTE reg, WORD i2c_channel)
 {
 	I2c_Master_Set_Tar(i2c_addr, I2C_REGADDR_7BIT, i2c_channel);
 	I2c_Master_Write_Block(data, length, reg, i2c_channel);
@@ -689,7 +686,7 @@ void I2cM_Write_Block(BYTE i2c_addr, BYTE* data, BYTE length, BYTE reg, WORD i2c
 //  return :
 //		none
 //*****************************************************************************
-void I2c_Master_Read_Block(BYTE* data, BYTE length, BYTE reg, WORD i2c_channel)
+void I2c_Master_Read_Block(BYTE *data, BYTE length, BYTE reg, WORD i2c_channel)
 {
 	WORD loop = 0;
 	if (length)
@@ -733,7 +730,7 @@ void I2c_Master_Read_Block(BYTE* data, BYTE length, BYTE reg, WORD i2c_channel)
 //  return :
 //		none
 //*****************************************************************************
-void I2cM_Read_Block(BYTE i2c_addr, BYTE* data, BYTE length, BYTE reg, WORD i2c_channel)
+void I2cM_Read_Block(BYTE i2c_addr, BYTE *data, BYTE length, BYTE reg, WORD i2c_channel)
 {
 	I2c_Master_Set_Tar(i2c_addr, I2C_REGADDR_7BIT, i2c_channel);
 	I2c_Master_Read_Block(data, length, reg, i2c_channel);
@@ -789,7 +786,7 @@ uint8_t I2c_Slave_Read_Byte(WORD i2c_channel)
 //  return :
 //      none
 //*****************************************************************************
-void I2c_Slave_Write_Block(uint8_t* data, BYTE length, WORD i2c_channel)
+void I2c_Slave_Write_Block(uint8_t *data, BYTE length, WORD i2c_channel)
 {
 	BYTE loop = 0;
 	length--;

@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2023-11-03 18:07:55
  * @Description: This file is used for handling Standard 8042 Keyboard Controller Commands
  *
@@ -49,8 +49,7 @@ static void Command_D4(void);
 // Handle KBC command A1 -
 //-----------------------------------------------------------------------------
 static void Command_A1(void)
-{
-}
+{}
 void Command_C0(void)
 {
     // Just return the compatibility value for now. //return (PCIN | 0x1F);
@@ -71,9 +70,9 @@ void Command_90(void)
         }
         vDelayXms(5);   // Emulate transmission delay times
         KBC_MOB = 0xFC; // timeout error
-#if ENABLE_DEBUGGER_SUPPORT
+    #if ENABLE_DEBUGGER_SUPPORT
         Debugger_KBC_PMC_Record(1, 0, 0xFC);
-#endif
+    #endif
     }
 }
 BYTE Set_Port60_Multi_Data_Handle(void)
@@ -112,61 +111,61 @@ void KB_Cmd_Handle(BYTE nKB60DAT)
         cmdbk = KB_Command;
         switch (KB_Command)
         {
-        case 0xED: /* Update LEDs command. */
-            // Led_Data = nKB60DAT;
-            ack = 0xFA;
-            KB_Command = 0x00;
-            if (nKB60DAT & 0x01)
-            {
-                Led_Data_SCROLL = 1;
-            }
-            else
-            {
-                Led_Data_SCROLL = 0;
-            }
-            if (nKB60DAT & 0x02)
-            {
-                NumLockKey = 1;
-                Led_Data_NUM = 1;
-            }
-            else
-            {
-                NumLockKey = 0;
-                Led_Data_NUM = 0;
-            }
-            if (nKB60DAT & 0x04)
-            {
-                Led_Data_CAPS = 1;
-            }
-            else
-            {
-                Led_Data_CAPS = 0;
-            }
-            OEM_Write_Leds(); // Hook Oem On-board LED control
-            /* Update scanner numlock state. */
-            Scanner_State_NUM_LOCK = Led_Data_NUM;
-            break;
-        case 0xF0: /* Set alternate KBD_SCAN codes. */
-            Keyboard_CodeSet = nKB60DAT;
-            ack = 0xFA;
-            KB_Command = 0x00;
-            break;
-        case 0xF3: /* Set typematic rate/delay. */
-            Keyboard_Typematic = nKB60DAT;
-            KBS_Set_KBS_INFO(Keyboard_Typematic);
-            ack = 0xFA;
-            KB_Command = 0x00;
-            break;
-        default:        // Unknown command request system resend
-            ack = 0xFE; // Resend
-            break;
+            case 0xED: /* Update LEDs command. */
+                // Led_Data = nKB60DAT;
+                ack = 0xFA;
+                KB_Command = 0x00;
+                if (nKB60DAT & 0x01)
+                {
+                    Led_Data_SCROLL = 1;
+                }
+                else
+                {
+                    Led_Data_SCROLL = 0;
+                }
+                if (nKB60DAT & 0x02)
+                {
+                    NumLockKey = 1;
+                    Led_Data_NUM = 1;
+                }
+                else
+                {
+                    NumLockKey = 0;
+                    Led_Data_NUM = 0;
+                }
+                if (nKB60DAT & 0x04)
+                {
+                    Led_Data_CAPS = 1;
+                }
+                else
+                {
+                    Led_Data_CAPS = 0;
+                }
+                OEM_Write_Leds(); // Hook Oem On-board LED control
+                /* Update scanner numlock state. */
+                Scanner_State_NUM_LOCK = Led_Data_NUM;
+                break;
+            case 0xF0: /* Set alternate KBD_SCAN codes. */
+                Keyboard_CodeSet = nKB60DAT;
+                ack = 0xFA;
+                KB_Command = 0x00;
+                break;
+            case 0xF3: /* Set typematic rate/delay. */
+                Keyboard_Typematic = nKB60DAT;
+                KBS_Set_KBS_INFO(Keyboard_Typematic);
+                ack = 0xFA;
+                KB_Command = 0x00;
+                break;
+            default:        // Unknown command request system resend
+                ack = 0xFE; // Resend
+                break;
         }
-#if 0   
+    #if 0   
         if (ack != 0x00)                         // if need send ack to host
         {
             Send_KB_Data_To_Host(ack);          // send to host
         }
-#endif
+    #endif
         if (KB_Main_CHN == 0)
         {
             if (ack != 0x00) // if need send ack to host
@@ -176,10 +175,10 @@ void KB_Cmd_Handle(BYTE nKB60DAT)
         }
         else
         {
-#if !(PS2_0_CLOCK_EN & PS2_1_CLOCK_EN)
+        #if !(PS2_0_CLOCK_EN & PS2_1_CLOCK_EN)
             dprint("PS2 CLOCK NOT ENABLE\n");
             return;
-#endif
+        #endif
             if (cmdbk == 0xED)
             {
                 Send_Data_To_PS2((KB_Main_CHN - 1), (nKB60DAT & 0x07));
@@ -200,76 +199,74 @@ void KB_Cmd_Handle(BYTE nKB60DAT)
     KB_Command = 0x00;
     switch (nKB60DAT)
     {
-    case 0xED: /* Update LEDs command. */
-        ack = 0xFA;
-        KB_Command = 0xED;
-        // Send_KB_Data_To_Host(ack);
-        OEM_Write_Leds(); // Hook Oem On-board LED control
-        /* Update scanner numlock state. */
-        // Scanner_State_NUM_LOCK = Led_Data_NUM;
-        Scanner_State_NUM_LOCK = 0;
-        break;
-    case 0xEC:
-        ack = 0xFA;
-        // Send_KB_Data_To_Host(ack);
-        break;
-    case 0xEE: /* ECHO command. */
-        ack = 0xEE;
-        // Send_KB_Data_To_Host(ack);
-        break;
-    case 0xF0: /* Set alternate KBD_SCAN codes. */
-        ack = 0xFA;
-        KB_Command = 0xF0;
-        // Send_KB_Data_To_Host(ack);
-        break;
-    case 0xF2: /* Read manufacturers ID */
-        ack = 0xFA;
-        ack1 = 0xAB;
-        if (Host_Flag_XLATE_PC)
-        {
-            ack2 = 0x83;
-        }
-        else
-        {
-            ack2 = 0x41;
-        }
-        break;
-    case 0xF3: /* Set typematic rate/delay. */
-        ack = 0xFA;
-        KB_Command = 0xF3;
-        break;
-    case 0xF4: /* Enable scanning. */
-        KB_Scan_Flag = 1;
-        ack = 0xFA;
-        break;
-    case 0xF5: /* Default disable. */
-        KB_Scan_Flag = 0;
-        // KBD_CLear_Buffer();
-        // KBD_Default_Typematic();
-        ack = 0xFA;
-        // Send_KB_Data_To_Host(ack);
-        break;
-    case 0xF6: /* Set defaults. */
-        // KBD_CLear_Buffer();
- // KBD_Default_Typematic();
-        ack = 0xFA;
-        // Send_KB_Data_To_Host(ack);
-        break;
-    case 0xF7:
-    case 0xF8:
-    case 0xF9:
-    case 0xFA:
-    case 0xFB:
-        ack = 0xFA;
-        break;
-    case 0xFF: /* Reset keyboard. */
-        KBD_CLear_Buffer();
-        ack = 0xFA;
-        ack1 = 0xAA;
-        break;
-    default: // Unknown command request system resend
-        ack = 0xFE;
-        break;
+        case 0xED: /* Update LEDs command. */
+            ack = 0xFA;
+            KB_Command = 0xED;
+            // Send_KB_Data_To_Host(ack);
+            OEM_Write_Leds(); // Hook Oem On-board LED control
+            /* Update scanner numlock state. */
+            // Scanner_State_NUM_LOCK = Led_Data_NUM;
+            Scanner_State_NUM_LOCK = 0;
+            break;
+        case 0xEC:
+            ack = 0xFA;
+            // Send_KB_Data_To_Host(ack);
+            break;
+        case 0xEE: /* ECHO command. */
+            ack = 0xEE;
+            // Send_KB_Data_To_Host(ack);
+            break;
+        case 0xF0: /* Set alternate KBD_SCAN codes. */
+            ack = 0xFA;
+            KB_Command = 0xF0;
+            // Send_KB_Data_To_Host(ack);
+            break;
+        case 0xF2: /* Read manufacturers ID */
+            ack = 0xFA;
+            ack1 = 0xAB;
+            if (Host_Flag_XLATE_PC)
+            {
+                ack2 = 0x83;
+            }
+            else
+            {
+                ack2 = 0x41;
+            }
+            break;
+        case 0xF3: /* Set typematic rate/delay. */
+            ack = 0xFA;
+            KB_Command = 0xF3;
+            break;
+        case 0xF4: /* Enable scanning. */
+            KB_Scan_Flag = 1;
+            ack = 0xFA;
+            break;
+        case 0xF5: /* Default disable. */
+            KB_Scan_Flag = 0;
+            // KBD_CLear_Buffer();
+            ack = 0xFA;
+            // Send_KB_Data_To_Host(ack);
+            break;
+        case 0xF6: /* Set defaults. */
+            // KBD_CLear_Buffer();
+            ack = 0xFA;
+            // Send_KB_Data_To_Host(ack);
+            break;
+        case 0xF7:
+        case 0xF8:
+        case 0xF9:
+        case 0xFA:
+        case 0xFB:
+            ack = 0xFA;
+            break;
+        case 0xFF: /* Reset keyboard. */
+            KBD_CLear_Buffer();
+            ack = 0xFA;
+            ack1 = 0xAA;
+            break;
+        default: // Unknown command request system resend
+            ack = 0xFE;
+            break;
     }
     kbc_dprint("ack:%#x\n", ack);
     kbc_dprint("ack1:%#x\n", ack1);
@@ -319,10 +316,10 @@ void KB_Cmd_Handle(BYTE nKB60DAT)
     }
     else
     {
-#if !(PS2_0_CLOCK_EN & PS2_1_CLOCK_EN)
+    #if !(PS2_0_CLOCK_EN & PS2_1_CLOCK_EN)
         dprint("PS2 CLOCK NOT ENABLE\n");
         return;
-#endif
+    #endif
         Send_Data_To_PS2((KB_Main_CHN - 1), nKB60DAT);
     }
 }
@@ -338,7 +335,7 @@ static void Command_A5Data(void)
         if (Tmp_Load < 8) // PASS_SIZE = 8
         {                 // If there is room in the buffer
             // Pass_Buff[Tmp_Load] = KBHIData;   // Store KBD_SCAN code
-            (*(VBYTE*)(Pass_BuffBase + Tmp_Load)) = KBHIData; // Store KBD_SCAN code
+            (*(VBYTE *)(Pass_BuffBase + Tmp_Load)) = KBHIData; // Store KBD_SCAN code
             Tmp_Load++;                                        // Increment password buffer index
         }
         // Cmd_Byte = 0xA5;        // Set to keep waiting for next byte
@@ -365,16 +362,17 @@ BYTE Loop_Wait_Get_Port60_Data(void)
             else
             {
                 KBHIData = KBC_IB;
-#if ENABLE_DEBUGGER_SUPPORT
-                /* Debugger record */
+            #if ENABLE_DEBUGGER_SUPPORT
+                            /* Debugger record */
                 Debugger_KBC_PMC_Record(0, 0, KBHIData);
-#endif
+            #endif
                 return 0x01;
             }
         }
         iLOOP--;
-    } while (iLOOP != 0);
-    // Failed Monitor
+    }
+    while (iLOOP != 0);
+ // Failed Monitor
     return 0x00;
 }
 //-----------------------------------------------------------------------------
@@ -384,26 +382,26 @@ void Command_00_3F(void) // Command_00_3F: Read KBC RAM Control Bytes
 {
     switch (KBHICmd & 0x1F)
     {
-    case 0x00: // Cmd_0x00 & Cmd_0x20
-        kbc_dprint("Host_Flag:%#x\n", Host_Flag);
-        Transmit_Data_To_Host(Host_Flag);
-        break;
-    case 0x13: // Cmd_0x13 & Cmd_0x33 Send Security Code On byte to host
-        Transmit_Data_To_Host(Pass_On);
-        break;
-    case 0x14: // Cmd_0x14 & Cmd_0x34 Send Security Code Off byte to host
-        Transmit_Data_To_Host(Pass_Off);
-        break;
-    case 0x16: // Cmd_0x16 & Cmd_0x36 Send Reject make code 1 to host
-        Transmit_Data_To_Host(Pass_Make1);
-        break;
-    case 0x17: // Cmd_0x17 & Cmd_0x37 Send Reject make code 2 to host
-        Transmit_Data_To_Host(Pass_Make2);
-        break;
-    default:
-        Transmit_Data_To_Host(0x00);
-        // Failed Monitor
-        break;
+        case 0x00: // Cmd_0x00 & Cmd_0x20
+            kbc_dprint("Host_Flag:%#x\n", Host_Flag);
+            Transmit_Data_To_Host(Host_Flag);
+            break;
+        case 0x13: // Cmd_0x13 & Cmd_0x33 Send Security Code On byte to host
+            Transmit_Data_To_Host(Pass_On);
+            break;
+        case 0x14: // Cmd_0x14 & Cmd_0x34 Send Security Code Off byte to host
+            Transmit_Data_To_Host(Pass_Off);
+            break;
+        case 0x16: // Cmd_0x16 & Cmd_0x36 Send Reject make code 1 to host
+            Transmit_Data_To_Host(Pass_Make1);
+            break;
+        case 0x17: // Cmd_0x17 & Cmd_0x37 Send Reject make code 2 to host
+            Transmit_Data_To_Host(Pass_Make2);
+            break;
+        default:
+            Transmit_Data_To_Host(0x00);
+            // Failed Monitor
+            break;
     }
 }
 //----------------------------------------------------------------------------
@@ -516,29 +514,29 @@ void Command_A5X(BYTE data)
 {
     switch (data)
     {
-    case 0xA0:
-        break;
-    case 0xA1:
-        Transmit_Data_To_Host(0xB0);
-        break;
-    case 0xA2:
-        Transmit_Data_To_Host(0x6A);
-        break;
-    case 0xA3:
-        Transmit_Data_To_Host(0x08);
-        break;
-    case 0xA4:
-        Transmit_Data_To_Host(0x00);
-        break;
-    case 0xA6:
-        Transmit_Data_To_Host(0x0B);
-        break;
-    case 0xA7:
-        break;
-    case 0xA8:
-        break;
-    default:
-        break;
+        case 0xA0:
+            break;
+        case 0xA1:
+            Transmit_Data_To_Host(0xB0);
+            break;
+        case 0xA2:
+            Transmit_Data_To_Host(0x6A);
+            break;
+        case 0xA3:
+            Transmit_Data_To_Host(0x08);
+            break;
+        case 0xA4:
+            Transmit_Data_To_Host(0x00);
+            break;
+        case 0xA6:
+            Transmit_Data_To_Host(0x0B);
+            break;
+        case 0xA7:
+            break;
+        case 0xA8:
+            break;
+        default:
+            break;
     }
 }
 //-----------------------------------------------------------------------------
@@ -548,13 +546,13 @@ void Command_40_7F(void) // Command_40_7F: Write KBC RAM Control Bytes
     {
         while (!(KBC_STA & KBC_STA_IBF));
         KBHIData = KBC_IB;
-#if ENABLE_DEBUGGER_SUPPORT
-        /* Debugger record */
+    #if ENABLE_DEBUGGER_SUPPORT
+            /* Debugger record */
         Debugger_KBC_PMC_Record(0, 0, KBHIData);
-#endif
-#if SUPPORT_8042DEBUG_OUTPUT
+    #endif
+    #if SUPPORT_8042DEBUG_OUTPUT
         Write_Debug_Data_To_Sram(KBHIData);
-#endif
+    #endif
         Write_KCCB(KBHIData);
         return;
     }
@@ -563,27 +561,27 @@ void Command_40_7F(void) // Command_40_7F: Write KBC RAM Control Bytes
         KBHIStep = 0x00; // Set Command Finished
         switch (KBHICmd & 0x1F)
         {
-        case 0x00: // Cmd_0x40 & Cmd_0x60
-            kbc_dprint("Write_KCCB:%#x\n", KBHIData);
-            Write_KCCB(KBHIData);
-            break;
-        case 0x12: // Cmd_0x52 & Cmd_0x72
-            Command_A5X(KBHIData);
-            break;
-        case 0x13:              // Cmd_0x53 & Cmd_0x73 Write Security Code On byte
-            Pass_On = KBHIData; // Write the data.
-            break;
-        case 0x14:               // Cmd_0x54 & Cmd_0x74 Write Security Code Off byte
-            Pass_Off = KBHIData; // Write the data.
-            break;
-        case 0x16:                 // Cmd_0x56 & Cmd_0x76 Reject make code 1
-            Pass_Make1 = KBHIData; // Write the data.
-            break;
-        case 0x17:                 // Cmd_0x57 & Cmd_0x77 Reject make code 2
-            Pass_Make2 = KBHIData; // Write the data.
-            break;
-        default: // Failed Monitor
-            break;
+            case 0x00: // Cmd_0x40 & Cmd_0x60
+                kbc_dprint("Write_KCCB:%#x\n", KBHIData);
+                Write_KCCB(KBHIData);
+                break;
+            case 0x12: // Cmd_0x52 & Cmd_0x72
+                Command_A5X(KBHIData);
+                break;
+            case 0x13:              // Cmd_0x53 & Cmd_0x73 Write Security Code On byte
+                Pass_On = KBHIData; // Write the data.
+                break;
+            case 0x14:               // Cmd_0x54 & Cmd_0x74 Write Security Code Off byte
+                Pass_Off = KBHIData; // Write the data.
+                break;
+            case 0x16:                 // Cmd_0x56 & Cmd_0x76 Reject make code 1
+                Pass_Make1 = KBHIData; // Write the data.
+                break;
+            case 0x17:                 // Cmd_0x57 & Cmd_0x77 Reject make code 2
+                Pass_Make2 = KBHIData; // Write the data.
+                break;
+            default: // Failed Monitor
+                break;
         }
     }
 }
@@ -855,11 +853,9 @@ void Command_AE(void)
         PS2_PORT1_CR = CCMD_KBD_ENABLE;
 }
 void A20GATE_ON(void)
-{
-}
+{}
 void A20GATE_OFF(void)
-{
-}
+{}
 void Command_D1(void)
 {
 #if CONTROL_A20_WAY3
@@ -935,7 +931,7 @@ static void Command_D4(void)
     // MULPX_Multiplex = 0;
     if (Set_Port60_Data_Handle()) // Get driver command from host
     {
-#if 1
+    #if 1
         if (KBHIData == 0xFF) // if is reset command
         {
         }
@@ -949,7 +945,7 @@ static void Command_D4(void)
             vDelayXms(20); // Emulate transmission delay times
             Send_Aux_Data_To_Host(0xFC);
         }
-#endif
+    #endif
     }
     else
     {
@@ -1035,13 +1031,13 @@ void Service_PCI_Main(void)
             KBHIStep = 0;
         }
         KBHICmd = KBC_IB;
-#if ENABLE_DEBUGGER_SUPPORT
-        /* Debugger record */
+    #if ENABLE_DEBUGGER_SUPPORT
+            /* Debugger record */
         Debugger_KBC_PMC_Record(0, 0, KBHICmd);
-#endif
-#if SUPPORT_8042DEBUG_OUTPUT
+    #endif
+    #if SUPPORT_8042DEBUG_OUTPUT
         Write_Debug_Data_To_Sram(KBHICmd);
-#endif
+    #endif
         kbc_dprint("KBHICmd:%#x\n", KBHICmd);
         (Port64_Table[(KBHICmd >> 4)])(); // use Transmit_Data_To_Host() to send data
     }
@@ -1050,15 +1046,15 @@ void Service_PCI_Main(void)
         if (KBHIStep || FastA20) // If need data
         {
             KBHIData = KBC_IB;
-#if SUPPORT_8042DEBUG_OUTPUT
+        #if SUPPORT_8042DEBUG_OUTPUT
             Write_Debug_Data_To_Sram(KBHIData);
-#endif
-#if ENABLE_DEBUGGER_SUPPORT
-            /* Debugger record */
+        #endif
+        #if ENABLE_DEBUGGER_SUPPORT
+                    /* Debugger record */
             Debugger_KBC_PMC_Record(0, 0, KBHIData);
-#endif
+        #endif
             kbc_dprint("KBHIData:%#x\n", KBHIData);
-#if CONTROL_A20_WAY3
+        #if CONTROL_A20_WAY3
             if (FastA20)
             {
                 FastA20 = 0;
@@ -1072,20 +1068,20 @@ void Service_PCI_Main(void)
                 }
                 return;
             }
-#endif
+        #endif
             (Port64_Table[(KBHICmd >> 4)])(); // use Transmit_Data_To_Host() to send data
         }
         else
         {
             KBHIData = KBC_IB;
-#if SUPPORT_8042DEBUG_OUTPUT
+        #if SUPPORT_8042DEBUG_OUTPUT
             Write_Debug_Data_To_Sram(KBHIData);
-#endif
+        #endif
             kbc_dprint("KBHIData:%#x\n", KBHIData);
-#if ENABLE_DEBUGGER_SUPPORT
-            /* Debugger record */
+        #if ENABLE_DEBUGGER_SUPPORT
+                    /* Debugger record */
             Debugger_KBC_PMC_Record(0, 0, KBHIData);
-#endif
+        #endif
             Command_AE();
             KB_Cmd_Handle(KBHIData); // Keyboard Command
         }
