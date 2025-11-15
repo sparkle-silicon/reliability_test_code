@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu daowes.ly@qq.com
+ * @LastEditors: daweslinyu 
  * @LastEditTime: 2025-10-18 20:35:46
  * @Description: This file is used to handling PS2 interface
  *

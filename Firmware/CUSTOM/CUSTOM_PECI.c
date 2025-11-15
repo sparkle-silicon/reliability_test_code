@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu daowes.ly@qq.com
+ * @LastEditors: daweslinyu 
  * @LastEditTime: 2025-09-12 15:04:50
  * @Description: This is about the  national crypto algorithm implementation
  *

@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: coolwangzi@126.com
+ * @LastEditors: Iversu
  * @LastEditTime: 2025-09-15 15:04:46
  * @Description: This is DMA configuration interface file
  *

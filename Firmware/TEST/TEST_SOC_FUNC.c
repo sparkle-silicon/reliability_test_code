@@ -1,6 +1,6 @@
 /*
  * @Author: Maple
- * @LastEditors: daweslinyu daowes.ly@qq.com
+ * @LastEditors: daweslinyu 
  * @LastEditTime: 2025-10-18 20:51:25
  * @Description: This file is used for soc module initiliazation and configuration
  *

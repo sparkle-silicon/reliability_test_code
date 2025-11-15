@@ -8,7 +8,7 @@ Task* Add_Task(TaskFunction function, TaskParams params, Task** head)
 {
     if (mailbox_task_count >= MAX_TASK_COUNT)
     {
-        printf("Task full\n");
+        dprint("Task full\n");
         return NULL;
     }
     Task* new_task = malloc(sizeof(Task));
@@ -65,6 +65,7 @@ void Process_Tasks(void)
         if (cy_reset_flag == 1)
         {
             //复位子系统
+            dprint("Reset crypto\n");
             SYSCTL_RST1 |= BIT(17);
             __nop;
             SYSCTL_RST1 &= ~BIT(17);

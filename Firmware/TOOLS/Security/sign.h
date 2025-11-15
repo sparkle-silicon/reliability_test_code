@@ -1,7 +1,7 @@
 /*
- * @Author: daweslinyu daowes.ly@qq.com
+ * @Author: daweslinyu 
  * @Date: 2024-09-27 15:43:56
- * @LastEditors: daweslinyu daowes.ly@qq.com
+ * @LastEditors: daweslinyu 
  * @LastEditTime: 2025-03-27 22:00:54
  * @FilePath: /ROM/home/riscv/work_git/SPK32AE103/Firmware/TOOLS/SMx/103fm_sign.h
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE

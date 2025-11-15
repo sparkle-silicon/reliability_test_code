@@ -1,7 +1,7 @@
 /*
- * @Author: daweslinyu daowes.ly@qq.com
+ * @Author: daweslinyu 
  * @Date: 2024-04-12 19:00:37
- * @LastEditors: daweslinyu daowes.ly@qq.com
+ * @LastEditors: daweslinyu 
  * @LastEditTime: 2024-04-22 15:33:35
  * @FilePath: /gcc-13.2.0/home/riscv/work_git/DEBUGGER/Slave/AE10X/INCLUDE/AE_SOFT_FP.H
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE

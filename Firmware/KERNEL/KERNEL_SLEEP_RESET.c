@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu daowes.ly@qq.com
+ * @LastEditors: daweslinyu 
  * @LastEditTime: 2025-10-21 16:37:36
  * @Description: This file applys for chip soft reset and chip sleep interface
  *

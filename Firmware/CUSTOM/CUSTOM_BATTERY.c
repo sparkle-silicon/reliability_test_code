@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu daowes.ly@qq.com
+ * @LastEditors: daweslinyu 
  * @LastEditTime: 2025-07-03 18:10:26
  * @Description: Platform battery & battery charger control code
  *
