@@ -179,8 +179,8 @@ void ESPI_Init(void)
 #endif
     ESPI_GCTRL1 = F_eSPI_INT_ENABLE;                /* REG@31A1.7: eSPI Interrupt Enable */
     ESPI_GCTRL2 = F_eSPI_TO_WUC_ENABLE;                /* REG@31A1.4: eSPI To WUC Enable */
-    VWCTRL0 &= (~F_VW_UPDATE_FLAG_SEL);
-    VWUPDATEMODESEL = 0x0;
+    ESPI_VWCTRL0 &= (~F_VW_UPDATE_FLAG_SEL);
+    ESPI_VWUPDATEMODE = 0x0;
     ESPI_UCTRL0 |= Upstream_INT_EN;    // 使能upsteam中断使能
 #endif
 }
@@ -203,9 +203,9 @@ void ESPI_Init(void)
  */
 void EC_ACK_eSPI_Reset(void)
 {
-    if ((IS_MASK_SET(VWIDX7, F_IDX7_HOST_RST_WARN)) && (IS_MASK_SET(VWIDX7, F_IDX7_HOST_RST_WARN_VALID)))
+    if ((IS_MASK_SET(ESPI_VWIDX7, F_IDX7_HOST_RST_WARN)) && (IS_MASK_SET(ESPI_VWIDX7, F_IDX7_HOST_RST_WARN_VALID)))
     {
-        VWIDX6 = (F_IDX6_HOST_RST_ACK_VALID +
+        ESPI_VWIDX6 = (F_IDX6_HOST_RST_ACK_VALID +
             F_IDX6_HOST_RST_ACK +
             F_IDX6_RCIN +
             F_IDX6_SMI +
@@ -216,10 +216,10 @@ void EC_ACK_eSPI_Reset(void)
             sysctl_iomux_config(GPIOD, 6, 1); // alert
         }
 
-        VWCTRL3 |= F_VW_INDEX_6_RESEND;     //send VW INDEX6
+        ESPI_VWCTRL3 |= F_VW_INDEX_6_RESEND;     //send VW INDEX6
 
         _C1 = 60000;
-        while (IS_MASK_SET(VWIDX7, F_IDX7_HOST_RST_WARN))
+        while (IS_MASK_SET(ESPI_VWIDX7, F_IDX7_HOST_RST_WARN))
         {
             _C1--;
 #if 1 /* Timeout if need */
@@ -230,7 +230,7 @@ void EC_ACK_eSPI_Reset(void)
 #endif
         }
 
-        VWIDX6 = (F_IDX6_HOST_RST_ACK_VALID +
+        ESPI_VWIDX6 = (F_IDX6_HOST_RST_ACK_VALID +
             F_IDX6_RCIN +
             F_IDX6_SMI +
             F_IDX6_SCI);
@@ -240,13 +240,13 @@ void EC_ACK_eSPI_Reset(void)
             sysctl_iomux_config(GPIOD, 6, 1); // alert
         }
 
-        VWCTRL3 |= F_VW_INDEX_6_RESEND;     //send VW INDEX6
+        ESPI_VWCTRL3 |= F_VW_INDEX_6_RESEND;     //send VW INDEX6
         Hook_EC_ACK_eSPI_Reset();
     }
 
-    if ((IS_MASK_SET(VWIDX3, F_IDX3_OOB_RST_WARN)) && (IS_MASK_SET(VWIDX3, F_IDX3_OOB_RST_WARN_VALID)))
+    if ((IS_MASK_SET(ESPI_VWIDX3, F_IDX3_OOB_RST_WARN)) && (IS_MASK_SET(ESPI_VWIDX3, F_IDX3_OOB_RST_WARN_VALID)))
     {
-        VWIDX4 |= (F_IDX4_OOB_RST_ACK_VALID +
+        ESPI_VWIDX4 |= (F_IDX4_OOB_RST_ACK_VALID +
             F_IDX4_OOB_RST_ACK);
 
         if (IS_MASK_SET(ESPI_GCC0, F_ALERT_MODE))
@@ -254,10 +254,10 @@ void EC_ACK_eSPI_Reset(void)
             sysctl_iomux_config(GPIOD, 6, 1); // alert
         }
 
-        VWCTRL3 |= F_VW_INDEX_4_RESEND;     //send VW INDEX4
+        ESPI_VWCTRL3 |= F_VW_INDEX_4_RESEND;     //send VW INDEX4
 
         _C1 = 60000;
-        while (IS_MASK_SET(VWIDX3, F_IDX3_OOB_RST_WARN))
+        while (IS_MASK_SET(ESPI_VWIDX3, F_IDX3_OOB_RST_WARN))
         {
             _C1--;
 #if 1 /* Timeout if need */
@@ -268,16 +268,16 @@ void EC_ACK_eSPI_Reset(void)
 #endif
         }
 
-        _R5 = (VWIDX4 | F_IDX4_OOB_RST_ACK_VALID);
+        _R5 = (ESPI_VWIDX4 | F_IDX4_OOB_RST_ACK_VALID);
         _R5 &= (~F_IDX4_OOB_RST_ACK_VALID);
-        VWIDX4 = _R5;  //(F_IDX4_OOB_RST_ACK_VALID);
+        ESPI_VWIDX4 = _R5;  //(F_IDX4_OOB_RST_ACK_VALID);
 
         if (IS_MASK_SET(ESPI_GCC0, F_ALERT_MODE))
         {
             sysctl_iomux_config(GPIOD, 6, 1); // alert
         }
 
-        VWCTRL3 |= F_VW_INDEX_4_RESEND;     //send VW INDEX4
+        ESPI_VWCTRL3 |= F_VW_INDEX_4_RESEND;     //send VW INDEX4
     }
 }
 /*-----------------------------------------------------------------------------
@@ -302,26 +302,26 @@ void EC_ACK_eSPI_SUS_WARN(void)
 {
 #if 0
     /* Use internal registers */
-    if (IS_MASK_SET(REG_32A6, BIT3))
+    if (IS_MASK_SET(ESPI_32A6, BIT3))
     {
-        VWIDX40 |= (F_IDX40_VALID + F_IDX40_SUSACK);
-        REG_32A6 = 0x0F;
+        ESPI_VWIDX40 |= (F_IDX40_VALID + F_IDX40_SUSACK);
+        ESPI_32A6 = 0x0F;
     }
 #else
     /* Use formal registers */
-    if (IS_MASK_SET(VWIDX41, F_IDX41_SUS_WARN) &&
-        IS_MASK_SET(VWIDX41, F_IDX41_VALID))
+    if (IS_MASK_SET(ESPI_VWIDX41, F_IDX41_SUS_WARN) &&
+        IS_MASK_SET(ESPI_VWIDX41, F_IDX41_VALID))
     {
-        if (IS_MASK_SET(VWIDX40, F_IDX40_VALID))
+        if (IS_MASK_SET(ESPI_VWIDX40, F_IDX40_VALID))
             return;
-        VWIDX40 |= (F_IDX40_SUSACK + F_IDX40_VALID);
+        ESPI_VWIDX40 |= (F_IDX40_SUSACK + F_IDX40_VALID);
 
         if (IS_MASK_SET(ESPI_GCC0, F_ALERT_MODE))
         {
             sysctl_iomux_config(GPIOD, 6, 1); // alert
         }
 
-        VWCTRL3 |= F_VW_INDEX_40_RESEND;     //send VW INDEX40
+        ESPI_VWCTRL3 |= F_VW_INDEX_40_RESEND;     //send VW INDEX40
     }
 #endif
 }
@@ -344,13 +344,13 @@ BYTE EC_ACK_eSPI_Boot_Ready(void)
     {
         if (IS_MASK_SET(ESPI_CH1_GCC3, F_VW_CHN_READY))
         {
-            if (VWIDX5 == (F_IDX5_SLAVE_BOOT_LOAD_STATUS_VALID +
+            if (ESPI_VWIDX5 == (F_IDX5_SLAVE_BOOT_LOAD_STATUS_VALID +
                 F_IDX5_SLAVE_BOOT_LOAD_DONE_VALID +
                 F_IDX5_SLAVE_BOOT_LOAD_STATUS +
                 F_IDX5_SLAVE_BOOT_LOAD_DONE))
                 return 0;
 
-            VWIDX5 = (F_IDX5_SLAVE_BOOT_LOAD_STATUS_VALID +
+            ESPI_VWIDX5 = (F_IDX5_SLAVE_BOOT_LOAD_STATUS_VALID +
                 F_IDX5_SLAVE_BOOT_LOAD_DONE_VALID +
                 F_IDX5_SLAVE_BOOT_LOAD_STATUS +
                 F_IDX5_SLAVE_BOOT_LOAD_DONE);
@@ -364,7 +364,7 @@ BYTE EC_ACK_eSPI_Boot_Ready(void)
                 sysctl_iomux_config(GPIOD, 6, 1); // alert
             }
 
-            VWCTRL3 |= F_VW_INDEX_5_RESEND;     //send VW INDEX5
+            ESPI_VWCTRL3 |= F_VW_INDEX_5_RESEND;     //send VW INDEX5
             return 1;
         }
     }
@@ -775,7 +775,7 @@ BYTE Process_eSPI_OOB_Message(void)
             data_temp.byte[i] = *OOB_Table_Pntr;
             OOB_Table_Pntr++;
         }
-        REG32(UPSTREAM_DATA + _R5) = data_temp.dword;
+        REG32(ESPI_UPSTREAM_DATA + _R5) = data_temp.dword;
         _R5++;
     }
 
@@ -818,7 +818,7 @@ BYTE Process_eSPI_OOB_Message(void)
     while (_R5 > 0)
     {
         /* Read OOB return data */
-        *Tmp_XPntr = (VBYTE)((REG32(PUT_OOB_DATA + (_R6 / 4))) >> ((_R6 % 4) * 8));
+        *Tmp_XPntr = (VBYTE)((REG32(ESPI_PUT_OOB_DATA + (_R6 / 4))) >> ((_R6 % 4) * 8));
         _R6++;
         Tmp_XPntr++;
         _R5--;
@@ -846,7 +846,7 @@ BYTE eSPI_OOB_Receive(BYTE* OOB_Meg_Table)
     while (_R5 > 0)
     {
         /* Read OOB return data */
-        *Tmp_XPntr = (VBYTE)((REG32(PUT_OOB_DATA + (_R6 / 4))) >> ((_R6 % 4) * 8));
+        *Tmp_XPntr = (VBYTE)((REG32(ESPI_PUT_OOB_DATA + (_R6 / 4))) >> ((_R6 % 4) * 8));
         _R6++;
         Tmp_XPntr++;
         _R5--;
@@ -892,7 +892,7 @@ BYTE eSPI_OOB_Send(BYTE* OOB_Meg_Table)
             data_temp.byte[i] = *OOB_Table_Pntr;
             OOB_Table_Pntr++;
         }
-        REG32(UPSTREAM_DATA + _R5) = data_temp.dword;
+        REG32(ESPI_UPSTREAM_DATA + _R5) = data_temp.dword;
         _R5++;
     }
 
@@ -944,7 +944,7 @@ void Process_eSPI_OOB_CrashLog(void)
             data_temp.byte[i] = *OOB_Table_Pntr;
             OOB_Table_Pntr++;
         }
-        REG32(UPSTREAM_DATA + _R5) = data_temp.dword;
+        REG32(ESPI_UPSTREAM_DATA + _R5) = data_temp.dword;
         _R5++;
     }
 
@@ -999,7 +999,7 @@ void Process_eSPI_OOB_CrashLog(void)
     while (_R5 > 0)
     {
         /* Read OOB return data */
-        *Tmp_XPntr = (VBYTE)((REG32(PUT_OOB_DATA + (_R6 / 4))) >> ((_R6 % 4) * 8));
+        *Tmp_XPntr = (VBYTE)((REG32(ESPI_PUT_OOB_DATA + (_R6 / 4))) >> ((_R6 % 4) * 8));
         _R6++;
         Tmp_XPntr++;
         _R5--;
@@ -1034,7 +1034,7 @@ BYTE eSPI_Flash_Read(BYTE addr3, BYTE addr2, BYTE addr1, BYTE addr0,
     ESPI_UCTRL2 = 0x20; // tag + length[11:8]
     ESPI_UCTRL3 = length; // length[7:0]   ,max support  64 bytes
 
-    REG32(UPSTREAM_DATA) = (DWORD)(addr3 | (addr2 << 8) | (addr1 << 16) | (addr0 << 24));
+    REG32(ESPI_UPSTREAM_DATA) = (DWORD)(addr3 | (addr2 << 8) | (addr1 << 16) | (addr0 << 24));
 
     ESPI_UCTRL0 |= Upstream_EN;    //Set upstream enable
     ESPI_UCTRL0 |= Upstream_GO;    //Set upstream go
@@ -1081,7 +1081,7 @@ BYTE eSPI_Flash_Read(BYTE addr3, BYTE addr2, BYTE addr1, BYTE addr0,
     while (_R5 > 0)
     {
         /* Read OOB return data */
-        *bufferindex = (VBYTE)((REG32(UPSTREAM_DATA + (_R6 / 4))) >> ((_R6 % 4) * 8));
+        *bufferindex = (VBYTE)((REG32(ESPI_UPSTREAM_DATA + (_R6 / 4))) >> ((_R6 % 4) * 8));
         _R6++;
         bufferindex++;
         _R5--;
@@ -1115,7 +1115,7 @@ BYTE eSPI_Flash_Erase(BYTE addr3, BYTE addr2, BYTE addr1, BYTE addr0, BYTE mode)
                 011:Support 4K && 64K Byte erase
     */
     ESPI_UCTRL3 = mode;
-    REG32(UPSTREAM_DATA) = (DWORD)(addr3 | (addr2 << 8) | (addr1 << 16) | (addr0 << 24));
+    REG32(ESPI_UPSTREAM_DATA) = (DWORD)(addr3 | (addr2 << 8) | (addr1 << 16) | (addr0 << 24));
 
     ESPI_UCTRL0 |= Upstream_EN;    //Set upstream enable
     ESPI_UCTRL0 |= Upstream_GO;    //Set upstream go
@@ -1159,7 +1159,7 @@ BYTE eSPI_Flash_Write(BYTE addr3, BYTE addr2, BYTE addr1, BYTE addr0,
     ESPI_UCTRL1 = OOB_Flash_Write; // cycle type
     ESPI_UCTRL2 = 0x20; // tag + length[11:8]
     ESPI_UCTRL3 = length; // length[7:0]   ,max support  64 bytes
-    REG32(UPSTREAM_DATA) = (DWORD)(addr3 | (addr2 << 8) | (addr1 << 16) | (addr0 << 24));
+    REG32(ESPI_UPSTREAM_DATA) = (DWORD)(addr3 | (addr2 << 8) | (addr1 << 16) | (addr0 << 24));
 
     _R5 = 1;
     _R6 = length;
@@ -1173,7 +1173,7 @@ BYTE eSPI_Flash_Write(BYTE addr3, BYTE addr2, BYTE addr1, BYTE addr0,
             data_temp.byte[i] = *bufferindex;
             bufferindex++;
         }
-        REG32(UPSTREAM_DATA + _R5) = data_temp.dword;
+        REG32(ESPI_UPSTREAM_DATA + _R5) = data_temp.dword;
         _R5++;
     }
 
@@ -1268,23 +1268,23 @@ BYTE OOB_PECI_RdPkgConfig(BYTE addr, BYTE* ReadData,
     ESPI_UCTRL1 = OOB_Message; // eSPI Cycle Type
     ESPI_UCTRL2 = 0x20;        // Tag[3:0]+Length[11:8],
     ESPI_UCTRL3 = 12;          // Length[7:0]=N+3
-    *UPSTREAM_DATA = (DWORD)(0x0F << 24) + (DWORD)(0x09 << 16) + (DWORD)(0x01 << 8) + (DWORD)0x20;  //eSPI Slave 0/EC, Byte Count N,PECI Command,PCH
+    *ESPI_UPSTREAM_DATA = (DWORD)(0x0F << 24) + (DWORD)(0x09 << 16) + (DWORD)(0x01 << 8) + (DWORD)0x20;  //eSPI Slave 0/EC, Byte Count N,PECI Command,PCH
 
     if (Domain < 2)
     {
-        *(UPSTREAM_DATA + 1) = ((PECI_CMD_RdPkgConfig + Domain) << 24) + (ReadLen << 16) + (WriteLen << 8) + addr; //PECI Target Address,WriteLen,ReadLen,Domain
+        *(ESPI_UPSTREAM_DATA + 1) = ((PECI_CMD_RdPkgConfig + Domain) << 24) + (ReadLen << 16) + (WriteLen << 8) + addr; //PECI Target Address,WriteLen,ReadLen,Domain
     }
     else
     {
-        *(UPSTREAM_DATA + 1) = (PECI_CMD_RdPkgConfig << 24) + (ReadLen << 16) + (WriteLen << 8) + addr; //PECI Target Address,WriteLen,ReadLen,Domain
+        *(ESPI_UPSTREAM_DATA + 1) = (PECI_CMD_RdPkgConfig << 24) + (ReadLen << 16) + (WriteLen << 8) + addr; //PECI Target Address,WriteLen,ReadLen,Domain
     }
     if (Retry < 2)
     {
-        *(UPSTREAM_DATA + 2) = (MSB << 24) + (LSB << 16) + (Index << 8) + ((_PECI_HostID << 1) + Retry); //INDEX,LSB.MSB,RETRY
+        *(ESPI_UPSTREAM_DATA + 2) = (MSB << 24) + (LSB << 16) + (Index << 8) + ((_PECI_HostID << 1) + Retry); //INDEX,LSB.MSB,RETRY
     }
     else
     {
-        *(UPSTREAM_DATA + 2) = (MSB << 24) + (LSB << 16) + (Index << 8) + (_PECI_HostID << 1); //INDEX,LSB.MSB,RETRY
+        *(ESPI_UPSTREAM_DATA + 2) = (MSB << 24) + (LSB << 16) + (Index << 8) + (_PECI_HostID << 1); //INDEX,LSB.MSB,RETRY
     }
 
     ESPI_UCTRL0 |= Upstream_EN; // set upstream enable
@@ -1312,7 +1312,7 @@ BYTE OOB_PECI_RdPkgConfig(BYTE addr, BYTE* ReadData,
     while (_R5 > 0)
     {
         /* Read OOB return data */
-        *ReadData = (VBYTE)((REG32(PUT_OOB_DATA + (_R6 / 4))) >> ((_R6 % 4) * 8));
+        *ReadData = (VBYTE)((REG32(ESPI_PUT_OOB_DATA + (_R6 / 4))) >> ((_R6 % 4) * 8));
         _R6++;
         ReadData++;
         _R5--;
@@ -1349,23 +1349,23 @@ BYTE OOB_PECI_WrPkgConfig(BYTE addr, BYTE* WriteData,
     ESPI_UCTRL1 = OOB_Message;  // eSPI Cycle Type
     ESPI_UCTRL2 = 0x20;         // Tag[3:0]+Length[11:8],
     ESPI_UCTRL3 = 5 + WriteLen; // Length[7:0]=N+3
-    *UPSTREAM_DATA = (0x0F << 24) + ((2 + WriteLen) << 16) + (0x01 << 8) + 0x20;  //eSPI Slave 0/EC, Byte Count N,PECI Command,PCH
+    *ESPI_UPSTREAM_DATA = (0x0F << 24) + ((2 + WriteLen) << 16) + (0x01 << 8) + 0x20;  //eSPI Slave 0/EC, Byte Count N,PECI Command,PCH
 
     if (Domain < 2)
     {
-        *(UPSTREAM_DATA + 1) = ((PECI_CMD_WrPkgConfig + Domain) << 24) + (ReadLen << 16) + (WriteLen << 8) + addr; //PECI Target Address,WriteLen,ReadLen,Domain
+        *(ESPI_UPSTREAM_DATA + 1) = ((PECI_CMD_WrPkgConfig + Domain) << 24) + (ReadLen << 16) + (WriteLen << 8) + addr; //PECI Target Address,WriteLen,ReadLen,Domain
     }
     else
     {
-        *(UPSTREAM_DATA + 1) = (PECI_CMD_WrPkgConfig << 24) + (ReadLen << 16) + (WriteLen << 8) + addr; //PECI Target Address,WriteLen,ReadLen,Domain
+        *(ESPI_UPSTREAM_DATA + 1) = (PECI_CMD_WrPkgConfig << 24) + (ReadLen << 16) + (WriteLen << 8) + addr; //PECI Target Address,WriteLen,ReadLen,Domain
     }
     if (Retry < 2)
     {
-        *(UPSTREAM_DATA + 2) = (MSB << 24) + (LSB << 16) + (Index << 8) + ((_PECI_HostID << 1) + Retry); //INDEX,LSB.MSB,RETRY
+        *(ESPI_UPSTREAM_DATA + 2) = (MSB << 24) + (LSB << 16) + (Index << 8) + ((_PECI_HostID << 1) + Retry); //INDEX,LSB.MSB,RETRY
     }
     else
     {
-        *(UPSTREAM_DATA + 2) = (MSB << 24) + (LSB << 16) + (Index << 8) + (_PECI_HostID << 1); //INDEX,LSB.MSB,RETRY
+        *(ESPI_UPSTREAM_DATA + 2) = (MSB << 24) + (LSB << 16) + (Index << 8) + (_PECI_HostID << 1); //INDEX,LSB.MSB,RETRY
     }
 
     // _R6 = 12;
@@ -1386,7 +1386,7 @@ BYTE OOB_PECI_WrPkgConfig(BYTE addr, BYTE* WriteData,
             data_temp.byte[i] = *WriteData;
             WriteData++;
         }
-        REG32(UPSTREAM_DATA + _R6) = data_temp.dword;
+        REG32(ESPI_UPSTREAM_DATA + _R6) = data_temp.dword;
         _R6++;
     }
 
@@ -2131,7 +2131,7 @@ BYTE Process_Peripheral_Message_Send(void)
             data_temp.byte[i] = *Peri_Table_Pntr;
             Peri_Table_Pntr++;
         }
-        REG32(UPSTREAM_DATA + _R5) = data_temp.dword;
+        REG32(ESPI_UPSTREAM_DATA + _R5) = data_temp.dword;
         _R5++;
     }
 
@@ -2196,7 +2196,7 @@ BYTE Process_Peripheral_Memory_Read32(void)
             data_temp.byte[i] = *Peri_Table_Pntr;
             Peri_Table_Pntr++;
         }
-        REG32(UPSTREAM_DATA + _R5) = data_temp.dword;
+        REG32(ESPI_UPSTREAM_DATA + _R5) = data_temp.dword;
         _R5++;
     }
 
@@ -2250,7 +2250,7 @@ BYTE Process_Peripheral_Memory_Read32(void)
     while (_R5 > 0)
     {
         /* Read data return data */
-        *Tmp_XPntr = (VBYTE)((REG32(PUT_PC_DATA + (_R6 / 4))) >> ((_R6 % 4) * 8));
+        *Tmp_XPntr = (VBYTE)((REG32(ESPI_PUT_PC_DATA + (_R6 / 4))) >> ((_R6 % 4) * 8));
         _R6++;
         Tmp_XPntr++;
         _R5--;
@@ -2574,7 +2574,7 @@ void Service_eSPI(void)
     {
         EC_SET_eSPI_CHN_Ready();
 
-        if (VWIDX5 == (F_IDX5_SLAVE_BOOT_LOAD_STATUS_VALID +
+        if (ESPI_VWIDX5 == (F_IDX5_SLAVE_BOOT_LOAD_STATUS_VALID +
             F_IDX5_SLAVE_BOOT_LOAD_DONE_VALID +
             F_IDX5_SLAVE_BOOT_LOAD_STATUS +
             F_IDX5_SLAVE_BOOT_LOAD_DONE))

@@ -18,9 +18,9 @@
 #include "AE_DEBUGGER.H"
 #include "AE_FUNC.H"
 #include "CUSTOM_POWER.H"
-//****************************************************************************
-//static function  declaration
-//****************************************************************************
+ //****************************************************************************
+ //static function  declaration
+ //****************************************************************************
 static BYTE ACPI_SMB_NULL(void);
 static BYTE ACPI_SMB_WQuick_CMD(void);
 static BYTE ACPI_SMB_RQuick_CMD(void);
@@ -42,7 +42,7 @@ static BYTE ACPI_SMB_BLOCK_Call(void);
 //----------------------------------------------------------------------------
 BYTE Read_Map_ECSPACE_BASE_ADDR(BYTE MapIndex)
 {
-    Tmp_XPntr = (VBYTE *)(ECSPACE_BASE_ADDR | MapIndex);
+    Tmp_XPntr = (VBYTE*)(ECSPACE_BASE_ADDR | MapIndex);
     return (*Tmp_XPntr);
 }
 //----------------------------------------------------------------------------
@@ -50,7 +50,7 @@ BYTE Read_Map_ECSPACE_BASE_ADDR(BYTE MapIndex)
 //----------------------------------------------------------------------------
 void Write_Map_ECSPACE_BASE_ADDR(BYTE MapIndex, BYTE data1)
 {
-    Tmp_XPntr = (VBYTE *)(ECSPACE_BASE_ADDR | MapIndex);
+    Tmp_XPntr = (VBYTE*)(ECSPACE_BASE_ADDR | MapIndex);
     *Tmp_XPntr = data1;
     System_PowerState = SYSTEM_S0;
 }
@@ -60,7 +60,7 @@ void Write_Map_ECSPACE_BASE_ADDR(BYTE MapIndex, BYTE data1)
 //----------------------------------------------------------------------------
 void Read_Ext_RAMSpace(void)
 {
-    Tmp_XPntr = (VBYTE *)((PM1Data1 << 8) + PM1Data); //  address low
+    Tmp_XPntr = (VBYTE*)((PM1Data1 << 8) + PM1Data); //  address low
     PMC1_DOR = *Tmp_XPntr;
 #if ENABLE_DEBUGGER_SUPPORT
     /* Debugger record */
@@ -73,7 +73,7 @@ void Read_Ext_RAMSpace(void)
 //----------------------------------------------------------------------------
 void Write_Ext_RAMSpace(void)
 {
-    Tmp_XPntr = (VBYTE *)((PM1Data2 << 8) + PM1Data1);
+    Tmp_XPntr = (VBYTE*)((PM1Data2 << 8) + PM1Data1);
     *Tmp_XPntr = PM1Data;
 }
 //----------------------------------------------------------------------------
@@ -162,7 +162,7 @@ void EC6266_Cmd_82(void)
     SET_BIT(PMC1_STR, BURST_Mode); // PMC1_STR.4 Set Burst mode flag  FIXME Burs
     PMC1_DOR = 0x90;      // Byte #2 (Burst acknowledge byte)
 #if ENABLE_DEBUGGER_SUPPORT
-/* Debugger record */
+    /* Debugger record */
     Debugger_KBC_PMC_Record(1, 1, 0x90);
 #endif
     SET_MASK(SYSTEM_MISC1, ACPI_OS);     // Auto Set ACPI Mode if Host Do ECCmd82
@@ -191,16 +191,16 @@ int CheckBurstMode(void)
 {
     WORD BurstLoopOut;
     BurstLoopOut = T_Burst_Loop;
-    while((PMC1_STR & IBF1) == 0x00)//检查一定时间内IBF是否置位
+    while ((PMC1_STR & IBF1) == 0x00)//检查一定时间内IBF是否置位
     {
         BurstLoopOut--;
         // if( TF1 || (BurstLoopOut==0) )  // Time-Out	//FIXME xia
-        if((TIMER3_TCR & TIMER_EN) || (BurstLoopOut == 0)) // Time-Out 退出突发模式
+        if ((TIMER3_TCR & TIMER_EN) || (BurstLoopOut == 0)) // Time-Out 退出突发模式
         {
             CLEAR_FLAG(PMC1_STR, BURST);
-        #if ACPI_SCI_Response
+#if ACPI_SCI_Response
             SCI_Response(1); // Generate Interrupt
-        #endif
+#endif
             TIMER_Disable(TIMER3);
             return (0);
         }
@@ -216,14 +216,14 @@ int CheckBurstMode(void)
 //-----------------------------------------------------------------------------
 void EC6266_Cmd_84(void)
 {
-/* Byte #2 (Query value to host).*/
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    /* Byte #2 (Query value to host).*/
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #if (SUPPORT_ACPI_SMI)
-    if(Is_Flag1(PMC1_STR, 5))
+    if (Is_Flag1(PMC1_STR, 5))
     {
         SCI_LastQueryEvent = Read_SCI_Query_Value();
     }
-    else if(Is_Flag1(PMC1_STR, 6))
+    else if (Is_Flag1(PMC1_STR, 6))
     {
         SCI_LastQueryEvent = Read_SMI_Query_Value();
     }
@@ -242,9 +242,9 @@ void EC6266_Cmd_84(void)
 #if ACPI_SCI_Response
     SCI_Response(1); // Interrupt on IBF=0
 #endif
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #if SCI_EVENT_LOG
-    if(SCI_LastQueryEvent > 0)
+    if (SCI_LastQueryEvent > 0)
     {
     }
 #endif
@@ -255,48 +255,48 @@ void EC6266_Cmd_84(void)
 }
 void SCI_Low(void)
 {
-    #if SCI_PIN_MODE_VW
-    VWIDX6|=(F_IDX6_SCI_VALID+F_IDX6_SCI);
-    VWCTRL3|=F_VW_INDEX_6_RESEND;
-    #else
+#if SCI_PIN_MODE_VW
+    ESPI_VWIDX6 |= (F_IDX6_SCI_VALID + F_IDX6_SCI);
+    ESPI_VWCTRL3 |= F_VW_INDEX_6_RESEND;
+#else
     CLEAR_MASK(GPIO0_DR3, BIT(3));
-    #endif
+#endif
 }
 void SCI_High(void)
 {
-    #if SCI_PIN_MODE_VW
-    VWIDX6&=~F_IDX6_SCI;
-    VWCTRL3|=F_VW_INDEX_6_RESEND;
-    #else
+#if SCI_PIN_MODE_VW
+    ESPI_VWIDX6 &= ~F_IDX6_SCI;
+    ESPI_VWCTRL3 |= F_VW_INDEX_6_RESEND;
+#else
     SET_MASK(GPIO0_DR3, BIT(3));
-    #endif
+#endif
 }
 //-----------------------------------------------------------------------------
 // Generate SCIs in response to related transactions
 //-----------------------------------------------------------------------------
 void SCI_Response(BYTE sci_count)
 {
-    if(IS_MASK_CLEAR(SYSTEM_MISC1, ACPI_OS))
+    if (IS_MASK_CLEAR(SYSTEM_MISC1, ACPI_OS))
         return;
 #if SCI_POLLING_CONTROL
     SCI_Count = 15;
     SCI_Response_Flag += sci_count;
 #else
-    for(BYTE i = 0; i < sci_count; i++)
+    for (BYTE i = 0; i < sci_count; i++)
     {
-        #if SCI_PIN_MODE_VW
-        SET_MASK(VWIDX6, F_IDX6_SCI_VALID);
-        CLEAR_MASK(VWIDX6, F_IDX6_SCI);     /* eSPI SCI# */
-        VWCTRL3|=F_VW_INDEX_6_RESEND;
+#if SCI_PIN_MODE_VW
+        SET_MASK(ESPI_VWIDX6, F_IDX6_SCI_VALID);
+        CLEAR_MASK(ESPI_VWIDX6, F_IDX6_SCI);     /* eSPI SCI# */
+        ESPI_VWCTRL3 |= F_VW_INDEX_6_RESEND;
         Loop_Delay(16);
-        SET_MASK(VWIDX6, F_IDX6_SCI_VALID);
-        SET_MASK(VWIDX6, F_IDX6_SCI);       /* eSPI SCI# */
-        VWCTRL3|=F_VW_INDEX_6_RESEND;
-        #else 
+        SET_MASK(ESPI_VWIDX6, F_IDX6_SCI_VALID);
+        SET_MASK(ESPI_VWIDX6, F_IDX6_SCI);       /* eSPI SCI# */
+        ESPI_VWCTRL3 |= F_VW_INDEX_6_RESEND;
+#else 
         SCI_Low();
         Loop_Delay(16);
         SCI_High();
-        #endif
+#endif
     }
 #endif
 }
@@ -322,7 +322,8 @@ void Loop_Delay(BYTE delay)
 // Generate SMIs for Query event request
 //-----------------------------------------------------------------------------
 void SMI_Interrupt(void)
-{}
+{
+}
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 // Upon receipt of the QR_EC command byte, the embedded
@@ -338,16 +339,16 @@ void SMI_Interrupt(void)
 //-----------------------------------------------------------------------------
 BYTE Read_SCI_Query_Value(void)
 {
-    if(SCI_Event_Out_Index != SCI_Event_In_Index)
+    if (SCI_Event_Out_Index != SCI_Event_In_Index)
     {
         SCI_QueryEvent = SCI_Event_Buffer[SCI_Event_Out_Index];
         SCI_Event_Buffer[SCI_Event_Out_Index] = 0x00;
         SCI_Event_Out_Index++;
-        if(SCI_Event_Out_Index > EVENT_BUFFER_SIZE)
+        if (SCI_Event_Out_Index > EVENT_BUFFER_SIZE)
         {
             SCI_Event_Out_Index = 0x00;
         }
-        if(SCI_Event_Out_Index == SCI_Event_In_Index)
+        if (SCI_Event_Out_Index == SCI_Event_In_Index)
         {
             CLEAR_BIT(PMC1_STR, SCI_EVENT);
         }
@@ -365,19 +366,19 @@ BYTE Read_SCI_Query_Value(void)
 //-----------------------------------------------------------------------------
 BYTE Write_SCI_Query_Value(BYTE NewSCI)
 {
-    if(!ACPI_STATE_S0)
+    if (!ACPI_STATE_S0)
         return 0x00;
-    if((SCI_Event_Buffer[SCI_Event_In_Index]) == 0x00)
+    if ((SCI_Event_Buffer[SCI_Event_In_Index]) == 0x00)
     {
         SCI_Event_Buffer[SCI_Event_In_Index] = NewSCI;
         SCI_Event_In_Index++;
     }
-    if(SCI_Event_In_Index > EVENT_BUFFER_SIZE)
+    if (SCI_Event_In_Index > EVENT_BUFFER_SIZE)
     {
         SCI_Event_In_Index = 0x00;
     }
     SET_BIT(PMC1_STR, SCI_EVENT);
-    if(WAIT_SCI_CENTER)
+    if (WAIT_SCI_CENTER)
         return 0x00;
     WAIT_SCI_CENTER = 1; // Recovery default SCI center
 #if ACPI_SCI_Response
@@ -392,14 +393,14 @@ BYTE Write_SCI_Query_Value(BYTE NewSCI)
 BYTE Read_SMI_Query_Value(void)
 {
     SMI_QueryEvent = SMI_Event_Buffer[SMI_Event_Out_Index];
-    if(SMI_QueryEvent == 0x00)
+    if (SMI_QueryEvent == 0x00)
     {
         CLEAR_BIT(PMC1_STR, SMI_EVENT);
         return SCI_QueryEvent;
     }
     SMI_Event_Buffer[SMI_Event_Out_Index] = 0x00;
     SMI_Event_Out_Index++;
-    if(SMI_Event_Out_Index > EVENT_BUFFER_SIZE)
+    if (SMI_Event_Out_Index > EVENT_BUFFER_SIZE)
     {
         SMI_Event_Out_Index = 0x00;
     }
@@ -411,14 +412,14 @@ BYTE Read_SMI_Query_Value(void)
 //-----------------------------------------------------------------------------
 BYTE Write_SMI_Query_Value(BYTE NewSMI)
 {
-    if(NewSMI == 0x00)
+    if (NewSMI == 0x00)
         return 0x00;
-    if((SMI_Event_Buffer[SMI_Event_In_Index]) == 0x00)
+    if ((SMI_Event_Buffer[SMI_Event_In_Index]) == 0x00)
     {
         SMI_Event_Buffer[SMI_Event_In_Index] = NewSMI;
         SMI_Event_In_Index++;
     }
-    if(SMI_Event_In_Index > EVENT_BUFFER_SIZE)
+    if (SMI_Event_In_Index > EVENT_BUFFER_SIZE)
     {
         SMI_Event_In_Index = 0x00;
     }
@@ -431,7 +432,7 @@ BYTE Write_SMI_Query_Value(BYTE NewSMI)
 void Clear_Event_Buffer(void)
 {
     BYTE i;
-    for(i = 0; i < EVENT_BUFFER_SIZE; i++)
+    for (i = 0; i < EVENT_BUFFER_SIZE; i++)
     {
         SMI_Event_Buffer[i] = 0;
         SCI_Event_Buffer[i] = 0;
@@ -449,39 +450,39 @@ void Service_Event_Center(void)
 {
     //-------------------------------------------------------------------------
     SCI_StepTimer++;
-    if(SCI_StepTimer > 40)
+    if (SCI_StepTimer > 40)
     {
         SCI_StepTimer = 0;
         SCI_QueryEvent = SCI_Event_Buffer[SCI_Event_Out_Index];
-        if(SCI_QueryEvent > 0x00 && ACPI_STATE_S0)
+        if (SCI_QueryEvent > 0x00 && ACPI_STATE_S0)
         {
-            if(IS_MASK_SET(SYSTEM_MISC1, ACPI_OS))
+            if (IS_MASK_SET(SYSTEM_MISC1, ACPI_OS))
             {
                 SET_BIT(PMC1_STR, SCI_EVENT);
                 CLEAR_BIT(PMC1_STR, SMI_EVENT);
                 SCI_Interrupt();
                 return;
             }
-        #if (SUPPORT_ACPI_SMI)
+#if (SUPPORT_ACPI_SMI)
             else
             {
                 SMI_Interrupt();
             }
-        #endif
+#endif
         }
     }
-//------------------------------------------------------------------------
+    //------------------------------------------------------------------------
 #if (SUPPORT_ACPI_SMI)
     SMI_StepTimer++;
-    if(SMI_StepTimer > 40)
+    if (SMI_StepTimer > 40)
     {
         SMI_StepTimer = 0;
         SMI_QueryEvent = SMI_Event_Buffer[SMI_Event_Out_Index];
-        if(SMI_QueryEvent > 0x00 && ACPI_STATE_S0)
+        if (SMI_QueryEvent > 0x00 && ACPI_STATE_S0)
         {
-            if(IS_MASK_SET(SYSTEM_MISC1, ACPI_OS))
+            if (IS_MASK_SET(SYSTEM_MISC1, ACPI_OS))
             {
-                if(!(Is_Flag1(PMC1_STR, SCI_EVENT))) // SCI Service First
+                if (!(Is_Flag1(PMC1_STR, SCI_EVENT))) // SCI Service First
                 {
                     SET_BIT(PMC1_STR, SMI_EVENT);
                     SMI_Interrupt();
@@ -509,12 +510,12 @@ void ACPI_SMB_Via_EC(void)
 #define EC_SMB_SCI_Number 0x20 // ACPI EC SMBus Event
     BYTE RUNCODE;
     RUNCODE = Oem_ACPISMBusviaEC();
-    if((ACPI_SMB_PROTOCOL != 0x00) && (RUNCODE == 0x00))
+    if ((ACPI_SMB_PROTOCOL != 0x00) && (RUNCODE == 0x00))
     {
         ACPI_SMB_STATUS = 0x00;
         ACPI_SMB_PROTOCOL &= 0x0F;
         // ACPI response to writes to SMBus Protocol register. (ACPI_SMB_PROTOCOL)
-        if((ACPISMBusviaEC_Table[ACPI_SMB_PROTOCOL])())
+        if ((ACPISMBusviaEC_Table[ACPI_SMB_PROTOCOL])())
         {
             ACPI_SMB_STATUS = 0x80;
         }
@@ -726,43 +727,42 @@ void Service_PCI2_Main(void)
     VBYTE cnt = 0;
     do
     {
-        if(PMC1_STR & C_D1) // CMD:1=Byte in data register is a command byte
+        if (PMC1_STR & C_D1) // CMD:1=Byte in data register is a command byte
         {
             PM1Cmd = PMC1_DIR; // Load command from Port Buffer
-        #if ENABLE_DEBUGGER_SUPPORT
+#if ENABLE_DEBUGGER_SUPPORT
             /* Debugger Record */
             Debugger_KBC_PMC_Record(0, 1, PM1Cmd);
-        #endif
-        #if !(LPC_WAY_OPTION_SWITCH)
+#endif
+#if !(LPC_WAY_OPTION_SWITCH)
             PMC1_CTL |= IBF_INT_ENABLE;
-        #endif
+#endif
             PM1Step = 0;
             (Port66_Table[PM1Cmd >> 4])(); // Handle command
         }
         else // CMD:0=Byte in data register is a data byte
         {
             PM1Data = PMC1_DIR; // Load data
-        #if ENABLE_DEBUGGER_SUPPORT
+#if ENABLE_DEBUGGER_SUPPORT
             /* Debugger Record */
             Debugger_KBC_PMC_Record(0, 1, PM1Data);
-        #endif
-        #if !(LPC_WAY_OPTION_SWITCH)
+#endif
+#if !(LPC_WAY_OPTION_SWITCH)
             PMC1_CTL |= IBF_INT_ENABLE;
-        #endif
-            if(PM1Step != 0x00)
+#endif
+            if (PM1Step != 0x00)
             {
                 (Port62_Table[PM1Step & 0x07])(); // Handle command data
             }
             else
             {
-                while(cnt < 0xFF)
+                while (cnt < 0xFF)
                 {
                     cnt++;
                 }
             }
         }
-    }
-    while(Is_FLAG_SET(PMC1_STR, BURST) && CheckBurstMode());
+    } while (Is_FLAG_SET(PMC1_STR, BURST) && CheckBurstMode());
 }
 /* ----------------------------------------------------------------------------
  * FUNCTION: Service_PCI2
@@ -776,14 +776,14 @@ void __weak Service_PCI2(void)
     return;
 #endif
 #if LPC_WAY_OPTION_SWITCH
-    if(Is_FLAG_CLEAR(PMC1_STR, IBF1))
+    if (Is_FLAG_CLEAR(PMC1_STR, IBF1))
         return;
     Service_PCI2_Main();
 #else
-    if(F_Service_PCI2 == 1)
+    if (F_Service_PCI2 == 1)
     {
         F_Service_PCI2 = 0;
-        if(Is_FLAG_CLEAR(PMC1_STR, IBF1))
+        if (Is_FLAG_CLEAR(PMC1_STR, IBF1))
             return;
         Service_PCI2_Main();
     }
@@ -802,12 +802,12 @@ void __weak Service_PCI2(void)
  * ------------------------------------------------------------------------- */
 void Gen_SCI_Pulse(BYTE Qevent)
 {
-    if(Qevent == QeventSCI)
+    if (Qevent == QeventSCI)
     {
         Disable_Interrupt_Main_Switch();
     }
     SCI_Response(1);
-    if(Qevent == QeventSCI)
+    if (Qevent == QeventSCI)
     {
         Enable_Interrupt_Main_Switch();
     }
@@ -831,27 +831,27 @@ void Gen_EC_QEvent(BYTE sci_number, BYTE sci_mode)
 {
     UNUSED_VAR(sci_mode);
     // if in non-acpi mode, pull sci pin will wake up system in S3 state
-    if(IS_MASK_CLEAR(SYSTEM_MISC1, ACPI_OS))
+    if (IS_MASK_CLEAR(SYSTEM_MISC1, ACPI_OS))
     {
         return;
     }
     dprint("\nvoid Gen_EC_QEvent(BYTE sci_number, BYTE sci_mode)%#x\n", sci_number);
 #if SUPPORT_QEvent_Pending
-    if((sci_mode == SCIMode_Normal) || (sci_mode == SCIMode_Pending))
+    if ((sci_mode == SCIMode_Normal) || (sci_mode == SCIMode_Pending))
     {
-        if(sci_mode == SCIMode_Normal)
+        if (sci_mode == SCIMode_Normal)
         {
-            if(PD_SCI_Event_In_Index != PD_SCI_Event_Out_Index)
+            if (PD_SCI_Event_In_Index != PD_SCI_Event_Out_Index)
             {
                 EC_QEvent_Suspend(sci_number);
                 return;
             }
         }
-        if(Is_BitDef_Set(PMC1_STR, IBF1) || Is_BitDef_Set(KBC_STA, KBC_STA_IBF))
+        if (Is_BitDef_Set(PMC1_STR, IBF1) || Is_BitDef_Set(KBC_STA, KBC_STA_IBF))
         {
-            if(sci_mode == SCIMode_Pending)
+            if (sci_mode == SCIMode_Pending)
             {
-                if(PD_SCI_Event_Out_Index == 0x00)
+                if (PD_SCI_Event_Out_Index == 0x00)
                 {
                     PD_SCI_Event_Out_Index = 7;
                 }
@@ -871,12 +871,12 @@ void Gen_EC_QEvent(BYTE sci_number, BYTE sci_mode)
     ITempB55 = SCI_Event_In_Index;           // Get the input index.
     SCI_Event_Buffer[ITempB55] = sci_number; // Put the SCI number in the buffer.
     ITempB55++;                              // Increment the index.
-    if(ITempB55 > 9)
+    if (ITempB55 > 9)
     {
         ITempB55 = 0;
     }
     // If the buffer is not full, update the input index.
-    if(ITempB55 != SCI_Event_Out_Index)
+    if (ITempB55 != SCI_Event_Out_Index)
     {
         SCI_Event_In_Index = ITempB55;
     }
@@ -894,12 +894,12 @@ void EC_QEvent_Suspend(BYTE sci_number)
     index = PD_SCI_Event_In_Index;           // Get the input index.
     PD_SCI_Event_Buffer[index] = sci_number; // Put the SCI number in the buffer.
     index++;                                 // Increment the index.
-    if(index >= 8)
+    if (index >= 8)
     {
         index = 0;
     }
     // If the buffer is not full, update the input index.
-    if(index != PD_SCI_Event_Out_Index)
+    if (index != PD_SCI_Event_Out_Index)
     {
         PD_SCI_Event_In_Index = index;
     }
@@ -911,13 +911,13 @@ void EC_QEvent_Suspend(BYTE sci_number)
 void Release_EC_QEvent_Suspend(void)
 {
 #if SUPPORT_QEvent_Pending
-    if(Is_BitDef_Set(SYSTEM_MISC1, ACPI_OS))
+    if (Is_BitDef_Set(SYSTEM_MISC1, ACPI_OS))
     {
-        if(PD_SCI_Event_Out_Index != PD_SCI_Event_In_Index)
+        if (PD_SCI_Event_Out_Index != PD_SCI_Event_In_Index)
         {
             sci_number = PD_SCI_Event_Buffer[PD_SCI_Event_Out_Index];
             PD_SCI_Event_Out_Index++;
-            if(PD_SCI_Event_Out_Index >= 8)
+            if (PD_SCI_Event_Out_Index >= 8)
             {
                 PD_SCI_Event_Out_Index = 0;
             }
@@ -932,10 +932,10 @@ void Release_EC_QEvent_Suspend(void)
 //----------------------------------------------------------------------------
 void SCI_Send(void)
 {
-    if(SCI_Response_Flag > 0)
+    if (SCI_Response_Flag > 0)
     {
         SCI_Low();
-        if(SCI_Count == 0)
+        if (SCI_Count == 0)
         {
             SCI_High();
             SCI_Response_Flag--;
