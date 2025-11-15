@@ -662,7 +662,10 @@ void Reset_Crypto_Cpu(void)
 
     //恢复时钟频率
     dprint("modify clock frequency done\n");
-    SYSCTL_CLKDIV_OSC96M = Clk_Div;
+    ICTL1_INTMASK7 |= 0x20;//mailbox int mask
+    Default_Mailbox_SetClockFrequency(Clk_Div);
+    ICTL1_INTMASK7 &= 0xDF;//mailbox int unmask
+    // SYSCTL_CLKDIV_OSC96M = Clk_Div;
 }
 
 void WaitCrypUpdate(void)

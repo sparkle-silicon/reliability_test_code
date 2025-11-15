@@ -14,7 +14,7 @@
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
 #include "KERNEL_MAIN.H"
-
+#include "KERNEL_MAILBOX.H"
 #define printf_instructions_msg " \
 \n\
 ************************************************************************************\n\

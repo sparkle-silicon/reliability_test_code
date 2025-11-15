@@ -170,7 +170,7 @@
 
 #define CHIP_CLOCK_INT_HIGH 96000000
 #define CHIP_CLOCK_INT_LOW  32768
-#define CHIP_CLOCK_SWITCH 4             // 1(96) 2(48) 3(32) 4（24）5（19.2）分频数（时钟）
+#define CHIP_CLOCK_SWITCH 1     // 1(96) 2(48) 3(32) 4（24）5（19.2）分频数（时钟）
 #define LOW_CHIP_CLOCK CHIP_CLOCK_INT_LOW
 #define HIGH_CHIP_CLOCK (CHIP_CLOCK_INT_HIGH / (SYSCTL_CLKDIV_OSC96M+1)) // 96M/CHIP_CLOCK_SWITCH
 #define CPU_TIMER_FREQ (LOW_CHIP_CLOCK)
@@ -477,8 +477,8 @@
 #define DEBUG 1                                       // 0:close printf   1:open printf
 #define KBS_DEBUG 0 & DEBUG                           // 0:close printf   1:open printf
 #define KBC_DEBUG 0 & DEBUG                           // 0:close printf   1:open printf
-#define I2C_DEBUG 0 & DEBUG                           // 0:close printf   1:open printf
-#define IRQC_DEBUG 1 & DEBUG                          // 0:close printf   1:open printf
+#define I2C_DEBUG 1 & DEBUG                           // 0:close printf   1:open printf
+#define IRQC_DEBUG 0 & DEBUG                          // 0:close printf   1:open printf
 #define ANX7447_UCSI_DEBUG 1 & DEBUG &SUPPORT_ANX7447 // 0:close printf   1:open printf
 #define I3C_DEBUG 0 & DEBUG                           // 0:close printf   1:open printf
 

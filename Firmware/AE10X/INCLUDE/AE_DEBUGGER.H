@@ -36,7 +36,7 @@
 #define STOP_RECOARD_KBC_PMC_DATA 0xEE	//      	0xEE--Stop recording KBC/PMC data
 #define HANDSHAKE_REQUEST 0x99			// 		0x99--Handshake request
 #define DISCONNECTION_REQUEST 0x66		// 		0x66--no used DEBUGGER FUNCTION
-
+#define DEBUGGER_CMD_CRYPRAM_UPDATE 0x64
 #define DEBUGGER_BASE_ADDR  UART1_BASE_ADDR
 // extern volatile uint32_t DEBUGGER_FIFO;
 #define DEBUGGER_REG_ADDR(offset) REG_ADDR(DEBUGGER_BASE_ADDR, offset)

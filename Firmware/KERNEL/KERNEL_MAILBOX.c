@@ -8,6 +8,7 @@ Task* Add_Task(TaskFunction function, TaskParams params, Task** head)
 {
     if (mailbox_task_count >= MAX_TASK_COUNT)
     {
+        printf("Task full\n");
         return NULL;
     }
     Task* new_task = malloc(sizeof(Task));
@@ -145,20 +146,20 @@ void Mailbox_ExecuteFirmwareUpdate(void* param)
     MAILBOX_SET_IRQ(MAILBOX_Firmware_IRQ_NUMBER);                                 // 触发对应中断
 }
 
-void Mailbox_FW_Extension_Trigger(void)
-{
-    MAILBOX_SELF_CMD = MAILBOX_CMD_FIRMWARE_EXTENSION;       // 命令字
-    MAILBOX_SELF_INFO1 = 0x1070800; // 扩展固件信息
-    MAILBOX_SET_IRQ(MAILBOX_Control_IRQ_NUMBER);         // 触发子系统中断
-}
+// void Mailbox_FW_Extension_Trigger(void)
+// {
+//     MAILBOX_SELF_CMD = MAILBOX_CMD_FIRMWARE_EXTENSION;       // 命令字
+//     MAILBOX_SELF_INFO1 = 0x1070800; // 扩展固件信息
+//     MAILBOX_SET_IRQ(MAILBOX_Control_IRQ_NUMBER);         // 触发子系统中断
+// }
 
-void Mailbox_Read_EFUSE_Trigger(void)
-{
-    MAILBOX_SELF_CMD = MAILBOX_CMD_READ_EFUSE; // 命令字
-    MAILBOX_SET_IRQ(MAILBOX_Efuse_IRQ_NUMBER);    // 触发子系统中断
-}
+// void Mailbox_Read_EFUSE_Trigger(void)
+// {
+//     MAILBOX_SELF_CMD = MAILBOX_CMD_READ_EFUSE; // 命令字
+//     MAILBOX_SET_IRQ(MAILBOX_Efuse_IRQ_NUMBER);    // 触发子系统中断
+// }
 
-void Mailbox_Read_FLASHID_Trigger(void)
+void Mailbox_Read_FLASHID_Trigger(void) //mailbox 5
 {
     MAILBOX_SELF_CMD = MAILBOX_CMD_READ_FLASHUID; // 命令字
     MAILBOX_SET_IRQ(MAILBOX_Control_IRQ_NUMBER);   // 触发子系统中断
@@ -179,7 +180,7 @@ void Mailbox_APB2_Source_Alloc_Trigger(void* param)
     MAILBOX_SET_IRQ(MAILBOX_Control_IRQ_NUMBER); // 触发子系统中断
 }
 
-void Mailbox_Cryp_Selfcheck(void* param)
+void Mailbox_Cryp_Selfcheck(void *param) //mailbox 1
 {
     TaskParams* params = (TaskParams*)param;
     MAILBOX_SELF_INFO1 = params->E2C_INFO1;
@@ -187,7 +188,7 @@ void Mailbox_Cryp_Selfcheck(void* param)
     MAILBOX_SET_IRQ(MAILBOX_Control_IRQ_NUMBER);
 }
 
-void Mailbox_SetClockFrequency(void* param)
+void Mailbox_SetClockFrequency(void *param) 
 {
     TaskParams* params = (TaskParams*)param;
     MAILBOX_SELF_INFO1 = params->E2C_INFO1;//通知子系统设置多少分频
@@ -195,24 +196,515 @@ void Mailbox_SetClockFrequency(void* param)
     MAILBOX_SET_IRQ(MAILBOX_Control_IRQ_NUMBER);
 }
 
-void Transfer_IntFlashToExtFlash(uint32_t destAddr, uint32_t srcAddr, size_t dataSize)
+
+void Malibox_Switch_Flash_Quad_Dual(void *param) //已经屏蔽
+{
+    TaskParams *params = (TaskParams *)param;
+    MAILBOX_SELF_INFO1 = params->E2C_INFO1;
+    MAILBOX_SELF_CMD = MAILBOX_CMD_FLASH_DUAL_QUAD_SWITCH;
+    MAILBOX_SET_IRQ(MAILBOX_Control_IRQ_NUMBER);
+}
+
+void Mailbox_Crypto_Secure_Boot(void *param)
+{
+    TaskParams *params = (TaskParams *)param;
+    MAILBOX_SELF_INFO1 = params->E2C_INFO1;
+    MAILBOX_SELF_INFO2 = params->E2C_INFO2;
+    MAILBOX_SELF_INFO3 = params->E2C_INFO3;
+    MAILBOX_SELF_INFO4 = params->E2C_INFO4;
+    MAILBOX_SELF_INFO5 = params->E2C_INFO5;
+    MAILBOX_SELF_INFO6 = params->E2C_INFO6;
+    MAILBOX_SELF_CMD = MAILBOX_CMD_SECURE_BOOT;
+    MAILBOX_SET_IRQ(MAILBOX_Control_IRQ_NUMBER);
+}
+
+
+void Mailbox_SimilarDMA(void *param)//类DMA
+{
+    TaskParams *params = (TaskParams *)param;
+    MAILBOX_SELF_INFO1 = params->E2C_INFO1;     // byte3:输入选择(需要根据选择判断输入状态)byte2-byte0:输入数据地址
+    MAILBOX_SELF_INFO2 = params->E2C_INFO2;     // 数据长度
+    MAILBOX_SELF_INFO3 = params->E2C_INFO3;     // byte3:输出选择(需要根据选择判断输出状态)byte2-byte0:输出数据地址
+    MAILBOX_SELF_CMD = MAILBOX_CMD_SIMILARDMA;
+    MAILBOX_SET_IRQ(MAILBOX_Control_IRQ_NUMBER);
+    command_processed = false;
+}
+
+void Mailbox_Flash_Page_Change(void *param)
+{
+    TaskParams *params = (TaskParams *)param;
+    MAILBOX_SELF_INFO1 = params->E2C_INFO1;
+    MAILBOX_SELF_INFO2 = params->E2C_INFO2;
+    MAILBOX_SELF_INFO3 = params->E2C_INFO3;
+    MAILBOX_SELF_INFO4 = params->E2C_INFO4;
+    MAILBOX_SELF_INFO5 = params->E2C_INFO5;
+    MAILBOX_SELF_INFO6 = params->E2C_INFO6;
+    MAILBOX_SELF_INFO7 = params->E2C_INFO7;
+    MAILBOX_SELF_CMD = MAILBOX_CMD_PAGE_DATA_CHANGE;
+    MAILBOX_SET_IRQ(MAILBOX_Firmware_IRQ_NUMBER);
+    command_processed = false;
+}
+
+void Mailbox_Generate_Key(void *param)//密钥管理-生成密钥
+{
+    TaskParams *params = (TaskParams *)param;
+    MAILBOX_SELF_INFO1 = params->E2C_INFO1; //byte3-byte1:reseved  byte0:switch key:LenovoKeySegment:0x80
+    MAILBOX_SELF_INFO2 = params->E2C_INFO2; //byte3:输入选择(需要根据选择判断输入状态)byte2-byte0:IdData(16byte)
+    MAILBOX_SELF_INFO3 = params->E2C_INFO3; //byte3:输入选择(需要根据选择判断输入状态)byte2-byte0:Password(16byte) 
+    MAILBOX_SELF_CMD = MAILBOX_CMD_GENERATE_KEY;
+    MAILBOX_SET_IRQ(MAILBOX_SecretKey_IRQ_NUMBER);
+    command_processed = false;
+}
+
+void Mailbox_Get_Key(void *param)//密钥管理-获取密钥
+{
+    TaskParams *params = (TaskParams *)param;
+    MAILBOX_SELF_INFO1 = params->E2C_INFO1;
+    MAILBOX_SELF_INFO2 = params->E2C_INFO2; 
+    MAILBOX_SELF_INFO3 = params->E2C_INFO3; 
+    MAILBOX_SELF_CMD = MAILBOX_CMD_GET_KEY;
+    MAILBOX_SET_IRQ(MAILBOX_SecretKey_IRQ_NUMBER);
+    command_processed = false;
+}
+
+void Mailbox_Get_Key_Id(void *param)//密钥管理-获取密钥ID
+{
+    TaskParams *params = (TaskParams *)param;
+    MAILBOX_SELF_INFO1 = params->E2C_INFO1;
+    MAILBOX_SELF_INFO2 = params->E2C_INFO2; 
+    MAILBOX_SELF_CMD = MAILBOX_CMD_GET_KEYID;
+    MAILBOX_SET_IRQ(MAILBOX_SecretKey_IRQ_NUMBER);
+    command_processed = false;
+}
+
+void Mailbox_Clear_Key(void *param)//密钥管理-清除密钥
+{
+    TaskParams *params = (TaskParams *)param;
+    MAILBOX_SELF_INFO1 = params->E2C_INFO1;
+    MAILBOX_SELF_CMD = MAILBOX_CMD_CLEAR_KEY;
+    MAILBOX_SET_IRQ(MAILBOX_SecretKey_IRQ_NUMBER);
+    command_processed = false;
+}
+
+void Mailbox_Clear_All_Key(void *param)//密钥管理-清除所有密钥
+{
+    TaskParams *params = (TaskParams *)param;
+    MAILBOX_SELF_INFO1 = params->E2C_INFO1;
+    MAILBOX_SELF_CMD = MAILBOX_CMD_CLEAR_ALL_KEY;
+    MAILBOX_SET_IRQ(MAILBOX_SecretKey_IRQ_NUMBER);
+    command_processed = false;
+}
+
+void Mailbox_Digest_Or_CrcVerify(void *param)//摘要算法
+{
+    TaskParams *params = (TaskParams *)param;
+    MAILBOX_SELF_INFO1 = params->E2C_INFO1;
+    MAILBOX_SELF_INFO2 = params->E2C_INFO2; 
+    MAILBOX_SELF_INFO3 = params->E2C_INFO3;
+    MAILBOX_SELF_INFO4 = params->E2C_INFO4;
+    MAILBOX_SELF_CMD = MAILBOX_CMD_DIGEST_VERIFY;
+    MAILBOX_SET_IRQ(MAILBOX_Crypto_IRQ_NUMBER);
+    command_processed = false;
+}
+
+void Mailbox_Symmetrric_Key(void *param)//对称加密
+{
+    TaskParams *params = (TaskParams *)param;
+    MAILBOX_SELF_INFO1 = params->E2C_INFO1;
+    MAILBOX_SELF_INFO2 = params->E2C_INFO2; 
+    MAILBOX_SELF_INFO3 = params->E2C_INFO3;
+    MAILBOX_SELF_INFO4 = params->E2C_INFO4;
+    MAILBOX_SELF_INFO5 = params->E2C_INFO5;
+    MAILBOX_SELF_INFO6 = params->E2C_INFO6;
+    MAILBOX_SELF_CMD = MAILBOX_CMD_SYMMETRIC_KEY;
+    MAILBOX_SET_IRQ(MAILBOX_Crypto_IRQ_NUMBER);
+    command_processed = false;
+}
+
+void Mailbox_Asymmetric_Key_Pair(void *param)//非对称加密解密
+{
+    TaskParams *params = (TaskParams *)param;
+    MAILBOX_SELF_INFO1 = params->E2C_INFO1;
+    MAILBOX_SELF_INFO2 = params->E2C_INFO2; 
+    MAILBOX_SELF_INFO3 = params->E2C_INFO3;
+    MAILBOX_SELF_INFO4 = params->E2C_INFO4;
+    MAILBOX_SELF_INFO5 = params->E2C_INFO5;
+    MAILBOX_SELF_INFO6 = params->E2C_INFO6;
+    MAILBOX_SELF_INFO7 = params->E2C_INFO7;
+    MAILBOX_SELF_CMD = MAILBOX_CMD_ASYMMETRIC_KEY;
+    MAILBOX_SET_IRQ(MAILBOX_Crypto_IRQ_NUMBER);
+    command_processed = false;
+}
+
+void Mailbox_Key_Pair_Generate(void *param)//非对称加解密-密钥生成
+{
+    TaskParams *params = (TaskParams *)param;
+    MAILBOX_SELF_INFO1 = params->E2C_INFO1;
+    MAILBOX_SELF_INFO2 = params->E2C_INFO2; 
+    MAILBOX_SELF_INFO3 = params->E2C_INFO3;
+    MAILBOX_SELF_INFO4 = params->E2C_INFO4;
+    MAILBOX_SELF_INFO5 = params->E2C_INFO5;
+    MAILBOX_SELF_CMD = MAILBOX_CMD_KEYPAIR_GENERATE;
+    MAILBOX_SET_IRQ(MAILBOX_Crypto_IRQ_NUMBER);
+    command_processed = false;
+}
+
+void Mailbox_Signature_Verify(void *param) //非对称加解密-签名函数
+{
+    TaskParams *params = (TaskParams *)param;
+    MAILBOX_SELF_INFO1 = params->E2C_INFO1;
+    MAILBOX_SELF_INFO2 = params->E2C_INFO2; 
+    MAILBOX_SELF_INFO3 = params->E2C_INFO3;
+    MAILBOX_SELF_INFO4 = params->E2C_INFO4;
+    MAILBOX_SELF_INFO5 = params->E2C_INFO5;
+    MAILBOX_SELF_INFO6 = params->E2C_INFO6;
+    MAILBOX_SELF_INFO7 = params->E2C_INFO7;
+    MAILBOX_SELF_CMD = MAILBOX_CMD_SIGNATURE_VERIFY;
+    MAILBOX_SET_IRQ(MAILBOX_Crypto_IRQ_NUMBER);
+    command_processed = false;
+}
+
+void Mailbox_MessageAuthentication(void *param)//MAC
+{
+    TaskParams *params = (TaskParams *)param;
+    MAILBOX_SELF_INFO1 = params->E2C_INFO1;
+    MAILBOX_SELF_INFO2 = params->E2C_INFO2;
+    MAILBOX_SELF_INFO3 = params->E2C_INFO3;
+    MAILBOX_SELF_INFO4 = params->E2C_INFO4;
+    MAILBOX_SELF_INFO5 = params->E2C_INFO5;
+    MAILBOX_SELF_INFO6 = params->E2C_INFO6;
+    MAILBOX_SELF_CMD = MAILBOX_CMD_MAC;
+    MAILBOX_SET_IRQ(MAILBOX_Crypto_IRQ_NUMBER);
+    command_processed = false;
+}
+
+void Mailbox_KeyDerivation(void *param)//KDF
+{
+    TaskParams *params = (TaskParams *)param;
+    MAILBOX_SELF_INFO1 = params->E2C_INFO1;
+    MAILBOX_SELF_INFO2 = params->E2C_INFO2; 
+    MAILBOX_SELF_INFO3 = params->E2C_INFO3;
+    MAILBOX_SELF_INFO4 = params->E2C_INFO4;
+    MAILBOX_SELF_INFO5 = params->E2C_INFO5;
+    MAILBOX_SELF_CMD = MAILBOX_CMD_KDF;
+    MAILBOX_SET_IRQ(MAILBOX_Crypto_IRQ_NUMBER);
+    command_processed = false;
+}
+
+void Mailbox_Diffie_Hellman(void *param)//非对称加解密-密钥交换
+
+{
+    TaskParams *params = (TaskParams *)param;
+    MAILBOX_SELF_INFO1 = params->E2C_INFO1;
+    MAILBOX_SELF_INFO2 = params->E2C_INFO2; 
+    MAILBOX_SELF_INFO3 = params->E2C_INFO3;
+    MAILBOX_SELF_INFO4 = params->E2C_INFO4;
+    MAILBOX_SELF_INFO5 = params->E2C_INFO5;
+    MAILBOX_SELF_CMD = MAILBOX_CMD_DIFFIE_HELLMAN;
+    MAILBOX_SET_IRQ(MAILBOX_Crypto_IRQ_NUMBER);
+    command_processed = false;
+}
+
+
+void Mailbox_RandomNumber_Generator(void *param)//随机数生成
+{
+    TaskParams *params = (TaskParams *)param;
+    MAILBOX_SELF_INFO1 = params->E2C_INFO1;
+    MAILBOX_SELF_INFO2 = params->E2C_INFO2;
+    MAILBOX_SELF_CMD = MAILBOX_CMD_RANDOM_NUMBER;
+    MAILBOX_SET_IRQ(MAILBOX_Crypto_IRQ_NUMBER);
+    command_processed = false;
+}
+
+void Mailbox_Set_Used_RandomNumber(void *param)//设置随机数
+{
+    TaskParams *params = (TaskParams *)param;
+    MAILBOX_SELF_INFO1 = params->E2C_INFO1;
+    MAILBOX_SELF_CMD = MAILBOX_CMD_USE_RAND;
+    MAILBOX_SET_IRQ(MAILBOX_Crypto_IRQ_NUMBER);
+    command_processed = false;
+
+}
+
+
+void Transfer_Mailbox_Cryp_Selfcheck(uint8_t mode)
 {
     TaskParams Params;
-    Params.E2C_INFO1 = 0x1;//update mode
+    Params.E2C_INFO1 = mode;
+    Add_Task(Mailbox_Cryp_Selfcheck, Params, &task_head);
+}
+
+void Transfer_Mailbox_APB2_Source_Alloc_Trigger(uint32_t module)
+{
+    TaskParams Params;
+    Params.E2C_INFO1 = module;
+    Add_Task(Mailbox_APB2_Source_Alloc_Trigger, Params, &task_head);
+}
+
+void Transfer_Mailbox_Read_FLASHID_Trigger(void)
+{
+    TaskParams Params;
+    Add_Task((TaskFunction)Mailbox_Read_FLASHID_Trigger, Params, &task_head);
+}
+
+void Transfer_Mailbox_SetClockFrequency(uint32_t value)
+{
+    TaskParams Params;
+    Params.E2C_INFO1 = value;
+    Add_Task(Mailbox_SetClockFrequency, Params, &task_head);
+}
+
+void Transfer_Mailbox_Switch_Flash_Quad_Dual(uint32_t value)
+{
+    TaskParams Params;
+    Params.E2C_INFO1 = (value&0xff);
+    Add_Task(Malibox_Switch_Flash_Quad_Dual, Params, &task_head);
+}
+
+void Transfer_Mailbox_Read_FLASHUID_Trigger(void)
+{
+    TaskParams Params;
+    Add_Task((TaskFunction)Mailbox_Read_FLASHUID_Trigger, Params, &task_head);
+}
+
+void Transfer_Mailbox_Crypto_Secure_Boot(uint32_t star_addr,
+    uint32_t hash_mode,
+    uint8_t switch_flash,
+    uint8_t signature,
+    uint32_t signature_addr,
+    uint32_t publickey_addr)
+{
+    TaskParams Params;
+    Params.E2C_INFO1 = (star_addr&0xffffff);//
+    Params.E2C_INFO2 = hash_mode;//
+    Params.E2C_INFO3 = switch_flash;//
+    Params.E2C_INFO4 = signature;//
+    Params.E2C_INFO5 = (signature_addr&0xffffff);//
+    Params.E2C_INFO6 = (publickey_addr & 0xffffff);//
+    Add_Task(Mailbox_Crypto_Secure_Boot, Params, &task_head);
+}
+
+void Transfer_Mailbox_Flash_Mirror(uint8_t mirror_mode, size_t dataSize, uint32_t destAddr, uint32_t srcAddr )
+{
+    TaskParams Params;
+    Params.E2C_INFO1 = mirror_mode;//update mode
     Params.E2C_INFO2 = dataSize;
     Params.E2C_INFO3 = destAddr;
     Params.E2C_INFO4 = srcAddr;
     Add_Task(Mailbox_ExecuteFirmwareUpdate, Params, &task_head);
 }
 
-void Transfer_ExtFlashToIntFlash(uint32_t destAddr, uint32_t srcAddr, size_t dataSize)
+void Transfer_Mailbox_Flash_Page_Change(uint32_t change_number, uint32_t start_addr,
+    uint8_t addr1, uint8_t data1,uint8_t addr0, uint8_t data0,
+    uint8_t addr3, uint8_t data3,uint8_t addr2, uint8_t data2,
+    uint8_t addr5, uint8_t data5, uint8_t addr4, uint8_t data4,
+    uint8_t addr7, uint8_t data7, uint8_t addr6, uint8_t data6,
+    uint8_t addr9, uint8_t data9, uint8_t addr8, uint8_t data8,
+    uint8_t addr12, uint8_t data11, uint8_t addr10, uint8_t data10)
 {
     TaskParams Params;
-    Params.E2C_INFO1 = 0x2;//update mode
-    Params.E2C_INFO2 = dataSize;
-    Params.E2C_INFO3 = destAddr;
-    Params.E2C_INFO4 = srcAddr;
-    Add_Task(Mailbox_ExecuteFirmwareUpdate, Params, &task_head);
+    Params.E2C_INFO1 = (change_number<<24)|(start_addr&0xffffff);
+    Params.E2C_INFO2 = (addr1<<24)|(data1<<16)|(addr0<<8)|(data0);
+    Params.E2C_INFO3 = (addr3<<24)|(data3<<16)|(addr2<<8)|(data2);
+    Params.E2C_INFO4 = (addr5<<24)|(data5<<16)|(addr4<<8)|(data4);
+    Params.E2C_INFO5 = (addr7<<24)|(data7<<16)|(addr6<<8)|(data6);
+    Params.E2C_INFO6 = (addr9<<24)|(data9<<16)|(addr8<<8)|(data8);
+    Params.E2C_INFO7 = (addr12<<24)|(data11<<16)|(addr10<<8)|(data10);
+    Add_Task(Mailbox_Flash_Page_Change, Params, &task_head);
+}
+void Transfer_Mailbox_SimilarDMA( uint32_t switch_data_input,uint32_t srcAddr,
+    size_t dataSize,
+    uint32_t switch_output , uint32_t destAddr)
+{
+    TaskParams Params;
+    Params.E2C_INFO1 = ((switch_data_input&0xff)<<24)|(srcAddr&0xffffff);//源地址
+    Params.E2C_INFO2 = dataSize;//大小
+    Params.E2C_INFO3 = ((switch_output&0xff)<<24)|(destAddr&0xffffff);//目标地址
+    Add_Task(Mailbox_SimilarDMA, Params, &task_head);
+}
+void Transfer_Mailbox_Generate_Key(uint32_t switch_key,
+    uint32_t switch_input, uint32_t IDdata_addr,
+    uint32_t switch_output, uint32_t password_addr)
+{
+    TaskParams Params;
+    Params.E2C_INFO1 = (switch_key & 0xff);
+    Params.E2C_INFO2 = ((switch_input&0xff)<<24)|(IDdata_addr&0xffffff);
+    Params.E2C_INFO3 = ((switch_output&0xff)<<24)|(password_addr&0xffffff);
+    Add_Task(Mailbox_Generate_Key, Params, &task_head);
+}
+void Transfer_Mailbox_Get_Key(uint32_t switch_key, uint32_t key_num,
+    uint32_t switch_input, uint32_t password_addr,
+    uint32_t switch_output, uint32_t key_addr)
+{
+    TaskParams Params;
+    Params.E2C_INFO1 = ((switch_key & 0xff)<<8)|(key_num&0xff);
+    Params.E2C_INFO2 = ((switch_input&0xff)<<24)|(password_addr&0xffffff);
+    Params.E2C_INFO3 = ((switch_output&0xff)<<24)|(key_addr&0xffffff);
+    Add_Task(Mailbox_Get_Key, Params, &task_head);
+}
+void Transfer_Mailbox_Get_Key_Id(uint32_t switch_key, uint32_t key_num,
+    uint32_t switch_input, uint32_t IDdata_addr)
+{
+    TaskParams Params;
+    Params.E2C_INFO1 = ((switch_key & 0xff)<<8)|(key_num&0xff);
+    Params.E2C_INFO2 = ((switch_input&0xff)<<24)|(IDdata_addr&0xffffff);
+    Add_Task(Mailbox_Get_Key_Id, Params, &task_head);
+}
+void Transfer_Mailbox_Clear_Key(uint32_t switch_key,uint32_t key_num)
+{
+    TaskParams Params;
+    Params.E2C_INFO1 = ((switch_key & 0xff)<<8)|(key_num&0xff);
+    Add_Task(Mailbox_Clear_Key, Params, &task_head);
+}
+void Transfer_Mailbox_Clear_All_Key()
+{
+    TaskParams Params;
+    Params.E2C_INFO1 = 0x80;
+    Add_Task(Mailbox_Clear_All_Key, Params, &task_head);
+}
+void Transfer_Mailbox_Digest_Or_CrcVerify(uint32_t switch_mode, uint32_t mode_lenth, uint32_t crc_init, uint32_t switch_code,
+    uint32_t switch_input, uint32_t input_addr,
+    uint32_t DATA_ByteLength,
+    uint32_t switch_output, uint32_t output_addr)
+{
+    TaskParams Params;
+    Params.E2C_INFO1 = ((switch_mode & 0xff)<<24)|((mode_lenth&0xff)<<16)|((crc_init&0xff)<<8)|(switch_code&0xff);
+    Params.E2C_INFO2 = ((switch_input&0xff)<<24)|(input_addr&0xffffff);
+    Params.E2C_INFO3 = DATA_ByteLength;
+    Params.E2C_INFO4 = ((switch_output & 0xff)<<24) | (output_addr & 0xffffff);
+    Add_Task(Mailbox_Digest_Or_CrcVerify, Params, &task_head);
+}
+void Transfer_Mailbox_Symmetrric_Key(uint32_t switch_mode, uint32_t switch_key_lenth, uint32_t switch_mode_lenth, uint32_t used,
+    uint32_t switch_key_input, uint32_t input_key_addr,
+    uint32_t switch_iv_input, uint32_t iv_addr,
+    uint32_t switch_data_input, uint32_t data_addr,
+    uint32_t DATA_4ByteLength,
+    uint32_t switch_output, uint32_t output_addr)
+{
+    TaskParams Params;
+    Params.E2C_INFO1 = ((switch_mode & 0xff) << 24) | (((switch_key_lenth & 0xff) << 16)) | (((switch_mode_lenth & 0xff) << 8)) | (used & 0xff);
+    Params.E2C_INFO2 = ((switch_key_input & 0xff) << 24) | (input_key_addr & 0xffffff);
+    Params.E2C_INFO3 = ((switch_iv_input&0xff)<<24)|(iv_addr&0xffffff);
+    Params.E2C_INFO4 = ((switch_data_input&0xff)<<24)|(data_addr&0xffffff);
+    Params.E2C_INFO5 = DATA_4ByteLength;
+    Params.E2C_INFO6 =((switch_output&0xff)<<24)|(output_addr&0xffffff);
+    Add_Task(Mailbox_Symmetrric_Key, Params, &task_head);
+}
+
+void Transfer_Mailbox_Asymmetric_Key_Pair(uint32_t switch_mode,uint32_t used,
+    uint32_t switch_data_input, uint32_t data_addr,
+    uint32_t DATA_ByteLength,
+    uint32_t switch_ecc_secp, uint32_t secp_addr,
+    uint32_t switch_key_input, uint32_t key_addr,
+    uint32_t switch_ecc_r_input_and_switch_rsa_output,uint32_t ecc_r_addr_and_rsa_out_addr,
+    uint32_t switch_ecc_output, uint32_t ecc_output_addr)
+{
+    TaskParams Params;
+    Params.E2C_INFO1 = ((switch_mode & 0xff)<<24)|(used&0xff);
+    Params.E2C_INFO2 = ((switch_data_input&0xff)<<24)|(data_addr&0xffffff);
+    Params.E2C_INFO3 = DATA_ByteLength;
+    Params.E2C_INFO4 = ((switch_ecc_secp&0xff)<<24)|(secp_addr&0xffffff);
+    Params.E2C_INFO5 = ((switch_key_input&0xff)<<24)|(key_addr&0xffffff);
+    Params.E2C_INFO6 = ((switch_ecc_r_input_and_switch_rsa_output & 0xff)<<24) | (ecc_r_addr_and_rsa_out_addr & 0xffffff);
+    Params.E2C_INFO7 = ((switch_ecc_output & 0xff)<<24) | (ecc_output_addr & 0xffffff);
+    Add_Task(Mailbox_Asymmetric_Key_Pair, Params, &task_head);
+}
+
+void Transfer_Mailbox_Key_Pair_Generate(uint32_t switch_mode,uint32_t switch_rsa_key_lenth ,uint32_t switch_rsa_e,uint32_t used,
+    uint32_t switch_pubkey_input, uint32_t pubkey_addr,
+    uint32_t prikey_addr,
+    uint32_t switch_ecc_secp, uint32_t secp_addr,
+    uint32_t switch_rsa_e_input, uint32_t rsa_e_addr)
+{
+    TaskParams Params;
+    Params.E2C_INFO1 = ((switch_mode & 0xff)<<24)|((switch_rsa_key_lenth&0xff)<<16)|((switch_rsa_e&0xff)<<8)|(used&0xff);
+    Params.E2C_INFO2 = ((switch_pubkey_input&0xff)<<24)|(pubkey_addr&0xffffff);
+    Params.E2C_INFO3 = (prikey_addr&0xffffff);
+    Params.E2C_INFO4 = ((switch_ecc_secp&0xff)<<24)|(secp_addr&0xffffff);
+    Params.E2C_INFO5 = ((switch_rsa_e_input&0xff)<<24)|(rsa_e_addr&0xffffff);
+    Add_Task(Mailbox_Key_Pair_Generate, Params, &task_head);
+}
+
+
+void Transfer_Mailbox_Signature_Verify(uint32_t switch_mode,uint32_t switch_hash_mode,uint32_t switch_mode_lenth,uint32_t used,
+    uint32_t switch_data_input, uint32_t data_addr,
+    uint32_t DATA_ByteLength,
+    uint32_t switch_ecc_secp, uint32_t secp_addr,
+    uint32_t switch_key_input, uint32_t key_addr,
+    uint32_t switch_ecc_r_output_and_switch_rsa_data_output,uint32_t ecc_r_addr_and_rsa_out_addr,
+    uint32_t switch_ecc_s_output_and_switch_rsa_data_lenth_output, uint32_t ecc_output_lenth)
+{
+    TaskParams Params;
+    Params.E2C_INFO1 = ((switch_mode & 0xff)<<24)|((switch_hash_mode&0xff)<<16)|((switch_mode_lenth&0xff)<<8)|(used&0xff);
+    Params.E2C_INFO2 = ((switch_data_input&0xff)<<24)|(data_addr&0xffffff);
+    Params.E2C_INFO3 = DATA_ByteLength;
+    Params.E2C_INFO4 = ((switch_ecc_secp&0xff)<<24)|(secp_addr&0xffffff);
+    Params.E2C_INFO5 = ((switch_key_input&0xff)<<24)|(key_addr&0xffffff);
+    Params.E2C_INFO6 = ((switch_ecc_r_output_and_switch_rsa_data_output & 0xff)<<24) | (ecc_r_addr_and_rsa_out_addr & 0xffffff);
+    Params.E2C_INFO7 = ((switch_ecc_s_output_and_switch_rsa_data_lenth_output & 0xff)<<24) | (ecc_output_lenth & 0xffffff);
+    Add_Task(Mailbox_Signature_Verify, Params, &task_head);
+}
+void Transfer_Mailbox_MessageAuthentication(uint32_t switch_hash_mode, uint32_t mode_lenth,uint32_t hmac,
+    uint32_t switch_key_input, uint32_t key_addr,
+    uint32_t KEY_ByteLength,
+    uint32_t switch_data_input, uint32_t data_input_addr,
+    uint32_t DATA_ByteLength,
+    uint32_t switch_data_output, uint32_t data_output_addr)
+{
+    TaskParams Params;
+    Params.E2C_INFO1 = ((switch_hash_mode & 0xff)<<24)|((mode_lenth&0xff)<<16)|(hmac&0x0);
+    Params.E2C_INFO2 = ((switch_key_input&0xff)<<24)|(key_addr&0xffffff);
+    Params.E2C_INFO3 = KEY_ByteLength;
+    Params.E2C_INFO4 = ((switch_data_input & 0xff)<<24) | (data_input_addr & 0xffffff);
+    Params.E2C_INFO5 = DATA_ByteLength;
+    Params.E2C_INFO6 = ((switch_data_output & 0xff)<<24) | (data_output_addr & 0xffffff);
+    Add_Task(Mailbox_MessageAuthentication, Params, &task_head);
+}
+
+void Transfer_Mailbox_KeyDerivation(uint32_t switch_hash_mode, uint32_t mode_lenth,uint32_t mode,
+    uint32_t switch_data_input, uint32_t data_input_addr,
+    uint32_t DATA_ByteLength,
+    uint32_t switch_data_output, uint32_t data_output_addr,
+    uint32_t KEY_ByteLength)
+{
+    TaskParams Params;
+    Params.E2C_INFO1 = ((switch_hash_mode & 0xff)<<24)|((mode_lenth&0xff)<<16)|(mode&0xff);
+    Params.E2C_INFO2 = ((switch_data_input&0xff)<<24)|(data_input_addr&0xffffff);
+    Params.E2C_INFO3 = DATA_ByteLength;
+    Params.E2C_INFO4 = ((switch_data_output & 0xff)<<24) | (data_output_addr & 0xffffff);
+    Params.E2C_INFO5 = KEY_ByteLength;
+    Add_Task(Mailbox_KeyDerivation, Params, &task_head);
+}
+
+void Transfer_Mailbox_Diffie_Hellman(uint32_t ecdh_mode, uint32_t switch_fq_f2m,
+    uint32_t switch_prikey_input, uint32_t prikey_input_addr,
+    uint32_t switch_pubkey_input, uint32_t pubkey_input_addr,
+    uint32_t switch_ecc_secp_input, uint32_t ecc_secp_addr,
+    uint32_t switch_sharedkey_output,uint32_t sharedkey_output_addr)
+{
+    TaskParams Params;
+    Params.E2C_INFO1 = ((ecdh_mode & 0xff)<<24)|(switch_fq_f2m&0xff);
+    Params.E2C_INFO2 = ((switch_prikey_input&0xff)<<24)|(prikey_input_addr&0xffffff);
+    Params.E2C_INFO3 = ((switch_pubkey_input&0xff)<<24)|(pubkey_input_addr&0xffffff);
+    Params.E2C_INFO4 = ((switch_ecc_secp_input & 0xff)<<24) | (ecc_secp_addr & 0xffffff);
+    Params.E2C_INFO5 = ((switch_sharedkey_output&0xff)<<24)|(sharedkey_output_addr&0xffffff);
+    Add_Task(Mailbox_Diffie_Hellman, Params, &task_head);
+}
+
+void Transfer_Mailbox_RandomNumber_Generator(uint32_t rand_mode, uint32_t rand_bits_length,
+    uint32_t switch_rand_output, uint32_t rand_output_addr)
+{
+    TaskParams Params;
+    Params.E2C_INFO1 = ((rand_mode & 0xff) << 24) | (rand_bits_length & 0xffff);
+    Params.E2C_INFO2 = ((switch_rand_output & 0xff) << 24) | (rand_output_addr & 0xffffff);
+    Add_Task(Mailbox_RandomNumber_Generator, Params, &task_head);
+}
+
+void Transfer_Mailbox_Set_Used_RandomNumber(uint32_t rand_flag)//设置随机数
+{
+    TaskParams Params;
+    Params.E2C_INFO1 = rand_flag;
+    Add_Task(Mailbox_Set_Used_RandomNumber, Params, &task_head);
 }
 /*************************************eRPMC Mailbox***************************************/
 #define OP1_Code 0x9B
@@ -601,7 +1093,12 @@ void Mailbox_Control(void)
         if ((BYTE)(MAILBOX_OTHER_INFO1 & 0x1) == 0x1)
             dprint("flash 9fcmd return id:0x%x 0x%x 0x%x 0x%x\n", MAILBOX_OTHER_INFO5, MAILBOX_OTHER_INFO4, MAILBOX_OTHER_INFO3, MAILBOX_OTHER_INFO2);
         else if ((BYTE)(MAILBOX_OTHER_INFO1 & 0x2) == 0x2)
-            dprint("read flash failed\n");
+            printf("read flash failed\n");
+    }
+    else if (C2E_CMD == MAILBOX_CMD_SECURE_BOOT)
+    {
+        printf("MAILBOX_CMD_SECURE_BOOT\n");
+        printf("cmd_result: 0x%08x\n", MAILBOX_OTHER_INFO1);
     }
 }
 
@@ -610,11 +1107,13 @@ void Mailbox_Firmware(void)
 
     if (C2E_CMD == MAILBOX_CMD_FIRMWARE_MIRROR)
     {
-        /* code */
+        printf("MAILBOX_CMD_FIRMWARE_MIRROR\n");
+        printf("cmd_result: 0x%08x\n", MAILBOX_OTHER_INFO1);
     }
     else if (C2E_CMD == MAILBOX_CMD_PAGE_DATA_CHANGE)
     {
-        /* code */
+        printf("MAILBOX_CMD_PAGE_DATA_CHANGE\n");
+        printf("cmd_result: 0x%08x\n", MAILBOX_OTHER_INFO1);
     }
     else
     {
@@ -649,10 +1148,113 @@ void Mailbox_eRPMC(void)
 
 void Mailbox_SecretKey(void)
 {
+    if (C2E_CMD == MAILBOX_CMD_GENERATE_KEY)
+    {
+        printf("MAILBOX_CMD_GENERATE_KEY\n");
+        printf("cmd_result: 0x%08x\n", MAILBOX_OTHER_INFO1);
+        printf("output_addr: 0x%08x\n", MAILBOX_OTHER_INFO2);
+    }
+    if (C2E_CMD == MAILBOX_CMD_GET_KEY)
+    {
+        printf("MAILBOX_CMD_GET_KEY\n");
+        printf("cmd_result: 0x%08x\n", MAILBOX_OTHER_INFO1);
+        printf("output_addr: 0x%08x\n", MAILBOX_OTHER_INFO2);
+
+    }
+    if (C2E_CMD == MAILBOX_CMD_GET_KEYID)
+    {
+        printf("MAILBOX_CMD_GET_KEYID\n");
+        printf("cmd_result: 0x%08x\n", MAILBOX_OTHER_INFO1);
+        printf("output_addr: 0x%08x\n", MAILBOX_OTHER_INFO2);
+
+    }
+    if (C2E_CMD == MAILBOX_CMD_CLEAR_KEY)
+    {
+        printf("MAILBOX_CMD_CLEAR_KEY\n");
+        printf("cmd_result: 0x%08x\n", MAILBOX_OTHER_INFO1);
+        printf("output_addr: 0x%08x\n", MAILBOX_OTHER_INFO2);
+    }
+    if (C2E_CMD == MAILBOX_CMD_CLEAR_ALL_KEY)
+    {
+        printf("MAILBOX_CMD_CLEAR_ALL_KEY\n");
+        printf("cmd_result: 0x%08x\n", MAILBOX_OTHER_INFO1);
+        printf("output_addr: 0x%08x\n", MAILBOX_OTHER_INFO2);
+    }
+
 }
 
 void Mailbox_Crypto(void)
 {
+    if (C2E_CMD == MAILBOX_CMD_DIGEST_VERIFY)
+    {
+        printf("MAILBOX_CMD_DIGEST_VERIFY\n");
+        printf("cmd_result: 0x%08x\n", MAILBOX_OTHER_INFO1);
+        printf("output_addr: 0x%08x\n", MAILBOX_OTHER_INFO2);
+    }
+    else if(C2E_CMD == MAILBOX_CMD_SYMMETRIC_KEY)
+    {
+        printf("MAILBOX_CMD_SYMMETRIC_KEY\n");
+        printf("cmd_result: 0x%08x\n", MAILBOX_OTHER_INFO1);
+        printf("output_addr: 0x%08x\n", MAILBOX_OTHER_INFO2);
+    }
+    else if(C2E_CMD == MAILBOX_CMD_ASYMMETRIC_KEY)
+    {
+        printf("MAILBOX_CMD_ASYMMETRIC_KEY\n");
+        printf("cmd_result: 0x%08x\n", MAILBOX_OTHER_INFO1);
+        printf("output_addr: 0x%08x\n", MAILBOX_OTHER_INFO2);
+        printf("output_lenth: 0x%08x\n", MAILBOX_OTHER_INFO3);
+    }
+    else if(C2E_CMD == MAILBOX_CMD_KEYPAIR_GENERATE)
+    {
+        printf("MAILBOX_CMD_KEYPAIR_GENERATE\n");
+        printf("cmd_result: 0x%08x\n", MAILBOX_OTHER_INFO1);
+        printf("pubkey_addr: 0x%08x\n", MAILBOX_OTHER_INFO2);
+        printf("prikey_addr: 0x%08x\n", MAILBOX_OTHER_INFO3);
+    }
+    else if(C2E_CMD == MAILBOX_CMD_SIGNATURE_VERIFY)
+    {
+        printf("MAILBOX_CMD_SIGNATURE_VERIFY\n");
+        printf("cmd_result: 0x%08x\n", MAILBOX_OTHER_INFO1);
+        printf("signature_result: 0x%08x\n", MAILBOX_OTHER_INFO2);
+        printf("outputlenth: 0x%08x\n", MAILBOX_OTHER_INFO3);
+    }
+    else if(C2E_CMD == MAILBOX_CMD_MAC)
+    {
+        printf("MAILBOX_CMD_MAC\n");
+        printf("cmd_result: 0x%08x\n", MAILBOX_OTHER_INFO1);
+        printf("output_addr: 0x%08x\n", MAILBOX_OTHER_INFO2);
+    }
+    else if (C2E_CMD == MAILBOX_CMD_KDF)
+    {
+        printf("MAILBOX_CMD_KDF\n");
+        printf("cmd_result: 0x%08x\n", MAILBOX_OTHER_INFO1);
+        printf("output_addr: 0x%08x\n", MAILBOX_OTHER_INFO2);
+    }
+    else if (C2E_CMD == MAILBOX_CMD_DIFFIE_HELLMAN)
+    {
+        printf("MAILBOX_CMD_DIFFIE_HELLMAN\n");
+        printf("cmd_result: 0x%08x\n", MAILBOX_OTHER_INFO1);
+        printf("output_addr: 0x%08x\n", MAILBOX_OTHER_INFO2);
+    }
+    else if (C2E_CMD == MAILBOX_CMD_RANDOM_NUMBER)
+    {
+        printf("MAILBOX_CMD_RANDOM_NUMBER\n");
+        printf("cmd_result: 0x%08x\n", MAILBOX_OTHER_INFO1);
+        printf("output_addr: 0x%08x\n", MAILBOX_OTHER_INFO2);
+    }
+    else if (C2E_CMD == MAILBOX_CMD_USE_RAND)
+    {
+        printf("MAILBOX_CMD_USE_RAND\n");
+        printf("cmd_result: 0x%08x\n", MAILBOX_OTHER_INFO1);
+        printf("output_addr: 0x%08x\n", MAILBOX_OTHER_INFO2);
+    }
+    else
+    {
+        printf("unknown fw update cmd\n");
+    }
+
+
+
 }
 
 void Mailbox_SecureStorage(void)
@@ -670,30 +1272,30 @@ void Mailbox_C2E_Service(void)
 
     switch (Mailbox_Int_Store)
     {
-    case 0x01:
-        Mailbox_Control();
-        break;
-    case 0x02:
-        Mailbox_Firmware();
-        break;
-    case 0x04:
-        Mailbox_Efuse();
-        break;
-    case 0x08:
-        Mailbox_eRPMC();
-        break;
-    case 0x10:
-        Mailbox_SecretKey();
-        break;
-    case 0x20:
-        Mailbox_Crypto();
-        break;
-    case 0x40:
-        Mailbox_SecureStorage();
-        break;
-    default:
-        dprint("Mailbox_Int_Store:%x\n", Mailbox_Int_Store);
-        break;
+        case 0x01:
+            Mailbox_Control();
+            break;
+        case 0x02:
+            Mailbox_Firmware();
+            break;
+        case 0x04:
+            Mailbox_Efuse();
+            break;
+        case 0x08:
+            Mailbox_eRPMC();
+            break;
+        case 0x10://密钥管理
+            Mailbox_SecretKey();
+            break;
+        case 0x20://安全算法相关
+            Mailbox_Crypto();
+            break;
+        case 0x40:
+            Mailbox_SecureStorage();
+            break;
+        default:
+            dprint("Mailbox_Int_Store:%x\n", Mailbox_Int_Store);
+            break;
     }
     command_processed = true;
     mailbox_timeout_s = timer_1s_count; //超时计数同步

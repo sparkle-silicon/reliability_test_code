@@ -24,9 +24,9 @@ DUAL_BOOT_FLAG?=0#双启动开关
 SAVE_TEMPS_FILE ?= 0#保留编译文件
 USER_RISCV_LIBC_A?=0#0 USER_AE10X_LIBC_A 1 USER_RISCV_LIBC_A
 #安全相关
-PEM_FILE ?= $(TOPDIR)/TOOLS/Security/private_key.pem
+PEM_FILE ?= $(TOPDIR)/TOOLS/Security/private_key4096.pem
 EFUSE_SECVER_FLAG?=1#efuse security open or close 
-HASH_4kSECTORSIZE?=0#0:4k*HASH_4kSECTORSIZE sector size
+HASH_4kSECTORSIZE?=63#0:4k*HASH_4kSECTORSIZE sector size
 EXTERNAL_FLASH_ADDR?=0x000000#外部flash地址
 ifeq ($(findstring /sh,$(SHELL_TYPES)),/sh)
 SHELL_TYPE := $(shell readlink -f $(SHELL_TYPES))
