@@ -31,14 +31,14 @@ void PECI_Init(void)
     SYSCTL_CLKDIV_PECI = PECI_CLKDIV_1;
     SYSCTL_PMU_CFG |= PMU_EN_IBIAS | PMU_EN_BUF;
     SYSCTL_PECI_PAD_CTRL |= PECI_RESERVED_REG;
-    // PECI_HOSTAR = PECI_HOSTAR_LSB_FIRST;     //if lsb first, need enable this bit
+    // PECI_STAR = PECI_STAR_LSB_FIRST;     //if lsb first, need enable this bit
     PECI_Set_Pad(VTTlev_110V, PADSEL_PECI);     //set pad voltage
-    PECI_HOCTLR |= PECI_HOCTLR_HHRAE;
-    PECI_HOCTL2R &= 0xF8;
-    PECI_HOCTL2R |= TRANSFER_RATE_1_0MHz;       // PECI host optimal transfer rate. = 1MHz <-KBL
-    PECI_HOCTL2R &= ~PECI_HOCTLR_HHRAE;
+    PECI_CTRL1R |= PECI_CTRL1R_HHRAE;
+    PECI_CTRL2R &= 0xF8;
+    PECI_CTRL2R |= TRANSFER_RATE_1_0MHz;       // PECI host optimal transfer rate. = 1MHz <-KBL
+    PECI_CTRL2R &= ~PECI_CTRL1R_HHRAE;
     PECI_ERRCNT = 0;
-    PECI_HOCTLR |= PECI_HOST_ENABLE;            // PECI Host Enable
+    PECI_CTRL1R |= PECI_HOST_ENABLE;            // PECI Host Enable
 }
 
 /*-----------------------------------------------------------------------------
@@ -59,10 +59,10 @@ void PECI_Set_Pad(u16 VTTlev, u8 PADsel)
     else
     {
         SYSCTL_PECI_PAD_CTRL &= ~PECI_VTT_SEL;
-        PECI_HOCTLR |= PECI_HOCTLR_HHRAE;
+        PECI_CTRL1R |= PECI_CTRL1R_HHRAE;
         PECI_PADCTLR &= 0xfc;
         PECI_PADCTLR |= VTTlev & 0b11;
-        PECI_HOCTL2R &= ~PECI_HOCTLR_HHRAE;
+        PECI_CTRL2R &= ~PECI_CTRL1R_HHRAE;
     }
 }
 //-----------------------------------------------------------------------------
@@ -84,8 +84,8 @@ void Service_PECI(void)
         return;
     }
 
-    PECI_HOCTLR = 0x08;     /* PECI module only enable one time */
-    PECI_HOSTAR |= 0xEE;    /* ResetPECIStatus  */
+    PECI_CTRL1R = 0x08;     /* PECI module only enable one time */
+    PECI_STAR |= 0xEE;    /* ResetPECIStatus  */
 
 #if 1
     if (!(PECI_FLAG & F_PECI_INIT))
@@ -247,57 +247,57 @@ void Service_PECI_Data(void)
 
     while (PECI_FLAG & F_PECI_BUSY)
     {
-        if ((PECI_HOSTAR & 0xEC) != 0)
+        if ((PECI_STAR & 0xEC) != 0)
         {
             /* Error Bit */
             if (PECI_ERRCNT < 255)
             {
                 PECI_ERRCNT++;
             }
-            PECI_ERRSTS = PECI_HOSTAR;
-            PECI_HOCTLR = 0x08;      /* PECI module only enable one time */
-            //PECI_HOCTLR = 0x00;    /* PECI_HostDisable (Will have Glitch Noise)*/
-            PECI_HOSTAR = 0xFE;  /* ResetPECIStatus  */
+            PECI_ERRSTS = PECI_STAR;
+            PECI_CTRL1R = 0x08;      /* PECI module only enable one time */
+            //PECI_CTRL1R = 0x00;    /* PECI_HostDisable (Will have Glitch Noise)*/
+            PECI_STAR = 0xFE;  /* ResetPECIStatus  */
             CLEAR_MASK(PECI_FLAG, F_PECI_BUSY);
         }
-        else if (IS_MASK_SET(PECI_HOSTAR, PECI_HOSTAR_FINISH))
+        else if (IS_MASK_SET(PECI_STAR, PECI_STAR_FINISH))
         {
             PECI_ERRCNT = 0;
-            PECI_ERRSTS = PECI_HOSTAR;
+            PECI_ERRSTS = PECI_STAR;
             // Tmp_XPntr = (unsigned int *)PECI_MEMADR;
             if (PECI_CMD == PECI_CMD_GetTemp)
             {
-                for (i = 0; i < PECI_HORDLR; i++)
+                for (i = 0; i < PECI_RDLR; i++)
                 {
-                    PECI_Get_Temp[i] = PECI_HORDDR;
+                    PECI_Get_Temp[i] = PECI_RDDAR;
                 }
             }
             else if (PECI_CMD == PECI_CMD_GetDIB;)
             {
-                for (i = 0; i < PECI_HORDLR; i++)
+                for (i = 0; i < PECI_RDLR; i++)
                 {
-                    PECI_Get_DIB[i] = PECI_HORDDR;
+                    PECI_Get_DIB[i] = PECI_RDDAR;
                 }
             }
             else if (PECI_CMD == PECI_CMD_RdPkgConfig)
             {
-                PECI_RdPkgCfg_Idx16_CC = PECI_HORDDR;
-                for (i = 0; i < PECI_HORDLR; i++)
+                PECI_RdPkgCfg_Idx16_CC = PECI_RDDAR;
+                for (i = 0; i < PECI_RDLR; i++)
                 {
-                    PECI_RdPkgCfg_Idx16[i] = PECI_HORDDR;
+                    PECI_RdPkgCfg_Idx16[i] = PECI_RDDAR;
                 }
             }
             else
             {
-                for (i = 0x00; i < PECI_HORDLR; i++)
+                for (i = 0x00; i < PECI_RDLR; i++)
                 {
-                    PeciBuffer[i] = PECI_HORDDR;
+                    PeciBuffer[i] = PECI_RDDAR;
                     //PeciDataPointer++;
                 }
             }
-            PECI_HOCTLR = 0x08;      /* PECI module only enable one time */
-            //PECI_HOCTLR = 0x00;    /* PECI_HostDisable (Will have Glitch Noise)*/
-            PECI_HOSTAR = 0xFE;  /* ResetPECIStatus  */
+            PECI_CTRL1R = 0x08;      /* PECI module only enable one time */
+            //PECI_CTRL1R = 0x00;    /* PECI_HostDisable (Will have Glitch Noise)*/
+            PECI_STAR = 0xFE;  /* ResetPECIStatus  */
 
             CLEAR_MASK(PECI_FLAG, F_PECI_BUSY);
             PECI_FLAG |= F_PECI_UPDATED;
@@ -318,8 +318,8 @@ void Service_PECI_Data(void)
             {
                 PECI_TIMER = 0;
                 PECI_OVTCT++;
-                PECI_HOCTLR = 0x00;  /* PECI_HostDisable */
-                PECI_HOSTAR = 0xFE;  /* ResetPECIStatus  */
+                PECI_CTRL1R = 0x00;  /* PECI_HostDisable */
+                PECI_STAR = 0xFE;  /* ResetPECIStatus  */
                 CLEAR_MASK(PECI_FLAG, F_PECI_BUSY);
             }
         }
@@ -354,16 +354,16 @@ void Service_PECI_Command(void)
         return;
     }
     //-------------------------------------------------------------------------
-    PECI_HOCTLR = 0x08;      /* PECI module only enable one time */
-    //PECI_HOCTLR = 0x00;    /* PECI_HostDisable (Will have Glitch Noise)*/
-    PECI_HOSTAR = 0xFE;      /* ResetPECIStatus  */
+    PECI_CTRL1R = 0x08;      /* PECI module only enable one time */
+    //PECI_CTRL1R = 0x00;    /* PECI_HostDisable (Will have Glitch Noise)*/
+    PECI_STAR = 0xFE;      /* ResetPECIStatus  */
     /* PECI_HostEnable(); */
-    PECI_HOCTLR = (PECI_HOCTLR_FIFOCLR + PECI_HOCTLR_FCSERR_ABT + PECI_HOCTLR_PECIHEN + PECI_HOCTLR_CONCTRL);
+    PECI_CTRL1R = (PECI_CTRL1R_FIFOCLR + PECI_CTRL1R_FCSERR_ABT + PECI_CTRL1R_PECIHEN + PECI_CTRL1R_CONCTRL);
     if (!(PECI_FLAG & F_PECI_INIT))
     {
-        PECI_HOTRADDR = _PECI_CPU_ADDR;
-        PECI_HOWRLR = 0x01;
-        PECI_HORDLR = 0x08;
+        PECI_TAR_ADDR = _PECI_CPU_ADDR;
+        PECI_WRLR = 0x01;
+        PECI_RDLR = 0x08;
         PECI_CMD = PECI_CMD_GetDIB;;
         PeciDataPointer = &PECI_Get_DIB[0];
     }
@@ -395,31 +395,31 @@ void Service_PECI_Command(void)
     {
         if (PECI_RdPkgCfg_Idx16[2] == 0x00)
         {
-            PECI_HOTRADDR = _PECI_CPU_ADDR;
-            PECI_HOWRLR = 0x05;
-            PECI_HORDLR = 0x05;
+            PECI_TAR_ADDR = _PECI_CPU_ADDR;
+            PECI_WRLR = 0x05;
+            PECI_RDLR = 0x05;
             PECI_CMD = PECI_CMD_RdPkgConfig;
             PeciDataPointer = &PECI_RdPkgCfg_Idx16_CC;
         }
         else
         {
-            PECI_HOTRADDR = _PECI_CPU_ADDR;
-            PECI_HOWRLR = 0x01;
-            PECI_HORDLR = 0x02;
+            PECI_TAR_ADDR = _PECI_CPU_ADDR;
+            PECI_WRLR = 0x01;
+            PECI_RDLR = 0x02;
             PECI_CMD = PECI_CMD_GetTemp;
             PeciDataPointer = &PECI_Get_Temp[0];
         }
     }
-    PECI_HOCMDR = PECI_CMD;
+    PECI_CMDR = PECI_CMD;
 
     if (PECI_CMD == PECI_CMD_RdPkgConfig)
     {
-        PECI_HOWRDR = 0x02;
-        PECI_HOWRDR = 16;
-        PECI_HOWRDR = 0x00;
-        PECI_HOWRDR = 0x00;
+        PECI_WRDAR = 0x02;
+        PECI_WRDAR = 16;
+        PECI_WRDAR = 0x00;
+        PECI_WRDAR = 0x00;
     }
-    PECI_HOCTLR |= PECI_HOCTLR_START;    /* PECI_HostControl(PECI_HOCTLR_START) */
+    PECI_CTRL1R |= PECI_CTRL1R_START;    /* PECI_HostControl(PECI_CTRL1R_START) */
     PECI_TIMER = 0;
 
     PECI_DELAY = 4;    /* 4 x 500ms = 2.0sec */
