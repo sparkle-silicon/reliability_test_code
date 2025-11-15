@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu daowes.ly@qq.com
+ * @LastEditors: daweslinyu 
  * @LastEditTime: 2025-10-24 11:16:01
  * @Description:
  *
@@ -442,7 +442,6 @@ void __interrupt SECTION(".interrupt.WDT_HANDLER") WDT_HANDLER(void)
 		WDT_FeedDog();// 不重启则喂狗
 	}
 };
-#define TEST_10TIMES 0
 void __interrupt SECTION(".interrupt.ADC_HANDLER") ADC_HANDLER(void)
 {
 #if ENABLE_DEBUGGER_SUPPORT
@@ -457,7 +456,7 @@ void __interrupt SECTION(".interrupt.ADC_HANDLER") ADC_HANDLER(void)
 		{
 			(&ADC_Data0)[i] = ADC_ReadData(i);
 			ADC_INTSTAT |= 1 << i;		//清除中断
-			irqprint("ADC%d:0x%x Voltage:%.2f V\n", i, (&ADC_Data0)[i], (&ADC_Data0)[i] * 3.3 / 4095.0);
+			irqprint("ADC%d:0x%x Voltage:%.2f V\n", i, (&ADC_Data0)[i],( (&ADC_Data0)[i] * 3.3 / 4095.0));
 		}
 		if (ADC_ValidStatus_2 & (1 << i))
 		{
@@ -468,23 +467,6 @@ void __interrupt SECTION(".interrupt.ADC_HANDLER") ADC_HANDLER(void)
 			}
 		}
 	}
-#if TEST_10TIMES
-	if ((((ADC_CTRL >> 7) & 0x3) == 0x2) || (((ADC_CTRL >> 7) & 0x3) == 0x3) || (((ADC_CTRL >> 7) & 0x3) == 0x1))//连续触发 auto samp
-		// if((((ADC_CTRL>>7)&0x3)==0x2))
-	{
-		//在此测试连续，
-		if (counter_1 < 10)
-		{
-			counter_1++;
-			irqprint("counter_1:%x\n", counter_1);
-		}
-		else
-		{
-			counter_1 = 0;
-			ADC__TriggerMode_Config(SW_SAMPLE); //停止连续模式
-		}
-	}
-#endif
 }
 void __interrupt SECTION(".interrupt.UART0_HANDLER") UART0_HANDLER(void)
 {

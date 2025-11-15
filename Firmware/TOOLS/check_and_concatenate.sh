@@ -1,8 +1,8 @@
 #!/bin/bash
 ###
- # @Author: daweslinyu daowes.ly@qq.com
+ # @Author: daweslinyu 
  # @Date: 2024-06-14 15:07:40
- # @LastEditors: daweslinyu daowes.ly@qq.com
+ # @LastEditors: daweslinyu 
  # @LastEditTime: 2024-06-14 15:07:47
  # @FilePath: /SPK32AE103/Firmware/TOOLS/check_and_concatenate.sh
  # @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
