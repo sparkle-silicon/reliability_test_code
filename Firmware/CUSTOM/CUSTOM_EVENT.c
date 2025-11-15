@@ -18,44 +18,47 @@
 #include "KERNEL_MEMORY.H"
 #include "CUSTOM_POWER.H"
 #include "CUSTOM_BATTERY.H"
-//-----------------------------------------------------------------------------
-// no change function
-//-----------------------------------------------------------------------------
+ //-----------------------------------------------------------------------------
+ // no change function
+ //-----------------------------------------------------------------------------
 void NullEvent(void)
-{}
+{
+}
 //-----------------------------------------------------------------------------
 // Adapter in function
 //-----------------------------------------------------------------------------
 void AdapterIn(void)
-{}
+{
+}
 //-----------------------------------------------------------------------------
 // Adapter out function
 //-----------------------------------------------------------------------------
 void AdapterOut(void)
-{}
+{
+}
 //-----------------------------------------------------------------------------
 // power button was pressed
 //-----------------------------------------------------------------------------
 void PSWPressed(void)
 {
 	PSW_COUNTER = T_PSWOFF;
-	switch(System_PowerState)
+	switch (System_PowerState)
 	{
-		case SYSTEM_S5:
-			Custom_S5_S0_Trigger();
-			break;
-		case SYSTEM_S4:
-			Custom_S4_S0_Trigger();
-			break;
-		case SYSTEM_S3:
-			Custom_S3_S0_Trigger();
-			break;
-		case SYSTEM_S0:
-			dprint("SYSTEM_S0\n");
-			// ECQEvent();
-			break;
-		default:
-			break;
+	case SYSTEM_S5:
+		Custom_S5_S0_Trigger();
+		break;
+	case SYSTEM_S4:
+		Custom_S4_S0_Trigger();
+		break;
+	case SYSTEM_S3:
+		Custom_S3_S0_Trigger();
+		break;
+	case SYSTEM_S0:
+		dprint("SYSTEM_S0\n");
+		// ECQEvent();
+		break;
+	default:
+		break;
 	}
 }
 //-----------------------------------------------------------------------------
@@ -70,12 +73,12 @@ void PSWReleased(void)
 //-----------------------------------------------------------------------------
 void PSWOverrided(void)
 {
-	if(IS_MASK_SET(CTRL_FLAG1, pwrbtn_press)) // power button was pressed
+	if (IS_MASK_SET(CTRL_FLAG1, pwrbtn_press)) // power button was pressed
 	{
-		if(PSW_COUNTER != 0) // pwrbutton press 4 second
+		if (PSW_COUNTER != 0) // pwrbutton press 4 second
 		{
 			PSW_COUNTER -= 1;	  // PSW_COUNTER count down
-			if(PSW_COUNTER == 0) // time out
+			if (PSW_COUNTER == 0) // time out
 			{
 				Custom_S0_S5_Trigger(SC_4SEC);
 			}
@@ -126,47 +129,48 @@ void Event_Center(BYTE Count_id)
 {
 	BYTE new_state, old_state;
 	BYTE record_flag;
-	switch(Count_id)
+	switch (Count_id)
 	{
-		case 0:
-			new_state = Read_PWR_SW();
-			break;
-		case 1:
-			// new_state = Read_BC_ACOK();
-			new_state = 0x00;
-			break;
-		case 2:
-			// new_state = Read_BATT_PRS_1();
-			new_state = 0x00;
-			break;
-		case 3:
-			new_state = 0x00;
-			break;
-		case 4:
-			new_state = 0x00;
-			break;
-		case 5:
-			new_state = 0x00;
-			break;
-		case 6:
-			new_state = 0x00;
-			break;
-		case 7:
-			new_state = 0x00;
-			break;
-		case 8:
-			new_state = 0x00;
-			break;
-		case 9:
-			new_state = 0x00;
-			break;
-		default:
-			new_state = 0x00;
-			break;
+	case 0:
+		// new_state = Read_PWR_SW();
+		new_state = 0x00;
+		break;
+	case 1:
+		// new_state = Read_BC_ACOK();
+		new_state = 0x00;
+		break;
+	case 2:
+		// new_state = Read_BATT_PRS_1();
+		new_state = 0x00;
+		break;
+	case 3:
+		new_state = 0x00;
+		break;
+	case 4:
+		new_state = 0x00;
+		break;
+	case 5:
+		new_state = 0x00;
+		break;
+	case 6:
+		new_state = 0x00;
+		break;
+	case 7:
+		new_state = 0x00;
+		break;
+	case 8:
+		new_state = 0x00;
+		break;
+	case 9:
+		new_state = 0x00;
+		break;
+	default:
+		new_state = 0x00;
+		break;
 	}
 	Tmp_XPntr = Event_Table[Count_id].REG_Evt;
 	Tmp_XPntr1 = Event_Table[Count_id].Cunter_Evt;
-	if((*Tmp_XPntr1) != 0)
+	if ((*Tmp_XPntr1) != 0)
 	{
 		DEBOUNCE_FLAG0 = 1;
 	}
@@ -176,18 +180,18 @@ void Event_Center(BYTE Count_id)
 	}
 	record_flag = Event_Table[Count_id].Flag_Evt;
 	old_state = ((*Tmp_XPntr & record_flag) != 0x00);
-	if(new_state != old_state)
+	if (new_state != old_state)
 	{
-		if((*Tmp_XPntr1) == 0x00)
+		if ((*Tmp_XPntr1) == 0x00)
 		{
 			(*Tmp_XPntr1) = Event_Table[Count_id].Time_Evt;
 		}
 		else
 		{
 			(*Tmp_XPntr1)--;
-			if((*Tmp_XPntr1) == 0)
+			if ((*Tmp_XPntr1) == 0)
 			{
-				if(new_state)
+				if (new_state)
 				{
 					(Event_Table[Count_id].press_evt)();
 					*Tmp_XPntr |= record_flag;
@@ -202,9 +206,9 @@ void Event_Center(BYTE Count_id)
 	}
 	else
 	{
-		if((*Tmp_XPntr1) != 0)
+		if ((*Tmp_XPntr1) != 0)
 		{
-			if(DEBOUNCE_FLAG0 == 0)
+			if (DEBOUNCE_FLAG0 == 0)
 				(*Tmp_XPntr1) = Event_Table[Count_id].Time_Evt;
 		}
 		(Event_Table[Count_id].nochange_evt)();

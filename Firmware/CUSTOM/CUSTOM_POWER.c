@@ -703,7 +703,7 @@ void Custom_S5S0_Sequence(void)
     if (PowerSequence_Step == ((sizeof(PowerSequence_S5S0) / sizeof(sPowerSEQ))))
     {
         Copy_Power_Sequence_Record_To_Sram(PowSeq_Record_Flag);
-}
+    }
 #endif
 }
 //----------------------------------------------------------------------------
@@ -782,7 +782,7 @@ void Custom_S4S0_Sequence(void)
     if (PowerSequence_Step == (sizeof(PowerSequence_S4S0) / sizeof(sPowerSEQ)))
     {
         Copy_Power_Sequence_Record_To_Sram(PowSeq_Record_Flag);
-}
+    }
 #endif
 }
 //----------------------------------------------------------------------------
@@ -861,7 +861,7 @@ void Custom_S3S0_Sequence(void)
     if (PowerSequence_Step == (sizeof(PowerSequence_S3S0) / sizeof(sPowerSEQ)))
     {
         Copy_Power_Sequence_Record_To_Sram(PowSeq_Record_Flag);
-}
+    }
 #endif
 }
 //-----------------------------------------------------------------------------
@@ -1148,7 +1148,7 @@ void Custom_S0S3_Sequence(void)
     if (PowerSequence_Step == (sizeof(PowerSequence_S0S3) / sizeof(sPowerSEQ)))
     {
         Copy_Power_Sequence_Record_To_Sram(PowSeq_Record_Flag);
-}
+    }
 #endif
 }
 //----------------------------------------------------------------------------
@@ -1227,7 +1227,7 @@ void Custom_S0S4_Sequence(void)
     if (PowerSequence_Step == (sizeof(PowerSequence_S0S4) / sizeof(sPowerSEQ)))
     {
         Copy_Power_Sequence_Record_To_Sram(PowSeq_Record_Flag);
-}
+    }
 #endif
 }
 //-----------------------------------------------------------------
@@ -1306,7 +1306,7 @@ void Custom_S0S5_Sequence(void)
     if (PowerSequence_Step == ((sizeof(PowerSequence_S0S5) / sizeof(sPowerSEQ))))
     {
         Copy_Power_Sequence_Record_To_Sram(PowSeq_Record_Flag);
-}
+    }
 #endif
 }
 void Custom_Reboot_Sequence(void)
@@ -1382,7 +1382,7 @@ void Custom_Reboot_Sequence(void)
     if (PowerSequence_Step == ((sizeof(PowerSequence_Reboot) / sizeof(sPowerSEQ))))
     {
         Copy_Power_Sequence_Record_To_Sram(PowSeq_Record_Flag);
-}
+    }
 #endif
 }
 //-----------------------------------------------------------------------------
@@ -1461,31 +1461,24 @@ void Sys_PowerState_Control(void)
         // Auto_PowerOn_Monitor();
         break;
     case SYSTEM_S4_S0:
-        // dprint("Custom_S4S0_Sequence\n");
         Custom_S4S0_Sequence();
         break;
     case SYSTEM_S5_S0:
-        // dprint("Custom_S5S0_Sequence\n");
         Custom_S5S0_Sequence();
         break;
     case SYSTEM_S3_S0:
-        // dprint("Custom_S3S0_Sequence\n");
         Custom_S3S0_Sequence();
         break;
     case SYSTEM_S0_S3:
-        // dprint("Custom_S0S3_Sequence\n");
         Custom_S0S3_Sequence();
         break;
     case SYSTEM_S0_S4:
-        // dprint("Custom_S0S4_Sequence\n");
         Custom_S0S4_Sequence();
         break;
     case SYSTEM_S0_S5:
-        //dprint("Custom_S0S5_Sequence\n");
         Custom_S0S5_Sequence();
         break;
     case SYSTEM_REBOOT:
-        //dprint("Custom_Reboot_Sequence\n");
         Custom_Reboot_Sequence();
         break;
     case SYSTEM_EC_WDTRST:
