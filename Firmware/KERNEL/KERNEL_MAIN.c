@@ -19,7 +19,7 @@
 \n\
 ************************************************************************************\n\
 *                    Embedded Controller  GDMEC01 Series Firmware                  *\n\
-* Copyright ©2024-2025 GigaDevice Semiconductor Inc., Ltd. All Rights Reserved. *\n\
+* Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved. *\n\
 ************************************************************************************\n\
 \n\
 "
