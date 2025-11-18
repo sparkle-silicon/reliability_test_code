@@ -1,6 +1,6 @@
 /*
  * @Author: Linyu
- * @LastEditors: daweslinyu daowes.ly@qq.com
+ * @LastEditors: daweslinyu 
  * @LastEditTime: 2025-11-15 17:10:16
  * @Description:
  *               define chip_type

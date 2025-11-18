@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2024-07-12 16:16:48
  * @Description:
  *
@@ -19,13 +19,13 @@
 #include "KERNEL_MAILBOX.H"
 #include "KERNEL_TIMER.H"
 #include "CUSTOM_POWER.H"
-/*-----------------------------------------------------------------------------
- * eSPI Module Proess Definition
- *---------------------------------------------------------------------------*/
+ /*-----------------------------------------------------------------------------
+  * eSPI Module Proess Definition
+  *---------------------------------------------------------------------------*/
 #define SUPPORT_OOB_SERVICE_MODULE TRUE
 #define DEBUG_OOB_MESSAGE FALSE
 
- /* eSPI <-> OOB <-> PCH */
+  /* eSPI <-> OOB <-> PCH */
 #define SUPPORT_OOB_PCH_TEMPERATURE TRUE
 #define PCH_TEMP_GET_OOB_SEC 5
 
