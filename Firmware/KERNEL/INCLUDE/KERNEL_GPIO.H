@@ -380,7 +380,7 @@
  /*-----------------------------------------------------------------------------
   * GPIO引脚监测输入高低定义
   *---------------------------------------------------------------------------*/
-// GPIOA组输入检测
+  // GPIOA组输入检测
 #define IS_GPIOA0(x)  ((x) ? IS_MASK_SET(GPIO0_EXT0, BIT(0)) : IS_MASK_CLEAR(GPIO0_EXT0, BIT(0)))
 #define IS_GPIOA1(x)  ((x) ? IS_MASK_SET(GPIO0_EXT0, BIT(1)) : IS_MASK_CLEAR(GPIO0_EXT0, BIT(1)))
 #define IS_GPIOA2(x)  ((x) ? IS_MASK_SET(GPIO0_EXT0, BIT(2)) : IS_MASK_CLEAR(GPIO0_EXT0, BIT(2)))
@@ -625,9 +625,9 @@
 #define Pin125(x) GPIOB4(x)
 #define Pin126(x) GPIOA13(x)
 #define Pin128(x) GPIOC14(x)
- /*-----------------------------------------------------------------------------
-  * GPIO引脚检测高低定义(按照pin的格式)
-  *---------------------------------------------------------------------------*/
+  /*-----------------------------------------------------------------------------
+   * GPIO引脚检测高低定义(按照pin的格式)
+   *---------------------------------------------------------------------------*/
 #define IS_Pin2(x)    IS_GPIOC15(x)
 #define IS_Pin3(x)    IS_GPIOB31(x)
 #define IS_Pin4(x)    IS_GPIOA14(x)
@@ -772,10 +772,10 @@
 #define GPIO_IOF_SEL    (0x3C)
 #define GPIO_DEBOUNCE_EN   (0x48)
 #define GPIO_OUTPUT_XOR    (0x40)
-/************GPIO Register define***************/
+   /************GPIO Register define***************/
 struct GPIOPinState {
-	BYTE default_state_idx;	// default state is mux_state[default_state_idx]
-	BYTE mux_state[4]; // 0 is input, 1 is output
+  BYTE default_state_idx;	// default state is mux_state[default_state_idx]
+  BYTE mux_state[4]; // 0 is input, 1 is output
 };
 extern struct GPIOPinState gpio_state_table[];
 //******************************************************************************************
@@ -891,4 +891,4 @@ extern void GPIO_Input_EN(int GPIO, int gpio_no, char sw);
 extern char GPIOAutoTest(void);
 char ReadGPIOLevel(BYTE port, BYTE pin);
 
-#endif /* _NUCLEI_GPIO_H */
+#endif
