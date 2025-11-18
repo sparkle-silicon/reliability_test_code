@@ -15,6 +15,7 @@
  */
 #include "CUSTOM_LED.H"
 #include "CUSTOM_POWER.H"
+#include "KERNEL_MEMORY.H"
 /* ----------------------------------------------------------------------------
  * FUNCTION: OEM_Write_Leds
  *

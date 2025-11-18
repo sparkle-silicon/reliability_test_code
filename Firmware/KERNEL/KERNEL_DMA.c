@@ -14,9 +14,10 @@
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
 
-#include "AE_INCLUDE.H"
 #include "KERNEL_DMA.H"
-
+#include "KERNEL_I2C.H"
+#include "KERNEL_I3C.H"
+#include "KERNEL_MEMORY.H"
 void Moudle_DMA_Enable(uint32_t Module)
 {
     

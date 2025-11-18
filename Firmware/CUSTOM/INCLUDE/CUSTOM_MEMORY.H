@@ -19,9 +19,6 @@
 #ifndef CUSTOM_MEMORY_H
 #define CUSTOM_MEMORY_H
 #include "AE_GLOBAL.H"
-#include "AE_REG.H"
-#include "AE_CONFIG.H"
-#include "KERNEL_MEMORY.H"
 
 /****************************************************************
 --------------------- MEMORY SECTION 3 --------------------------

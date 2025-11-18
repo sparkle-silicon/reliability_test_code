@@ -14,9 +14,7 @@
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
 #include "CUSTOM_PMC4.H"
-#include "CUSTOM_PMC3.H"
-#include "CUSTOM_PMC1.H"
-#include "AE_FUNC.H"
+#include "KERNEL_MEMORY.H"
 #define SUPPORTED_PMC4_0X 1
 #define SUPPORTED_PMC4_1X 1
 #define SUPPORTED_PMC4_2X 1
@@ -1458,14 +1456,14 @@ void __weak Service_PCI5(void)
     return;
 #endif
 #if LPC_WAY_OPTION_SWITCH
-    if(Is_FLAG_CLEAR(PMC4_STR, IBF1))
+    if(Is_FLAG_CLEAR(PMC4_STR, IBF4))
         return;
     Service_PCI5_Main();
 #else
     if(F_Service_PCI5 == 1)
     {
         F_Service_PCI5 = 0;
-        if(Is_FLAG_CLEAR(PMC4_STR, IBF1))
+        if(Is_FLAG_CLEAR(PMC4_STR, IBF4))
             return;
         Service_PCI5_Main();
     }

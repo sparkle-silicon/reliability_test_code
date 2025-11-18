@@ -17,10 +17,6 @@
 #ifndef KERNEL_PECI_H
 #define KERNEL_PECI_H
 #include "AE_GLOBAL.H"
-#include "AE_REG.H"  
-#include "AE_CONFIG.H"
-#include "AE_PRINTF.H"
-#include "AE_MALLOC.H"
 
 #define PECI_CLOCK  (HIGH_CHIP_CLOCK / (SYSCTL_CLKDIV_PECI+1)) 
 

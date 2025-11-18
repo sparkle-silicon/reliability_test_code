@@ -16,12 +16,6 @@
 #ifndef __CUSTOM_EVENT_H
 #define __CUSTOM_EVENT_H
 #include "AE_GLOBAL.H"
-#include "AE_REG.H"
-#include "AE_CONFIG.H"
-#include "KERNEL_MEMORY.H"
-
-extern VBYTE* Tmp_XPntr;
-extern VBYTE* Tmp_XPntr1;
 
 //---------------------------------------------------------------------------------
 //Debounce Time Setting

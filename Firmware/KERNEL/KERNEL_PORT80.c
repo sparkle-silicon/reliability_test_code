@@ -15,6 +15,7 @@
  */
 #include "KERNEL_PORT80.H"
 #include "KERNEL_TIMER.H"
+#include "KERNEL_MEMORY.H"
 #define P80_TO_BRAM_SWITCH 1
 //-----------------------------------------------------------------------------
 // Port 80 with BRAM Output, PNP config

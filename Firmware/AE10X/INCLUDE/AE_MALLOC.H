@@ -15,8 +15,6 @@
  */
 #ifndef AE_MALLOC_H
 #define AE_MALLOC_H
-#include "AE_GLOBAL.H"
-#include "AE_REG.H"
 #include "AE_CONFIG.H"
 extern void *malloc(size_t nbytes); /* get a block */
 extern void free(void *aptr);

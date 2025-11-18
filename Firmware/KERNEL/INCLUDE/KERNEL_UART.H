@@ -16,9 +16,7 @@
 #ifndef KERNEL_UART_H
 #define KERNEL_UART_H
 #include "AE_GLOBAL.H"
-#include "AE_REG.H"
-#include "AE_CONFIG.H"
-#include "KERNEL_MEMORY.H"
+#include "KERNEL_GPIO.H"
 #define UART0_CHANNEL 0x0
 #define UART1_CHANNEL 0x1
 // #define UART2_CHANNEL 0x2

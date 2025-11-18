@@ -14,6 +14,10 @@
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
 #include "CUSTOM_INIT.H"
+#include "KERNEL_MAILBOX.H"
+#include "KERNEL_TIMER.H"
+#include "KERNEL_PNP.H"
+#include "KERNEL_MEMORY.H"
  /****************************************************************************
  * SPKAE10X Init FLOW :
  * 1. DoubleBoot (Custom Configuration Double Boot Addr，Function Is Get_DoubleBoot_ADDR() In File CUSTOM_INIT.c)

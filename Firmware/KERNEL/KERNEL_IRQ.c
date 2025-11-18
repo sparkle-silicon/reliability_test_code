@@ -13,15 +13,8 @@
  * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
-#include "KERNEL_IRQ.H"
-#include "KERNEL_INTC.H"
-#include "AE_DEBUGGER.H"
-#include "AE_PRINTF.H"
-#include "AE_COMMAND.H"
-#include "KERNEL_SPIF.H"
-#include "CUSTOM_POWER.H"
-#include "KERNEL_MEMORY.H"
-#include "KERNEL_RTC.H"
+#include "AE_INCLUDE.H"
+#include "KERNEL_INCLUDE.H"
 
 #if ENABLE_DEBUGGER_SUPPORT
 extern char Uart_buffer[UART_BUFFER_SIZE]; // An array of data transferred by the debugger

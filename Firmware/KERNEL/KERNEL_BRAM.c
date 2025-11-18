@@ -14,7 +14,7 @@
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
 #include "KERNEL_BRAM.H"
-#include "KERNEL_TIMER.H"
+#include "KERNEL_MEMORY.H"
 /**
  * @brief 此函数用于配置BRAM逻辑设备，并初始化其相关参数。
  *

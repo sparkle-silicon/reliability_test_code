@@ -16,8 +16,7 @@
 #ifndef KERNEL_WATCHDOG_H
 #define KERNEL_WATCHDOG_H
 #include "AE_GLOBAL.H"
-#include "AE_REG.H"
-#include "AE_CONFIG.H"
+
 #define WDT_ISR  0x01
 #define Wdt_Int_Status ((WDT_STAT & (0x1 << 0)) != 0)
 #define Wdt_Int_Status ((WDT_STAT & (0x1 << 0)) != 0)

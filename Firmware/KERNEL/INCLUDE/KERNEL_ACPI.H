@@ -16,15 +16,7 @@
 #ifndef KERNEL_ACPI_H
 #define KERNEL_ACPI_H
 #include "AE_GLOBAL.H"
-#include "AE_REG.H"
-#include "AE_CONFIG.H"
-#include "KERNEL_MEMORY.H"
 #include "CUSTOM_PMC1.H"
-#include "CUSTOM_PMC2.H"
-#include "CUSTOM_PMC3.H"
-#include "CUSTOM_PMC4.H"
-#include "CUSTOM_PMC5.H"
-#include "CUSTOM_GPIO.H"
 
 #define T_Burst_Loop 250
 

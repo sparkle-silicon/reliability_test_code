@@ -19,7 +19,6 @@
 #include "AE_GLOBAL.H"
 #include "AE_REG.H"
 #include "AE_CONFIG.H"
-#include "KERNEL_MEMORY.H"
 
 #include "AE_ANX7447_UCSI.H"
 #include "AE_ANX7447_LIB.H"

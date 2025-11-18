@@ -14,8 +14,7 @@
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
 #include "CUSTOM_TEMPERATURE.H"
-#include "AE_FUNC.H"
-
+#include "KERNEL_MEMORY.H"
 char get_temperature(WORD i2c_channel)
 {
     if (i2c_channel == 0)

@@ -16,8 +16,6 @@
 #ifndef KERNEL_SHAREMEMORY_H
 #define KERNEL_SHAREMEMORY_H
 #include "AE_GLOBAL.H"
-#include "AE_REG.H"
-#include "AE_CONFIG.H"
 #include "KERNEL_PNP.H"
 #define SMF_SR_IR_HOST  HEX01
 #define SMF_SR_IR_EC    HEX02
@@ -47,7 +45,6 @@
 #define SMS_WxAAS_16SIZE    0x00
 #define SMFSR_EC_IE     HEX08
 #define SMFSR_EC_IR     HEX02
-#define PNPCNST_SETEN   BIT(27)
 
 extern void SMS_Init(VBYTE windows, VBYTE baseaddr, VBYTE aas);
 extern void SMF_Init(void);

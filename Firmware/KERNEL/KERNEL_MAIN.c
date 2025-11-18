@@ -13,8 +13,10 @@
  * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
+#include "AE_INCLUDE.H"
+#include "KERNEL_INCLUDE.H"
 #include "KERNEL_MAIN.H"
-#include "KERNEL_MAILBOX.H"
+#include "CUSTOM_INCLUDE.H"
 #define printf_instructions_msg " \
 \n\
 ************************************************************************************\n\

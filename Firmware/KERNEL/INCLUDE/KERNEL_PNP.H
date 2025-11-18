@@ -16,9 +16,6 @@
 #ifndef KERNEL_PNP_H
 #define KERNEL_PNP_H
 #include "AE_GLOBAL.H"
-#include "AE_REG.H"
-#include "AE_CONFIG.H"
-#include "KERNEL_MEMORY.H"
 
 #define PNP_Timeout 5000
  /*--------------------PNP bit definition-----------------*/
@@ -78,6 +75,8 @@
 #define HOST_CAN2_EN BIT(28)
 #define HOST_CAN3_EN BIT(29)
 #define HOST_CANx_EN (HOST_CAN0_EN | HOST_CAN1_EN | HOST_CAN2_EN | HOST_CAN3_EN)
+
+#define PNPCNST_SETEN   BIT(27)
 
 extern void Config_PNP_Access_Request(void);
 extern void Config_PNP_Access_Release(void);

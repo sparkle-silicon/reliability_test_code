@@ -16,9 +16,6 @@
 #ifndef KERNEL_TIMER_H
 #define KERNEL_TIMER_H
 #include "AE_GLOBAL.H"
-#include "AE_REG.H"
-#include "AE_CONFIG.H"
-#include "KERNEL_MEMORY.H"
 
 #define TIMER0 0x0
 #define TIMER1 0x1

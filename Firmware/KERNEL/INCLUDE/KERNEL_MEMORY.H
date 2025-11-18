@@ -19,9 +19,12 @@
 #ifndef KERNEL_MEMORY_H
 #define KERNEL_MEMORY_H
 #include "AE_GLOBAL.H"
-#include "AE_REG.H"
-#include "AE_CONFIG.H"
 #include "CUSTOM_MEMORY.H"
+
+extern VBYTE* Tmp_XPntr;
+extern VBYTE* Tmp_XPntr1;
+extern VBYTE* KBDataPending;
+extern VBYTE* MSDataPending;
 
 // DRAM BASE ADDRESS DEFINITION
 #define MEMORY_BASE0_ADDR DRAM_BASE_ADDR

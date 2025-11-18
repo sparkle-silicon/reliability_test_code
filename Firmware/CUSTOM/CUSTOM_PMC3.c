@@ -14,7 +14,7 @@
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
 #include "CUSTOM_PMC3.H"
-#include "AE_FUNC.H"
+#include "KERNEL_MEMORY.H"
 #define SUPPORTED_PMC3_0X 1
 #define SUPPORTED_PMC3_1X 1
 #define SUPPORTED_PMC3_2X 1

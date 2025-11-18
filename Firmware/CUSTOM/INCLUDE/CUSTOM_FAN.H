@@ -16,9 +16,6 @@
 #ifndef __CUSTOM_FAN_H
 #define __CUSTOM_FAN_H
 #include "AE_GLOBAL.H"
-#include "AE_REG.H"
-#include "AE_CONFIG.H"
-#include "KERNEL_MEMORY.H"
 #include "KERNEL_PWM.H"
 
  /*风扇扫描level等级结构*/

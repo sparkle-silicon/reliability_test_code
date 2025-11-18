@@ -16,11 +16,6 @@
 #ifndef KERNEL_SOC_FUNC_H
 #define KERNEL_SOC_FUNC_H
 #include "AE_GLOBAL.H"
-#include "AE_REG.H"
-#include "AE_CONFIG.H"
-#include "AE_FUNC.H"
-#include "KERNEL_INCLUDE.H"
-#include "CUSTOM_INCLUDE.H"
 
  // Module init function
 extern void gpio_init(void);

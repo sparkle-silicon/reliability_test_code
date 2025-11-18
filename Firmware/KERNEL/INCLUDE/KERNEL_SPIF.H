@@ -16,10 +16,11 @@
 #ifndef __KERNEL_SPIFE_H_
 #define __KERNEL_SPIFE_H_
 #include "AE_GLOBAL.H"
-#include "AE_REG.H"
-#include "AE_CONFIG.H"
-#include "AE_MALLOC.H"
-#include "KERNEL_MEMORY.H"
+
+extern FUNCT_PTR_V_V Smf_Ptr;
+extern FUNCT_PTR_V_V IVT_Ptr;
+extern FUNCT_PTR_V_D_BP_L Spif_Ptr;
+extern FUNCT_PTR_V_D_BP ECU_Ptr;
 
  /*FLASH COMMANDS*/
 #define FLASH_ID_CMD 0x90

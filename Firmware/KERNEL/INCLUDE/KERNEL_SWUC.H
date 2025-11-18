@@ -16,8 +16,6 @@
 #ifndef __KERNEL_SWUC_H_
 #define __KERNEL_SWUC_H_
 #include "AE_GLOBAL.H"
-#include "AE_REG.H"
-#include "AE_CONFIG.H"
 #include "KERNEL_PNP.H"
 /**事件中断宏**/
 #define RI1_EC_IRQ   HEX01

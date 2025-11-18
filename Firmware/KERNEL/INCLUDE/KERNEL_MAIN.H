@@ -16,10 +16,6 @@
 #ifndef KERNEL_MAIN_H
 #define KERNEL_MAIN_H
 
-#include "AE_INCLUDE.H"
-#include "KERNEL_INCLUDE.H"
-#include "CUSTOM_INCLUDE.H"
-
  // #define HIGH_LEVEL_SERVICE_NUM_DIV  5//3:>90% 4:>95%,9:>98%
 #define HIGH_LEVEL_SERVICE_NUM (3)/*((sizeof(service_table) / sizeof(FUNCT_PTR_V_V)) /HIGH_LEVEL_SERVICE_NUM_DIV)*/
 // #define LOW_LEVEL_SERVICE_NUM_MUL  3//11/6:>90% 7/5:>95%,17/15:>98%

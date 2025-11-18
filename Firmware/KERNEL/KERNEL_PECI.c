@@ -14,7 +14,7 @@
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
 #include "KERNEL_PECI.H"
-
+#include "KERNEL_MEMORY.H"
 #if PECI_Softwave_AWFCS
 u8 PECI_CRC8;
 #endif

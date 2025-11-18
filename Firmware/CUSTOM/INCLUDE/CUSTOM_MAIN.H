@@ -16,10 +16,6 @@
 #ifndef CUSTOM_MAIN_H
 #define CUSTOM_MAIN_H
 #include "AE_GLOBAL.H"
-#include "AE_REG.H"
-#include "AE_CONFIG.H"
-#include "KERNEL_MEMORY.H"
-#include "KERNEL_HOST.H"
 
  /*-----------------------------------------------------------------------------
   * External Calling Process

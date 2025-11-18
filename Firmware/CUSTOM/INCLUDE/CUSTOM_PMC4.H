@@ -16,12 +16,12 @@
 #ifndef CUSTOM_PMC4_H
 #define CUSTOM_PMC4_H
 #include "AE_GLOBAL.H"
-#include "AE_REG.H"
-#include "AE_CONFIG.H"
 
  /*--------------------PMC4 Register Address definition-----------------*/
 #define OBF4            BIT(0x00)
 #define IBF4            BIT(0x01)
+#define DBG_En4         BIT(0x02)
+#define C_D4            BIT(0x03)
 /*--------------------------------------------------------------------------*/
 extern void Service_PCI5(void);
 #endif

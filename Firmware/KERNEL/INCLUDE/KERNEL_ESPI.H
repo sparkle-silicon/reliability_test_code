@@ -16,10 +16,6 @@
 #ifndef KERNEL_ESPI_H
 #define KERNEL_ESPI_H
 #include "AE_GLOBAL.H" //全局变量
-#include "AE_REG.H"    //寄存器
-#include "AE_CONFIG.H"
-#include "AE_PRINTF.H"
-#include "AE_MALLOC.H"
 
 #define F_CLR_PLTRST_STEP 0
 #define F_PLTRST_HI_LEVEL 1

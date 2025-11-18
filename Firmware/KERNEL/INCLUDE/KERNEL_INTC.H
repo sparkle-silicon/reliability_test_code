@@ -16,9 +16,6 @@
 #ifndef _KERNEL_INTC_H
 #define _KERNEL_INTC_H
 #include "AE_GLOBAL.H"
-#include "AE_REG.H"
-#include "AE_CONFIG.H"
-#include "KERNEL_MEMORY.H"
 
  /*----------------------------------LINE--------------------------------*/
 #define INTC_ICTL_INTEN_L 0x00       // IRQ interrupt source enable register (low)

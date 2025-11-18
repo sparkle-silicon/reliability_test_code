@@ -15,6 +15,7 @@
  */
 #include "CUSTOM_SCANTABS.H"
 #include "CUSTOM_POWER.H"
+#include "KERNEL_MEMORY.H"
  // KBD_SN1211 Column ROW demo
  //     /* C\R    R0    R1    R2    R3    R4    R5    R6    R7 */
  //             /***********************************************/

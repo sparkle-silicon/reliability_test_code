@@ -13,9 +13,11 @@
  * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
-#include "KERNEL_TIMER.H"
 #include "AE_FUNC.H"
-#include "KERNEL_ACPI.H" //电源管理
+#include "KERNEL_TIMER.H"
+#include "KERNEL_ACPI.H"
+#include "KERNEL_WATCHDOG.H"
+#include "KERNEL_MEMORY.H"
  /**
   * @brief reload timer count
   *

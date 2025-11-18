@@ -16,10 +16,7 @@
 #ifndef __KERNEL_I2C_H
 #define __KERNEL_I2C_H
 #include "AE_GLOBAL.H"
-#include "AE_REG.H"
-#include "AE_CONFIG.H"
-#include "AE_DEBUGGER.H"
-
+#include "KERNEL_GPIO.H"
 #define I2C_STANDARD 0
 #define I2C_FAST 1
 #define I2C_HIGH 2

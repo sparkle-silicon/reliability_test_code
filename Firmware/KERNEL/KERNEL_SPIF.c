@@ -16,6 +16,7 @@
 #include "KERNEL_SPIF.H"
 #include "KERNEL_TIMER.H"
 #include "KERNEL_ACPI.H"
+#include "KERNEL_MEMORY.H"
 #pragma pack(4)
 FUNCT_PTR_V_V Smf_Ptr;
 FUNCT_PTR_V_V IVT_Ptr;

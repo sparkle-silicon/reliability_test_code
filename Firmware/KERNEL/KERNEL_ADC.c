@@ -14,7 +14,7 @@
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
 #include "KERNEL_ADC.H"
-
+#include "KERNEL_MEMORY.H"
  /**
   * @brief ADC触发模式选择
   *

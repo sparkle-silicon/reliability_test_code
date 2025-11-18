@@ -16,6 +16,8 @@
 #include "KERNEL_PNP.H"
 #include "KERNEL_TIMER.H"
 #include "KERNEL_SOC_FUNC.H"
+#include "KERNEL_SHAREMEMORY.H"
+#include "KERNEL_MEMORY.H"
  //-----------------------------------------------------------------------------
  // PNP config send requeset
  //-----------------------------------------------------------------------------

@@ -14,6 +14,8 @@
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
 #include "KERNEL_SOC_FUNC.H"
+#include "KERNEL_INCLUDE.H"
+#include "CUSTOM_INCLUDE.H"
 
 void gpio_init(void)
 {

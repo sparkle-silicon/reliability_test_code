@@ -16,9 +16,6 @@
 #ifndef CUSTOM_LED_H
 #define CUSTOM_LED_H
 #include "AE_GLOBAL.H"
-#include "AE_REG.H"
-#include "AE_CONFIG.H"
-#include "KERNEL_MEMORY.H"
 #include "KERNEL_PWM.H"
 
  /*-----------------------------------------------------------------------------

@@ -15,6 +15,7 @@
  */
 #include "KERNEL_SHAREMEMORY.H"
 #include "KERNEL_TIMER.H"
+#include "KERNEL_MEMORY.H"
 void SMS_Init(VBYTE windows, VBYTE baseaddr, VBYTE aas)
 {
 #if !(SRAM_CLOCK_EN)

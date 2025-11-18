@@ -16,14 +16,6 @@
 #ifndef AE_INIT_H
 #define AE_INIT_H
 #include "AE_GLOBAL.H"
-#include "AE_REG.H"
-#include "AE_CONFIG.H"
-#if TEST
-#include "TEST_SOC_FUNC.H"
-#else
-#include "KERNEL_SOC_FUNC.H"
-#endif
-#include "CUSTOM_INIT.H"
 
 #define AE_UPDATE_NO_INIT_FUNCTION {if(SYSCTL_CFG & BIT3) {\
 set_csr(mstatus, MSTATUS_MIE); return; \

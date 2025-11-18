@@ -16,12 +16,9 @@
 #ifndef CUSTOM_INIT_H
 #define CUSTOM_INIT_H
 #include "AE_GLOBAL.H"
-#include "AE_REG.H"
-#include "AE_CONFIG.H"
 #include "AE_INIT.H"
-#include "KERNEL_MEMORY.H"
-#include "CUSTOM_FAN.H"
 #include "AE_FLASHINFO.H"
+#include "CUSTOM_FAN.H"
 
 #define DoubleBoot_DEF_ADDR 0xA0084
 

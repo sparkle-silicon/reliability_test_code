@@ -17,9 +17,8 @@
 #ifndef __KERNEL_I3C_H
 #define __KERNEL_I3C_H
 #include "AE_GLOBAL.H"
-#include "AE_REG.H"
-#include "AE_CONFIG.H"
-#include "AE_DEBUGGER.H"
+#include "KERNEL_GPIO.H"
+
 #ifndef I3C_CLOCK_DIVISION
 #define I3C_CLOCK  (HIGH_CHIP_CLOCK)
 #else
@@ -356,7 +355,7 @@
 #define DMATB_TX_DISABLE HEX00
 #define DMATB_TX_ENABLE HEX01
 
-#define I3C_TIMEOUT I2CTimeOut
+#define I3C_TIMEOUT (HIGH_CHIP_CLOCK / (SYSCTL_CLKDIV_SMB+1))	//TimeOut set
 
 //I3C调试打印
 #if I3C_DEBUG 

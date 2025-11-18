@@ -13,8 +13,9 @@
  * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
  * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
-#include <AE_LIBC.H>
-#include <AE_INIT.H>
+#include "AE_LIBC.H"
+#include "AE_INIT.H"
+#include "KERNEL_MEMORY.H"
 #if defined(USER_AE10X_LIBC_A)
 void __assert_func(const char *file,
                    int line,

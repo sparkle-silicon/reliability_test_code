@@ -16,7 +16,6 @@
 #ifndef AE_FLASHINFO_H
 #define AE_FLASHINFO_H
 #include "AE_GLOBAL.H"
-// #include "AE_INCLUDE.H"
 #if PRINTF_UART_SWITCH == 0
 #define UART_BAUD UART0_BAUD
 #elif PRINTF_UART_SWITCH == 1

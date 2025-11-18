@@ -13,7 +13,9 @@
  * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
-#include <KERNEL_RTC.H>
+#include "KERNEL_RTC.H"
+#include "KERNEL_SLEEP_RESET.H"
+#include "KERNEL_MEMORY.H"
 u32 Get_RTC_CountVal(void)
 {
     u32 rtc_ccvr = (RTC_CCVR0 << 0) | \

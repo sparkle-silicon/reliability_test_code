@@ -14,6 +14,7 @@
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
 #include "KERNEL_I2C.H"
+#include "KERNEL_MEMORY.H"
  //*****************************************************************************
  //  I2C channel number and base address conversion function
  //

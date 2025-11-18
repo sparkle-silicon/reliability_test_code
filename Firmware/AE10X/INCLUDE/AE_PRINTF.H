@@ -18,7 +18,6 @@
 #include "AE_GLOBAL.H"
 #include "AE_REG.H"
 #include "AE_CONFIG.H"
-#include "KERNEL_MEMORY.H"
 #include "KERNEL_UART.H"
 #include "AE_SOFT_FP.H"
 

@@ -13,7 +13,9 @@
  * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
-#include <AE_FUNC.H>
+#include "AE_FUNC.H"
+#include "KERNEL_IRQ.H"
+#include "KERNEL_MEMORY.H"
  // Configure PMP to make all the address space accesable and executable
 void pmp_open_all_space()
 {

@@ -19,9 +19,10 @@
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
 #include "AE_DEBUGGER.H"
+#include "KERNEL_I2C.H"
 #include "KERNEL_KBS.H"
-#include "CUSTOM_POWER.H"
 #include "KERNEL_GPIO.H"
+#include "CUSTOM_POWER.H"
 #if ENABLE_DEBUGGER_SUPPORT
 //*****************************************************************************
 //

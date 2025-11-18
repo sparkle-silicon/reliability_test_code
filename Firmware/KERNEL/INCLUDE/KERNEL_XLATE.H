@@ -15,12 +15,10 @@
  */
 #ifndef KERNEL_XLATE_H
 #define KERNEL_XLATE_H
-#include <AE_GLOBAL.H>
-#include <AE_REG.H>
-#include <AE_CONFIG.H>
-#include <KERNEL_KBS.H>
-#include <CUSTOM_SCANTABS.H>
-#include <KERNEL_PORT6064.H>
+#include "AE_GLOBAL.H"
+#include "KERNEL_KBS.H"
+#include "CUSTOM_SCANTABS.H"
+#include "KERNEL_PORT6064.H"
 
 #define NUM_LOCK 	(BIT0)
 #define LShift    	(BIT1)

@@ -13,8 +13,9 @@
  * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
-#include "KERNEL_XLATE.H"
 #include "AE_PRINTF.H"
+#include "KERNEL_XLATE.H"
+#include "KERNEL_MEMORY.H"
 #include "CUSTOM_POWER.H"
 BYTE press_times = 0;
 /* BREAK_EVENT key string for Shift_Cursor and Numlock_Corsor. */

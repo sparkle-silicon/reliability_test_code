@@ -14,8 +14,10 @@
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
 #include "KERNEL_SLEEP_RESET.H"
-#include "CUSTOM_POWER.H"
 #include "KERNEL_TIMER.H"
+#include "KERNEL_MAILBOX.H"
+#include "KERNEL_SPIF.H"
+#include "KERNEL_MEMORY.H"
 int8_t KBS_KSDC1R_CONTEXT = 0;
 int8_t KBS_KSDC2R_CONTEXT = 0;
 int8_t KBS_KSDC3R_CONTEXT = 0;

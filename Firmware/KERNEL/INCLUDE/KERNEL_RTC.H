@@ -17,8 +17,7 @@
 #define _KERNEL_RTC_H
 
 #include "AE_GLOBAL.H" //全局变量
-#include "AE_REG.H"    //寄存器
-#include "AE_CONFIG.H"
+
 
  // //如果开了预分频计数器，则会预分频跑到
 #define RTC_CCR_IEN BIT0//中断使能

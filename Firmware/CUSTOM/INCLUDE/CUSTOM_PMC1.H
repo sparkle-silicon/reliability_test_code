@@ -16,12 +16,8 @@
 #ifndef CUSTOM_PMC1_H
 #define CUSTOM_PMC1_H
 #include "AE_GLOBAL.H"
-#include "AE_REG.H"
-#include "AE_CONFIG.H"
-#include "KERNEL_MEMORY.H"
 #include "KERNEL_ACPI.H"
 #include "KERNEL_PORT6064.H"
-#include "KERNEL_MAIN.H"
 
 #define OBF1 BIT(0x00)
 #define IBF1 BIT(0x01)

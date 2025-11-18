@@ -16,8 +16,6 @@
 #ifndef AE_COMMAND_H
 #define AE_COMMAND_H
 #include "AE_GLOBAL.H"
-#include "AE_REG.H"
-#include "AE_CONFIG.H"
 #define CMD_BUFF_MAX 255
 extern char CMD_UART_BUFF[CMD_BUFF_MAX + 1];
 #ifndef NULL

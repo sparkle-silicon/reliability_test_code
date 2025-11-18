@@ -16,9 +16,6 @@
 #ifndef CUSTOM_POWER_H
 #define CUSTOM_POWER_H
 #include "AE_GLOBAL.H"
-#include "AE_REG.H"
-#include "AE_CONFIG.H"
-#include "KERNEL_PORT6064.H"
 #include "KERNEL_PNP.H"
 #include "KERNEL_GPIO.H"
  //-----------------------------------------------------------------------------

@@ -15,14 +15,7 @@
  */
 #ifndef __AE_UPDATA_H_
 #define __AE_UPDATA_H_
-#include "AE_GLOBAL.H"
-#include "AE_REG.H"
 #include "AE_CONFIG.H"
-#include "KERNEL_MEMORY.H"
-#include "KERNEL_SHAREMEMORY.H"
-#include "KERNEL_UART.H"
-#include "KERNEL_GPIO.H"
-#include "KERNEL_SPIF.H"
 extern char uart_crtpram_updatebuffer[16];
 extern char update_extflash_cmd[16];
 extern int uart_crypram_updateindex;

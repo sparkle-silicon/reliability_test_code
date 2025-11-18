@@ -15,7 +15,12 @@
  */
 #include "KERNEL_PS2.H"
 #include "KERNEL_SOC_FUNC.H"
-#include "AE_DEBUGGER.H"
+#include "KERNEL_TIMER.H"
+#include "KERNEL_KBS.H"
+#include "KERNEL_PORT6064.H"
+#include "KERNEL_HOST.H"
+#include "KERNEL_IRQ.H"
+#include "KERNEL_MEMORY.H"
  //----------------------------------------------------------------------------
  // FUNCTION: PS2_PortN_Read_Status
  //

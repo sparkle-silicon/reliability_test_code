@@ -14,7 +14,10 @@
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
 #include "AE_INIT.H"
-
+#include "CUSTOM_INIT.H"
+#include "KERNEL_SOC_FUNC.H"
+#include "KERNEL_IRQ.H"
+#include "KERNEL_MEMORY.H"
  /*
   * @brief 双启动流程
   */

@@ -18,16 +18,7 @@
  */
 #ifndef _AE_ANX7447_UCSI_H_
 #define _AE_ANX7447_UCSI_H_
-
 #include "AE_GLOBAL.H"
-#include "AE_REG.H"
-#include "AE_CONFIG.H"
-#include "KERNEL_MEMORY.H"
-
-#include "KERNEL_INCLUDE.H"
-#include "CUSTOM_INCLUDE.H"
-#include "CUSTOM_ANX7447_PORT.H"
-
 #ifndef __func__
 #define __func__    __FILE__
 #endif

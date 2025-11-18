@@ -16,16 +16,11 @@
 #ifndef CUSTOM_PMC2_H
 #define CUSTOM_PMC2_H
 #include "AE_GLOBAL.H"
-#include "AE_REG.H"
-#include "AE_CONFIG.H"
-#include "KERNEL_MEMORY.H"
-#include "KERNEL_SPIF.H"
-#include "AE_DEBUGGER.H"
 
  /*--------------------PMC2 Register Address definition-----------------*/
 #define OBF2            BIT(0x00)
 #define IBF2            BIT(0x01)
-#define DBG_En          BIT(0x02)
+#define DBG_En2          BIT(0x02)
 #define C_D2            BIT(0x03)
 /*--------------------------------------------------------------------------*/
 

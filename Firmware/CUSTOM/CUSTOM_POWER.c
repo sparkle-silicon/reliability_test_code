@@ -17,6 +17,10 @@
 #include "CUSTOM_GPIO.H"
 #include "KERNEL_PWM.H"
 #include "KERNEL_PS2.H"
+#include "KERNEL_KBS.H"
+#include "KERNEL_TIMER.H"
+#include "KERNEL_ACPI.H"
+#include "KERNEL_MEMORY.H"
  /***************Power Sequence Debugger Information Record ******************/
 sPowSeq_Pin_Record PowSeq_Record[40];
 /*******************************************************/

@@ -16,7 +16,6 @@
 #ifndef __KERNEL_CEC_H_
 #define __KERNEL_CEC_H_
 #include "AE_GLOBAL.H"
-#include "AE_REG.H"
 
 #define CEC0_CHANNEL 0
 #define CEC1_CHANNEL 1

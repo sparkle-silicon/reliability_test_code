@@ -13,14 +13,8 @@
  * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
-#include "KERNEL_INTC.H"
 #include "AE_INCLUDE.H"
-#include "KERNEL_MAIN.H"
-#include "KERNEL_I2C.H"
-#include "KERNEL_CEC.H"
-#include "AE_DEBUGGER.H"
-#include "AE_COMMAND.H"
-#include "CUSTOM_POWER.H"
+#include "KERNEL_INCLUDE.H"
 extern unsigned char iicFeedback, iic_flag, iic_int_flag;
 #if ENABLE_DEBUGGER_SUPPORT
 extern char Uart_buffer[UART_BUFFER_SIZE]; // An array of data transferred by the debugger

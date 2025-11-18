@@ -16,12 +16,9 @@
 #ifndef CUSTOM_BATTERY_H
 #define CUSTOM_BATTERY_H
 #include "AE_GLOBAL.H"
-#include "AE_REG.H"
-#include "AE_CONFIG.H"
-#include "KERNEL_MEMORY.H"
 #include "KERNEL_ACPI.H"
 #include "KERNEL_I2C.H"
-#include "KERNEL_TIMER.H"
+#include "CUSTOM_MEMORY.H"
  /*-----------------------------------------------------------------------------
   * Parameter Definition
   *---------------------------------------------------------------------------*/

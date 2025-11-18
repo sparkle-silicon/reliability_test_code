@@ -15,6 +15,7 @@
  */
 #include "KERNEL_SPI.H"
 #include "KERNEL_TIMER.H"
+#include "KERNEL_MEMORY.H"
  /*------------------------------SPIM Interface Code-----------------------------*/
 /**
  * @brief SPIM初始化函数

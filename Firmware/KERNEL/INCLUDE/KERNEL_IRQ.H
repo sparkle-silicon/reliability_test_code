@@ -16,10 +16,6 @@
 #ifndef KERNEL_IRQ_H_
 #define KERNEL_IRQ_H_
 #include "AE_GLOBAL.H"
-#include "AE_REG.H"
-#include "AE_CONFIG.H"
-#include "KERNEL_INCLUDE.H"
-#include "AE_DEBUGGER.H"
 
 #define IRQC_INT_DEVICE_CPUS 0
 #define IRQC_INT_DEVICE_CPUT 1

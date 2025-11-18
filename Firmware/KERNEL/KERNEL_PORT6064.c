@@ -13,13 +13,15 @@
  * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
-#include "KERNEL_PORT6064.H"
-#include "AE_FUNC.H"
-#include "KERNEL_TIMER.H"
-#include "KERNEL_INTC.H"
-#include "KERNEL_KBS.H"
 #include "AE_DEBUGGER.H"
+#include "KERNEL_PORT6064.H"
+#include "KERNEL_TIMER.H"
+#include "KERNEL_KBS.H"
+#include "KERNEL_HOST.H"
+#include "KERNEL_PS2.H"
 #include "CUSTOM_LED.H"
+#include "CUSTOM_KBC6064.H"
+#include "KERNEL_MEMORY.H"
  //****************************************************************************
  //static function  declaration
  //****************************************************************************

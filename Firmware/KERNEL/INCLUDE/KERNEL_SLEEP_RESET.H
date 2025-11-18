@@ -16,9 +16,7 @@
 #ifndef KERNEL_SOFT_RESET_H
 #define KERNEL_SOFT_RESET_H
 #include "AE_GLOBAL.H"
-#include "AE_REG.H"
-#include "AE_CONFIG.H"
-#include <KERNEL_RTC.H>
+#include "KERNEL_RTC.H"
 
 #define SUPPORT_DEEPSLEEP
 #define SUPPORT_GPIO_WAKEUP 1     // GPIO中断唤醒

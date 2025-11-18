@@ -16,8 +16,7 @@
 #ifndef __KERNEL_PWM_H
 #define __KERNEL_PWM_H
 #include "AE_GLOBAL.H"
-#include "AE_REG.H"
-#include "AE_CONFIG.H"
+#include "KERNEL_GPIO.H"
 //*****************************************************************************
 // define config
 //*****************************************************************************

@@ -15,6 +15,8 @@
  */
 #include "AE_INCLUDE.H"
 #include "KERNEL_UART.H"
+#include "KERNEL_GPIO.H"
+#include "KERNEL_MEMORY.H"
 int serial_base(BYTE uart_num)
 {
     uart_num &= 0b111;//保护机制

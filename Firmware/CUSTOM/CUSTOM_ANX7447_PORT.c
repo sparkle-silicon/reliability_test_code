@@ -16,15 +16,10 @@
  * Portions of this firmware library utilize the ANX7447 driver, which is copyrighted by Analogix Semiconductor, Inc.
  * 本固件库的部分代码使用了 ANX7447 驱动程序，其版权归 Analogix Semiconductor, Inc. 所有。
  */
-#include "AE_GLOBAL.H"
-#include "AE_REG.H"
-#include "AE_CONFIG.H"
-#include "KERNEL_MEMORY.H"
-
+#include "CUSTOM_ANX7447_PORT.H"
 #include "AE_ANX7447_UCSI.H"
 #include "AE_ANX7447_LIB.H"
-#include "CUSTOM_ANX7447_PORT.H"
-
+#include "KERNEL_MEMORY.H"
 #if SUPPORT_ANX7447
 
 const u8 Liberty_i2c_address[PD_MAX_INSTANCE][4] = {

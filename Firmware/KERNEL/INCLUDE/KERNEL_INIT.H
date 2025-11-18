@@ -16,9 +16,7 @@
 #ifndef KERNEL_INIT_H
 #define KERNEL_INIT_H
 #include "AE_GLOBAL.H"
-#include "AE_REG.H"
-#include "AE_CONFIG.H"
-#include "KERNEL_MEMORY.H"
+
 /*-----------------------------------------------------------------------------
  * Data Parameter definition
  *---------------------------------------------------------------------------*/

@@ -16,8 +16,7 @@
 #ifndef __KERNEL_ADC_H
 #define __KERNEL_ADC_H
 #include "AE_GLOBAL.H"
-#include "AE_REG.H"
-#include "AE_CONFIG.H"
+#include "KERNEL_GPIO.H"
 
 #define ADC_CHANNEL0 0
 #define ADC_CHANNEL1 1

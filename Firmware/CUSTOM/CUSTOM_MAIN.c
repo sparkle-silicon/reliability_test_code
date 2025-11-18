@@ -13,21 +13,9 @@
  * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
-#include "CUSTOM_MAIN.H"
-#include "CUSTOM_EVENT.H"
-#include "CUSTOM_TEMPERATURE.H"
-#include "CUSTOM_BATTERY.H"
-#include "CUSTOM_POWER.H"
-#include "CUSTOM_PMC1.H"
-#include "CUSTOM_LED.H"
-#include "CUSTOM_FAN.H"
-#include "CUSTOM_ANX7447_PORT.H"
-#include "AE_UPDATE.H"
-#include "KERNEL_SLEEP_RESET.H"
+#include "AE_INCLUDE.H"
 #include "KERNEL_INCLUDE.H"
-#include "KERNEL_I3C.H"
-#include "CUSTOM_PECI.H"
-
+#include "CUSTOM_INCLUDE.H"
 u32 RunTimeStamp = 0;
 
 //-----------------------------------------------------------------------------

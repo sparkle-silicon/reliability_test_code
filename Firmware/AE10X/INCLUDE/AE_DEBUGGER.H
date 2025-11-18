@@ -16,10 +16,7 @@
 #ifndef AE_DEBUGGER_H
 #define AE_DEBUGGER_H
 #include "AE_GLOBAL.H"
-#include "AE_REG.H"
-#include "AE_CONFIG.H"
-#include "AE_UPDATE.H"
-#include "KERNEL_INCLUDE.H"
+
 #define PMC_KBC_SendCnt 256
 //  The Debugger Function Uart Entrance
 #define READ_REQUEST 0x55			   //		0x55--read request
@@ -135,5 +132,5 @@ extern void DEBUGGER_Int(void);
 
 char Debugger_Handshake(BYTE data);
 #endif
-extern WORD Intr_num[];
+
 #endif

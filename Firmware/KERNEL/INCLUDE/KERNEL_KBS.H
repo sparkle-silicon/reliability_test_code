@@ -15,14 +15,8 @@
  */
 #ifndef KERNEL_KBS_H
 #define KERNEL_KBS_H
-#include <AE_GLOBAL.H>
-#include <AE_REG.H>
-#include <AE_CONFIG.H>
-#include <AE_PRINTF.H>
-#include <AE_FUNC.H>
-#include <KERNEL_XLATE.H>
-#include <KERNEL_MEMORY.H>
-#include <KERNEL_GPIO.H>
+#include "AE_GLOBAL.H"
+#include "KERNEL_GPIO.H"
 
 #define KBD_Int_Enable	(KBS_KSDC1R |= (0x1<<5))
 #define KBD_Int_Disable	(KBS_KSDC1R &= ~(0x1<<5))

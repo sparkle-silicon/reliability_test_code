@@ -15,17 +15,8 @@
  */
  //test file
 #include "TEST.H"
-#include "KERNEL_PNP.H"
-#include "KERNEL_SWUC.H"
-#include "KERNEL_TIMER.H"
-#include "KERNEL_GPIO.H"
-#include "CUSTOM_TEMPERATURE.H"
-#include "AE_FUNC.H"
-#include "KERNEL_TIMER.H"
-#include "KERNEL_GPIO.H"
-#include "CUSTOM_TEMPERATURE.H"
-#include "CUSTOM_POWER.H"
-#include "KERNEL_SOC_FUNC.H"
+#include "KERNEL_INCLUDE.H"
+#include "CUSTOM_INCLUDE.H"
 #define WDT_mode 0 //1中断模式 0非中断
 #define PWRSW_mode 0
 

@@ -16,8 +16,7 @@
 #ifndef KERNEL_PS2_H
 #define KERNEL_PS2_H
 #include "AE_GLOBAL.H"
-#include "AE_REG.H"
-#include "AE_CONFIG.H"
+#include "KERNEL_GPIO.H"
 
 #define PS2_CLOCK  (HIGH_CHIP_CLOCK / (SYSCTL_CLKDIV_PS2+1)) 
 #define PS2_WaitTime 3000
@@ -125,8 +124,6 @@
 /* KBD_MODE_MOUSE_INT 0x02 Mouse data generate */
 /* KBD_MODE_KBD_INT 0x01   kbd data generate  */
 extern VBYTE PS2_PortN_Data[];
-extern VBYTE* KBDataPending;
-extern VBYTE* MSDataPending;
 
 extern BYTE Handle_Kbd_Event(BYTE channel);
 extern BYTE Handle_Mouse_Event(BYTE channel);

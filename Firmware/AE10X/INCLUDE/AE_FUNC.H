@@ -16,10 +16,6 @@
 #ifndef AE_FUNC_H
 #define AE_FUNC_H
 #include "AE_GLOBAL.H"
-#include "AE_REG.H"
-#include "AE_CONFIG.H"
-#include "KERNEL_GPIO.H"
-#include "KERNEL_IRQ.H"
  /*************时钟模块控制宏*************/
 #define SPIM_CLOCK_EN 1
 #define CAN3_CLOCK_EN 1

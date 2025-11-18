@@ -16,8 +16,7 @@
 #ifndef KERNEL_SPI_H_
 #define KERNEL_SPI_H_
 #include "AE_GLOBAL.H"
-#include "AE_REG.H"
-#include "AE_CONFIG.H"
+#include "KERNEL_GPIO.H"
  /*********************************SPIM CONFIG CLOCK*********************************/
 #define SPIM_CLOCK  (HIGH_CHIP_CLOCK / (SYSCTL_CLKDIV_SPIM+1)) 
 #define SPIM_DEFAULT_TIMEOUT 1000000 //(SPIM_CLOCK/(SPIM_CPSR+1)*32) // SPI超时时间

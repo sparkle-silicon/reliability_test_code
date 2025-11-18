@@ -15,9 +15,9 @@
  */
 #include "CUSTOM_EVENT.H"
 #include "CUSTOM_GPIO.H"
-#include "KERNEL_MEMORY.H"
 #include "CUSTOM_POWER.H"
 #include "CUSTOM_BATTERY.H"
+#include "KERNEL_MEMORY.H"
  //-----------------------------------------------------------------------------
  // no change function
  //-----------------------------------------------------------------------------

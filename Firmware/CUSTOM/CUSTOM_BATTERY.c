@@ -15,9 +15,9 @@
  */
 #include "CUSTOM_BATTERY.H"
 #include "CUSTOM_GPIO.H"
-#include "KERNEL_MEMORY.H"
 #include "CUSTOM_POWER.H"
-
+#include "KERNEL_MEMORY.H"
+#include "KERNEL_SLEEP_RESET.H"
  /*-----------------------------------------------------------------------------
   * Local Parameter Definition
   *---------------------------------------------------------------------------*/

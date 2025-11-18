@@ -13,7 +13,9 @@
  * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
-#include <KERNEL_KBS.H>
+#include "KERNEL_KBS.H"
+#include "KERNEL_XLATE.H"
+#include "KERNEL_MEMORY.H"
 VBYTE KBD_BUFF[KBF_SIZE] = { 0 };
 VBYTE KBS_matrix[MAX_SCAN_LINES] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 const BYTE KBS_repeat_tbl[] =

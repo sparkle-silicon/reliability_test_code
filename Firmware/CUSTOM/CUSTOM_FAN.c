@@ -14,7 +14,7 @@
  * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
  */
 #include "CUSTOM_FAN.H"
-#include "CUSTOM_TEMPERATURE.H"
+#include "KERNEL_MEMORY.H"
  /*FAN TEMP,Level and */
 VBYTE	 last_dcr = 0, Level = 1;
 /*

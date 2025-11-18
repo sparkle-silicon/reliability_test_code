@@ -17,8 +17,7 @@
 #define KERNEL_MAILBOX_H
 
 #include "AE_GLOBAL.H"
-#include "AE_REG.H"
-#include "AE_CONFIG.H"
+
 #define MAX_TASK_COUNT 12  //最大任务数
 #define MAX_TASK_TIMEOUT 61 //设置超时时间至少（MAX_TASK_TIMEOUT-1）秒
 typedef void (*TaskFunction)(void*); // 定义任务函数类型，接受参数

@@ -16,9 +16,6 @@
 #ifndef __KERNEL_BRAM_H_
 #define __KERNEL_BRAM_H_
 #include "AE_GLOBAL.H"
-#include "AE_REG.H"
-#include "AE_CONFIG.H"
-#include "KERNEL_MEMORY.H"
 #include "KERNEL_PNP.H"
 
 #define sms_write(addr,value)	((*((volatile uint8_t *)(addr))) = (value))

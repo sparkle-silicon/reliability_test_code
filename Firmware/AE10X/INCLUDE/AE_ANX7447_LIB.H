@@ -19,12 +19,6 @@
 
 #ifndef _AE_ANX7447_LIB_H_
 #define _AE_ANX7447_LIB_H_
-#include "AE_GLOBAL.H"
-#include "AE_REG.H"
-#include "AE_CONFIG.H"
-#include "KERNEL_MEMORY.H"
-
-#include "CUSTOM_ANX7447_PORT.H"
 
 #define min(A, B) (A>B?B:A)
 #define max(A, B) (A>B?A:B)

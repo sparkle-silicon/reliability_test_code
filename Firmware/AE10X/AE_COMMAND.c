@@ -15,9 +15,8 @@
  */
 #include "AE_COMMAND.H"
 #include "KERNEL_GPIO.H"
-#include "AE_PRINTF.H"
-#include "AE_UPDATE.H"
 #include "CUSTOM_POWER.H"
+#include "KERNEL_MEMORY.H"
 #if ENABLE_COMMAND_SUPPORT
 /*
  * 文档说明:简单设定调试命令行

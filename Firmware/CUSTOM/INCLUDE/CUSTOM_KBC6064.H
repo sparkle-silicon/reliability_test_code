@@ -16,11 +16,7 @@
 #ifndef CUSTOM_KBC6064_H
 #define CUSTOM_KBC6064_H
 #include "AE_GLOBAL.H"
-#include "AE_REG.H"
-#include "AE_CONFIG.H"
-#include "KERNEL_MEMORY.H"
 #include "KERNEL_PORT6064.H"
-#include "KERNEL_MAIN.H"
 /*-----------------------------------------------------------------------------
  * External Calling Process
  *---------------------------------------------------------------------------*/

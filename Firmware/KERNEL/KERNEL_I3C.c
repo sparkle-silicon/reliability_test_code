@@ -15,8 +15,9 @@
  */
 
 #include "KERNEL_I3C.H"
-#include <math.h>
-
+#include "KERNEL_GPIO.H"
+#include "KERNEL_TIMER.H"
+#include "KERNEL_MEMORY.H"
  /******** availiable dynamic addr for use *********/
  // 7'h08~3D
  // 7'h3F~5D

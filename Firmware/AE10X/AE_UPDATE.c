@@ -15,6 +15,9 @@
  */
 #include "AE_UPDATE.H"
 #include "KERNEL_MAILBOX.H"
+#include "KERNEL_SPIF.H"
+#include "KERNEL_MEMORY.H"
+#include "CUSTOM_PMC2.H"
 /****************************************************************************************************************/
 /***********************************************************************/
 #define flash_write(addr, value) ((*((volatile uint32_t *)(addr))) = (value))
@@ -458,13 +461,10 @@ void SECTION(".update.function") Flash_Update_Function(void)
     {
         {
             dprint("jump mailbx update\n");
-
-            uint8_t Update_Addr0, Update_Addr1, Update_Addr2 = 0;
             uint32_t Update_Addr = 0;
             uint32_t FW_256byte_cnt = 0;
             Update_Addr = REG32((SRAM_BASE_ADDR + 0x108));
             FW_256byte_cnt = REG32((SRAM_BASE_ADDR + 0x104));
-            dprint("%x,%x,%x,%x,%d\n", Update_Addr0, Update_Addr1, Update_Addr2, Update_Addr, FW_256byte_cnt);
             __nop__;
             __nop__;
             // Transport_Update_To_iram1(Mailbox_4KSMS_UPDATE, 0x100);
