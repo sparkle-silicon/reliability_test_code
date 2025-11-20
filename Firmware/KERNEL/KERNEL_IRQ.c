@@ -447,9 +447,8 @@ void __interrupt SECTION(".interrupt.ADC_HANDLER") ADC_HANDLER(void)
 	{
 		if (ADC_ValidStatus_1 & (1 << i))
 		{
-			(&ADC_Data0)[i] = ADC_ReadData(i);
-			ADC_INTSTAT |= 1 << i;		//清除中断
-			irqprint("ADC%d:0x%x Voltage:%.2f V\n", i, (&ADC_Data0)[i],( (&ADC_Data0)[i] * 3.3 / 4095.0));
+			(&ADC_Data0)[i] = ADC_ReadData(i);//get ADC data and clear interrupt
+			irqprint("ADC%d:%d Voltage:%.2f V\n", i, (&ADC_Data0)[i],( (&ADC_Data0)[i] * 3.3 / 4095.0));
 		}
 		if (ADC_ValidStatus_2 & (1 << i))
 		{

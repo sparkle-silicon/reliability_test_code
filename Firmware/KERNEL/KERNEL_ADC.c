@@ -339,6 +339,10 @@ void ADC_Channelx_Set(uint8_t channelx, uint8_t sw)
       {
             ADC_CHAN_EN = (0x1 << channelx);
       }
+      else if(sw == DISABLE)
+      {
+            ADC_CHAN_EN &= (~(0x1 << channelx));
+      }
 }
 
 /**
@@ -367,7 +371,7 @@ void ADC_Cnt(uint32_t timercount)
 void ADC_SW_Sample_Init_Single(uint8_t channelx, uint8_t ADC_Databuffer_channelx, uint8_t mode)
 {
       //单通道
-      ADC_IRQ_Config(0x1 << ADC_Databuffer_channelx, ENABLE, DISABLE);
+      ADC_IRQ_Config(0x1 << ADC_Databuffer_channelx, DISABLE, DISABLE);
       ADC_CTRL |= 0x1; //使能adc模拟
       ADC_CycleEvent_IRQ_Config(DISABLE);//关闭中断end_of_adc_cycle_event
       DataOverflow_IRQ_Config(DISABLE);//关闭中断data_overflow_event
@@ -381,9 +385,6 @@ void ADC_SW_Sample_Init_Single(uint8_t channelx, uint8_t ADC_Databuffer_channelx
       ADC_Calibration_Config(0x8000, 0);//设置a=0x8000,b=0
       ADC_Channelx_Set(channelx, ENABLE);// 通道使能
       MatchADCChannelToData(channelx, ADC_Databuffer_channelx); //设置ADC通道采样的数据存入哪个数据缓存通道
-
-      //配置触发
-      ADC_Trigger();
 }
 
 /**
@@ -691,6 +692,8 @@ void ADC_Auto_Sample_Init_Single(uint8_t channelx, uint8_t ADC_Databuffer_channe
       ADC_CTRL &= 0x000;                        //清除ADC_CTRL,先默认进入软件模式
 
       ADC_CTRL |= (1 << 0);                     //打开adc模拟
+      ADC_CycleEvent_IRQ_Config(DISABLE);//关闭中断end_of_adc_cycle_event
+      DataOverflow_IRQ_Config(DISABLE);//关闭中断data_overflow_event
       ADC_SampleMode_Config(mode);              // 0:单端 1:差分
       ADC_CTRL |= (1 << 5);                     //scale打开
       ADC_TriggerMode_Config(AUTO_SAMPLE);
@@ -699,7 +702,7 @@ void ADC_Auto_Sample_Init_Single(uint8_t channelx, uint8_t ADC_Databuffer_channe
       ADC_CHAN_EN |= (0x1 << channelx);
       MatchADCChannelToData(channelx, ADC_Databuffer_channelx);
       ADC_Cnt(timercount);                      //配置采样触发时间 
-      ADC_INTMASK |= ((1 << channelx) | (1 << (cmp_channelx + 8)));
+      ADC_INTMASK |= ((1 << ADC_Databuffer_channelx) | (1 << (cmp_channelx + 8)));
 
       if (cmp_channelx == -1)
       {
@@ -766,10 +769,20 @@ void ADC_Close(void)
  *
  * @note 此函数用于读取ADCdatabuffer中采集到的值。根据初始化中设置的ADC_Databuffer_channelx，读取对应的ADC通道采集到的数据。
  */
-short ADC_ReadData(uint8_t ADC_Databuffer_channelx)
+uint16_t ADC_ReadData(uint8_t ADC_Databuffer_channelx)
 {
-      short Data = 0;
-      // Data = ADC_REG(ADC_DATA_0_OFFSET + ADC_Databuffer_channelx * 2);
+      uint16_t Data = 0;
+      uint16_t timeout = ADC_TIMEOUT;
+      uint16_t Stat = ADC_INTSTAT;
+      while(!(Stat&(0x1<<ADC_Databuffer_channelx)))
+      {
+            Stat = ADC_INTSTAT;
+            if(timeout-- == 0)
+            {
+                  dprint("Stat:0x%x, ADC_ReadData timeout\n", Stat);
+                  return 0xFFFF;
+            }
+      }
       switch (ADC_Databuffer_channelx)
       {
       case 0:
@@ -797,5 +810,6 @@ short ADC_ReadData(uint8_t ADC_Databuffer_channelx)
             Data = ADC_DATA_7;
             break;
       }
+      ADC_INTSTAT = 1 << ADC_Databuffer_channelx;
       return Data;
 }

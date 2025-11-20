@@ -18,6 +18,8 @@
 #include "AE_GLOBAL.H"
 #include "KERNEL_GPIO.H"
 
+#define ADC_TIMEOUT 30000
+
 #define ADC_CHANNEL0 0
 #define ADC_CHANNEL1 1
 #define ADC_CHANNEL2 2
@@ -30,6 +32,9 @@
 #define ADC_CHANNEL9 9
 #define ADC_CHANNEL10 10
 #define ADC_CHANNEL11 11
+#define ADC_CHANNEL12 12
+#define ADC_CHANNEL13 13
+#define ADC_CHANNEL14 14
 
 #define ADC_CLOCK (CHIP_CLOCK_INT_HIGH / ((SYSCTL_CLKDIV_OSC96M_ADC&0x3F)+((SYSCTL_CLKDIV_OSC96M_ADC>>6)&0x3F)))
 
@@ -120,6 +125,7 @@ void ADC_HW_Sample_Init_Multi(uint8_t mode, uint32_t timercount, uint8_t Data_Se
 void ADC_Auto_Sample_Init_Single(uint8_t channelx, uint8_t ADC_Databuffer_channelx, char cmp_channelx, uint8_t cmp_rule, uint16_t threshold, uint32_t timercount, uint8_t mode);
 void ADC_Cont_Sample_Init_Single(uint8_t channelx, u_int8_t ADC_Databuffer_channelx, uint8_t mode);
 void ADC_Cont_Sample_Init_Multi(uint8_t mode, uint8_t Data_Select, uint8_t Chanal_8_mode);
-short ADC_ReadData(uint8_t ADC_Databuffer_channelx);
+uint16_t ADC_ReadData(uint8_t ADC_Databuffer_channelx);
+void ADC_Trigger();
 void ADC_Cnt(uint32_t timercount);
 #endif
