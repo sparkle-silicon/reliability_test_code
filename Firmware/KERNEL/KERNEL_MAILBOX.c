@@ -1,4 +1,3 @@
-#include "KERNEL_MAILBOX.H"
 #include "KERNEL_INCLUDE.H"
 volatile bool command_processed = true; // 用于标志子系统是否处理完命令
 Task* task_head = NULL;                 // 任务链表头

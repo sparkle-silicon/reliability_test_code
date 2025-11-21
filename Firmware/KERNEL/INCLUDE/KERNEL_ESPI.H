@@ -796,9 +796,11 @@ typedef struct {
     // Byte 12
     uint8_t Extended_Status : 8;        //  (Byte 12)
     // Byte 13
-    uint32_t RPMC_ParameterTable;         //  (Byte 13)
-    // Byte 17-20
-    uint32_t RPMC_Parameters_Device0;      //  (Byte 17)
+    uint8_t __padding_for_align[3];     // bytes 13-15: 确保下面的 uint32_t 从偏移 16 开始
+    // Byte 16-19
+    uint32_t RPMC_ParameterTable;         //
+    // Byte 20-23
+    uint32_t RPMC_Parameters_Device0;     //
 
 } eSPI_OOB_ReadParameters_RESPONSE;
 

@@ -15,7 +15,6 @@
  */
 #include "AE_INCLUDE.H"
 #include "KERNEL_INCLUDE.H"
-#include "KERNEL_MAIN.H"
 #include "CUSTOM_INCLUDE.H"
 #define printf_instructions_msg " \
 \n\
