@@ -25,7 +25,6 @@ VBYTE SMI_Event_Buffer[10];                          // offset:HEX 0x00-0x09 SIZ
 VBYTE PD_SCI_Event_Buffer[10];                       // offset:HEX 0x00-0x09 SIZE:DEC 10
 VBYTE* KBDataPending = (VBYTE*)KBData_Buff_MemBase; // offset:HEX 0x00-0x03 SIZE:DEC 4
 VBYTE* MSDataPending = (VBYTE*)MSData_Buff_MemBase; // offset:HEX 0x00-0x03 SIZE:DEC 4
-VBYTE PS2_PortN_Data[3];
 VBYTE* Tmp_code_pointer = NULL;
 VBYTE* Tmp_XPntr;
 VBYTE* Tmp_XPntr1;

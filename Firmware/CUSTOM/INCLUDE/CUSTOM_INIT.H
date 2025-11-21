@@ -19,11 +19,12 @@
 #include "AE_INIT.H"
 #include "AE_FLASHINFO.H"
 #include "CUSTOM_FAN.H"
-
+/* or */
+#define ADDR_OR_ID(addr, id) ((addr) | (((id)&0xfff) << 20))
+/*DoubleBoot Address*/
 #define DoubleBoot_DEF_ADDR 0xA0084
 
 extern FUNCT_PTR_V_V Get_DoubleBoot_ADDR(void);
 extern void Default_Config();
 extern void Device_init(void);
-#define ADDR_OR_ID(addr, id) ((addr) | (((id)&0xfff) << 20))
 #endif

@@ -22,7 +22,7 @@
 #define Wdt_Int_Status ((WDT_STAT & (0x1 << 0)) != 0)
 #define WDT_CRR_CRR 0x76;
 #define WDT_FLAG 1 //看门狗喂狗or清中断 1 or 0
-/************* WDT Register define************/
+/* WDT Register define */
 #define WDT_CR_RPL_2        HEX00
 #define WDT_CR_RPL_4        HEX04
 #define WDT_CR_RPL_8        HEX08
@@ -37,6 +37,6 @@
 #define WDT_CR_DISEN        HEX00
 
 extern void WDT_Clear_IRQ(void);
-void WDT_FeedDog(void);
-void WDT_Init(BYTE mode, WORD count);
+extern void WDT_FeedDog(void);
+extern void WDT_Init(BYTE mode, WORD count);
 #endif

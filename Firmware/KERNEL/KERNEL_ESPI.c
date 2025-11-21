@@ -181,6 +181,20 @@ void ESPI_Init(void)
     ESPI_UCTRL0 |= Upstream_INT_EN;    // 使能upsteam中断使能
 #endif
 }
+
+/*-----------------------------------------------------------------------------
+ * @subroutine - Hook_EC_ACK_eSPI_Reset
+ * @function - Hook_EC_ACK_eSPI_Reset
+ * @upstream - By call
+ * @input    - None
+ * @return   - None
+ * @note     - None
+ */
+void Hook_EC_ACK_eSPI_Reset(void)
+{
+
+
+}
 /*-----------------------------------------------------------------------------
  * @subroutine - EC_ACK_eSPI_Reset
  * @function - EC_ACK_eSPI_Reset

@@ -23,15 +23,7 @@ FUNCT_PTR_V_V IVT_Ptr;
 FUNCT_PTR_V_D_BP_L Spif_Ptr;
 FUNCT_PTR_V_D_BP ECU_Ptr;
 BYTE Write_buff[256] = { 0, 1, 2, 3, 4, 5, 6 };
-// char Write_buff[256]="flash string test!\n";
 BYTE Read_buff[256] = { 0 };
-// char Read_buff[]="";
-void SPIFI_Init(void)
-{
-   // SYSCTL_PIOE_IECFG &= ~(0x33000000); //可选屏蔽内部SPIF引脚,降低功耗用
-    //
-   return;
-}
 uint32_t EXTERNAL_FLASH_ID = 0;
 void SPIFE_Init(void)
 {
@@ -593,25 +585,6 @@ void Transport_Update_To_iram1(FUNCT_PTR_B_D_D funcpoint, const int malloc_size)
    dprint("Load Function to DRAM finish!\n");
 }
 
-void Dram_Part_Init(void)
-{
-   int i = 0;
-   for(i = 0; i < 0x800; i++)
-   {
-      (*(BYTEP)(0x21000 + i)) = 0;
-   }
-   dprint("Dram Part Init finish!\n");
-}
-void Dram_Read(void)
-{
-   int i = 0;
-   BYTE data;
-   for(i = 0; i < 0x800; i++)
-   {
-      data = (*(BYTEP)(0x21000 + i));
-      dprint("Read DRAM data is %#x\n", data);
-   }
-}
 FUNCT_PTR_V_V Load_Smfi_To_Dram(FUNCT_PTR_V_V func, const int malloc_size)
 {
    int i;

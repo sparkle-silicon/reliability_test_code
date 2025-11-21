@@ -89,7 +89,7 @@ void RTC_Deep_Sleep_Test(u32 sleep_time)
     SYSCTL_MODEN1 = RTC_EN | SPIFE_EN | CACHE_EN;
     SYSCTL_DVDD_EN |= BIT4 | BIT5 | BIT6;
     SYSCTL_DVDD_EN &= ~(BIT0 | BIT1 | BIT2);
-    CPU_Sleep();
+    asm volatile("wfi");//CPU Sleep
 }
 void RTC_Sleep_Test(u32 sleep_time)
 {
@@ -105,6 +105,6 @@ void RTC_Sleep_Test(u32 sleep_time)
     SYSCTL_MODEN1 = RTC_EN | SPIFE_EN | CACHE_EN;
     SYSCTL_DVDD_EN |= BIT4 | BIT5 | BIT6;
     SYSCTL_DVDD_EN &= ~(BIT0 | BIT1 | BIT2);
-    CPU_Sleep();
+    asm volatile("wfi");//CPU Sleep
 
 }

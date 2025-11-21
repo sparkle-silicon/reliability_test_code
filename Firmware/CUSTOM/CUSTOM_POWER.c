@@ -1486,7 +1486,7 @@ void Sys_PowerState_Control(void)
         Custom_Reboot_Sequence();
         break;
     case SYSTEM_EC_WDTRST:
-        // InternalWDTNow();
+        
         break;
     default:
         System_PowerState = SYSTEM_S5;
@@ -1671,16 +1671,3 @@ void PowerChange_Var_Clear(void)
     Clear_Event_Buffer(); // clear qevent buffer
 }
 
-/*-----------------------------------------------------------------------------
- * @subroutine - Hook_EC_ACK_eSPI_Reset
- * @function - Hook_EC_ACK_eSPI_Reset
- * @upstream - By call
- * @input    - None
- * @return   - None
- * @note     - None
- */
-void Hook_EC_ACK_eSPI_Reset(void)
-{
-
-
-}

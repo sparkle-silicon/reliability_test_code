@@ -19,12 +19,15 @@
 #include "AE_GLOBAL.H" //全局变量
 
 
- // //如果开了预分频计数器，则会预分频跑到
+ // 如果开了预分频计数器，则会预分频跑到
 #define RTC_CCR_IEN BIT0//中断使能
 #define RTC_CCR_MASK BIT1//中断屏蔽
 #define RTC_CCR_EN BIT2//计数器使能
 #define RTC_CCR_WEN BIT3//计数器循环使能
 #define RTC_CCR_PSCLREN BIT4//预分频使能
+/*-----------------------------------------------------------------------------
+ * External Calling Prototype
+ *---------------------------------------------------------------------------*/
 extern u32 Get_RTC_CountVal(void);
 extern void Set_RTC_MatchVal(u32 count);
 extern void Set_RTC_LoadVal(u32 count);

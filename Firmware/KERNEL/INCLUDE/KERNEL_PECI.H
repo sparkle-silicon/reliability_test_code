@@ -28,9 +28,9 @@
 #define PECI_CLKDIV_4 4
 #define PECI_CLKDIV_8 8
 
-#define PMU_EN_IBIAS 0x00000100UL
-#define PMU_EN_BUF 0x00000200UL
-#define PECI_RESERVED_REG 0x00000001UL
+#define PMU_EN_IBIAS        0x00000100UL
+#define PMU_EN_BUF          0x00000200UL
+#define PECI_RESERVED_REG   0x00000001UL
 
 #define VTTlev_110V 0b00    //peci寄存器控制方式设置peci pad电压为1.10v
 #define VTTlev_105V 0b01    //peci寄存器控制方式设置peci pad电压为1.05v

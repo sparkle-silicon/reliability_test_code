@@ -65,7 +65,6 @@
 
 #endif
 // for battery
-// for battery
 #define BATTERY_RSOC REG8(ECSPACE_BASE_ADDR + 0x10)   // Battery  battery_remain_percent
 #define BATTERY_FCAP_L REG8(ECSPACE_BASE_ADDR + 0x11) // Battery  battery_charge
 #define BATTERY_FCAP_H REG8(ECSPACE_BASE_ADDR + 0x12)

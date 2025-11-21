@@ -17,13 +17,13 @@
 #define __KERNEL_SWUC_H_
 #include "AE_GLOBAL.H"
 #include "KERNEL_PNP.H"
-/**事件中断宏**/
+/*event irq type*/
 #define RI1_EC_IRQ   HEX01
 #define RI2_EC_IRQ   HEX02
 #define RING_EC_IRQ  HEX08
 #define SIRQ_EC_IRQ  HEX40
 #define MIRQ_EC_IRQ  HEX80
-/**传统模式或ACPI模式唤醒中断宏**/
+/*ACPI wakeup irq type*/
 #define RTC_IRQ      HEX01
 #define ACPI_S1      HEX02
 #define ACPI_S2      HEX04
@@ -32,8 +32,9 @@
 #define ACPI_S5      HEX20
 #define PWRBT        HEX40
 #define PWRSLY       HEX80
-
+/*read irq status*/
 #define SWUC_Int_Status(type)	((SWUSTA & (0x1<<type)) != 0)
+
 void SWUC_Int_Enable(BYTE  type);
 void SWUC_Int_Disable(BYTE  type);
 BYTE  SWUC_Int_Enable_Read(BYTE  type);
@@ -41,12 +42,6 @@ void SWUC_PNP_Config(void);
 void SWUC_EventIRQ_Config(BYTE  irq_type, BYTE  sw);
 void SWUC_SW_WakeUp_Config(uint8_t hsecm_ec);
 void SWUC_ACPIIRQ_Config(BYTE  irq_type, BYTE  sw);
-/*****测试代码*****/
-void SWUC_UART_Test(void);
-void SWUC_RI1_RI2_Test(void);
-void SWUC_Ring_Test(void);
-void SWUC_Soft_Test(void);
-void SWUC_LegacyMode_Test(void);
 void SWUC_ACPI_Init(void);
 void SWUC_PWUREQ_Init(void);
 void SWUC_SMI_Init(void);

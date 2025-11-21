@@ -123,8 +123,6 @@
 /* KBD_MODE_SYS  0x04   The system flag */
 /* KBD_MODE_MOUSE_INT 0x02 Mouse data generate */
 /* KBD_MODE_KBD_INT 0x01   kbd data generate  */
-extern VBYTE PS2_PortN_Data[];
-
 extern BYTE Handle_Kbd_Event(BYTE channel);
 extern BYTE Handle_Mouse_Event(BYTE channel);
 extern void Handle_Mouse(BYTE channel);
@@ -139,6 +137,7 @@ extern int Send_Aux_Data_To_Host(BYTE auxdata);
 extern int AE10x_PS2_Init(void);
 extern char Disable_Aux_Data_Reporting(BYTE channel);
 extern void PS2_PortN_Init(uint8_t channel);
+extern void Handle_Kbd(BYTE channel);
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 #endif

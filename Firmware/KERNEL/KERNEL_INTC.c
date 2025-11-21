@@ -19,8 +19,7 @@ extern unsigned char iicFeedback, iic_flag, iic_int_flag;
 #if ENABLE_DEBUGGER_SUPPORT
 extern char Uart_buffer[UART_BUFFER_SIZE]; // An array of data transferred by the debugger
 #endif
-extern BYTE RPMC_OOB_TempArr[80];
-/************weak声明************/
+
 void intr0_gpio_a0(void) __weak;
 void intr0_gpio_a1(void) __weak;
 void intr0_gpio_a2(void) __weak;
@@ -101,22 +100,6 @@ void intr1_gpio_c12(void) __weak; // 12
 void intr1_gpio_c13(void) __weak; // 13
 void intr1_gpio_c14(void) __weak; // 14
 void intr1_gpio_c15(void) __weak; // 15
-// void intr1_gpio_e0(void) __weak; // 14 16
-// void intr1_gpio_e1(void) __weak; // 15 17
-// void intr1_gpio_e2(void) __weak; // 16 18
-// void intr1_gpio_e3(void) __weak; // 17 19
-// void intr1_gpio_e4(void) __weak; // 18 20
-// void intr1_gpio_e5(void) __weak; // 19 21
-// void intr1_gpio_e6(void) __weak; // 20 22
-// void intr1_gpio_e7(void) __weak; // 21 23
-// void intr1_gpio_e8(void) __weak;  // 22
-// void intr1_gpio_e9(void) __weak;  // 23
-// void intr1_gpio_e10(void) __weak; // 24
-// void intr1_gpio_e11(void) __weak; // 25
-// void intr1_gpio_e12(void) __weak; // 26
-// void intr1_gpio_e13(void) __weak; // 27
-// void intr1_gpio_e14(void) __weak; // 28
-// void intr1_gpio_e15(void) __weak; // 29
 
 void intr1_gpio_e16(void) __weak; // 30
 void intr1_gpio_e17(void) __weak; // 31
@@ -168,7 +151,7 @@ void intr1_por_int(void) __weak; // 58 60
 void intr1_mailbox(void) __weak; // 59 61
 void intr1_espi(void) __weak;	// 62
 void intr1_null63(void) __weak; // 63
-/************weak声明************/
+
 void disable_intc(int index, int num)
 {
 	set_ictl_reg(index, INTC_ICTL_INTMASK_L, num);

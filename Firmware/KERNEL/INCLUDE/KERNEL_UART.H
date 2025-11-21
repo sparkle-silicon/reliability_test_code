@@ -19,8 +19,6 @@
 #include "KERNEL_GPIO.H"
 #define UART0_CHANNEL 0x0
 #define UART1_CHANNEL 0x1
-// #define UART2_CHANNEL 0x2
-// #define UART3_CHANNEL 0x3
 #define UARTA_CHANNEL 0x2//0xA
 #define UARTB_CHANNEL 0x3//0xB
 // bit index

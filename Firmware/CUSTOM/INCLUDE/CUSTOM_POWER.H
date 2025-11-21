@@ -123,6 +123,4 @@ extern BYTE PF_CHARGE_LED_OFF(void);
 extern BYTE PF_CHARGE_FULL_LED_ON(void);
 extern BYTE PF_CHARGE_FULL_LED_OFF(void);
 extern void PowerChange_Var_Clear(void);
-extern void Hook_EC_ACK_eSPI_Reset(void);
-
 #endif

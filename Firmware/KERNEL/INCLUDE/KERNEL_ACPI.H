@@ -118,7 +118,6 @@ extern BYTE Read_SMI_Query_Value(void);
 extern BYTE Write_SMI_Query_Value(BYTE NewSMI);
 extern void Clear_Event_Buffer(void);
 extern int CheckBurstMode(void); // zb 10.26 add
-extern void ACPI_SMB_Via_EC(void);
 /*-----------------------------------------------------------------------------
  * Internal Calling Prototype
  *---------------------------------------------------------------------------*/

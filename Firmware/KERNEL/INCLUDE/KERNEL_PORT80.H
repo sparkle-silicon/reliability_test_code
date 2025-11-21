@@ -23,9 +23,11 @@
 
 #define P80LR_EN BIT(24)
 #define P80L_EN  BIT(25)
-//函数声明
-void Port80_Bram_PNP_Config(void);
-void Port80_Config(uint16_t addr0, uint8_t addr1, uint32_t offset, uint8_t rgn_en);
-char Get_Port80_Bufferdata(uint32_t *p_data);
+/*-----------------------------------------------------------------------------
+ * External Calling Prototype
+ *---------------------------------------------------------------------------*/
+extern void Port80_Bram_PNP_Config(void);
+extern void Port80_Config(uint16_t addr0, uint8_t addr1, uint32_t offset, uint8_t rgn_en);
+extern char Get_Port80_Bufferdata(uint32_t *p_data);
 extern void L80_Init();
 #endif

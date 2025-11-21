@@ -50,7 +50,9 @@
 #define ADC_SINGLEENDED 0
 #define ADC_FULLYDIFFEENTIAL 1
 
- /**************************ADC Register define**************************/
+/*-----------------------------------------------------------------------------
+ * ADC Register define
+ *---------------------------------------------------------------------------*/
 #define ADC_CTRL_TRIGGER_SOFT       HEX00
 #define ADC_CTRL_TRIGGER_HARD       HEX80
 #define ADC_CTRL_TRIGGER_CONTINUE   0x100
@@ -81,7 +83,9 @@
 #define ADC_Int_Mask_Read(type)		((ADC_INTMASK & (0x1<<type)) != 0)
 #define ADC_Int_Status(type)	((ADC_INTSTAT & (0x1<<type)) != 0)
 
-/*****中断屏蔽宏*******/
+/*-----------------------------------------------------------------------------
+ * ADC Interrupt mask define
+ *---------------------------------------------------------------------------*/
 #define  ADCData0_intrMask        HEX01
 #define  ADCData1_intrMask        HEX02
 #define  ADCData2_intrMask        HEX04
@@ -95,7 +99,9 @@
 #define  ADC_Cmp1fail_intrMask    0x200
 #define  ADC_Cmp2fail_intrMask    0x400
 #define  ADC_AllData_intrMask     0x7FF
-/******采样方式宏*******/
+/*-----------------------------------------------------------------------------
+ * ADC mode define
+ *---------------------------------------------------------------------------*/
 #define  SINGLE_ENDED             0
 #define  DIFFERENTIAL             1
 #define  SW_SAMPLE                0
@@ -103,13 +109,13 @@
 #define  CONT_SAMPLE              2 
 #define  AUTO_SAMPLE              3
 
-/******ADCFormat*******/
+
 #define OriginCode 0 //原码
 #define CompCode   1 //补码
 
-//*****************************************************************************
-// Function prototype
-//*****************************************************************************
+/*-----------------------------------------------------------------------------
+ * Function prototype
+ *---------------------------------------------------------------------------*/
 
 void ADC_TriggerMode_Config(uint8_t mode);
 void ADC_SampleMode_Config(uint8_t mode);
@@ -117,7 +123,6 @@ void ADC_Channelx_Config(uint8_t channelx, uint8_t sw);
 void ADC_IRQ_Config(uint16_t irq_type, uint8_t sw, uint8_t comparator_on);
 void ADC_Clear_IRQ(uint8_t irq_type);
 uint8_t CheckADCDataValidity(uint8_t channelx);
-void ADC_Timercount_Set(uint32_t timercount);
 void ADC_SW_Sample_Init_Single(uint8_t channelx, uint8_t ADC_Databuffer_channelx, uint8_t mode);
 void ADC_SW_Sample_Init_Multi(uint8_t mode, uint8_t Data_Select, uint8_t Chanal_8_mode);
 void ADC_HW_Sample_Init_Single(uint8_t channelx, u_int8_t ADC_Databuffer_channelx, uint8_t mode, uint32_t timercount);
@@ -127,5 +132,4 @@ void ADC_Cont_Sample_Init_Single(uint8_t channelx, u_int8_t ADC_Databuffer_chann
 void ADC_Cont_Sample_Init_Multi(uint8_t mode, uint8_t Data_Select, uint8_t Chanal_8_mode);
 uint16_t ADC_ReadData(uint8_t ADC_Databuffer_channelx);
 void ADC_Trigger();
-void ADC_Cnt(uint32_t timercount);
 #endif

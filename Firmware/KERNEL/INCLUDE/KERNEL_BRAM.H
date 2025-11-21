@@ -18,10 +18,6 @@
 #include "AE_GLOBAL.H"
 #include "KERNEL_PNP.H"
 
-#define sms_write(addr,value)	((*((volatile uint8_t *)(addr))) = (value))
-#define sms_read(addr)		(*((volatile uint8_t *)(addr)))
-#define HBRAM_EN 0x00040000
-
 extern void BRAM_Config(uint8_t index_0, uint8_t index_1, uint8_t mask);
 extern void BRAM_EC_Read(void);
 extern void BRAM_EC_Write(void);

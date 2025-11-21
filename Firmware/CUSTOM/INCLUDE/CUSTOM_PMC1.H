@@ -18,14 +18,14 @@
 #include "AE_GLOBAL.H"
 #include "KERNEL_ACPI.H"
 #include "KERNEL_PORT6064.H"
-
-#define OBF1 BIT(0x00)
-#define IBF1 BIT(0x01)
-#define Busy BIT(0x02)
-#define C_D1 BIT(0x03)
-#define BURST BIT(0x04)
-#define SCIEVT BIT(0x05)
-#define SMIEVT BIT(0x06)
+ /*PMC1 Register bit definition*/
+#define OBF1    BIT(0)
+#define IBF1    BIT(1)
+#define Busy    BIT(2)
+#define C_D1    BIT(3)
+#define BURST   BIT(4)
+#define SCIEVT  BIT(5)
+#define SMIEVT  BIT(6)
  /*--------------------------------------------------------------------------*/
  /*-----------------------------------------------------------------------------
   * External Calling Process

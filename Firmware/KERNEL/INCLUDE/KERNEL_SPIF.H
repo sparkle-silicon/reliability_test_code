@@ -21,6 +21,9 @@ extern FUNCT_PTR_V_V Smf_Ptr;
 extern FUNCT_PTR_V_V IVT_Ptr;
 extern FUNCT_PTR_V_D_BP_L Spif_Ptr;
 extern FUNCT_PTR_V_D_BP ECU_Ptr;
+extern FUNCT_PTR_V_D_BP_L Spif_Ptr;
+extern BYTE Write_buff[256];
+extern BYTE Read_buff[256];
 
  /*FLASH COMMANDS*/
 #define FLASH_ID_CMD 0x90
@@ -28,21 +31,11 @@ extern FUNCT_PTR_V_D_BP ECU_Ptr;
 #define FLASH_PAGE_PROGRAM_CMD 0x02
 #define FLASH_WRIT_CMD 0x06
 #define FLASH_READ_CMD 0x03
-
+/*SPIF STATUS*/
 #define SPIF_RDY_READY       0x1
 #define SPIFE_Write_Status   0x1
 #define SPIFE_Sleep_State    0x2
-#define Spif_Int_Mask (SPIFE_INTMASK &= ~(0x1))
-#define Spif_Int_Unmask (SPIFE_INTMASK |= 0x1)
-#define Spif_Int_Mask_Read ((SPIFE_INTMASK & 0x1) != 0)
 
-extern FUNCT_PTR_V_D_BP_L Spif_Ptr;
-extern BYTE Write_buff[256];
-extern BYTE Read_buff[256];
-extern VBYTE* Tmp_code_pointer;
-extern VBYTE* Tmp_XPntr;
-
-extern void SPIFI_Init(void);
 extern void SPIFE_Init(void);
 extern uint32_t SPIFE_READ_ID(void);
 extern void ExtFlash_Deep_Power_Down(void);
@@ -51,8 +44,6 @@ extern FUNCT_PTR_V_D_BP_L Load_Fla_If_To_Ram(FUNCT_PTR_V_D_BP_L funcpoint, const
 extern void Transport_Update_To_iram1(FUNCT_PTR_B_D_D funcpoint, const int malloc_size);
 extern void Transport_Func_To_iram1(FUNCT_PTR_V_V funcpoint, const int malloc_size);
 extern FUNCT_PTR_V_V Load_Smfi_To_Dram(FUNCT_PTR_V_V func, const int malloc_size);
-extern void Dram_Part_Init(void);
-extern void Dram_Read(void);
 extern ALIGNED(4) void SPIFE_Write(DWORD addr, BYTEP write_buff, WORD length);
 extern ALIGNED(4) void SPIFE_Read(DWORD addr, BYTEP read_buff, WORD length);
 extern void RunSPIFE_WriteFromRAM(DWORD addr, BYTEP write_buff, WORD lentgh);

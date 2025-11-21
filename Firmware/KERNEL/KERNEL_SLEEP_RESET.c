@@ -60,10 +60,6 @@ int32_t SYSCTL_PMU_CFG_CONTEXT = 0;
  * ------------------------------------------------------------------------- */
 void Module_SoftReset(int reg_idx, int bit_no)
 {
-	/*--------------this is a module reset example-------------*/
-	// Module_RESET_REG0 |= 0x3ff066e1;
-	// Module_RESET_REG0 = 0x0;
-	// Module_RESET_REG1 = 0x0; 
 	if (reg_idx == 0)
 	{
 		Module_RESET_REG0 |= (1 << bit_no);
@@ -77,17 +73,12 @@ void Module_SoftReset(int reg_idx, int bit_no)
 
 }
 /* ----------------------------------------------------------------------------
- * FUNCTION:   CPU_Sleep
+ * FUNCTION:   CPU_SLP_RES
  *
- * This is CPU Sleep Interface,If you call this function,cpu will sleep and
+ * This is CPU Sleep and Reset Interface,If you call this function,cpu will sleep and
  * it will wake up when interrupt occurs.
  *
  * ------------------------------------------------------------------------- */
-void CPU_Sleep(void)
-{
-	asm volatile("wfi");
-}
-
 void ALIGNED(4) OPTIMIZE(0) CPU_SLP_RES(void)
 {
 	volatile int i = 0;

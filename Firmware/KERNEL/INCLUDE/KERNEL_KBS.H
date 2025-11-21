@@ -18,6 +18,13 @@
 #include "AE_GLOBAL.H"
 #include "KERNEL_GPIO.H"
 
+//KBS调试打印
+#if KBS_DEBUG 
+#define kbs_dprint dprint
+#else 
+#define kbs_dprint(fmt, args...)
+#endif
+
 #define KBD_Int_Enable	(KBS_KSDC1R |= (0x1<<5))
 #define KBD_Int_Disable	(KBS_KSDC1R &= ~(0x1<<5))
 #define KBD_Int_Enable_Read	((KBS_KSDC1R & (0x1<<5)) != 0)
@@ -149,13 +156,6 @@
 #define KSO16CtrlReg	GPCRC3
 #define KSO17CtrlReg	GPCRC5
 
-//KBS调试打印
-#if KBS_DEBUG 
-#define kbs_dprint dprint
-#else 
-#define kbs_dprint(fmt, args...)
-#endif
-
 /*--------------------------------------------------------------------------*/
 extern void Service_KBS(void);
 extern BYTE KBS_Buffer_Get(BYTEP);
@@ -164,7 +164,7 @@ extern void KBS_Set_KBS_INFO(VBYTE type_rate);
 extern void KBD_CLear_Buffer(void);//zb 10.26 add
 extern void KBS_Init(void);
 extern BYTE KBS_Buffer_Input(BYTE   row_column);
-extern BYTE  KBS_Buffer_puts(const BYTE *pntr);
+extern BYTE KBS_Buffer_puts(const BYTE *pntr);
 extern void KBS_Clear_Break(void);
 extern void KBD_Check_Repeat(void);
 

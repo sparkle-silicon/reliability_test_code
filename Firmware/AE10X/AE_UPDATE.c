@@ -24,8 +24,6 @@
 #define flash_read(addr) (*((volatile uint32_t *)(addr)))
 /***********************************************************************/
 /***********************************************************************/
-#define sms_write(addr, value) ((*((volatile uint8_t *)(addr))) = (value))
-#define sms_read(addr) (*((volatile uint8_t *)(addr)))
 char uart_crtpram_updatebuffer[16];
 int uart_crypram_updateindex = 0;
 char update_crypram_cmd[12] = { 0x64 ,0x72 ,0x61 ,0x6D ,0x30 ,0x2D ,0x75 ,0x70 ,0x64 ,0x61 ,0x74 ,0x65 };

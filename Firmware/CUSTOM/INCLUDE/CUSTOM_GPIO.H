@@ -203,14 +203,6 @@
   //-----------------------------------------------------------------
   // GPIO Active
   //-----------------------------------------------------------------
-#define GPin0           bit0
-#define GPin1           bit1
-#define GPin2           bit2
-#define GPin3           bit3
-#define GPin4           bit4
-#define GPin5           bit5
-#define GPin6           bit6
-#define GPin7           bit7
 #define HighActive      1
 #define LowActive       0
 

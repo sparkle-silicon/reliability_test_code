@@ -29,7 +29,7 @@ void BRAM_SIOConfig(void)
 #endif
 // Enable BRAM logic device
 #if (SYSCTL_CLOCK_EN)
-  SYSCTL_HDEVEN |= HBRAM_EN;      //host侧BRAM使能
+  SYSCTL_HDEVEN |= HOST_BRAM_EN;      //host侧BRAM使能
 #endif
   // Enable BRAM
   Config_PNP_Write(0x23, 0x01, 0x01);

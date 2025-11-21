@@ -95,13 +95,6 @@ void TIMER_Int_Mask(u8 index, u8 int_mask)
 		TIMER_REG(0x14 * index + TIMER_TCR_OFFSET) |= TIMER_MASK_EN;
 	}
 }
-void InternalWDTNow(void)
-{
-	// reserved
-	WDT_Init(0, 0);
-	// WDT reset chip
-	while(1);
-}
 /**
  * @brief timer定时中断使能
  *

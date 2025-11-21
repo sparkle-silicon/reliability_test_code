@@ -21,7 +21,7 @@
 #define TIMER1 0x1
 #define TIMER2 0x2
 #define TIMER3 0x3
-/************TIMER0常见定时定义************/
+/* TIMER0 */
 #define TIMER0_CLOCK (HIGH_CHIP_CLOCK / ((SYSCTL_CLKDIV_TMR0+1)<<1))
 #define TIMER0_1ms (TIMER0_CLOCK/1000)
 #define TIMER0_100us (TIMER0_1ms / 10)
@@ -31,7 +31,7 @@
 #define TIMER0_5us (TIMER0_1ms / 200)
 #define TIMER0_2us (TIMER0_1ms / 500)
 #define TIMER0_1us (TIMER0_1ms / 1000)
-/************TIMER1常见定时定义************/
+/* TIMER1 */
 #define TIMER1_CLOCK (HIGH_CHIP_CLOCK / ((SYSCTL_CLKDIV_TMR1+1)<<1))
 #define TIMER1_1ms (TIMER1_CLOCK/1000)
 #define TIMER1_100us (TIMER1_1ms / 10)
@@ -41,7 +41,7 @@
 #define TIMER1_5us (TIMER1_1ms / 200)
 #define TIMER1_2us (TIMER1_1ms / 500)
 #define TIMER1_1us (TIMER1_1ms / 1000)
-/************TIMER2常见定时定义************/
+/* TIMER2 */
 // 由于计数器只有16位而timer2频率有24.576Mhz所以延时最长大概4ms左右
 #define TIMER2_CLOCK (HIGH_CHIP_CLOCK / ((SYSCTL_CLKDIV_TMR2+1)<<1))
 #define TIMER2_1ms (TIMER2_CLOCK / 1000)
@@ -52,7 +52,7 @@
 #define TIMER2_5us (TIMER2_1ms / 200)
 #define TIMER2_2us (TIMER2_1ms / 500)
 #define TIMER2_1us (TIMER2_1ms / 1000)
-/************TIMER3常见定时定义************/
+/* TIMER3 */
 // 由于计数器只有16位而timer2频率有24.576Mhz所以延时最长大概4ms左右
 #define TIMER3_CLOCK (HIGH_CHIP_CLOCK / ((SYSCTL_CLKDIV_TMR3+1)<<1))
 #define TIMER3_1ms (TIMER3_CLOCK / 1000)
@@ -63,7 +63,7 @@
 #define TIMER3_5us (TIMER3_1ms / 200)
 #define TIMER3_2us (TIMER3_1ms / 500)
 #define TIMER3_1us (TIMER3_1ms / 1000)
-/************TIMER Register define************/
+/* TIMER Register define */
 #define TIMER_MASK_EN       HEX04
 #define TIMER_MODE_SIGLE    HEX02
 #define TIMER_EN            HEX01
@@ -71,7 +71,6 @@
 
 extern int TIMER_Disable(u8 index);
 extern int TIMER_Init(u8 index, u32 load_count, u8 loop_enable, u8 int_mask);
-extern void InternalWDTNow(void);
 extern BYTE Timer_Int_Enable(BYTE channel);
 extern BYTE Timer_Int_Disable(BYTE channel);
 extern BYTE Timer_Int_Enable_Read(BYTE channel);

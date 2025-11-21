@@ -17,16 +17,16 @@
 #define KERNEL_SHAREMEMORY_H
 #include "AE_GLOBAL.H"
 #include "KERNEL_PNP.H"
-#define SMF_SR_IR_HOST  HEX01
-#define SMF_SR_IR_EC    HEX02
-#define SMF_SR_IE_HOST  HEX04
-#define SMF_SR_IE_EC    HEX08
-#define SMS_CTL_HSIE    HEX80
-#define SMS_CTL_HSEMW   HEX40
-#define SMS_WUCTL_SMSW0E HEX01
-#define SMS_WUCTL_SMSW1E HEX02
-#define SMS_WUCTL_SMSW2E HEX04
-#define SMS_WUCTL_SMSW3E HEX08
+#define SMF_SR_IR_HOST      HEX01
+#define SMF_SR_IR_EC        HEX02
+#define SMF_SR_IE_HOST      HEX04
+#define SMF_SR_IE_EC        HEX08
+#define SMS_CTL_HSIE        HEX80
+#define SMS_CTL_HSEMW       HEX40
+#define SMS_WUCTL_SMSW0E    HEX01
+#define SMS_WUCTL_SMSW1E    HEX02
+#define SMS_WUCTL_SMSW2E    HEX04
+#define SMS_WUCTL_SMSW3E    HEX08
 #define SMS_WxAAS_WPE       0xC0
 #define SMS_WxAAS_LWPE      0x80
 #define SMS_WxAAS_HWPE      0x40
@@ -43,8 +43,8 @@
 #define SMS_WxAAS_64SIZE    0x02
 #define SMS_WxAAS_32SIZE    0x01
 #define SMS_WxAAS_16SIZE    0x00
-#define SMFSR_EC_IE     HEX08
-#define SMFSR_EC_IR     HEX02
+#define SMFSR_EC_IE         HEX08
+#define SMFSR_EC_IR         HEX02
 
 extern void SMS_Init(VBYTE windows, VBYTE baseaddr, VBYTE aas);
 extern void SMF_Init(void);

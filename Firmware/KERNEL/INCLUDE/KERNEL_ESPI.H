@@ -815,6 +815,7 @@ extern eSPI_OOB_RequestCounter eRPMC_RequestCounter;
 extern eSPI_OOB_RequestCounter_RESPONSE eRPMC_RequestCounter_data;
 extern eSPI_OOB_ReadParameters eRPMC_ReadParameters;
 extern eSPI_OOB_ReadParameters_RESPONSE eRPMC_ReadParameters_data;
+extern BYTE RPMC_OOB_TempArr[80];
 //-----------------------------------------------------------------------------
 // (33xxh) EC Interface Registers, eSI Queue 0 - PUT_PC DATA , PUT_OOB DATA
 //-----------------------------------------------------------------------------

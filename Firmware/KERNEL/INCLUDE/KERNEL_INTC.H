@@ -17,7 +17,10 @@
 #define _KERNEL_INTC_H
 #include "AE_GLOBAL.H"
 
- /*----------------------------------LINE--------------------------------*/
+extern const FUNCT_PTR_V_V intr0_service[];
+extern const FUNCT_PTR_V_V intr1_service[];
+
+/* Interrupt Controller Registers */
 #define INTC_ICTL_INTEN_L 0x00       // IRQ interrupt source enable register (low)
 #define INTC_ICTL_INTEN_H 0x04       // IRQ interrupt source enable register (high)
 #define INTC_ICTL_INTMASK_L 0x08     // IRQ interrupt source mask register (low).
@@ -39,27 +42,17 @@
 #define FINTC_ICTL_STATUS 0xd0      // Fast interrupt status register
 #define FINTC_ICTL_FINALSTATUS 0xd4 // Fast interrupt final status register
 #define INTC_ICTL_PLEVEL 0xd8       // IRQ System Priority Level Register
+/* INTC Registers Set */
 #define intc_write(index, addr, val) *(VBYTEP)(INTC0_BASE_ADDR + (index * 0x400) + addr) = val
 #define intc_read(index, addr) *(VBYTEP)(INTC0_BASE_ADDR + (index * 0x400) + addr)
 #define set_ictl_reg(index, addr, val) intc_write(index, addr, ((val) | intc_read(index, addr)))
 #define clear_ictl_reg(index, addr, val) intc_write(index, addr, (~(val) & intc_read(index, addr)))
-#define Pport_Int_Enable (PP_CTL |= (0x1 << 4))
-#define Pport_Int_Disable (PP_CTL &= ~(0x1 << 4))
-#define Pport_Int_Enable_Read ((PP_CTL & (0x1 << 4)) != 0)
-#define Pport_Int_Status ((PP_STA & (0x1 << 2)) != 0)
-#define MON_INTR_MASK INTR_MASK
-#define MON_INTR_STS INTR_STS
-#define Mon_Int_Mask(type) (MON_INTR_MASK |= (0x1 << (type)))
-#define Mon_Int_Unmask(type) (MON_INTR_MASK &= ~(0x1 << (type)))
-#define Mon_Int_Mask_Read(type) ((MON_INTR_MASK & (0x1 << (type))) != 0)
-#define Mon_Int_Status(type) ((MON_INTR_STS & (0x1 << (type))) != 0)
-extern const FUNCT_PTR_V_V intr0_service[];
-extern const FUNCT_PTR_V_V intr1_service[];
-
+/*-----------------------------------------------------------------------------
+ * External Calling Prototype
+ *---------------------------------------------------------------------------*/
 extern void disable_intc(int index, int num);
 extern void enable_intc(int index, int num);
 extern void intc_init();
-void Handle_Kbd(BYTE channel);
 extern BYTE Int_Control0_Enable(BYTE int_number);
 extern BYTE Int_Control1_Enable(BYTE int_num);
 extern BYTE Int_Control0_Disable(BYTE int_num);

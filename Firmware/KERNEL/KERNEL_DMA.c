@@ -173,11 +173,13 @@ void DMA_Init(DMA_InitTypeDef*DMA_Init_Struct)
     //     DMA_ChEnReg  = wdata;
     // }
 }
+
 void DMA_Channal_EN(uint8_t DMA_Channal)
 {
     DMA_DmaCfgReg = 0x1;
     DMA_ChEnReg  = ((0x1<<DMA_Channal)|((0x1<<DMA_Channal)<<8));
 }
+
 /**
  * @brief dma传输完成检测函数
  * @param  none

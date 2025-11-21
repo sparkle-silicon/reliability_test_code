@@ -16,11 +16,11 @@
 #ifndef CUSTOM_PMC3_H
 #define CUSTOM_PMC3_H
 #include "AE_GLOBAL.H"
- /*--------------------PMC3 Register Address definition-----------------*/
-#define OBF3            BIT(0x00)
-#define IBF3            BIT(0x01)
-#define DBG_En3         BIT(0x02)
-#define C_D3            BIT(0x03)
+ /*PMC3 Register bit definition*/
+#define OBF3            BIT(0)
+#define IBF3            BIT(1)
+#define DBG_En3         BIT(2)
+#define C_D3            BIT(3)
 /*--------------------------------------------------------------------------*/
 extern void Service_PCI4(void);
 

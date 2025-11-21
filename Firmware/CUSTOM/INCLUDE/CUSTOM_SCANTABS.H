@@ -19,6 +19,7 @@
 #include "KERNEL_XLATE.H"
 
 extern const BYTE  Cr_KBD_Tables[][8];
+
 extern void Check_KB_Wake_S3(BYTE  KSO, BYTE  KSI);
 extern void Check_Send_Key(BYTE  table_entry, BYTE  event);
 extern BYTE  Skip_Send_Key(void);
@@ -29,5 +30,4 @@ extern void Scratch_Fn_Key_Break(void);
 extern void Scratch_Fn_Key_Make(void);
 extern void Scratch_NUMLK_Key_Break(void);
 extern void Scratch_NUMLK_Key_Make(void);
-extern VBYTE* Tmp_code_pointer;
 #endif

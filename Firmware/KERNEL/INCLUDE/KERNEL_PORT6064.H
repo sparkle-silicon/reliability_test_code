@@ -56,9 +56,9 @@
 #else 
 #define kbc_dprint(fmt, args...)
 #endif
-  /*-----------------------------------------------------------------------------
-   * External Calling Prototype
-   *---------------------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------
+ * External Calling Prototype
+ *---------------------------------------------------------------------------*/
 extern void Service_PCI(void);
 extern void KB_Cmd_Handle(BYTE data_byte);
 extern void Write_Debug_Data_To_Sram(uint8_t Data);

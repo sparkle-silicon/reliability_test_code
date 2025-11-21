@@ -17,11 +17,11 @@
 #define CUSTOM_PMC5_H
 #include "AE_GLOBAL.H"
 
- /*--------------------PMC5 Register Address definition-----------------*/
-#define OBF5            BIT(0x00)
-#define IBF5            BIT(0x01)
-#define DBG_En5         BIT(0x02)
-#define C_D5            BIT(0x03)
+ /*PMC5 Register bit definition*/
+#define OBF5            BIT(0)
+#define IBF5            BIT(1)
+#define DBG_En5         BIT(2)
+#define C_D5            BIT(3)
 /*--------------------------------------------------------------------------*/
 extern void Service_PCI6(void);
 #endif

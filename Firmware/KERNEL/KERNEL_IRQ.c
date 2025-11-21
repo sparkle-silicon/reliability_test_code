@@ -21,7 +21,7 @@ extern char Uart_buffer[UART_BUFFER_SIZE]; // An array of data transferred by th
 #endif
 BYTE intr_st0, intr_st1, intr_st2, intr_st3, intr_st4, intr_st5, intr_st6, intr_st7;
 BYTE intr_st;
-/***************weak声明*********************/
+/* weak declaration of interrupt handler functions */
 void __interrupt SECTION(".interrupt.CPUS_HANDLER") CPUS_HANDLER(void) __weak;
 void __interrupt SECTION(".interrupt.CPUT_HANDLER") CPUT_HANDLER(void) __weak;
 void __interrupt SECTION(".interrupt.CPUR_HANDLER") CPUR_HANDLER(void) __weak;
@@ -54,8 +54,8 @@ void __interrupt SECTION(".interrupt.TIMER2_HANDLER") TIMER2_HANDLER(void) __wea
 void __interrupt SECTION(".interrupt.TIMER3_HANDLER") TIMER3_HANDLER(void) __weak;
 void __interrupt SECTION(".interrupt.INTC0_HANDLER") INTC0_HANDLER(void) __weak;
 void __interrupt SECTION(".interrupt.INTC1_HANDLER") INTC1_HANDLER(void) __weak;
-/***************weak声明*********************/
-/*----------------------------------LINE------------------------------------*/
+
+
 void irqc_enable_interrupt(uint32_t source)
 {
 	set_csr(0xBD1, 1 << source);

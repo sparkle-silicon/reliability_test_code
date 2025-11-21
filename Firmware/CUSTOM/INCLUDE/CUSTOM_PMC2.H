@@ -16,12 +16,11 @@
 #ifndef CUSTOM_PMC2_H
 #define CUSTOM_PMC2_H
 #include "AE_GLOBAL.H"
-
- /*--------------------PMC2 Register Address definition-----------------*/
-#define OBF2            BIT(0x00)
-#define IBF2            BIT(0x01)
-#define DBG_En2          BIT(0x02)
-#define C_D2            BIT(0x03)
+ /*PMC2 Register bit definition*/
+#define OBF2            BIT(0)
+#define IBF2            BIT(1)
+#define DBG_En2         BIT(2)
+#define C_D2            BIT(3)
 /*--------------------------------------------------------------------------*/
 
 /*-----------------------------------------------------------------------------

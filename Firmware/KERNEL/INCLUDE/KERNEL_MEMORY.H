@@ -25,6 +25,7 @@ extern VBYTE* Tmp_XPntr;
 extern VBYTE* Tmp_XPntr1;
 extern VBYTE* KBDataPending;
 extern VBYTE* MSDataPending;
+extern VBYTE* Tmp_code_pointer;
 
 // DRAM BASE ADDRESS DEFINITION
 #define MEMORY_BASE0_ADDR DRAM_BASE_ADDR

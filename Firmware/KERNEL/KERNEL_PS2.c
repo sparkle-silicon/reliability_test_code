@@ -21,6 +21,9 @@
 #include "KERNEL_HOST.H"
 #include "KERNEL_IRQ.H"
 #include "KERNEL_MEMORY.H"
+
+VBYTE PS2_PortN_Data[3];
+
  //----------------------------------------------------------------------------
  // FUNCTION: PS2_PortN_Read_Status
  //
