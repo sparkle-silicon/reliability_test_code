@@ -82,9 +82,9 @@ typedef struct PowSeq_Pin_Record
 	WORD pin_delay;
 } sPowSeq_Pin_Record;
 
-//-----------------------------------------------------------------------------
-// Function prototype
-//-----------------------------------------------------------------------------
+/*-----------------------------------------------------------------------------
+ * External Calling Prototype
+ *---------------------------------------------------------------------------*/
 extern void PowerState_Monitor(void);
 extern void Custom_S3_S0_Trigger(void);
 extern void Custom_S4_S0_Trigger(void);

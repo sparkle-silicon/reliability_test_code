@@ -18,7 +18,10 @@
 #include "AE_GLOBAL.H"
 #include "KERNEL_PNP.H"
 
+/*-----------------------------------------------------------------------------
+ * External Calling Prototype
+ *---------------------------------------------------------------------------*/
 extern void BRAM_Config(uint8_t index_0, uint8_t index_1, uint8_t mask);
-extern void BRAM_EC_Read(void);
-extern void BRAM_EC_Write(void);
+extern void BRAM_Read(void);
+extern void BRAM_Write(void);
 #endif

@@ -20,7 +20,9 @@
 extern const FUNCT_PTR_V_V intr0_service[];
 extern const FUNCT_PTR_V_V intr1_service[];
 
-/* Interrupt Controller Registers */
+/*-----------------------------------------------------------------------------
+ * Interrupt Controller Registers
+ *---------------------------------------------------------------------------*/
 #define INTC_ICTL_INTEN_L 0x00       // IRQ interrupt source enable register (low)
 #define INTC_ICTL_INTEN_H 0x04       // IRQ interrupt source enable register (high)
 #define INTC_ICTL_INTMASK_L 0x08     // IRQ interrupt source mask register (low).
@@ -42,7 +44,9 @@ extern const FUNCT_PTR_V_V intr1_service[];
 #define FINTC_ICTL_STATUS 0xd0      // Fast interrupt status register
 #define FINTC_ICTL_FINALSTATUS 0xd4 // Fast interrupt final status register
 #define INTC_ICTL_PLEVEL 0xd8       // IRQ System Priority Level Register
-/* INTC Registers Set */
+/*-----------------------------------------------------------------------------
+ * INTC Registers Set
+ *---------------------------------------------------------------------------*/
 #define intc_write(index, addr, val) *(VBYTEP)(INTC0_BASE_ADDR + (index * 0x400) + addr) = val
 #define intc_read(index, addr) *(VBYTEP)(INTC0_BASE_ADDR + (index * 0x400) + addr)
 #define set_ictl_reg(index, addr, val) intc_write(index, addr, ((val) | intc_read(index, addr)))
@@ -50,8 +54,8 @@ extern const FUNCT_PTR_V_V intr1_service[];
 /*-----------------------------------------------------------------------------
  * External Calling Prototype
  *---------------------------------------------------------------------------*/
-extern void disable_intc(int index, int num);
-extern void enable_intc(int index, int num);
+extern void Intc_Disable(int index, int num);
+extern void Intc_Enable(int index, int num);
 extern void intc_init();
 extern BYTE Int_Control0_Enable(BYTE int_number);
 extern BYTE Int_Control1_Enable(BYTE int_num);

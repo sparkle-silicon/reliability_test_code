@@ -136,12 +136,12 @@ void BAT_Var_Clear(void)
 
 void BatteryTARSetup(void)
 {
-	I2c_Master_Set_Tar(BAT_ADDR, I2C_REGADDR_7BIT, BAT_I2C_CHANNEL);
+	I2C_Master_Set_Tar(BAT_ADDR, I2C_REGADDR_7BIT, BAT_I2C_CHANNEL);
 }
 
 void ChargerTARSetup(void)
 {
-	I2c_Master_Set_Tar(CHARGER_ADDR, I2C_REGADDR_7BIT, BAT_I2C_CHANNEL);
+	I2C_Master_Set_Tar(CHARGER_ADDR, I2C_REGADDR_7BIT, BAT_I2C_CHANNEL);
 }
 
 void BAT_ChargePinControl(BYTE enable)
@@ -162,7 +162,7 @@ void BatteryWrite(BYTE addr, WORD value)
 	data[0] = (value & 0xFF);
 	data[1] = ((value >> 8) & 0xFF);
 
-	I2cM_Write_Block(BAT_ADDR, data, 2, addr, BAT_I2C_CHANNEL);
+	I2CM_Write_Block(BAT_ADDR, data, 2, addr, BAT_I2C_CHANNEL);
 }
 
 void ChargerWrite(BYTE addr, WORD value)
@@ -171,7 +171,7 @@ void ChargerWrite(BYTE addr, WORD value)
 	data[0] = (value & 0xFF);
 	data[1] = ((value >> 8) & 0xFF);
 
-	I2cM_Write_Block(CHARGER_ADDR, data, 2, addr, CHG_I2C_CHANNEL);
+	I2CM_Write_Block(CHARGER_ADDR, data, 2, addr, CHG_I2C_CHANNEL);
 }
 
 VWORD BatteryRead(BYTE addr)
@@ -179,11 +179,11 @@ VWORD BatteryRead(BYTE addr)
 	BYTE i = 2;
 	word_read temp;
 	BatteryTARSetup();
-	while (I2c_Check_TFE(BAT_I2C_CHANNEL));
+	while (I2C_Check_TFE(BAT_I2C_CHANNEL));
 	SMBUSn_DATA_CMD0(BAT_I2C_CHANNEL) = (I2C_WRITE) | addr;
 	SMBUSn_DATA_CMD0(BAT_I2C_CHANNEL) = I2C_READ;
 	SMBUSn_DATA_CMD0(BAT_I2C_CHANNEL) = I2C_READ | I2C_STOP;
-	while ((i--) && (0 == (I2c_Check_RFNE(BAT_I2C_CHANNEL))))
+	while ((i--) && (0 == (I2C_Check_RFNE(BAT_I2C_CHANNEL))))
 	{
 		temp.data0[1 - i] = SMBUSn_DATA_CMD0(BAT_I2C_CHANNEL) & 0xff;
 	}
@@ -195,11 +195,11 @@ VWORD ChargerRead(BYTE addr)
 	BYTE i = 2;
 	word_read temp;
 	ChargerTARSetup();
-	while (I2c_Check_TFE(CHG_I2C_CHANNEL));
+	while (I2C_Check_TFE(CHG_I2C_CHANNEL));
 	SMBUSn_DATA_CMD0(CHG_I2C_CHANNEL) = (I2C_WRITE) | addr;
 	SMBUSn_DATA_CMD0(CHG_I2C_CHANNEL) = I2C_READ;
 	SMBUSn_DATA_CMD0(CHG_I2C_CHANNEL) = I2C_READ | I2C_STOP;
-	while ((i--) && (0 == I2c_Check_RFNE(CHG_I2C_CHANNEL)))
+	while ((i--) && (0 == I2C_Check_RFNE(CHG_I2C_CHANNEL)))
 	{
 		temp.data0[1 - i] = SMBUSn_DATA_CMD0(CHG_I2C_CHANNEL) & 0xff;
 	}
@@ -560,7 +560,7 @@ void BATID_CheckDeviceName(void)
 	{
 		BYTE sLength = strlen(BatDevNameTable[index].DeviceName);
 		BatteryTARSetup();
-		I2c_Master_Read_Block(Temp_Name, sLength, BATCmd_Dname, BAT_I2C_CHANNEL);
+		I2C_Master_Read_Block(Temp_Name, sLength, BATCmd_Dname, BAT_I2C_CHANNEL);
 		for (i = 0; i < sLength; i++)
 		{
 			if (Temp_Name[i] != BatDevNameTable[index].DeviceName[i])
@@ -1037,7 +1037,7 @@ void Shutdown(BYTE i2c_addr, WORD i2c_channel)
 	BYTE TxDate[2];
 	TxDate[0] = Date & 0xff;    // 小端发送，高位数据先发送，低位数据后发送
 	TxDate[1] = (Date >> 8) & 0xff;
-	I2cM_Write_Word(i2c_addr, TxDate, Command, i2c_channel);// 连续往0x00小端按字两次写入0x0010则会进入ShutDown模式
-	I2cM_Write_Word(i2c_addr, TxDate, Command, i2c_channel);
+	I2CM_Write_Word(i2c_addr, TxDate, Command, i2c_channel);// 连续往0x00小端按字两次写入0x0010则会进入ShutDown模式
+	I2CM_Write_Word(i2c_addr, TxDate, Command, i2c_channel);
 
 }

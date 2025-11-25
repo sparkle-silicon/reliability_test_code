@@ -73,46 +73,46 @@ void Moudle_DMA_Enable(uint32_t Module)
     }
     
     case SUBUS0_DMA_RX:
-        I2c_Write_Short(0x1, SMBUS_DMA_CR_OFFSET, 0); 
+        I2C_Write_Short(0x1, SMBUS_DMA_CR_OFFSET, 0); 
         break;
     case SUBUS0_DMA_TX:
-        I2c_Write_Short(0x2, SMBUS_DMA_CR_OFFSET, 0);
+        I2C_Write_Short(0x2, SMBUS_DMA_CR_OFFSET, 0);
         break;
     case SUBUS1_DMA_RX:
-        I2c_Write_Short(0x1, SMBUS_DMA_CR_OFFSET, 1);
+        I2C_Write_Short(0x1, SMBUS_DMA_CR_OFFSET, 1);
         break;
     case SUBUS1_DMA_TX:
-        I2c_Write_Short(0x2, SMBUS_DMA_CR_OFFSET, 1);
+        I2C_Write_Short(0x2, SMBUS_DMA_CR_OFFSET, 1);
         break;
     case SUBUS2_DMA_RX:
-        I2c_Write_Short(0x1, SMBUS_DMA_CR_OFFSET, 2);
+        I2C_Write_Short(0x1, SMBUS_DMA_CR_OFFSET, 2);
         break;
     case SUBUS2_DMA_TX:
-        I2c_Write_Short(0x2, SMBUS_DMA_CR_OFFSET, 2);
+        I2C_Write_Short(0x2, SMBUS_DMA_CR_OFFSET, 2);
         break;
     case SUBUS3_DMA_RX:
-        I2c_Write_Short(0x1, SMBUS_DMA_CR_OFFSET, 3);
+        I2C_Write_Short(0x1, SMBUS_DMA_CR_OFFSET, 3);
         break;
     case SUBUS3_DMA_TX:
-        I2c_Write_Short(0x2, SMBUS_DMA_CR_OFFSET, 3);
+        I2C_Write_Short(0x2, SMBUS_DMA_CR_OFFSET, 3);
         break;
     case SUBUS4_DMA_RX:
-        I2c_Write_Short(0x1, SMBUS_DMA_CR_OFFSET, 4);
+        I2C_Write_Short(0x1, SMBUS_DMA_CR_OFFSET, 4);
         break;
     case SUBUS4_DMA_TX:
-        I2c_Write_Short(0x2, SMBUS_DMA_CR_OFFSET, 4);
+        I2C_Write_Short(0x2, SMBUS_DMA_CR_OFFSET, 4);
         break;
     case SUBUS5_DMA_RX:
-        I2c_Write_Short(0x1, SMBUS_DMA_CR_OFFSET, 5);
+        I2C_Write_Short(0x1, SMBUS_DMA_CR_OFFSET, 5);
         break;
     case SUBUS5_DMA_TX:
-        I2c_Write_Short(0x2, SMBUS_DMA_CR_OFFSET, 5);
+        I2C_Write_Short(0x2, SMBUS_DMA_CR_OFFSET, 5);
         break;
     case SUBUS6_DMA_RX:
-        I2c_Write_Short(0x1, SMBUS_DMA_CR_OFFSET, 6);
+        I2C_Write_Short(0x1, SMBUS_DMA_CR_OFFSET, 6);
         break;
     case SUBUS6_DMA_TX:
-        I2c_Write_Short(0x2, SMBUS_DMA_CR_OFFSET, 6);
+        I2C_Write_Short(0x2, SMBUS_DMA_CR_OFFSET, 6);
         break;
     default:
         break;

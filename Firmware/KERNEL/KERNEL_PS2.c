@@ -21,7 +21,7 @@
 #include "KERNEL_HOST.H"
 #include "KERNEL_IRQ.H"
 #include "KERNEL_MEMORY.H"
-
+#include "CUSTOM_POWER.H"
 VBYTE PS2_PortN_Data[3];
 
  //----------------------------------------------------------------------------
@@ -436,7 +436,7 @@ void Send_ResetCmd_To_MS_WaitACK(BYTE PortNum)
 {
 	BYTE ack;
 	if (PortNum == 0) // 发送Cmd之前屏蔽中断，以防中断中断中被调用，导致嵌套
-		irqc_disable_interrupt(IRQC_INT_DEVICE_PS2_CH0);
+		irqc_disable_interrupt(IRQC_INT_DEVICE_PS2_0);
 	else if (PortNum == 1)
 		ICTL1_INTMASK5 |= 0x40;
 	PS2_PortN_Write_Output_W(0xFF, PortNum);
@@ -453,7 +453,7 @@ void Send_ResetCmd_To_MS_WaitACK(BYTE PortNum)
 	TIMER_Disable(0x0);
 	if (PortNum == 0) // 等到取出ACK后再重新使能中断
 	{
-		irqc_enable_interrupt(IRQC_INT_DEVICE_PS2_CH0);
+		irqc_enable_interrupt(IRQC_INT_DEVICE_PS2_0);
 	}
 	else if (PortNum == 1)
 	{
@@ -608,9 +608,9 @@ int AE10x_PS2_Init(void)
 {
 	/*enable ps2 channel 0/1 device for scan ps2 channel*/
 	PS2_PortN_Write_Command_W(CCMD_WRITE, 0);
-	PS2_PortN_Write_Output_W(0x30, 0);
+	PS2_PortN_Write_Output_W((PS2_CR_MS_EN|PS2_CR_KB_EN), 0);
 	PS2_PortN_Write_Command_W(CCMD_WRITE, 1);
-	PS2_PortN_Write_Output_W(0x30, 1);
+	PS2_PortN_Write_Output_W((PS2_CR_MS_EN|PS2_CR_KB_EN), 1);
 	// KBD_SCAN ps2 device
 	PS2_Channel_Device_Scan();
 	// confirm ps2 main devices
@@ -1118,6 +1118,18 @@ void InitAndIdentifyPS2(void)
 	static WORD _10MS_Cunt = 0;
 	static DWORD Temp_SYSCTLPIO2 = 0;
 	static BYTE Temp_flag = 0;
+	static BYTE prev_power_state = SYSTEM_S5;  // 上一次电源状态
+	static BYTE power_on_attempts = 0;       // 上电初期的尝试次数
+	static BYTE s0_attempts = 0;             // S0状态下的尝试次数
+	bool should_attempt = FALSE;
+	// 检查电源状态变化
+	if(prev_power_state == SYSTEM_S5 && System_PowerState == SYSTEM_S5_S0)
+	{
+		// 从S5切换到S0，重置S0状态下的尝试次数
+		s0_attempts = 0;
+	}
+	// 保存当前电源状态作为下一次的历史状态
+	prev_power_state = System_PowerState;
 	if (MS_Main_CHN == 0 && KB_Main_CHN == 0)
 	{
 		if (Temp_flag == 0)
@@ -1128,8 +1140,26 @@ void InitAndIdentifyPS2(void)
 		if (PS2_PinSelect())
 		{
 			_10MS_Cunt++;
-			if (_10MS_Cunt >= 10)
+			if (_10MS_Cunt >= IdentifyTimeOut)//100ms
 			{
+				// 上电初期（默认初始状态为S5）且尝试次数未满3次
+				if(power_on_attempts < 3 && prev_power_state == SYSTEM_S5)
+				{
+					should_attempt = TRUE;
+					power_on_attempts++;
+				}
+				// 处于S0状态且尝试次数未满3次
+				else if(s0_attempts < 3 && prev_power_state == SYSTEM_S0)
+				{
+					should_attempt = TRUE;
+					s0_attempts++;
+				}
+				else
+				{
+					should_attempt = FALSE;
+				}
+				if(should_attempt == FALSE)
+					return;
 				//PS2 RESET
 				SYSCTL_RST0 |= (PS2M_RST);
 				SYSCTL_RST1 |= PS2K_RST;

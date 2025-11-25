@@ -19,7 +19,9 @@
 #include "KERNEL_KBS.H"
 #include "CUSTOM_SCANTABS.H"
 #include "KERNEL_PORT6064.H"
-/* Key State */
+/*-----------------------------------------------------------------------------
+ * Key State
+ *---------------------------------------------------------------------------*/
 #define NUM_LOCK 	(BIT0)
 #define LShift    	(BIT1)
 #define RShift   	(BIT2)
@@ -45,7 +47,9 @@ typedef volatile union _key_state
         BYTE bit7 : 1;  /* Bit[7] */
     } index;
 }  ukey_state;
-
+/*-----------------------------------------------------------------------------
+ * External Calling Prototype
+ *---------------------------------------------------------------------------*/
 extern void KBS_Xlate_Code2(uKEY key, BYTE  event);
 extern void Transmit_Key(BYTE  table_entry, BYTE  event);
 extern void Single_Code(BYTE  scan_code, BYTE  event);

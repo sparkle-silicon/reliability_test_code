@@ -17,15 +17,15 @@
 #define KERNEL_IRQ_H_
 #include "AE_GLOBAL.H"
 
-extern FUNCT_PTR_V_V Fla_If_Ptr, Smf_Ptr, IVT_Ptr;
-
 /*irq debug*/
 #if IRQC_DEBUG
 #define irqprint(fmt, args...) dprint(fmt, ##args)
 #else
 #define irqprint(fmt, args...)
 #endif
-/*irq number*/
+/*-----------------------------------------------------------------------------
+ * IRQ Number Define
+ *---------------------------------------------------------------------------*/
 #define IRQC_INT_DEVICE_CPUS 0
 #define IRQC_INT_DEVICE_CPUT 1
 #define IRQC_INT_DEVICE_CPUR 2
@@ -58,9 +58,13 @@ extern FUNCT_PTR_V_V Fla_If_Ptr, Smf_Ptr, IVT_Ptr;
 #define IRQC_INT_DEVICE_TIMER3 29
 #define IRQC_INT_DEVICE_INTR0 30
 #define IRQC_INT_DEVICE_INTR1 31
-
+/*-----------------------------------------------------------------------------
+ * IRQ Operation Define(Whether the first-level interrupt is enabled or not)
+ *---------------------------------------------------------------------------*/
 #define CSR_IRQC_CONFIG(IRQC, en_or_dis, lvl, edge) en_or_dis##able_irq(IRQC, lvl, edge); // lvl为0是边沿触发，1是电平触发
-
+/*-----------------------------------------------------------------------------
+ * External Calling Prototype
+ *---------------------------------------------------------------------------*/
 extern void cpu_irq_en(void);
 extern void Irqc_init();
 extern void irqc_enable_interrupt(uint32_t source);

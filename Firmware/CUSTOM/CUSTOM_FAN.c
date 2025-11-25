@@ -171,7 +171,7 @@ s8 ReadCPUTemp(void)
 s8 ReadSysTemp(void)
 {
 	/*iic接口读取温感*/
-	// get_temperature(1);
+	// Get_Temperature(1);
 	// sys_temp
 	return (s8)SYSTEM_TEMP;
 }

@@ -20,7 +20,7 @@
   *
   * @param mode 0软件 1硬件 2连续 3自动采样
   *
-  * @return             无
+  * @return 无
   */
 void ADC_TriggerMode_Config(uint8_t mode)
 {

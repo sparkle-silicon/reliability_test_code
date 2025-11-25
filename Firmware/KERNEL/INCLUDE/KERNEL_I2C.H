@@ -18,14 +18,16 @@
 #include "AE_GLOBAL.H"
 #include "KERNEL_GPIO.H"
 
-//I2C调试打印
+//I2C debug
 #if I2C_DEBUG 
 #define i2c_dprint dprint
 #else 
 #define i2c_dprint(fmt, args...)
 #endif
 
-/*I2C speed mode*/
+/*-----------------------------------------------------------------------------
+ * I2C Speed Mode
+ *---------------------------------------------------------------------------*/
 #define I2C_STANDARD 0
 #define I2C_FAST 1
 #define I2C_HIGH 2
@@ -43,8 +45,9 @@
 #define I2C_TXR_WTS             0       //write to slave
 #define I2C
 #endif
-/*API register define*/
-//all registers are 8 bits width
+/*-----------------------------------------------------------------------------
+ * I2C Parameters Definition
+ *---------------------------------------------------------------------------*/
 #define I2C_REGADDR     			0x5
 #define I2C_DATA_CMD_RWDIR  		0x11
 #define I2C_RAW_INTR_STAT_H 		0x35
@@ -153,46 +156,45 @@
 #define SMBUS_BIT10_ADDR_MASK 0x3ff
 #define SMBUS_BITn_ADDR_MASK SMBUS_BIT7_ADDR_MASK
 
-//*****************************************************************************
-// extern functions
-//*****************************************************************************
-extern WORD I2c_Channel_Baseaddr(WORD i2c_channel_num);
-extern BYTE  I2c_Int_Mask(BYTE  channel, BYTE  type);
-extern BYTE  I2c_Int_Unmask(BYTE  channel, BYTE  type);
-extern BYTE  I2c_Int_Mask_Read(BYTE  channel, BYTE  type);
-extern BYTE  I2c_Int_Status(BYTE  channel, BYTE  type);
-extern BYTE I2c_Master_Read_Byte(BYTE reg, WORD i2c_channel);
-extern BYTE I2cM_Read_Byte(BYTE i2c_addr, BYTE reg, WORD i2c_channel);
-extern int i2c_dw_read_clear_intrbits(WORD baseaddr);
-extern uint8_t I2c_Readb(WORD regoffset, WORD i2c_channel);
-extern char I2c_Check_TXE(WORD i2c_channel);
-extern char I2c_Check_RXF(WORD i2c_channel);
-extern char I2c_Check_TFE(WORD i2c_channel);
-extern char I2c_Check_TFNF(WORD i2c_channel);
-extern char I2c_Check_RFNE(WORD i2c_channel);
-extern char I2c_Check_Stop_Det(WORD i2c_channel);
-extern char I2c_Check_Active(WORD i2c_channel);
-extern uint8_t I2c_Slave_Read_Byte(WORD i2c_channel);
-extern void I2c_Write_Short(WORD value, WORD regoffset, WORD i2c_channel);
-extern WORD I2c_Read_Short(WORD regoffset, WORD i2c_channel);
-extern void I2c_Writeb(BYTE value, WORD regoffset, WORD i2c_channel);
-extern void I2c_Write16bit(WORD value, WORD regoffset, WORD i2c_channel);
-extern void I2c_Mux_set(BYTE modle);
-extern void I2c_Master_Set_Tar(WORD TAR, WORD BIT, WORD i2c_channel);
-extern void I2c_Master_Write_Byte(BYTE data, BYTE reg, WORD i2c_channel);
-extern void I2c_Master_Write_Word(BYTE* data, BYTE reg, WORD i2c_channel);
-extern void I2c_Master_Read_Word(BYTE* data, BYTE reg, WORD i2c_channel);
-extern void I2c_Master_Write_Block(BYTE* data, BYTE lenth, BYTE reg, WORD i2c_channel);
-extern void I2c_Master_Read_Block(BYTE* data, BYTE lenth, BYTE reg, WORD i2c_channel);
-extern void I2cM_Write_Byte(BYTE i2c_addr, BYTE reg, BYTE data, WORD i2c_channel);
-extern void I2cM_Write_Word(BYTE i2c_addr, BYTE* data, BYTE reg, WORD i2c_channel);
-extern void I2cM_Read_Word(BYTE i2c_addr, BYTE* data, BYTE reg, WORD i2c_channel);
-extern void I2cM_Write_Block(BYTE i2c_addr, BYTE* data, BYTE length, BYTE reg, WORD i2c_channel);
-extern void I2cM_Read_Block(BYTE i2c_addr, BYTE* data, BYTE length, BYTE reg, WORD i2c_channel);
-extern void I2c_Slave_Write_Byte(uint8_t data, WORD i2c_channel);
-extern void I2c_Slave_Write_Block(uint8_t* data, BYTE  length, WORD i2c_channel);
-extern void I2c_Master_Controller_Init(WORD i2c_channel, DWORD speed, BYTE spklen);
-extern void I2c_Slave_Init(WORD i2c_channel, DWORD speed, BYTE spklen);
-extern void I2c_Channel_Init(BYTE channel, DWORD speed, BYTE role, BYTE addr, BYTE spklen);
-extern void i2c_dw_tx_abrt(WORD baseaddr);
+/*-----------------------------------------------------------------------------
+ * External Calling Prototype
+ *---------------------------------------------------------------------------*/
+extern WORD I2C_Channel_Baseaddr(WORD i2c_channel_num);
+extern BYTE  I2C_Int_Mask(BYTE  channel, BYTE  type);
+extern BYTE  I2C_Int_Unmask(BYTE  channel, BYTE  type);
+extern BYTE  I2C_Int_Mask_Read(BYTE  channel, BYTE  type);
+extern BYTE  I2C_Int_Status(BYTE  channel, BYTE  type);
+extern BYTE I2C_Master_Read_Byte(BYTE reg, WORD i2c_channel);
+extern BYTE I2CM_Read_Byte(BYTE i2c_addr, BYTE reg, WORD i2c_channel);
+extern int I2C_ReadClear_Int(WORD baseaddr);
+extern uint8_t I2C_Readb(WORD regoffset, WORD i2c_channel);
+extern void I2C_Writeb(BYTE value, WORD regoffset, WORD i2c_channel);
+extern char I2C_Check_TXE(WORD i2c_channel);
+extern char I2C_Check_RXF(WORD i2c_channel);
+extern char I2C_Check_TFE(WORD i2c_channel);
+extern char I2C_Check_TFNF(WORD i2c_channel);
+extern char I2C_Check_RFNE(WORD i2c_channel);
+extern char I2C_Check_Stop_Det(WORD i2c_channel);
+extern char I2C_Check_Active(WORD i2c_channel);
+extern uint8_t I2C_Slave_Read_Byte(WORD i2c_channel);
+extern void I2C_Write_Short(WORD value, WORD regoffset, WORD i2c_channel);
+extern WORD I2C_Read_Short(WORD regoffset, WORD i2c_channel);
+extern void I2C_Mux_Set(BYTE modle);
+extern void I2C_Master_Set_Tar(WORD TAR, WORD BIT, WORD i2c_channel);
+extern void I2C_Master_Write_Byte(BYTE data, BYTE reg, WORD i2c_channel);
+extern void I2C_Master_Write_Word(BYTE* data, BYTE reg, WORD i2c_channel);
+extern void I2C_Master_Read_Word(BYTE* data, BYTE reg, WORD i2c_channel);
+extern void I2C_Master_Write_Block(BYTE* data, BYTE lenth, BYTE reg, WORD i2c_channel);
+extern void I2C_Master_Read_Block(BYTE* data, BYTE lenth, BYTE reg, WORD i2c_channel);
+extern void I2CM_Write_Byte(BYTE i2c_addr, BYTE reg, BYTE data, WORD i2c_channel);
+extern void I2CM_Write_Word(BYTE i2c_addr, BYTE* data, BYTE reg, WORD i2c_channel);
+extern void I2CM_Read_Word(BYTE i2c_addr, BYTE* data, BYTE reg, WORD i2c_channel);
+extern void I2CM_Write_Block(BYTE i2c_addr, BYTE* data, BYTE length, BYTE reg, WORD i2c_channel);
+extern void I2CM_Read_Block(BYTE i2c_addr, BYTE* data, BYTE length, BYTE reg, WORD i2c_channel);
+extern void I2C_Slave_Write_Byte(uint8_t data, WORD i2c_channel);
+extern void I2C_Slave_Write_Block(uint8_t* data, BYTE  length, WORD i2c_channel);
+extern void I2C_Master_Controller_Init(WORD i2c_channel, DWORD speed, BYTE spklen);
+extern void I2C_Slave_Init(WORD i2c_channel, DWORD speed, BYTE spklen);
+extern void I2C_Channel_Init(BYTE channel, DWORD speed, BYTE role, BYTE addr, BYTE spklen);
+extern void I2C_TX_Abrt(WORD baseaddr);
 #endif

@@ -62,13 +62,13 @@ void Module_SoftReset(int reg_idx, int bit_no)
 {
 	if (reg_idx == 0)
 	{
-		Module_RESET_REG0 |= (1 << bit_no);
-		Module_RESET_REG0 = 0x0;
+		SYSCTL_RST0 |= (1 << bit_no);
+		SYSCTL_RST0 = 0x0;
 	}
 	else
 	{
-		Module_RESET_REG1 |= (1 << bit_no);
-		Module_RESET_REG1 = 0x0;
+		SYSCTL_RST1 |= (1 << bit_no);
+		SYSCTL_RST1 = 0x0;
 	}
 
 }

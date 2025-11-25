@@ -16,10 +16,9 @@
 #ifndef CUSTOM_PECI_H
 #define CUSTOM_PECI_H
 #include "KERNEL_PECI.H"
-
- //*****************************************************************************
- // Function prototype
- //*****************************************************************************
+/*-----------------------------------------------------------------------------
+ * External Calling Prototype
+ *---------------------------------------------------------------------------*/
 extern void Service_PECI(void);
 extern void Service_PECI_Data(void);
 extern void Service_PECI_Command(void);

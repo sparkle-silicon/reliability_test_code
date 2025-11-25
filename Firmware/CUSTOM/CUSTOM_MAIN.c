@@ -155,7 +155,7 @@ void __weak Hook_500msEventC(void)
 void __weak Hook_1secEventA(void) // get all temp
 {
 #if (I2C_MODULE_EN && SUPPORT_I2C_TEMPERATURE)
-    get_temperature(2);
+    Get_Temperature(2);
 #endif
 }
 //-----------------------------------------------------------------------------

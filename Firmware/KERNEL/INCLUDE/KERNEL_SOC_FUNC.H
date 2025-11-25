@@ -17,7 +17,9 @@
 #define KERNEL_SOC_FUNC_H
 #include "AE_GLOBAL.H"
 
- // Module init function
+/*-----------------------------------------------------------------------------
+ * External Calling Prototype
+ *---------------------------------------------------------------------------*/
 extern void gpio_init(void);
 extern void mailbox_init(void);
 extern void uart_init(void);

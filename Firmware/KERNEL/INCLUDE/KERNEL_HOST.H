@@ -19,7 +19,7 @@
 #include "KERNEL_PORT6064.H"
 
 /*-----------------------------------------------------------------------------
- * KBC_STA标志位
+ * KBC_STA Flag
  *---------------------------------------------------------------------------*/
 #define KBC_OBF                   0x00 //Output Buffer Full
 #define KBC_IBF                   0x01 //Input Buffer Full
@@ -30,14 +30,14 @@
 #define KBC_TOE                   0x06 //Timeout error
 #define KBC_PE                    0x07 //Parity error
 /*-----------------------------------------------------------------------------
- * KBC_CTL标志位
+ * KBC_CTL Flag
  *---------------------------------------------------------------------------*/
-#define KBC_OBFKIE                0x00 //此位为 1 时 KBC 输出缓冲区满时产生键盘 SERIRQ IRQ1
-#define KBC_OBFMIE                0x01 //此位为 1 时 KBC 输出缓冲区满时产生鼠标 SERIRQ IRQ12
-#define KBC_OBEIE                 0x02 //数据输出寄存器空中断使能
-#define KBC_IBFIE                 0x03 //数据输入寄存器满中断使能
+#define KBC_OBFKIE                0x00 // When this bit is set to 1, generates keyboard SERIRQ (IRQ1) when the KBC output buffer is full
+#define KBC_OBFMIE                0x01 // When this bit is set to 1, generates mouse SERIRQ (IRQ12) when the KBC output buffer is full
+#define KBC_OBEIE                 0x02 // Data output register empty interrupt enable
+#define KBC_IBFIE                 0x03 // Data input register full interrupt enable
 /*-----------------------------------------------------------------------------
- * PMC标志位
+ * PMC Flag
  *---------------------------------------------------------------------------*/
 #define PM1_HOST_INT_ENABLE 0x10 // P143
 #define IBF_INT_ENABLE 0x1       // P157
@@ -45,7 +45,7 @@
 #define OBF_KEYBOARD_INT_ENABLE 0x1 // P143
 #define OBF_MOUSE_INT_ENABLE 0x2    // P143
 /*-----------------------------------------------------------------------------
- * External Calling Process
+ * External Calling Prototype
  *---------------------------------------------------------------------------*/
 extern void Service_Send(void);
 extern BYTE Send_KB_Data_To_Host(BYTE nKBData);
@@ -53,8 +53,8 @@ extern void KBC_Data_Suspend(BYTE nPending);
 extern BYTE Release_KBC_Data_Suspend(void);
 extern void Transmit_Data_To_Host(BYTE data_byte);
 extern void Mouse_Data_To_Host(BYTE data_byte);
-extern void kbc_init(void);
-extern void pmc_init(void);
+extern void KBC_Init(void);
+extern void PMC_Init(void);
 /*-----------------------------------------------------------------------------
  * Internal Process Definition
  *---------------------------------------------------------------------------*/

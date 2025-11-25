@@ -49,7 +49,6 @@
 #define I3C_MASTER1_MODE I3C_MASTER_I3C_MODE //i3c master1接口模式选择 I3C_MASTER_I3C_MODE/I3C_MASTER_I3C_MODE
 
 // ACPI Function Setting
-#define SUPPORT_ACPI_SMB_EC 0     // Enable ACPI SMBus via EC
 #define SUPPORT_ACPI_SMI 0        // Use SMI in ACPI Mode(No recommend)
 #define SUPPORT_QEvent_Pending 0  // QEvent Pending support
 #define SUPPORT_I2C_TEMPERATURE 0 // I2C temp get

@@ -18,7 +18,9 @@
 #include "AE_GLOBAL.H"
 #include "KERNEL_PWM.H"
 
- /*风扇扫描level等级结构*/
+/*-----------------------------------------------------------------------------
+ * Fan Level Structure
+ *---------------------------------------------------------------------------*/
 typedef struct thermalstruct
 {
 	BYTE  	CSTEP;    //风扇调速step,对应风扇的转速调节系数
@@ -26,6 +28,9 @@ typedef struct thermalstruct
 	s8  	CFanOff;	//温度下限
 	BYTE 	CDCR;      //初始占空比
 }thermal;
+/*-----------------------------------------------------------------------------
+ * Fan Control 
+ *---------------------------------------------------------------------------*/
 #define FAN0_CTR 246//245/246/255
 #define FAN0_MAX_DCR (FAN0_CTR)
 #define FAN0_MIN_DCR (0)
@@ -40,7 +45,9 @@ typedef struct thermalstruct
 #define _Ki  0.33 // 积分系数倒数
 #define _Kd  10  // 微分系数
 // #define FAN1_CTR_MAX_DCR 246
-
+/*-----------------------------------------------------------------------------
+ * External Calling Prototype
+ *---------------------------------------------------------------------------*/
 extern s8  ReadCPUTemp(void);
 extern s8  ReadSysTemp(void);
 extern BYTE FAN_LEV(BYTE channel);

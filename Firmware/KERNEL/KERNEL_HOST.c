@@ -331,7 +331,7 @@ void Mouse_Data_To_Host(BYTE data_byte)
 #endif
 }
 
-void kbc_init(void)
+void KBC_Init(void)
 {
     SET_BIT(KBC_CTL, KBC_IBFIE); // set KBC_IBF enable
 }
@@ -370,7 +370,7 @@ void pmc5_init(void)
     PMC5_CTL |= IBF_INT_ENABLE;
 #endif
 }
-void pmc_init(void)
+void PMC_Init(void)
 {
     pmc1_init();
     pmc2_init();

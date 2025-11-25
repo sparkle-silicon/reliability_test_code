@@ -16,13 +16,17 @@
 #ifndef KERNEL_WATCHDOG_H
 #define KERNEL_WATCHDOG_H
 #include "AE_GLOBAL.H"
-
+/*-----------------------------------------------------------------------------
+ * WDT Status Definition
+ *---------------------------------------------------------------------------*/
 #define WDT_ISR  0x01
 #define Wdt_Int_Status ((WDT_STAT & (0x1 << 0)) != 0)
 #define Wdt_Int_Status ((WDT_STAT & (0x1 << 0)) != 0)
 #define WDT_CRR_CRR 0x76;
 #define WDT_FLAG 1 //看门狗喂狗or清中断 1 or 0
-/* WDT Register define */
+/*-----------------------------------------------------------------------------
+ * WDT Register Bits Definition
+ *---------------------------------------------------------------------------*/
 #define WDT_CR_RPL_2        HEX00
 #define WDT_CR_RPL_4        HEX04
 #define WDT_CR_RPL_8        HEX08
@@ -35,7 +39,9 @@
 #define WDT_CR_RMOD_INTR    HEX02
 #define WDT_CR_EN           HEX01
 #define WDT_CR_DISEN        HEX00
-
+/*-----------------------------------------------------------------------------
+ * External Calling Prototype
+ *---------------------------------------------------------------------------*/
 extern void WDT_Clear_IRQ(void);
 extern void WDT_FeedDog(void);
 extern void WDT_Init(BYTE mode, WORD count);

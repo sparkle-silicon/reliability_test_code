@@ -152,11 +152,11 @@ void intr1_mailbox(void) __weak; // 59 61
 void intr1_espi(void) __weak;	// 62
 void intr1_null63(void) __weak; // 63
 
-void disable_intc(int index, int num)
+void Intc_Disable(int index, int num)
 {
 	set_ictl_reg(index, INTC_ICTL_INTMASK_L, num);
 }
-void enable_intc(int index, int num)
+void Intc_Enable(int index, int num)
 {
 	clear_ictl_reg(index, INTC_ICTL_INTMASK_L, num);
 }
@@ -892,7 +892,7 @@ void intr1_smbus4(void) // 27
 	else if (intr_stat & I2C_INTR_RX_FULL)
 	{
 #if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
-		Debugger_Cmd_IRQ(I2c_Slave_Read_Byte(DEBUGGER_I2C_CHANNEL));
+		Debugger_Cmd_IRQ(I2C_Slave_Read_Byte(DEBUGGER_I2C_CHANNEL));
 #endif
 	}
 	else if (intr_stat & I2C_INTR_TX_OVER)
@@ -951,7 +951,7 @@ void intr1_smbus5(void) // 28
 	{
 		// dprint("SMBUS5 RX FULL\n");//相当于延时
 #if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
-		Debugger_Cmd_IRQ(I2c_Slave_Read_Byte(DEBUGGER_I2C_CHANNEL));
+		Debugger_Cmd_IRQ(I2C_Slave_Read_Byte(DEBUGGER_I2C_CHANNEL));
 #endif
 	}
 	else if (intr_stat & I2C_INTR_TX_OVER)
@@ -1289,7 +1289,7 @@ void intr1_smbus0(void)
 	{
 		// dprint("SMBUS0 RX FULL\n");//相当于延时
 #if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
-		Debugger_Cmd_IRQ(I2c_Slave_Read_Byte(DEBUGGER_I2C_CHANNEL));
+		Debugger_Cmd_IRQ(I2C_Slave_Read_Byte(DEBUGGER_I2C_CHANNEL));
 #endif
 	}
 	else if (intr_stat & I2C_INTR_TX_OVER)
@@ -1372,7 +1372,7 @@ void intr1_smbus1(void)
 	{
 		// dprint("SMBUS1 RX FULL\n");//相当于延时
 #if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
-		Debugger_Cmd_IRQ(I2c_Slave_Read_Byte(DEBUGGER_I2C_CHANNEL));
+		Debugger_Cmd_IRQ(I2C_Slave_Read_Byte(DEBUGGER_I2C_CHANNEL));
 #endif
 	}
 	else if (intr_stat & I2C_INTR_TX_OVER)
@@ -1455,7 +1455,7 @@ void intr1_smbus2(void)
 	{
 		// dprint("SMBUS2 RX FULL\n");//相当于延时
 #if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
-		Debugger_Cmd_IRQ(I2c_Slave_Read_Byte(DEBUGGER_I2C_CHANNEL));
+		Debugger_Cmd_IRQ(I2C_Slave_Read_Byte(DEBUGGER_I2C_CHANNEL));
 #endif
 	}
 	else if (intr_stat & I2C_INTR_TX_OVER)
@@ -1538,7 +1538,7 @@ void intr1_smbus3(void)
 	{
 		// dprint("SMBUS3 RX FULL\n");//相当于延时
 #if (ENABLE_DEBUGGER_SUPPORT&&(DEBUGGER_I2C_CHANNEL == I2C_CHANNEL_0))
-		Debugger_Cmd_IRQ(I2c_Slave_Read_Byte(DEBUGGER_I2C_CHANNEL));
+		Debugger_Cmd_IRQ(I2C_Slave_Read_Byte(DEBUGGER_I2C_CHANNEL));
 #endif
 	}
 	else if (intr_stat & I2C_INTR_TX_OVER)

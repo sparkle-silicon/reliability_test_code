@@ -134,7 +134,7 @@ extern u8 ANXXDATA request_src_caps_flag[];
 void i2c_set_address(BYTE addr)
 {
     // setup Charger TAR
-    I2c_Master_Set_Tar(addr, I2C_REGADDR_7BIT, ANX7447_CHANNEL);
+    I2C_Master_Set_Tar(addr, I2C_REGADDR_7BIT, ANX7447_CHANNEL);
 
 }
 void ucsi_i2c_start(BYTE addr)
@@ -162,7 +162,7 @@ BYTE i2c_read_reg(BYTE i2c_addr, BYTE reg)
     BYTE datal = 0;
     ucsi_i2c_start(i2c_addr);
     ucsi_i2c_READ_DEBUG();
-    datal = (I2c_Master_Read_Byte(reg, ANX7447_CHANNEL));
+    datal = (I2C_Master_Read_Byte(reg, ANX7447_CHANNEL));
     ucsi_i2c_debug(((i2c_addr << 1) | 0b1), reg, 1, &datal);
     return datal;
 }
@@ -170,21 +170,21 @@ void i2c_read_block_reg(BYTE i2c_addr, BYTE reg, BYTE length, BYTE *buf)
 {
     ucsi_i2c_start(i2c_addr);//占位符，后续可能有用
     ucsi_i2c_READ_DEBUG();
-    I2c_Master_Read_Block(buf, length, reg, ANX7447_CHANNEL);
+    I2C_Master_Read_Block(buf, length, reg, ANX7447_CHANNEL);
     ucsi_i2c_debug(((i2c_addr << 1) | 0b1), reg, length, buf);
 }
 void i2c_write_reg(BYTE i2c_addr, BYTE reg, BYTE data1)
 {
     ucsi_i2c_start(i2c_addr);
     ucsi_i2c_WRITE_DEBUG();
-    I2c_Master_Write_Byte(data1, reg, ANX7447_CHANNEL);
+    I2C_Master_Write_Byte(data1, reg, ANX7447_CHANNEL);
     ucsi_i2c_debug(((i2c_addr << 1) | 0b0), reg, 1, &data1);
 }
 void i2c_write_block_reg_b(BYTE i2c_addr, BYTE reg, BYTE length, BYTE *buf)
 {
     ucsi_i2c_start(i2c_addr);//占位符，后续可能有用
     ucsi_i2c_WRITE_DEBUG();
-    I2c_Master_Write_Block(buf, length, reg, ANX7447_CHANNEL);
+    I2C_Master_Write_Block(buf, length, reg, ANX7447_CHANNEL);
     ucsi_i2c_debug(((i2c_addr << 1) | 0b0), reg, length, buf);
 }
 

@@ -18,24 +18,29 @@
 #include "AE_GLOBAL.H"
 
 extern FUNCT_PTR_V_V Smf_Ptr;
-extern FUNCT_PTR_V_V IVT_Ptr;
 extern FUNCT_PTR_V_D_BP_L Spif_Ptr;
 extern FUNCT_PTR_V_D_BP ECU_Ptr;
 extern FUNCT_PTR_V_D_BP_L Spif_Ptr;
 extern BYTE Write_buff[256];
 extern BYTE Read_buff[256];
 
- /*FLASH COMMANDS*/
+/*-----------------------------------------------------------------------------
+ * FLASH Commands
+ *---------------------------------------------------------------------------*/
 #define FLASH_ID_CMD 0x90
 #define FLASH_SECT_ERASE_CMD 0x20
 #define FLASH_PAGE_PROGRAM_CMD 0x02
 #define FLASH_WRIT_CMD 0x06
 #define FLASH_READ_CMD 0x03
-/*SPIF STATUS*/
+/*-----------------------------------------------------------------------------
+ * SPIF Status
+ *---------------------------------------------------------------------------*/
 #define SPIF_RDY_READY       0x1
 #define SPIFE_Write_Status   0x1
 #define SPIFE_Sleep_State    0x2
-
+/*-----------------------------------------------------------------------------
+ * External Calling Prototype
+ *---------------------------------------------------------------------------*/
 extern void SPIFE_Init(void);
 extern uint32_t SPIFE_READ_ID(void);
 extern void ExtFlash_Deep_Power_Down(void);

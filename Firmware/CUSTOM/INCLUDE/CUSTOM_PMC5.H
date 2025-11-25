@@ -17,7 +17,9 @@
 #define CUSTOM_PMC5_H
 #include "AE_GLOBAL.H"
 
- /*PMC5 Register bit definition*/
+/*-----------------------------------------------------------------------------
+ * PMC5 Register Bit Definitions
+ *---------------------------------------------------------------------------*/
 #define OBF5            BIT(0)
 #define IBF5            BIT(1)
 #define DBG_En5         BIT(2)

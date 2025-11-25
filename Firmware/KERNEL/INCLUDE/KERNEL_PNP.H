@@ -18,7 +18,9 @@
 #include "AE_GLOBAL.H"
 
 #define PNP_Timeout 5000
- /* PNP definition */
+/*-----------------------------------------------------------------------------
+ * PNP definition
+ *---------------------------------------------------------------------------*/
 #define E2PNP_RDY       0x1
 #define E2PNP_REQ       0x2
 #define EFIR_2E         0x2e000000
@@ -28,7 +30,9 @@
 #define E2PNP_RC        0x00000800 //读完成
 #define E2PNP_WC        0x00000400 //写完成
 #define PNPCNST_SETEN   BIT(27)
-/* PNP Register Address definition */
+/*-----------------------------------------------------------------------------
+ * PNP Register Address definition
+ *---------------------------------------------------------------------------*/
 #define PNP_CHIPID_VER_OFFSET HEX04
 #define PNP_LD_EN_OFFSET HEX08
 #define PNP_CONFIG_OFFSET HEX0C
@@ -45,7 +49,9 @@
 #define PNP_CONFIG REG32(PNP_CONFIG_ADDR)
 #define PNP_CTRL0 REG32(PNP_CTRL0_ADDR)
 #define PNP_CTRL1 REG32(PNP_CTRL1_ADDR)
-/* PNP Enable definition */
+/*-----------------------------------------------------------------------------
+ * PNP Enable definition
+ *---------------------------------------------------------------------------*/
 #define HOST_UARTA_EN BIT0
 #define HOST_UARTB_EN BIT1
 #define HOST_UART0_EN BIT2

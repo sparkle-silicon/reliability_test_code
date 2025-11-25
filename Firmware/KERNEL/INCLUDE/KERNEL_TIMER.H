@@ -21,6 +21,9 @@
 #define TIMER1 0x1
 #define TIMER2 0x2
 #define TIMER3 0x3
+/*-----------------------------------------------------------------------------
+ * TIMER Parameter Definition
+ *---------------------------------------------------------------------------*/
 /* TIMER0 */
 #define TIMER0_CLOCK (HIGH_CHIP_CLOCK / ((SYSCTL_CLKDIV_TMR0+1)<<1))
 #define TIMER0_1ms (TIMER0_CLOCK/1000)
@@ -68,7 +71,9 @@
 #define TIMER_MODE_SIGLE    HEX02
 #define TIMER_EN            HEX01
 #define TIMER_INT           HEX01
-
+/*-----------------------------------------------------------------------------
+ * External Calling Prototype
+ *---------------------------------------------------------------------------*/
 extern int TIMER_Disable(u8 index);
 extern int TIMER_Init(u8 index, u32 load_count, u8 loop_enable, u8 int_mask);
 extern BYTE Timer_Int_Enable(BYTE channel);

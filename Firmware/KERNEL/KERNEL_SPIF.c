@@ -19,9 +19,7 @@
 #include "KERNEL_MEMORY.H"
 #pragma pack(4)
 FUNCT_PTR_V_V Smf_Ptr;
-FUNCT_PTR_V_V IVT_Ptr;
 FUNCT_PTR_V_D_BP_L Spif_Ptr;
-FUNCT_PTR_V_D_BP ECU_Ptr;
 BYTE Write_buff[256] = { 0, 1, 2, 3, 4, 5, 6 };
 BYTE Read_buff[256] = { 0 };
 uint32_t EXTERNAL_FLASH_ID = 0;

@@ -24,8 +24,9 @@
 #else
 #define I3C_CLOCK  (HIGH_CHIP_CLOCK / (SYSCTL_CLKDIV_I3C+1))
 #endif
- /* * * * * MASTER * * * * */
- /** CCC Command Definitions of broadcast**/
+/*-----------------------------------------------------------------------------
+ * I3C Master Command Definitions of broadcast
+ *---------------------------------------------------------------------------*/
 #define ENEC_BC_CMD 0x00
 #define DISEC_BC_CMD 0x01
 #define ENTAS0_BC_CMD 0x02
@@ -47,7 +48,9 @@
 #define ENTHDR6_BC_CMD 0x26
 #define ENTHDR7_BC_CMD 0x27
 #define SETXTIME_BC_CMD 0x28
-/** CCC Command Definitions of direct**/
+/*-----------------------------------------------------------------------------
+ * I3C Master Command Definitions of direct
+ *---------------------------------------------------------------------------*/
 #define ENEC_DR_CMD 0x80
 #define DISEC_DR_CMD 0x81
 #define ENTAS0_DR_CMD 0x82
@@ -75,18 +78,24 @@
 #define BROADCAST_CMD_MAX 0x7F
 #define DIRECTED_CMD_MIN 0x80
 
-//i3c_mux select
+/*-----------------------------------------------------------------------------
+ * I3C Mux Select
+ *---------------------------------------------------------------------------*/
 #define I3C_MASTER0 0
 #define I3C_MASTER1 1
 #define I3C_SLAVE0 2
 #define I3C_SLAVE1 3
 
-//i3c master interface mode
+/*-----------------------------------------------------------------------------
+ * I3C Master Interface Mode
+ *---------------------------------------------------------------------------*/
 #define I3C_MASTER_NO_MODE 0
 #define I3C_MASTER_I3C_MODE 1
 #define I3C_MASTER_I2C_MODE 2
 
-//bits definition of register
+/*-----------------------------------------------------------------------------
+ * Bits Definition of Register
+ *---------------------------------------------------------------------------*/
 #define DEVICE_CTRL_IBA_INCLUDE 0x00000001UL
 #define DEVICE_CTRL_I2C_SLAVE_PRESENT 0x00000080UL
 #define DEVICE_CTRL_HOT_JOIN_CTRL 0x00000100UL
@@ -240,7 +249,9 @@
 #define RESPONSE_QUEUE_PORT_ERR_STS_PEC_ERROR 0xC0000000UL
 #define RESPONSE_QUEUE_PORT_ERR_STS_MASK 0xF0000000UL
 
- /* * MASTER * */
+/*-----------------------------------------------------------------------------
+ * I3C Master Control Definition
+ *---------------------------------------------------------------------------*/
 //Controls whether or not i3c is enable
 #define DISABLE_I3C HEX00
 #define ENABLE_I3C HEX01
@@ -321,7 +332,9 @@
 #define I3C_MASTER_WRITE 0
 #define I3C_MASTER_READ 1
 
-/* * * * * SLAVE * * * * */
+/*-----------------------------------------------------------------------------
+ * I3C Slave Control Definition
+ *---------------------------------------------------------------------------*/
 #define SLAVE0_SET_STATICADDR 0x5A
 #define SLAVE0_SET_IDPARTNO 0x12345678
 #define SLAVE0_SET_DCR 0x9A
@@ -348,24 +361,22 @@
 #define IDEXT_BCR(bcr) (((bcr)<<16)& 0x00FF0000UL)
 
 #define STATUS_RXPEND 0x00000800UL
-
-//DMA Control register
-#define DMAFB_RX_DISABLE HEX00
-#define DMAFB_RX_ENABLE HEX01
-#define DMATB_TX_DISABLE HEX00
-#define DMATB_TX_ENABLE HEX01
-
+/*-----------------------------------------------------------------------------
+ * I3C Timeout Definition
+ *---------------------------------------------------------------------------*/
 #define I3C_TIMEOUT (HIGH_CHIP_CLOCK / (SYSCTL_CLKDIV_SMB+1))	//TimeOut set
 
-//I3C调试打印
+//I3C debug
 #if I3C_DEBUG 
 #define i3c_dprint dprint
 #else 
 #define i3c_dprint(fmt, args...)
 #endif
 
-// 对7bit位宽的数据进行奇校验，返回校验位（0或1）
-// 参数：data - 需校验的7bit数据（注意：仅低7位有效，高1位会被忽略）
+/*-----------------------------------------------------------------------------
+ * 对7bit位宽的数据进行奇校验，返回校验位（0或1）
+ * 参数：data - 需校验的7bit数据（注意：仅低7位有效，高1位会被忽略）
+ *---------------------------------------------------------------------------*/
 #define ODD_PARITY_7BIT(data) ({ \
     unsigned char _7bit_data = (data) & 0x7F;  /* 只保留低7位，确保是7bit数据 */ \
     unsigned char _count = 0;                  /* 统计1的个数 */ \
@@ -379,7 +390,9 @@
     (_count % 2 == 0) ? 1 : 0;                 /* 若1的个数为偶数，校验位为1；否则为0（确保总数为奇数） */ \
 })
 
-//device char table structure define
+/*-----------------------------------------------------------------------------
+ * Device Char Table Structure Define
+ *---------------------------------------------------------------------------*/
 typedef union DEV_CHAR_TABLE {
     u32 dev_char_table1_loc[4];
     struct {
@@ -402,14 +415,15 @@ typedef union DEV_CHAR_TABLE {
     } dct_bits;
 } sDEV_CHAR_TABLE;
 
-//function extern
 extern BYTE MASTER0_DEV_DYNAMIC_ADDR_TABLE[];
 extern BYTE MASTER1_DEV_DYNAMIC_ADDR_TABLE[];
 extern BYTE MASTER0_DEV_STATIC_ADDR_TABLE[];
 extern BYTE MASTER1_DEV_STATIC_ADDR_TABLE[];
 extern sDEV_CHAR_TABLE master0_dev_read_char_table[];
 extern sDEV_CHAR_TABLE master1_dev_read_char_table[];
-
+/*-----------------------------------------------------------------------------
+ * External Calling Prototype
+ *---------------------------------------------------------------------------*/
 extern DWORD I3C_Channel_Baseaddr(BYTE i3c_mux);
 BYTE I3C_SDR_Master_Init(uint32_t speed, BYTE i3c_mux);
 extern void I3C_WriteREG_DWORD(DWORD value, WORD regoffset, BYTE i3c_mux);

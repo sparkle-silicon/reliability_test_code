@@ -17,13 +17,17 @@
 #define __KERNEL_SWUC_H_
 #include "AE_GLOBAL.H"
 #include "KERNEL_PNP.H"
-/*event irq type*/
+/*-----------------------------------------------------------------------------
+ * Event IRQ Type
+ *---------------------------------------------------------------------------*/
 #define RI1_EC_IRQ   HEX01
 #define RI2_EC_IRQ   HEX02
 #define RING_EC_IRQ  HEX08
 #define SIRQ_EC_IRQ  HEX40
 #define MIRQ_EC_IRQ  HEX80
-/*ACPI wakeup irq type*/
+/*-----------------------------------------------------------------------------
+ * ACPI Wakeup IRQ Type
+ *---------------------------------------------------------------------------*/
 #define RTC_IRQ      HEX01
 #define ACPI_S1      HEX02
 #define ACPI_S2      HEX04
@@ -32,9 +36,13 @@
 #define ACPI_S5      HEX20
 #define PWRBT        HEX40
 #define PWRSLY       HEX80
-/*read irq status*/
+/*-----------------------------------------------------------------------------
+ * SWUC Interrupt Status
+ *---------------------------------------------------------------------------*/
 #define SWUC_Int_Status(type)	((SWUSTA & (0x1<<type)) != 0)
-
+/*-----------------------------------------------------------------------------
+ * External Calling Prototype
+ *---------------------------------------------------------------------------*/
 void SWUC_Int_Enable(BYTE  type);
 void SWUC_Int_Disable(BYTE  type);
 BYTE  SWUC_Int_Enable_Read(BYTE  type);

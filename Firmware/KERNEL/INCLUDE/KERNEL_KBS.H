@@ -18,17 +18,27 @@
 #include "AE_GLOBAL.H"
 #include "KERNEL_GPIO.H"
 
-//KBS调试打印
+//KBS debug
 #if KBS_DEBUG 
 #define kbs_dprint dprint
 #else 
 #define kbs_dprint(fmt, args...)
 #endif
-
+//-----------------------------------------------------------------------------
+// Key Event Definition
+//-----------------------------------------------------------------------------
+#define MAKE_EVENT   0          //按键事件
+#define BREAK_EVENT  1	        //间断事件
+#define REPEAT_EVENT 2          //重复的事件
+/*-----------------------------------------------------------------------------
+ * KBS IRQ Operation
+ *---------------------------------------------------------------------------*/
 #define KBD_Int_Enable	(KBS_KSDC1R |= (0x1<<5))
 #define KBD_Int_Disable	(KBS_KSDC1R &= ~(0x1<<5))
 #define KBD_Int_Enable_Read	((KBS_KSDC1R & (0x1<<5)) != 0)
- //kbs reg define
+/*-----------------------------------------------------------------------------
+ * KBS Parameter Definition
+ *---------------------------------------------------------------------------*/
 #define KBS_KSOCTRL_ODEN                HEX01
 #define KBS_KSDC1R_EN                    BIT7
 #define KBS_KSDC1R_INT_EN                BIT5
@@ -74,12 +84,6 @@
 #define KBS_KSDC3R_DELAY25               0x70
 #define KBS_KSDC3R_DELAY27               0x80
 #define KBS_KSDC3R_DELAY29               0x90
-//-----------------------------------------------------------------------------
-// Key KBD_SCAN interface
-//-----------------------------------------------------------------------------
-#define MAKE_EVENT   0          //按键事件
-#define BREAK_EVENT  1	        //间断事件
-#define REPEAT_EVENT 2          //重复的事件
 // TM_xxx definitions are part of typematic handling for scanner keyboard.
 #define TM_SCALE    			2		// Pre-scale timer base is 5ms (5ms X 2 = 10ms)
 #define TM_REPEAT   			3
@@ -156,7 +160,9 @@
 #define KSO16CtrlReg	GPCRC3
 #define KSO17CtrlReg	GPCRC5
 
-/*--------------------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------
+ * External Calling Prototype
+ *---------------------------------------------------------------------------*/
 extern void Service_KBS(void);
 extern BYTE KBS_Buffer_Get(BYTEP);
 extern void KBS_Run(void);

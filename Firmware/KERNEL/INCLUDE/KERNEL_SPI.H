@@ -17,10 +17,14 @@
 #define KERNEL_SPI_H_
 #include "AE_GLOBAL.H"
 #include "KERNEL_GPIO.H"
- /*********************************SPIM CONFIG CLOCK*********************************/
+ /*-----------------------------------------------------------------------------
+ * SPIM Config Clock
+ *---------------------------------------------------------------------------*/
 #define SPIM_CLOCK  (HIGH_CHIP_CLOCK / (SYSCTL_CLKDIV_SPIM+1)) 
 #define SPIM_DEFAULT_TIMEOUT 1000000 //(SPIM_CLOCK/(SPIM_CPSR+1)*32) // SPI超时时间
-/*********************************SPIM REGISTER DEFINE*********************************/
+ /*-----------------------------------------------------------------------------
+ * SPIM Register Parameter Define
+ *---------------------------------------------------------------------------*/
 //控制器
 #define SPIM_CTRL_CPHA              0x0001                  // 时钟相位
 #define SPIM_CTRL_CPOL              0x0002                  // 时钟极性
@@ -105,8 +109,10 @@
 #define SPIM_CHIP_SELECT_CSN0 0
 #define SPIM_CHIP_SELECT_CSN1 1
 #define SPIM_CHIP_SELECT_FREE 2
-/*********************************SPI FLASH Demo Define*********************************/
- /* Common commands (根据实际需要更改) */
+ /*-----------------------------------------------------------------------------
+ * SPIM CMD Define
+ *---------------------------------------------------------------------------*/
+ /* Common commands  */
 #define SPI_FLASH_CMD_WRSR		0x01	// Write status register
 #define SPI_FLASH_CMD_WRITE_STATUS_REGISTERS	SPI_FLASH_CMD_WRSR
 #define SPI_FLASH_CMD_PP		0x02	// Page program
@@ -232,14 +238,17 @@
 // #define SPI_FLASH_SR2_LB3		0x20	//  SECURITY REGISTER LOCK BITS 3
 // #define SPI_FLASH_SR2_CMP		0x40	//  COMPLEMENT PROTECT
 // #define SPI_FLASH_SR2_SUS		0x80	//  SUSPEND STATUS
-
 #define SPI_FLASH_SR_QE		(SPI_FLASH_SR2_QE<<8)	//  QUAD ENABLE
-
+/*-----------------------------------------------------------------------------
+ * SPIM Interrupt Define
+ *---------------------------------------------------------------------------*/
 #define Spim_Int_Mask(type)			(SPIM_IMSR &= ~(0x1<<type))
 #define Spim_Int_Unmask(type)		(SPIM_IMSR |= (0x1<<type))
 #define	Spim_Int_Mask_Read(type)	((SPIM_IMSR & (0x1<<type)) == 0)
 #define Spim_Int_Status(type)		((SPIM_ISR & (0x1<<type)) != 0)
-
+/*-----------------------------------------------------------------------------
+ * External Calling Prototype
+ *---------------------------------------------------------------------------*/
 //SPIM初始化
 extern void SPIM_Init(BYTE mode, BYTE cpha, BYTE cpol, BYTE dly, BYTE dssp, BYTE lsb, BYTE cpsr, BYTE sampdelay);
 extern void SPIM_DMA_Enable(BYTE wr_en, BYTE rd_en);

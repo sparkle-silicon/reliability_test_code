@@ -445,7 +445,6 @@ void Clear_Event_Buffer(void)
 }
 //-----------------------------------------------------------------------------
 // Function: Service_Event_Center
-//
 //-----------------------------------------------------------------------------
 void Service_Event_Center(void)
 {
@@ -505,30 +504,6 @@ BYTE ACPI_SMB_NULL(void)
     return 0x00;
 }
 //-----------------------------------------------------------------------------
-void ACPI_SMB_Via_EC(void)
-{
-#if SUPPORT_ACPI_SMB_EC
-    BYTE RUNCODE;
-    RUNCODE = Oem_ACPISMBusviaEC();
-    if ((ACPI_SMB_PROTOCOL != 0x00) && (RUNCODE == 0x00))
-    {
-        ACPI_SMB_STATUS = 0x00;
-        ACPI_SMB_PROTOCOL &= 0x0F;
-        // ACPI response to writes to SMBus Protocol register. (ACPI_SMB_PROTOCOL)
-        if ((ACPISMBusviaEC_Table[ACPI_SMB_PROTOCOL])())
-        {
-            ACPI_SMB_STATUS = 0x80;
-        }
-        else
-        {
-            ACPI_SMB_STATUS = 0x5A;
-        }
-        ACPI_SMB_PROTOCOL = 0x00;
-        WAIT_SCI_CENTER = 0;
-        Write_SCI_Query_Value(EC_SMB_SCI_Number);
-    }
-#endif
-}
 //-----------------------------------------------------------------------------
 // 0x02 Write Quick Command
 //-----------------------------------------------------------------------------
@@ -562,66 +537,42 @@ static BYTE ACPI_SMB_Recive_BYTE(void)
 //-----------------------------------------------------------------------------
 static BYTE ACPI_SMB_Write_BYTE(void)
 {
-#if SUPPORT_ACPI_SMB_EC
-    return (bRWSMBus(SMBusChA, SMBusWB, ACPI_SMB_ADDRESS, ACPI_SMB_COMMAND, &ACPI_SMB_DATA));
-#else
     return 0x00;
-#endif
 }
 //-----------------------------------------------------------------------------
 // 0x07 Read Byte
 //-----------------------------------------------------------------------------
 static BYTE ACPI_SMB_Read_BYTE(void)
 {
-#if SUPPORT_ACPI_SMB_EC
-    return (bRWSMBus(SMBusChA, SMBusRB, ACPI_SMB_ADDRESS, ACPI_SMB_COMMAND, &ACPI_SMB_DATA));
-#else
     return 0x00;
-#endif
 }
 //-----------------------------------------------------------------------------
 // 0x08 Write Word
 //-----------------------------------------------------------------------------
 static BYTE ACPI_SMB_Write_WORD(void)
 {
-#if SUPPORT_ACPI_SMB_EC
-    return (bRWSMBus(SMBusChA, SMBusWW, ACPI_SMB_ADDRESS, ACPI_SMB_COMMAND, &ACPI_SMB_DATA));
-#else
     return 0x00;
-#endif
 }
 //-----------------------------------------------------------------------------
 // 0x09 Read Word
 //-----------------------------------------------------------------------------
 static BYTE ACPI_SMB_Read_WORD(void)
 {
-#if SUPPORT_ACPI_SMB_EC
-    return (bRWSMBus(SMBusChA, SMBusRW, ACPI_SMB_ADDRESS, ACPI_SMB_COMMAND, &ACPI_SMB_DATA));
-#else
     return 0x00;
-#endif
 }
 //-----------------------------------------------------------------------------
 // 0x0A Write Block
 //-----------------------------------------------------------------------------
 static BYTE ACPI_SMB_Write_BLOCK(void)
 {
-#if SUPPORT_ACPI_SMB_EC
-    return (bRSMBusBlock(SMBusChA, SMBusRBK, ACPI_SMB_ADDRESS, ACPI_SMB_COMMAND, &ACPI_SMB_DATA));
-#else
     return 0x00;
-#endif
 }
 //-----------------------------------------------------------------------------
 // 0x0B Read Block
 //-----------------------------------------------------------------------------
 static BYTE ACPI_SMB_Read_BLOCK(void)
 {
-#if SUPPORT_ACPI_SMB_EC
-    return (bRSMBusBlock(SMBusChA, SMBusRBK, ACPI_SMB_ADDRESS, ACPI_SMB_COMMAND, &ACPI_SMB_DATA));
-#else
     return 0x00;
-#endif
 }
 //-----------------------------------------------------------------------------
 // 0x0C Process Call

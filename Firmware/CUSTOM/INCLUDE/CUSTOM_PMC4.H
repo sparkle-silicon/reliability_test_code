@@ -17,7 +17,9 @@
 #define CUSTOM_PMC4_H
 #include "AE_GLOBAL.H"
 
-/*PMC4 Register bit definition*/
+/*-----------------------------------------------------------------------------
+ * PMC4 Register Definition
+ *---------------------------------------------------------------------------*/
 #define OBF4            BIT(0)
 #define IBF4            BIT(1)
 #define DBG_En4         BIT(2)

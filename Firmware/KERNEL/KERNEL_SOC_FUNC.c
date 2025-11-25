@@ -83,58 +83,58 @@ void smbus_init(void)
 	smbus0_ModuleClock_EN;
 	sysctl_iomux_i2c0(I2C0_CLK_SEL, I2C0_DAT_SEL);
 	i2c0_pull_up(I2C0_CLK_SEL, I2C0_DAT_SEL);
-	I2c_Channel_Init(I2C_CHANNEL_0, I2C0_SPEED, I2C0_DEFAULT_ROLE, I2C0_DEFAULT_ADDR, 1);
+	I2C_Channel_Init(I2C_CHANNEL_0, I2C0_SPEED, I2C0_DEFAULT_ROLE, I2C0_DEFAULT_ADDR, 1);
 #endif
 #if I2C1_EN_Init||((DEBUGGER_OUTPUT_SWITCH == 1)&&(DEBUGGER_I2C_CHANNEL==I2C_CHANNEL_1))
 	smbus1_ModuleClock_EN;
 	sysctl_iomux_i2c1();
 	i2c1_pull_up();
-	I2c_Channel_Init(I2C_CHANNEL_1, I2C1_SPEED, I2C1_DEFAULT_ROLE, I2C1_DEFAULT_ADDR, 1);
+	I2C_Channel_Init(I2C_CHANNEL_1, I2C1_SPEED, I2C1_DEFAULT_ROLE, I2C1_DEFAULT_ADDR, 1);
 #endif
 #if I2C2_EN_Init||((DEBUGGER_OUTPUT_SWITCH == 1)&&(DEBUGGER_I2C_CHANNEL==I2C_CHANNEL_2))
 	smbus2_ModuleClock_EN;
 	sysctl_iomux_i2c2(I2C2_CLK_SEL);
 	i2c2_pull_up(I2C2_CLK_SEL);
-	I2c_Channel_Init(I2C_CHANNEL_2, I2C2_SPEED, I2C2_DEFAULT_ROLE, I2C2_DEFAULT_ADDR, 1);
+	I2C_Channel_Init(I2C_CHANNEL_2, I2C2_SPEED, I2C2_DEFAULT_ROLE, I2C2_DEFAULT_ADDR, 1);
 #endif
 #if I2C3_EN_Init||((DEBUGGER_OUTPUT_SWITCH == 1)&&(DEBUGGER_I2C_CHANNEL==I2C_CHANNEL_3))
 	smbus3_ModuleClock_EN;
 	sysctl_iomux_i2c3();
 	i2c3_pull_up();
-	I2c_Channel_Init(I2C_CHANNEL_3, I2C3_SPEED, I2C3_DEFAULT_ROLE, I2C3_DEFAULT_ADDR, 1);
+	I2C_Channel_Init(I2C_CHANNEL_3, I2C3_SPEED, I2C3_DEFAULT_ROLE, I2C3_DEFAULT_ADDR, 1);
 #endif
 #if I2C4_EN_Init||((DEBUGGER_OUTPUT_SWITCH == 1)&&(DEBUGGER_I2C_CHANNEL==I2C_CHANNEL_4))
 	smbus4_ModuleClock_EN;
 	sysctl_iomux_i2c4();
 	i2c4_pull_up();
-	I2c_Channel_Init(I2C_CHANNEL_4, I2C4_SPEED, I2C4_DEFAULT_ROLE, I2C4_DEFAULT_ADDR, 1);
+	I2C_Channel_Init(I2C_CHANNEL_4, I2C4_SPEED, I2C4_DEFAULT_ROLE, I2C4_DEFAULT_ADDR, 1);
 #endif
 #if I2C5_EN_Init||((DEBUGGER_OUTPUT_SWITCH == 1)&&(DEBUGGER_I2C_CHANNEL==I2C_CHANNEL_5))
 	smbus5_ModuleClock_EN;
 	sysctl_iomux_i2c5();
 	i2c5_pull_up();
-	I2c_Channel_Init(I2C_CHANNEL_5, I2C5_SPEED, I2C5_DEFAULT_ROLE, I2C5_DEFAULT_ADDR, 1);
+	I2C_Channel_Init(I2C_CHANNEL_5, I2C5_SPEED, I2C5_DEFAULT_ROLE, I2C5_DEFAULT_ADDR, 1);
 #endif
 #if I2C6_EN_Init||((DEBUGGER_OUTPUT_SWITCH == 1)&&(DEBUGGER_I2C_CHANNEL==I2C_CHANNEL_6))
 	smbus6_ModuleClock_EN;
 	sysctl_iomux_i2c6();
 	i2c6_pull_up();
-	I2c_Channel_Init(I2C_CHANNEL_6, I2C6_SPEED, I2C6_DEFAULT_ROLE, I2C6_DEFAULT_ADDR, 1);
+	I2C_Channel_Init(I2C_CHANNEL_6, I2C6_SPEED, I2C6_DEFAULT_ROLE, I2C6_DEFAULT_ADDR, 1);
 #endif
 #if I2C7_EN_Init||((DEBUGGER_OUTPUT_SWITCH == 1)&&(DEBUGGER_I2C_CHANNEL==I2C_CHANNEL_7))
 	smbus7_ModuleClock_EN;
 	sysctl_iomux_i2c7();
 	i2c7_pull_up();
-	I2c_Channel_Init(I2C_CHANNEL_7, I2C7_SPEED, I2C7_DEFAULT_ROLE, I2C7_DEFAULT_ADDR, 1);
+	I2C_Channel_Init(I2C_CHANNEL_7, I2C7_SPEED, I2C7_DEFAULT_ROLE, I2C7_DEFAULT_ADDR, 1);
 #endif
 #if I2C8_EN_Init||((DEBUGGER_OUTPUT_SWITCH == 1)&&(DEBUGGER_I2C_CHANNEL==I2C_CHANNEL_8))
 	smbus8_ModuleClock_EN;
 	sysctl_iomux_i2c8();
 	i2c8_pull_up();
-	I2c_Channel_Init(I2C_CHANNEL_8, I2C8_SPEED, I2C8_DEFAULT_ROLE, I2C8_DEFAULT_ADDR, 1);
+	I2C_Channel_Init(I2C_CHANNEL_8, I2C8_SPEED, I2C8_DEFAULT_ROLE, I2C8_DEFAULT_ADDR, 1);
 #endif
 #if (DEBUGGER_OUTPUT_SWITCH == 1)//初始化调试器//因为是调试手段,所以尽早初始化(UART因为不需要考虑地址,只需要波特率因此相对简单)
-	I2c_Channel_Init(DEBUGGER_I2C_CHANNEL, DEBUGGER_I2C_SPEED, I2C_SLAVE_ROLE, DEBUGGER_I2C_ADDRESS, 1);
+	I2C_Channel_Init(DEBUGGER_I2C_CHANNEL, DEBUGGER_I2C_SPEED, I2C_SLAVE_ROLE, DEBUGGER_I2C_ADDRESS, 1);
 	SMBUSn_INTR_MASK0(DEBUGGER_I2C_CHANNEL) |= I2C_INTR_RX_FULL;
 #endif
 	dprint("SMBUS init done.\n");
@@ -322,13 +322,12 @@ void host_init(void)
 #endif
 #if HOST_P80_En_Init
 	sysctl_iomux_l80();
-	L80_Init();
 #endif
 #if (KBC_MODULE_EN||PMC_MODULE_EN)
 	pmckbc_ModuleClock_EN;
 #endif
 #if (KBC_MODULE_EN)
-	kbc_init();
+	KBC_Init();
 	dprint("KBC init done.\n");
 #endif
 #if (PMC_MODULE_EN)
@@ -336,7 +335,7 @@ void host_init(void)
 	 you can comment out the following two lines
 	 (CUSTOM_GPIO.H is configured for GPIO by default).*/
 	sysctl_iomux_sci(HOST_SCI_PIN_SEL);
-	pmc_init();
+	PMC_Init();
 	dprint("PMC init done.\n");
 #endif
 #if (PECI_MODULE_EN)

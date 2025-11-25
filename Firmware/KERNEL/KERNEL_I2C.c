@@ -24,7 +24,7 @@
  //  return :
  //      I2C channel baseaddr
  //*****************************************************************************
-WORD I2c_Channel_Baseaddr(WORD i2c_channel)
+WORD I2C_Channel_Baseaddr(WORD i2c_channel)
 {
 	// 如果传进来是基地址那么直接返回
 	if (i2c_channel <= SMBUS5_BASE_ADDR && i2c_channel >= SMBUS0_BASE_ADDR)
@@ -68,14 +68,14 @@ WORD I2c_Channel_Baseaddr(WORD i2c_channel)
 //  return :
 //      read value
 //*****************************************************************************
-uint8_t I2c_Readb(WORD regoffset, WORD i2c_channel)
+uint8_t I2C_Readb(WORD regoffset, WORD i2c_channel)
 {
 #if SMBUS_REG_SIZE==DEC8
 	return SMBUSn_REG(i2c_channel, regoffset);
 #elif SMBUS_REG_SIZE==DEC16
 	return SMBUSn_REG(i2c_channel, (regoffset & (~1))) >> ((regoffset & 1) << 3);
 #else
-	return REG8(REG_ADDR(I2c_Channel_Baseaddr(i2c_channel), regoffset));
+	return REG8(REG_ADDR(I2C_Channel_Baseaddr(i2c_channel), regoffset));
 #endif
 }
 
@@ -91,7 +91,7 @@ uint8_t I2c_Readb(WORD regoffset, WORD i2c_channel)
 //  return :
 //      none
 //*****************************************************************************
-void I2c_Writeb(BYTE value, WORD regoffset, WORD i2c_channel)
+void I2C_Writeb(BYTE value, WORD regoffset, WORD i2c_channel)
 {
 #if SMBUS_REG_SIZE==DEC8
 	SMBUSn_REG(i2c_channel, regoffset) = value;
@@ -100,33 +100,18 @@ void I2c_Writeb(BYTE value, WORD regoffset, WORD i2c_channel)
 	regoffset &= (~1);
 	SMBUSn_REG(i2c_channel, regoffset) = (SMBUSn_REG(i2c_channel, regoffset) & (0xff00 >> offset)) | ((uint16_t)value << offset);
 #else
-	REG8(REG_ADDR(I2c_Channel_Baseaddr(i2c_channel), regoffset)) = value;
+	REG8(REG_ADDR(I2C_Channel_Baseaddr(i2c_channel), regoffset)) = value;
 #endif
 }
 
-//写16位,value为低八位
-void I2c_Write16bit(WORD value, WORD regoffset, WORD i2c_channel)
-{
-#if SMBUS_REG_SIZE==DEC8
-	SMBUSn_REG(i2c_channel, regoffset) = value;
-	SMBUSn_REG(i2c_channel, (regoffset + SMBUS_REG1_OFFSET)) = (value >> 8);
-#elif SMBUS_REG_SIZE==DEC16
-	SMBUSn_REG(i2c_channel, regoffset) = value;
-#else
-	REG8(REG_ADDR(I2c_Channel_Baseaddr(i2c_channel), regoffset)) = value;
-	REG8(REG_ADDR(I2c_Channel_Baseaddr(i2c_channel), regoffset + 1)) = (value >> 8);
-#endif
-}
-
-
-WORD I2c_Read_Short(WORD regoffset, WORD i2c_channel)
+WORD I2C_Read_Short(WORD regoffset, WORD i2c_channel)
 {
 #if SMBUS_REG_SIZE==DEC8
 	return SMBUSn_REG(i2c_channel, regoffset) | (SMBUSn_REG(i2c_channel, regoffset + SMBUS_REG1_OFFSET) << 8);
 #elif SMBUS_REG_SIZE==DEC16
 	return SMBUSn_REG(i2c_channel, regoffset);
 #else
-	return REG16(REG_ADDR(I2c_Channel_Baseaddr(i2c_channel), regoffset));
+	return REG16(REG_ADDR(I2C_Channel_Baseaddr(i2c_channel), regoffset));
 #endif
 }
 
@@ -141,7 +126,7 @@ WORD I2c_Read_Short(WORD regoffset, WORD i2c_channel)
 //  return :
 //      none
 //*****************************************************************************
-void I2c_Write_Short(WORD value, WORD regoffset, WORD i2c_channel)
+void I2C_Write_Short(WORD value, WORD regoffset, WORD i2c_channel)
 {
 #if SMBUS_REG_SIZE==DEC8
 	SMBUSn_REG(i2c_channel, regoffset) = value;
@@ -149,7 +134,7 @@ void I2c_Write_Short(WORD value, WORD regoffset, WORD i2c_channel)
 #elif SMBUS_REG_SIZE==DEC16
 	SMBUSn_REG(i2c_channel, regoffset) = value;
 #else
-	REG16(REG_ADDR(I2c_Channel_Baseaddr(i2c_channel), regoffset)) = value;
+	REG16(REG_ADDR(I2C_Channel_Baseaddr(i2c_channel), regoffset)) = value;
 #endif
 }
 //*****************************************************************************
@@ -161,7 +146,7 @@ void I2c_Write_Short(WORD value, WORD regoffset, WORD i2c_channel)
 //  return :
 //      none
 //*****************************************************************************
-void I2c_Mux_set(BYTE model)
+void I2C_Mux_Set(BYTE model)
 {
 	// SYSCTL_CFG &= ~(7 << 16); // I2C_Mux: bit9~10  clear default: model: 0
 	// SYSCTL_CFG |= (model << 16);
@@ -177,7 +162,7 @@ void I2c_Mux_set(BYTE model)
 //  return :
 //      none
 //*****************************************************************************
-void I2c_Master_Set_Tar(WORD TAR, WORD REGADDR_BIT, WORD i2c_channel)
+void I2C_Master_Set_Tar(WORD TAR, WORD REGADDR_BIT, WORD i2c_channel)
 {
 	SMBUSn_ENABLE0(i2c_channel) = DISABLE;// Disable before setup
 	if (REGADDR_BIT == I2C_REGADDR_7BIT)
@@ -243,7 +228,7 @@ char I2c_Check_MST_ACTIVITY(WORD i2c_channel)
 //  return :
 //      none
 //*****************************************************************************
-char I2c_Check_TXE(WORD i2c_channel)
+char I2C_Check_TXE(WORD i2c_channel)
 {
 	DWORD loop = I2CTimeOut;
 	// the loop will out while the txFIFO less TX_TL
@@ -271,7 +256,7 @@ char I2c_Check_TXE(WORD i2c_channel)
 //  return :
 //      none
 //*****************************************************************************
-char I2c_Check_RXF(WORD i2c_channel)
+char I2C_Check_RXF(WORD i2c_channel)
 {
 	DWORD loop = I2CTimeOut;
 	// loop will out while RX more than RX_TL
@@ -298,7 +283,7 @@ char I2c_Check_RXF(WORD i2c_channel)
 //  return :
 //      none
 //*****************************************************************************
-char I2c_Check_TFE(WORD i2c_channel)
+char I2C_Check_TFE(WORD i2c_channel)
 {
 	DWORD loop = I2CTimeOut;
 	while (!(SMBUSn_STATUS0(i2c_channel) & I2C_STATUS_TFE)) // loop wait while Send FIFO not empty
@@ -324,7 +309,7 @@ char I2c_Check_TFE(WORD i2c_channel)
 //  return :
 //      none
 //*****************************************************************************
-char I2c_Check_TFNF(WORD i2c_channel)
+char I2C_Check_TFNF(WORD i2c_channel)
 {
 	DWORD loop = I2CTimeOut;
 
@@ -351,7 +336,7 @@ char I2c_Check_TFNF(WORD i2c_channel)
 //  return :
 //      none
 //*****************************************************************************
-char I2c_Check_RFNE(WORD i2c_channel)
+char I2C_Check_RFNE(WORD i2c_channel)
 {
 	DWORD loop = I2CTimeOut;
 	while (!(SMBUSn_STATUS0(i2c_channel) & I2C_STATUS_RFNE)) // loop wait while receive FIFO empty
@@ -377,7 +362,7 @@ char I2c_Check_RFNE(WORD i2c_channel)
 //  return :
 //      none
 //*****************************************************************************
-char I2c_Check_Stop_Det(WORD i2c_channel)
+char I2C_Check_Stop_Det(WORD i2c_channel)
 {
 	DWORD loop = I2CTimeOut;
 
@@ -403,7 +388,7 @@ char I2c_Check_Stop_Det(WORD i2c_channel)
 //  return :
 //      none
 //*****************************************************************************
-char I2c_Check_Active(WORD i2c_channel)
+char I2C_Check_Active(WORD i2c_channel)
 {
 	DWORD loop = I2CTimeOut;
 	while (SMBUSn_STATUS0(i2c_channel) & ACTIVITY)
@@ -428,15 +413,15 @@ char I2c_Check_Active(WORD i2c_channel)
 //  return :
 //      none
 //*****************************************************************************
-void I2c_Master_Write_Byte(BYTE data, BYTE reg, WORD i2c_channel)
+void I2C_Master_Write_Byte(BYTE data, BYTE reg, WORD i2c_channel)
 {
-	if (0 == I2c_Check_TFE(i2c_channel))
+	if (0 == I2C_Check_TFE(i2c_channel))
 	{
 		SMBUSn_DATA_CMD0(i2c_channel) = (I2C_WRITE) | reg;
 		SMB_Temp_Addr = reg;
 	}
 	/*write data and stop*/
-	if (0 == I2c_Check_TFE(i2c_channel))
+	if (0 == I2C_Check_TFE(i2c_channel))
 	{
 		SMBUSn_DATA_CMD0(i2c_channel) = (I2C_WRITE | I2C_STOP) | data;
 		SMB_Temp_Data = data;
@@ -456,10 +441,10 @@ void I2c_Master_Write_Byte(BYTE data, BYTE reg, WORD i2c_channel)
 //  return :
 //      none
 //*****************************************************************************
-void I2cM_Write_Byte(BYTE i2c_addr, BYTE reg, BYTE data, WORD i2c_channel)
+void I2CM_Write_Byte(BYTE i2c_addr, BYTE reg, BYTE data, WORD i2c_channel)
 {
-	I2c_Master_Set_Tar(i2c_addr, I2C_REGADDR_7BIT, i2c_channel);
-	I2c_Master_Write_Byte(data, reg, i2c_channel);
+	I2C_Master_Set_Tar(i2c_addr, I2C_REGADDR_7BIT, i2c_channel);
+	I2C_Master_Write_Byte(data, reg, i2c_channel);
 }
 
 //*****************************************************************************
@@ -472,20 +457,20 @@ void I2cM_Write_Byte(BYTE i2c_addr, BYTE reg, BYTE data, WORD i2c_channel)
 //  return :
 //      byte
 //*****************************************************************************
-BYTE I2c_Master_Read_Byte(BYTE reg, WORD i2c_channel)
+BYTE I2C_Master_Read_Byte(BYTE reg, WORD i2c_channel)
 {
 	BYTE data;
-	if (0 == I2c_Check_TFE(i2c_channel))
+	if (0 == I2C_Check_TFE(i2c_channel))
 	{
 		SMBUSn_DATA_CMD0(i2c_channel) = reg | I2C_WRITE;
 	}
 	// send the addr cmd to slave
-	if (0 == I2c_Check_TFE(i2c_channel))
+	if (0 == I2C_Check_TFE(i2c_channel))
 	{
 		SMBUSn_DATA_CMD0(i2c_channel) = I2C_READ | I2C_STOP;
 	}
 	// read the data from slave
-	if (0 == I2c_Check_RFNE(i2c_channel))
+	if (0 == I2C_Check_RFNE(i2c_channel))
 	{
 		data = SMBUSn_DATA_CMD0(i2c_channel) & 0xff;
 	}
@@ -504,11 +489,11 @@ BYTE I2c_Master_Read_Byte(BYTE reg, WORD i2c_channel)
 //  return :
 //      byte
 //*****************************************************************************
-BYTE I2cM_Read_Byte(BYTE i2c_addr, BYTE reg, WORD i2c_channel)
+BYTE I2CM_Read_Byte(BYTE i2c_addr, BYTE reg, WORD i2c_channel)
 {
 	BYTE datal = 0;
-	I2c_Master_Set_Tar(i2c_addr, I2C_REGADDR_7BIT, i2c_channel);
-	datal = (I2c_Master_Read_Byte(reg, i2c_channel));
+	I2C_Master_Set_Tar(i2c_addr, I2C_REGADDR_7BIT, i2c_channel);
+	datal = (I2C_Master_Read_Byte(reg, i2c_channel));
 	return datal;
 }
 
@@ -523,22 +508,22 @@ BYTE I2cM_Read_Byte(BYTE i2c_addr, BYTE reg, WORD i2c_channel)
 //  return :
 //      none
 //*****************************************************************************
-void I2c_Master_Write_Word(BYTE *data, BYTE reg, WORD i2c_channel)
+void I2C_Master_Write_Word(BYTE *data, BYTE reg, WORD i2c_channel)
 {
 	/*write offset*/
-	if (0 == I2c_Check_TFE(i2c_channel))
+	if (0 == I2C_Check_TFE(i2c_channel))
 	{
 		SMBUSn_DATA_CMD0(i2c_channel) = reg | I2C_WRITE;
 		SMB_Temp_Addr = reg;
 	}
 	/*write data without stop*/
-	if (0 == I2c_Check_TFE(i2c_channel))
+	if (0 == I2C_Check_TFE(i2c_channel))
 	{
 		SMBUSn_DATA_CMD0(i2c_channel) = data[0] | I2C_WRITE;
 		SMB_Temp_Data = data[0];
 	}
 	/*write data and stop*/
-	if (0 == I2c_Check_TFE(i2c_channel))
+	if (0 == I2C_Check_TFE(i2c_channel))
 	{
 		SMBUSn_DATA_CMD0(i2c_channel) = data[1] | I2C_WRITE | I2C_STOP;
 		SMB_Temp_Data = data[1];
@@ -558,10 +543,10 @@ void I2c_Master_Write_Word(BYTE *data, BYTE reg, WORD i2c_channel)
 //  return :
 //      none
 //*****************************************************************************
-void I2cM_Write_Word(BYTE i2c_addr, BYTE *data, BYTE reg, WORD i2c_channel)
+void I2CM_Write_Word(BYTE i2c_addr, BYTE *data, BYTE reg, WORD i2c_channel)
 {
-	I2c_Master_Set_Tar(i2c_addr, I2C_REGADDR_7BIT, i2c_channel);
-	I2c_Master_Write_Word(data, reg, i2c_channel);
+	I2C_Master_Set_Tar(i2c_addr, I2C_REGADDR_7BIT, i2c_channel);
+	I2C_Master_Write_Word(data, reg, i2c_channel);
 }
 
 //*****************************************************************************
@@ -575,22 +560,22 @@ void I2cM_Write_Word(BYTE i2c_addr, BYTE *data, BYTE reg, WORD i2c_channel)
 //  return :
 //		none
 //*****************************************************************************
-void I2c_Master_Read_Word(BYTE *data, BYTE reg, WORD i2c_channel)
+void I2C_Master_Read_Word(BYTE *data, BYTE reg, WORD i2c_channel)
 {
 	/*write offset*/
-	if (0 == I2c_Check_TFE(i2c_channel))
+	if (0 == I2C_Check_TFE(i2c_channel))
 	{
 		SMBUSn_DATA_CMD0(i2c_channel) = reg | I2C_WRITE;
 	}
 	/*read without stop*/
 	SMBUSn_DATA_CMD0(i2c_channel) = I2C_READ;
-	if (0 == I2c_Check_RFNE(i2c_channel))
+	if (0 == I2C_Check_RFNE(i2c_channel))
 	{
 		data[0] = SMBUSn_DATA_CMD0(i2c_channel) & 0xFF;
 	}
 	/*read and stop*/
 	SMBUSn_DATA_CMD0(i2c_channel) = I2C_READ | I2C_STOP;
-	if (0 == I2c_Check_RFNE(i2c_channel))
+	if (0 == I2C_Check_RFNE(i2c_channel))
 	{
 		data[1] = SMBUSn_DATA_CMD0(i2c_channel) & 0xFF;
 	}
@@ -609,10 +594,10 @@ void I2c_Master_Read_Word(BYTE *data, BYTE reg, WORD i2c_channel)
 //  return :
 //		none
 //*****************************************************************************
-void I2cM_Read_Word(BYTE i2c_addr, BYTE *data, BYTE reg, WORD i2c_channel)
+void I2CM_Read_Word(BYTE i2c_addr, BYTE *data, BYTE reg, WORD i2c_channel)
 {
-	I2c_Master_Set_Tar(i2c_addr, I2C_REGADDR_7BIT, i2c_channel);
-	I2c_Master_Read_Word(data, reg, i2c_channel);
+	I2C_Master_Set_Tar(i2c_addr, I2C_REGADDR_7BIT, i2c_channel);
+	I2C_Master_Read_Word(data, reg, i2c_channel);
 }
 
 //*****************************************************************************
@@ -627,13 +612,13 @@ void I2cM_Read_Word(BYTE i2c_addr, BYTE *data, BYTE reg, WORD i2c_channel)
 //  return :
 //		none
 //*****************************************************************************
-void I2c_Master_Write_Block(BYTE *data, BYTE length, BYTE reg, WORD i2c_channel)
+void I2C_Master_Write_Block(BYTE *data, BYTE length, BYTE reg, WORD i2c_channel)
 {
 	WORD loop = 0;
 	if (length)
 		length--;
 	else length = 1;
-	if (0 == I2c_Check_TFE(i2c_channel))
+	if (0 == I2C_Check_TFE(i2c_channel))
 	{
 		SMBUSn_DATA_CMD0(i2c_channel) = reg | I2C_WRITE;
 		SMB_Temp_Addr = reg;
@@ -641,7 +626,7 @@ void I2c_Master_Write_Block(BYTE *data, BYTE length, BYTE reg, WORD i2c_channel)
 	/*write data without stop*/
 	while (loop < length)
 	{
-		if (0 == I2c_Check_TFE(i2c_channel))
+		if (0 == I2C_Check_TFE(i2c_channel))
 		{
 			SMBUSn_DATA_CMD0(i2c_channel) = data[loop] | I2C_WRITE;
 			SMB_Temp_Data = *(data + loop);
@@ -649,7 +634,7 @@ void I2c_Master_Write_Block(BYTE *data, BYTE length, BYTE reg, WORD i2c_channel)
 		}
 	}
 	/*write data and stop*/
-	if (0 == I2c_Check_TFE(i2c_channel))
+	if (0 == I2C_Check_TFE(i2c_channel))
 	{
 		SMBUSn_DATA_CMD0(i2c_channel) = data[loop] | I2C_WRITE | I2C_STOP;
 	}
@@ -669,10 +654,10 @@ void I2c_Master_Write_Block(BYTE *data, BYTE length, BYTE reg, WORD i2c_channel)
 //  return :
 //		none
 //*****************************************************************************
-void I2cM_Write_Block(BYTE i2c_addr, BYTE *data, BYTE length, BYTE reg, WORD i2c_channel)
+void I2CM_Write_Block(BYTE i2c_addr, BYTE *data, BYTE length, BYTE reg, WORD i2c_channel)
 {
-	I2c_Master_Set_Tar(i2c_addr, I2C_REGADDR_7BIT, i2c_channel);
-	I2c_Master_Write_Block(data, length, reg, i2c_channel);
+	I2C_Master_Set_Tar(i2c_addr, I2C_REGADDR_7BIT, i2c_channel);
+	I2C_Master_Write_Block(data, length, reg, i2c_channel);
 }
 
 //*****************************************************************************
@@ -687,13 +672,13 @@ void I2cM_Write_Block(BYTE i2c_addr, BYTE *data, BYTE length, BYTE reg, WORD i2c
 //  return :
 //		none
 //*****************************************************************************
-void I2c_Master_Read_Block(BYTE *data, BYTE length, BYTE reg, WORD i2c_channel)
+void I2C_Master_Read_Block(BYTE *data, BYTE length, BYTE reg, WORD i2c_channel)
 {
 	WORD loop = 0;
 	if (length)
 		length--;
 	else length = 1;
-	if (0 == I2c_Check_TFE(i2c_channel))
+	if (0 == I2C_Check_TFE(i2c_channel))
 	{
 		SMBUSn_DATA_CMD0(i2c_channel) = reg | I2C_WRITE;
 	}
@@ -701,7 +686,7 @@ void I2c_Master_Read_Block(BYTE *data, BYTE length, BYTE reg, WORD i2c_channel)
 	while (loop < length)
 	{
 		SMBUSn_DATA_CMD0(i2c_channel) = I2C_READ;
-		if (0 == I2c_Check_RFNE(i2c_channel))
+		if (0 == I2C_Check_RFNE(i2c_channel))
 		{
 			data[loop] = SMBUSn_DATA_CMD0(i2c_channel) & 0xFF;
 			// dprint("loop = %d, data = %#x \n", loop, *(data + loop));
@@ -710,7 +695,7 @@ void I2c_Master_Read_Block(BYTE *data, BYTE length, BYTE reg, WORD i2c_channel)
 	}
 	/*read and stop*/
 	SMBUSn_DATA_CMD0(i2c_channel) = I2C_READ | I2C_STOP;
-	if (0 == I2c_Check_RFNE(i2c_channel))
+	if (0 == I2C_Check_RFNE(i2c_channel))
 	{
 		data[loop] = SMBUSn_DATA_CMD0(i2c_channel) & 0xFF;
 		//dprint("loop = %d, data = %#x \n", loop, *(data + loop));
@@ -731,10 +716,10 @@ void I2c_Master_Read_Block(BYTE *data, BYTE length, BYTE reg, WORD i2c_channel)
 //  return :
 //		none
 //*****************************************************************************
-void I2cM_Read_Block(BYTE i2c_addr, BYTE *data, BYTE length, BYTE reg, WORD i2c_channel)
+void I2CM_Read_Block(BYTE i2c_addr, BYTE *data, BYTE length, BYTE reg, WORD i2c_channel)
 {
-	I2c_Master_Set_Tar(i2c_addr, I2C_REGADDR_7BIT, i2c_channel);
-	I2c_Master_Read_Block(data, length, reg, i2c_channel);
+	I2C_Master_Set_Tar(i2c_addr, I2C_REGADDR_7BIT, i2c_channel);
+	I2C_Master_Read_Block(data, length, reg, i2c_channel);
 }
 
 //*****************************************************************************
@@ -747,10 +732,10 @@ void I2cM_Read_Block(BYTE i2c_addr, BYTE *data, BYTE length, BYTE reg, WORD i2c_
 //  return :
 //      none
 //*****************************************************************************
-void I2c_Slave_Write_Byte(uint8_t data, WORD i2c_channel)
+void I2C_Slave_Write_Byte(uint8_t data, WORD i2c_channel)
 {
 	/*write data and stop*/
-	if (0 == I2c_Check_TFE(i2c_channel))
+	if (0 == I2C_Check_TFE(i2c_channel))
 	{
 		SMBUSn_DATA_CMD0(i2c_channel) = data | I2C_WRITE;
 	}
@@ -765,11 +750,11 @@ void I2c_Slave_Write_Byte(uint8_t data, WORD i2c_channel)
 //  return :
 //      data
 //*****************************************************************************
-uint8_t I2c_Slave_Read_Byte(WORD i2c_channel)
+uint8_t I2C_Slave_Read_Byte(WORD i2c_channel)
 {
 	BYTE data = 0;
 	/*write data and stop*/
-	if (0 == I2c_Check_RFNE(i2c_channel))
+	if (0 == I2C_Check_RFNE(i2c_channel))
 	{
 		data = (SMBUSn_DATA_CMD0(i2c_channel) & 0xff);
 	}
@@ -787,14 +772,14 @@ uint8_t I2c_Slave_Read_Byte(WORD i2c_channel)
 //  return :
 //      none
 //*****************************************************************************
-void I2c_Slave_Write_Block(uint8_t *data, BYTE length, WORD i2c_channel)
+void I2C_Slave_Write_Block(uint8_t *data, BYTE length, WORD i2c_channel)
 {
 	BYTE loop = 0;
 	length--;
 	/*write data*/
 	while (loop <= length)
 	{
-		if (0 == I2c_Check_TFE(i2c_channel))
+		if (0 == I2C_Check_TFE(i2c_channel))
 		{
 			SMBUSn_DATA_CMD0(i2c_channel) = data[loop++] | I2C_WRITE;
 		}
@@ -810,7 +795,7 @@ void I2c_Slave_Write_Block(uint8_t *data, BYTE length, WORD i2c_channel)
 //  return :
 //      none
 //*****************************************************************************
-void I2c_Master_Controller_Init(WORD i2c_channel, DWORD speed, BYTE spklen)
+void I2C_Master_Controller_Init(WORD i2c_channel, DWORD speed, BYTE spklen)
 {
 	uint16_t hcnt, lcnt;
 	uint16_t control;
@@ -866,7 +851,7 @@ void I2c_Master_Controller_Init(WORD i2c_channel, DWORD speed, BYTE spklen)
 //  return :
 //      none
 //*****************************************************************************
-void I2c_Slave_Init(WORD i2c_channel, DWORD speed, BYTE spklen)
+void I2C_Slave_Init(WORD i2c_channel, DWORD speed, BYTE spklen)
 {
 	uint16_t hcnt, lcnt;
 	uint16_t control;
@@ -929,7 +914,7 @@ void I2c_Slave_Init(WORD i2c_channel, DWORD speed, BYTE spklen)
 //  return :
 //      none
 //*****************************************************************************
-void I2c_Channel_Init(BYTE channel, DWORD speed, BYTE role, BYTE addr, BYTE spklen)
+void I2C_Channel_Init(BYTE channel, DWORD speed, BYTE role, BYTE addr, BYTE spklen)
 {
 	if (!speed)
 	{
@@ -941,12 +926,12 @@ void I2c_Channel_Init(BYTE channel, DWORD speed, BYTE role, BYTE addr, BYTE spkl
 	}
 	if (role == I2C_MASTER_ROLE)
 	{
-		I2c_Master_Controller_Init(channel, speed, spklen);
-		I2c_Master_Set_Tar(addr, I2C_REGADDR_7BIT, channel);
+		I2C_Master_Controller_Init(channel, speed, spklen);
+		I2C_Master_Set_Tar(addr, I2C_REGADDR_7BIT, channel);
 	}
 	else if (role == I2C_SLAVE_ROLE)
 	{
-		I2c_Slave_Init(channel, speed, spklen);
+		I2C_Slave_Init(channel, speed, spklen);
 		I2c_Slave_Set_Sar(addr, channel);
 	}
 	else {}
@@ -958,7 +943,7 @@ void I2c_Channel_Init(BYTE channel, DWORD speed, BYTE role, BYTE addr, BYTE spkl
  * @param type
  * @return
  */
-BYTE I2c_Int_Mask(BYTE channel, BYTE type)
+BYTE I2C_Int_Mask(BYTE channel, BYTE type)
 {
 	if (channel <= I2C_CHANNEL_8)
 	{
@@ -977,7 +962,7 @@ BYTE I2c_Int_Mask(BYTE channel, BYTE type)
  * @param type
  * @return
  */
-BYTE I2c_Int_Unmask(BYTE channel, BYTE type)
+BYTE I2C_Int_Unmask(BYTE channel, BYTE type)
 {
 	if (channel <= I2C_CHANNEL_8)
 	{
@@ -996,7 +981,7 @@ BYTE I2c_Int_Unmask(BYTE channel, BYTE type)
  * @param type
  * @return
  */
-BYTE I2c_Int_Mask_Read(BYTE channel, BYTE type)
+BYTE I2C_Int_Mask_Read(BYTE channel, BYTE type)
 {
 	if (channel <= I2C_CHANNEL_8)
 	{
@@ -1014,7 +999,7 @@ BYTE I2c_Int_Mask_Read(BYTE channel, BYTE type)
  * @param type
  * @return
  */
-BYTE I2c_Int_Status(BYTE channel, BYTE type)
+BYTE I2C_Int_Status(BYTE channel, BYTE type)
 {
 	if (channel <= I2C_CHANNEL_8)
 	{
@@ -1034,7 +1019,7 @@ BYTE I2c_Int_Status(BYTE channel, BYTE type)
 //  return :
 //      i2c interrupts status
 //*****************************************************************************
-int i2c_dw_read_clear_intrbits(WORD i2c_channel)
+int I2C_ReadClear_Int(WORD i2c_channel)
 {
 #if 1
 	uint16_t intr_stat = SMBUSn_INTR_STAT0(i2c_channel);
@@ -1143,7 +1128,7 @@ int i2c_dw_read_clear_intrbits(WORD i2c_channel)
  * @brief i2c tx abort source
  * @param i2c_channel
  */
-void i2c_dw_tx_abrt(WORD i2c_channel)
+void I2C_TX_Abrt(WORD i2c_channel)
 {
 	dprint("Enter txabrt, source = %#x %#x\n", SMBUSn_TX_ABRT_SOURCE0(i2c_channel));
 }

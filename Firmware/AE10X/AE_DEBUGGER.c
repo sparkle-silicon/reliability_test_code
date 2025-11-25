@@ -537,14 +537,14 @@ void Debugger_I2c_Req(WORD channel)
 		{
 		case 0:
 			//  return "fe dd" mean the master read while slave does not recive any command
-			I2c_Slave_Write_Byte(0xFE, channel);
-			I2c_Slave_Write_Byte(0xDD, channel);
+			I2C_Slave_Write_Byte(0xFE, channel);
+			I2C_Slave_Write_Byte(0xDD, channel);
 			return;
 		case 1:
 		{
 			// return two byte data to indicate master the "255 +1" datas need to be read
-			I2c_Slave_Write_Byte(0x01, channel);
-			I2c_Slave_Write_Byte(buf[3], channel);
+			I2C_Slave_Write_Byte(0x01, channel);
+			I2C_Slave_Write_Byte(buf[3], channel);
 			iic_count = Num_flag = 0; // clear the count num// the number of datas have send by iic
 		}
 		break;
@@ -552,15 +552,15 @@ void Debugger_I2c_Req(WORD channel)
 		case 3:
 		{
 			// return two byte data to indicate master the "0 +1" datas need to be read
-			I2c_Slave_Write_Byte(0x00, channel);
-			I2c_Slave_Write_Byte(0x01, channel);
+			I2C_Slave_Write_Byte(0x00, channel);
+			I2C_Slave_Write_Byte(0x01, channel);
 		}
 		break;
 		case 4:
 		{					   // kbc send
 			F_Service_KBL = 0; // stop the kbd record until the datas have been sent
-			I2c_Slave_Write_Byte(0x00, channel);
-			I2c_Slave_Write_Byte(pos, channel);
+			I2C_Slave_Write_Byte(0x00, channel);
+			I2C_Slave_Write_Byte(pos, channel);
 			iic_count = Num_flag = 0; // clear the count num// the number of datas have send by iic
 		}
 		break;
@@ -609,7 +609,7 @@ void Debugger_I2c_Send(WORD channel)
 						break;
 					temp = 8;
 				}
-				I2c_Slave_Write_Block(wdata, temp, channel);
+				I2C_Slave_Write_Block(wdata, temp, channel);
 				int_status = SMBUSn_INTR_MASK0(channel);
 				int_status |= I2C_INTR_RD_REQ;
 				int_status &= (~I2C_INTR_TX_EMPTY);
@@ -620,7 +620,7 @@ void Debugger_I2c_Send(WORD channel)
 			}
 		}
 		Num_flag++;
-		I2c_Slave_Write_Block(wdata, 8, channel); // i2c slave send data to fifo
+		I2C_Slave_Write_Block(wdata, 8, channel); // i2c slave send data to fifo
 		/* Finish data send*/
 		if (Num_flag == 32)
 		{
@@ -636,7 +636,7 @@ void Debugger_I2c_Send(WORD channel)
 	case 2:
 	{ // int mode
 		// the real data master want to read
-		I2c_Slave_Write_Byte(0xFF, channel);
+		I2C_Slave_Write_Byte(0xFF, channel);
 		int_status = SMBUSn_INTR_MASK0(channel);
 		int_status |= I2C_INTR_RD_REQ;
 		int_status &= (~I2C_INTR_TX_EMPTY);
@@ -649,19 +649,19 @@ void Debugger_I2c_Send(WORD channel)
 	{
 		if (iic_int_flag == 1)
 		{
-			I2c_Slave_Write_Byte(0x01, channel);
+			I2C_Slave_Write_Byte(0x01, channel);
 		}
 		else if (iic_int_flag == 2)
 		{
-			I2c_Slave_Write_Byte(0x00, channel);
+			I2C_Slave_Write_Byte(0x00, channel);
 		}
 		else if (iic_int_flag == 3)
 		{
-			I2c_Slave_Write_Byte(0x11, channel);
+			I2C_Slave_Write_Byte(0x11, channel);
 		}
 		else
 		{
-			I2c_Slave_Write_Byte(0xDD, channel);
+			I2C_Slave_Write_Byte(0xDD, channel);
 		}
 		int_status = SMBUSn_INTR_MASK0(channel);
 		int_status |= I2C_INTR_RD_REQ;
@@ -686,7 +686,7 @@ void Debugger_I2c_Send(WORD channel)
 						break;
 					temp = 16;
 				}
-				I2c_Slave_Write_Block(wdata, temp, channel);
+				I2C_Slave_Write_Block(wdata, temp, channel);
 				/* Complete sending; Restore the Context*/
 				F_Service_KBL = 1;
 				iicFeedback = 0;
@@ -699,7 +699,7 @@ void Debugger_I2c_Send(WORD channel)
 			}
 		}
 		Num_flag++;
-		I2c_Slave_Write_Block(wdata, 16, channel); // i2c slave send data to fifo
+		I2C_Slave_Write_Block(wdata, 16, channel); // i2c slave send data to fifo
 		/* Complete sending; Restore the Context*/
 		if (Num_flag == 16)
 		{
@@ -2372,17 +2372,17 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 		switch (dbg_int_buf[1])
 		{
 		case 0x2:
-			I2c_Int_Mask(index, 2);//接收满
+			I2C_Int_Mask(index, 2);//接收满
 			break;
 		case 0x3:
-			I2c_Int_Unmask(index, 2);//接收满
+			I2C_Int_Unmask(index, 2);//接收满
 			break;
 		case 0x9:
-			value = I2c_Int_Mask_Read(index, 2);//接收满
+			value = I2C_Int_Mask_Read(index, 2);//接收满
 			read_flag = 1;
 			break;
 		case 0xC:
-			value = I2c_Int_Status(index, 2);//接收满
+			value = I2C_Int_Status(index, 2);//接收满
 			read_flag = 1;
 			break;
 		default:
@@ -2581,11 +2581,11 @@ BYTE Debugger_KBC_PMC_Record(BYTE direction, BYTE channel, BYTE value)
 char Debugger_Master_Read_Byte(WORD i2c_channel)
 {
 	char data;
-	if (0 == I2c_Check_TFNF(i2c_channel))
+	if (0 == I2C_Check_TFNF(i2c_channel))
 	{
 		SMBUSn_DATA_CMD0(i2c_channel) = I2C_READ | I2C_STOP;
 	}
-	if (0 == I2c_Check_RFNE(i2c_channel))
+	if (0 == I2C_Check_RFNE(i2c_channel))
 	{
 		data = SMBUSn_DATA_CMD0(i2c_channel) & 0xff;
 	}
@@ -2605,7 +2605,7 @@ char Debugger_Master_Read_Byte(WORD i2c_channel)
 //*****************************************************************************
 void Debugger_Master_Write_Byte(char data, WORD i2c_channel)
 {
-	if (0 == I2c_Check_TFNF(i2c_channel))
+	if (0 == I2C_Check_TFNF(i2c_channel))
 	{
 		SMBUSn_DATA_CMD0(i2c_channel) = data | I2C_WRITE | I2C_STOP;
 	}
@@ -2674,19 +2674,19 @@ void Debugger_Master_Read(short buf[], DWORD channel)
 {
 	int i, j;
 	int data[DEBUGGER_BUFF_SIZE];
-	if (0 == I2c_Check_TFE(channel))
+	if (0 == I2C_Check_TFE(channel))
 	{
 		SMBUSn_DATA_CMD0(channel) = 0x55 | I2C_WRITE;
 	}
-	if (0 == I2c_Check_TFNF(channel))
+	if (0 == I2C_Check_TFNF(channel))
 	{
 		SMBUSn_DATA_CMD0(channel) = buf[0] | I2C_WRITE;
 	}
-	if (0 == I2c_Check_TFNF(channel))
+	if (0 == I2C_Check_TFNF(channel))
 	{
 		SMBUSn_DATA_CMD0(channel) = buf[1] | I2C_WRITE;
 	}
-	if (0 == I2c_Check_TFNF(channel))
+	if (0 == I2C_Check_TFNF(channel))
 	{
 		SMBUSn_DATA_CMD0(channel) = buf[2] | I2C_WRITE | I2C_STOP;
 	}
@@ -2694,28 +2694,28 @@ void Debugger_Master_Read(short buf[], DWORD channel)
 	{
 		for (i = 0; i < 7; i++)
 		{
-			if (0 == I2c_Check_TFNF(channel))
+			if (0 == I2C_Check_TFNF(channel))
 			{
 				SMBUSn_DATA_CMD0(channel) = I2C_READ;
 			}
 		}
 		if (j == 31)
 		{
-			if (0 == I2c_Check_TFNF(channel))
+			if (0 == I2C_Check_TFNF(channel))
 			{
 				SMBUSn_DATA_CMD0(channel) = I2C_READ | I2C_STOP;
 			}
 		}
 		else
 		{
-			if (0 == I2c_Check_TFNF(channel))
+			if (0 == I2C_Check_TFNF(channel))
 			{
 				SMBUSn_DATA_CMD0(channel) = I2C_READ;
 			}
 		}
 		for (i = 0; i < 8; i++)
 		{
-			if (0 == I2c_Check_RFNE(channel))
+			if (0 == I2C_Check_RFNE(channel))
 			{
 				data[i + j * 8] = SMBUSn_DATA_CMD0(channel) & 0xff;
 			}
@@ -2744,26 +2744,26 @@ void Debugger_Master_Write(short buf[], DWORD channel)
 {
 	int get_data;
 	int i;
-	if (0 == I2c_Check_TFNF(channel))
+	if (0 == I2C_Check_TFNF(channel))
 	{
 		SMBUSn_DATA_CMD0(channel) = 0xFF | I2C_WRITE;
 	}
 	for (i = 0; i < 6; i++)
 	{
-		if (0 == I2c_Check_TFNF(channel))
+		if (0 == I2C_Check_TFNF(channel))
 		{
 			SMBUSn_DATA_CMD0(channel) = buf[i] | I2C_WRITE;
 		}
 	}
-	if (0 == I2c_Check_TFNF(channel))
+	if (0 == I2C_Check_TFNF(channel))
 	{
 		SMBUSn_DATA_CMD0(channel) = buf[i] | I2C_WRITE | I2C_STOP;
 	}
-	if (0 == I2c_Check_TFNF(channel))
+	if (0 == I2C_Check_TFNF(channel))
 	{
 		SMBUSn_DATA_CMD0(channel) = I2C_WRITE | I2C_STOP;
 	}
-	if (0 == I2c_Check_RFNE(channel))
+	if (0 == I2C_Check_RFNE(channel))
 	{
 		get_data = SMBUSn_DATA_CMD0(channel) & 0xFF;
 	}

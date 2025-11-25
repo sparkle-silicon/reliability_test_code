@@ -47,7 +47,7 @@ void BRAM_SIOConfig(void)
  *
  * @note 此函数用于在EC端进行BRAM地址写操作。
  */
-void BRAM_EC_Write(void)
+void BRAM_Write(void)
 {
   int i;
   for(i = 0; i < 48; i++)
@@ -65,7 +65,7 @@ void BRAM_EC_Write(void)
  *
  * @note 此函数用于在EC端进行BRAM地址读操作。
  */
-void BRAM_EC_Read(void)
+void BRAM_Read(void)
 {
   uint8_t i;
   for(i = 0; i <= 96; i++)

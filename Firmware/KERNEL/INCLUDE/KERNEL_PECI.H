@@ -101,9 +101,9 @@
 #define _PECI_Index_PPL3 0x39       // Power limit 3
 #define _PECI_Index_PPL4 0x3C       // Power limit 4
 
-//*****************************************************************************
-// Star Reg BIT
-//*****************************************************************************
+ /*-----------------------------------------------------------------------------
+ * Star Reg BIT
+ *---------------------------------------------------------------------------*/
 #define PECI_STAR_HOBY BIT0
 #define PECI_STAR_FINISH BIT1
 #define PECI_STAR_RD_FCS_ERR BIT2
@@ -112,10 +112,9 @@
 #define PECI_STAR_EXTERR BIT5
 #define PECI_STAR_BUSERR BIT6
 #define PECI_STAR_RCV_ERRCODE BIT7
-
-//*****************************************************************************
-// Ctrl Reg BIT
-//*****************************************************************************
+/*-----------------------------------------------------------------------------
+ * Ctrl Reg BIT
+ *---------------------------------------------------------------------------*/
 #define PECI_CTRL1R_START BIT0
 #define PECI_CTRL1R_AWFCS_EN BIT1
 #define PECI_CTRL1R_CONCTRL BIT2
@@ -124,16 +123,15 @@
 #define PECI_CTRL1R_FIFOCLR BIT5
 #define PECI_CTRL1R_AWFCS_FRC_CTRL BIT6
 #define PECI_CTRL1R_HHRAE BIT7
-//*****************************************************************************
-// Global variable (memory address allocation follow project )
-//*****************************************************************************
+/*-----------------------------------------------------------------------------
+ * Global variable (memory address allocation follow project )
+ *---------------------------------------------------------------------------*/
 #if PECI_Softwave_AWFCS
 extern u8 PECI_CRC8;
 #endif
-
-//*****************************************************************************
-// Variable prototype
-//*****************************************************************************
+/*-----------------------------------------------------------------------------
+ * Variable prototype
+ *---------------------------------------------------------------------------*/
 extern BYTE PECI_Get_DIB[];
 extern BYTE PECI_Get_DIB_TEST[];
 extern BYTE PECI_Get_Temp[];
@@ -142,17 +140,16 @@ extern BYTE PECI_RdPkgCfg_Idx16[];
 #define Processor_T_control PECI_RdPkgCfg_Idx16[1]
 extern BYTE PECI_ReadBuffer[];
 extern BYTE PECI_WriteBuffer[];
-
-//*****************************************************************************
-// Selection
-//*****************************************************************************
+/*-----------------------------------------------------------------------------
+ * Selection
+ *---------------------------------------------------------------------------*/
 #define PECI_Softwave_AWFCS         1       // 1 : softwave calculate AW_FCS
                                             // 0 : H.W. calculate AW_FCS
 #define PECI_HostID                 0x01    // Host ID = PECI_HostID << 1 (bit7 ~ bit0)
 #define PECI_TIMEOUT                30000
-//*****************************************************************************
-// Star Reg BIT
-//*****************************************************************************
+/*-----------------------------------------------------------------------------
+ * Star Reg BIT
+ *---------------------------------------------------------------------------*/
 #define PECI_STAR_HOBY            BIT0
 #define PECI_STAR_FINISH          BIT1
 #define PECI_STAR_RD_FCS_ERR      BIT2
@@ -162,9 +159,9 @@ extern BYTE PECI_WriteBuffer[];
 #define PECI_STAR_BUSERR          BIT6
 #define PECI_STAR_RCV_ERRCODE     BIT7
 
-//*****************************************************************************
-// Ctrl Reg BIT
-//*****************************************************************************
+/*-----------------------------------------------------------------------------
+ * Ctrl Reg BIT
+ *---------------------------------------------------------------------------*/
 #define PECI_CTRL1R_START           BIT0
 #define PECI_CTRL1R_AWFCS_EN        BIT1
 #define PECI_CTRL1R_CONCTRL         BIT2
@@ -173,16 +170,16 @@ extern BYTE PECI_WriteBuffer[];
 #define PECI_CTRL1R_FIFOCLR         BIT5
 #define PECI_CTRL1R_AWFCS_FRC_CTRL  BIT6
 #define PECI_CTRL1R_HHRAE           BIT7
-//*****************************************************************************
-// Global variable (memory address allocation follow project )
-//*****************************************************************************
+/*-----------------------------------------------------------------------------
+ * Global variable (memory address allocation follow project )
+ *---------------------------------------------------------------------------*/
 #if PECI_Softwave_AWFCS
 extern u8 PECI_CRC8;
 #endif
 
-//*****************************************************************************
-// Define PECI command
-//*****************************************************************************
+/*-----------------------------------------------------------------------------
+ * Define PECI command
+ *---------------------------------------------------------------------------*/
 #define PECI_CMD_GetDIB             0xF7
 #define PECI_CMD_Pin                0x00
 #define PECI_CMD_GetTemp            0x01
@@ -195,16 +192,16 @@ extern u8 PECI_CRC8;
 #define PECI_CMD_RdPCIConfigLocal   0xE1
 #define PECI_CMD_WrPCIConfigLocal   0xE5
 
-//*****************************************************************************
-// Define completion code
-//*****************************************************************************
+/*-----------------------------------------------------------------------------
+ * Define completion code
+ *---------------------------------------------------------------------------*/
 #define PECI_CC_Valid               0x40
 #define PECI_CC_TimeOut             0x80
 #define PECI_CC_Ignored             0x90
 
-//*****************************************************************************
-// Function prototype
-//*****************************************************************************
+/*-----------------------------------------------------------------------------
+ * External Calling Prototype
+ *---------------------------------------------------------------------------*/
 extern void PECI_HostEnable(void);
 extern void PECI_HostDisable(void);
 extern BYTE PECI_CheckHostBusy(void);

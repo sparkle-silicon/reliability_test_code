@@ -35,9 +35,9 @@
 #else
 #define DEFAULT_SMBUS3_UARTB_SEL  SMBUS3_SEL
 #endif
-//******************************************************************************************
-//      Interrupt set and read
-//******************************************************************************************
+/*-----------------------------------------------------------------------------
+* Interrupt set and get
+*---------------------------------------------------------------------------*/
 //set
 #define GPIOA0_7_Int_Enable(IO_num)	          (GPIO0_INTEN0 |= (0x1<<IO_num))
 #define GPIOA8_15_Int_Enable(IO_num)	        (GPIO0_INTEN1 |= (0x1<<IO_num))
@@ -223,7 +223,7 @@
 #define GPIOE16_23_Int_Status(IO_num)	        ((GPIO3_INTSTATUS2 & (0x1<<IO_num))  != 0)
 
 /*-----------------------------------------------------------------------------
-* GPIO引脚输出高低定义
+* GPIO Pin Output High/Low Level Definition
 *---------------------------------------------------------------------------*/
 // GPIOA0 to GPIOA7 
 #define GPIOA0(x) ((x) ? SET_MASK(GPIO0_DR0, BIT(0)) : CLEAR_MASK(GPIO0_DR0, BIT(0)))
@@ -367,9 +367,9 @@
 #define GPIOE23(x) ((x) ? SET_MASK(GPIO3_DR2, BIT(7)) : CLEAR_MASK(GPIO3_DR2, BIT(7)))
 
  /*-----------------------------------------------------------------------------
-  * GPIO引脚监测输入高低定义
+  * GPIO Pin Input Monitoring High/Low Level Definition
   *---------------------------------------------------------------------------*/
-  // GPIOA组输入检测
+  // GPIOA
 #define IS_GPIOA0(x)  ((x) ? IS_MASK_SET(GPIO0_EXT0, BIT(0)) : IS_MASK_CLEAR(GPIO0_EXT0, BIT(0)))
 #define IS_GPIOA1(x)  ((x) ? IS_MASK_SET(GPIO0_EXT0, BIT(1)) : IS_MASK_CLEAR(GPIO0_EXT0, BIT(1)))
 #define IS_GPIOA2(x)  ((x) ? IS_MASK_SET(GPIO0_EXT0, BIT(2)) : IS_MASK_CLEAR(GPIO0_EXT0, BIT(2)))
@@ -406,7 +406,7 @@
 #define IS_GPIOA30(x) ((x) ? IS_MASK_SET(GPIO0_EXT3, BIT(6)) : IS_MASK_CLEAR(GPIO0_EXT3, BIT(6)))
 #define IS_GPIOA31(x) ((x) ? IS_MASK_SET(GPIO0_EXT3, BIT(7)) : IS_MASK_CLEAR(GPIO0_EXT3, BIT(7)))
 
-// GPIOB组输入检测
+// GPIOB
 #define IS_GPIOB0(x)  ((x) ? IS_MASK_SET(GPIO1_EXT0, BIT(0)) : IS_MASK_CLEAR(GPIO1_EXT0, BIT(0)))
 #define IS_GPIOB1(x)  ((x) ? IS_MASK_SET(GPIO1_EXT0, BIT(1)) : IS_MASK_CLEAR(GPIO1_EXT0, BIT(1)))
 #define IS_GPIOB2(x)  ((x) ? IS_MASK_SET(GPIO1_EXT0, BIT(2)) : IS_MASK_CLEAR(GPIO1_EXT0, BIT(2)))
@@ -442,7 +442,7 @@
 #define IS_GPIOB29(x) ((x) ? IS_MASK_SET(GPIO1_EXT3, BIT(5)) : IS_MASK_CLEAR(GPIO1_EXT3, BIT(5)))
 #define IS_GPIOB30(x) ((x) ? IS_MASK_SET(GPIO1_EXT3, BIT(6)) : IS_MASK_CLEAR(GPIO1_EXT3, BIT(6)))
 #define IS_GPIOB31(x) ((x) ? IS_MASK_SET(GPIO1_EXT3, BIT(7)) : IS_MASK_CLEAR(GPIO1_EXT3, BIT(7)))
-// GPIOC组输入检测
+// GPIOC
 #define IS_GPIOC0(x)  ((x) ? IS_MASK_SET(GPIO2_EXT0, BIT(0)) : IS_MASK_CLEAR(GPIO2_EXT0, BIT(0)))
 #define IS_GPIOC1(x)  ((x) ? IS_MASK_SET(GPIO2_EXT0, BIT(1)) : IS_MASK_CLEAR(GPIO2_EXT0, BIT(1)))
 #define IS_GPIOC2(x)  ((x) ? IS_MASK_SET(GPIO2_EXT0, BIT(2)) : IS_MASK_CLEAR(GPIO2_EXT0, BIT(2)))
@@ -460,7 +460,7 @@
 #define IS_GPIOC13(x) ((x) ? IS_MASK_SET(GPIO2_EXT1, BIT(5)) : IS_MASK_CLEAR(GPIO2_EXT1, BIT(5)))
 #define IS_GPIOC14(x) ((x) ? IS_MASK_SET(GPIO2_EXT1, BIT(6)) : IS_MASK_CLEAR(GPIO2_EXT1, BIT(6)))
 #define IS_GPIOC15(x) ((x) ? IS_MASK_SET(GPIO2_EXT1, BIT(7)) : IS_MASK_CLEAR(GPIO2_EXT1, BIT(7)))
-// GPIOD组输入检测
+// GPIOD
 #define IS_GPIOD0(x) ((x) ? IS_MASK_SET(GPIO2_EXT2, BIT(0)) : IS_MASK_CLEAR(GPIO2_EXT2, BIT(0)))
 #define IS_GPIOD1(x) ((x) ? IS_MASK_SET(GPIO2_EXT2, BIT(1)) : IS_MASK_CLEAR(GPIO2_EXT2, BIT(1)))
 #define IS_GPIOD2(x) ((x) ? IS_MASK_SET(GPIO2_EXT2, BIT(2)) : IS_MASK_CLEAR(GPIO2_EXT2, BIT(2)))
@@ -470,7 +470,7 @@
 #define IS_GPIOD6(x) ((x) ? IS_MASK_SET(GPIO2_EXT2, BIT(6)) : IS_MASK_CLEAR(GPIO2_EXT2, BIT(6)))
 #define IS_GPIOD7(x) ((x) ? IS_MASK_SET(GPIO2_EXT2, BIT(7)) : IS_MASK_CLEAR(GPIO2_EXT2, BIT(7)))
 #define IS_GPIOD8(x) ((x) ? IS_MASK_SET(GPIO2_EXT3, BIT(0)) : IS_MASK_CLEAR(GPIO2_EXT3, BIT(0)))
-// GPIOE组输入检测
+// GPIOE
 #define IS_GPIOE0(x)  ((x) ? IS_MASK_SET(GPIO3_EXT0, BIT(0)) : IS_MASK_CLEAR(GPIO3_EXT0, BIT(0)))
 #define IS_GPIOE1(x)  ((x) ? IS_MASK_SET(GPIO3_EXT0, BIT(1)) : IS_MASK_CLEAR(GPIO3_EXT0, BIT(1)))
 #define IS_GPIOE2(x)  ((x) ? IS_MASK_SET(GPIO3_EXT0, BIT(2)) : IS_MASK_CLEAR(GPIO3_EXT0, BIT(2)))
@@ -498,7 +498,7 @@
 #define IS_GPIOE22(x) ((x) ? IS_MASK_SET(GPIO3_EXT2, BIT(6)) : IS_MASK_CLEAR(GPIO3_EXT2, BIT(6)))
 #define IS_GPIOE23(x) ((x) ? IS_MASK_SET(GPIO3_EXT2, BIT(7)) : IS_MASK_CLEAR(GPIO3_EXT2, BIT(7)))
  /*-----------------------------------------------------------------------------
-  * GPIO引脚输出高低定义(按照pin的格式)
+  * GPIO Pin Output High/Low Level Definition
   *---------------------------------------------------------------------------*/
 #define Pin2(x)   GPIOC15(x)
 #define Pin3(x)   GPIOB31(x)
@@ -614,9 +614,9 @@
 #define Pin125(x) GPIOB4(x)
 #define Pin126(x) GPIOA13(x)
 #define Pin128(x) GPIOC14(x)
-  /*-----------------------------------------------------------------------------
-   * GPIO引脚检测高低定义(按照pin的格式)
-   *---------------------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------
+ * GPIO Pin Input Monitoring High/Low Level Definition
+ *---------------------------------------------------------------------------*/
 #define IS_Pin2(x)    IS_GPIOC15(x)
 #define IS_Pin3(x)    IS_GPIOB31(x)
 #define IS_Pin4(x)    IS_GPIOA14(x)
@@ -731,7 +731,9 @@
 #define IS_Pin125(x)  IS_GPIOB4(x)
 #define IS_Pin126(x)  IS_GPIOA13(x)
 #define IS_Pin128(x)  IS_GPIOC14(x)
-
+/*-----------------------------------------------------------------------------
+ * GPIO Definition
+ *---------------------------------------------------------------------------*/
 #define GPIOA HEX01
 #define GPIOB HEX02
 #define GPIOC HEX03
@@ -743,7 +745,9 @@
 #define NUM_OF_GPIOC 14
 #define NUM_OF_GPIOD 7
 #define NUM_OF_GPIOE 24
-
+/*-----------------------------------------------------------------------------
+ * GPIO Offset Definition
+ *---------------------------------------------------------------------------*/
 #define GPIO_INPUT_VAL      (0x00)
 #define GPIO_INPUT_EN       (0x04)
 #define GPIO_OUTPUT_EN      (0x08)
@@ -771,7 +775,7 @@ struct GPIOPinState {
 };
 extern struct GPIOPinState gpio_state_table[];
 /*-----------------------------------------------------------------------------
- *	Extern functions
+ * External Calling Prototype
  *---------------------------------------------------------------------------*/
 extern void sysctl_iomux_uart0(void);
 extern void sysctl_iomux_uart1(uint32_t tx_sel, uint32_t rx_sel);

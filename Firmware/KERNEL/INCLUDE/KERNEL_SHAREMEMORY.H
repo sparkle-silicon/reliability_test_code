@@ -17,6 +17,9 @@
 #define KERNEL_SHAREMEMORY_H
 #include "AE_GLOBAL.H"
 #include "KERNEL_PNP.H"
+//-----------------------------------------------------------------------------
+// Share Memory Define
+//-----------------------------------------------------------------------------
 #define SMF_SR_IR_HOST      HEX01
 #define SMF_SR_IR_EC        HEX02
 #define SMF_SR_IE_HOST      HEX04
@@ -45,7 +48,9 @@
 #define SMS_WxAAS_16SIZE    0x00
 #define SMFSR_EC_IE         HEX08
 #define SMFSR_EC_IR         HEX02
-
+/*-----------------------------------------------------------------------------
+ * External Calling Prototype
+ *---------------------------------------------------------------------------*/
 extern void SMS_Init(VBYTE windows, VBYTE baseaddr, VBYTE aas);
 extern void SMF_Init(void);
 extern void SHAREMEM_PNP(void);

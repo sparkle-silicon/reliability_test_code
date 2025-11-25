@@ -16,14 +16,23 @@
 #ifndef __KERNEL_CEC_H_
 #define __KERNEL_CEC_H_
 #include "AE_GLOBAL.H"
-
+/*-----------------------------------------------------------------------------
+ * CEC Channel Definition
+ *---------------------------------------------------------------------------*/
 #define CEC0_CHANNEL 0
 #define CEC1_CHANNEL 1
-
+/*-----------------------------------------------------------------------------
+ * CEC Clock Definition
+ *---------------------------------------------------------------------------*/
 #define CEC_CLOCK  (HIGH_CHIP_CLOCK / (SYSCTL_CLKDIV_CEC+1))
-
+/*-----------------------------------------------------------------------------
+ * CEC Address Definition
+ *---------------------------------------------------------------------------*/
 #define CEC_Destination_address              0x0F//option. and the "F" mean broadcast
 #define CEC_Initiator_address                0x0F//as device address while CEC used to follower 
+/*-----------------------------------------------------------------------------
+ * CEC Register Bits Definition
+ *---------------------------------------------------------------------------*/
  //the bit of cec interrupt_enable_register
 #define CEC_Int_Receive_Head                 0x01
 #define CEC_Int_Receive_Block                0x02
@@ -58,8 +67,10 @@
 #define CEC_intStatue_erris                  0x20//action erro int
 //the bit of EOM in block
 #define CEC_send_EOM                         0x100
-
-extern void CEC_initiator_init(BYTE channel);
-extern void CEC_follower_init(BYTE channel);
-extern void CEC_Frame_send(BYTE channel, char* data, BYTE len, BYTE broadcast);
+/*-----------------------------------------------------------------------------
+ * External Calling Prototype
+ *---------------------------------------------------------------------------*/
+extern void CEC_Initiator_Init(BYTE channel);
+extern void CEC_Follower_Init(BYTE channel);
+extern void CEC_Frame_Send(BYTE channel, char* data, BYTE len, BYTE broadcast);
 #endif

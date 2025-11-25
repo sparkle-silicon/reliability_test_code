@@ -25,6 +25,7 @@
 #define T_BAT_DEBOUNCE   	    15      // 150 ms (timebase: 10 ms)
 #define T_PSWOFF         	    500 	// 5 secs (timebase: 10ms) EC 5sec override turn off system power
 #define T_EXTEVT_DEBOUNCE 	    10      // 100 ms (timebase: 10 ms)
+
 struct sEvent
 {
 	VBYTE* REG_Evt;

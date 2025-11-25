@@ -739,7 +739,7 @@ BYTE Module_test(void)
 					SYSCTL_MODEN0 &= (~SMB0_EN);
 				}
 				sysctl_iomux_i2c0(I2C0_CLK_SEL, I2C0_DAT_SEL);
-				I2c_Channel_Init(I2C_CHANNEL_0, I2C0_SPEED, I2C_MASTER_ROLE, 0x4c, 1);
+				I2C_Channel_Init(I2C_CHANNEL_0, I2C0_SPEED, I2C_MASTER_ROLE, 0x4c, 1);
 				dprint("perpare SMBUS0\n");
 				dprint("completing the jumper, then send any key to start test\n");  //SMCLK0接TMP_SCL，SMDAT0接TMP_SDA
 				Uart_Int_Disable(PRINTF_UART_SWITCH, 0);
@@ -755,7 +755,7 @@ BYTE Module_test(void)
 			Mtimer_Cunt++;
 			if (Mtimer_Cunt % 1000 == 0)     //1s测一次
 			{
-				get_temperature(0);
+				Get_Temperature(0);
 			}
 			if (Mtimer_Cunt >= 10000)      //测10s
 			{
@@ -792,7 +792,7 @@ BYTE Module_test(void)
 					SYSCTL_MODEN0 &= (~SMB1_EN);
 				}
 				sysctl_iomux_i2c1();
-				I2c_Channel_Init(I2C_CHANNEL_1, I2C1_SPEED, I2C_MASTER_ROLE, 0x4c, 1);
+				I2C_Channel_Init(I2C_CHANNEL_1, I2C1_SPEED, I2C_MASTER_ROLE, 0x4c, 1);
 				dprint("perpare SMBUS1\n");
 				dprint("completing the jumper, then send any key to start test\n");//SMCLK1接TMP_SCL，SMDAT1接TMP_SDA
 				Uart_Int_Disable(PRINTF_UART_SWITCH, 0);
@@ -808,7 +808,7 @@ BYTE Module_test(void)
 			Mtimer_Cunt++;
 			if (Mtimer_Cunt % 1000 == 0)
 			{
-				get_temperature(1);
+				Get_Temperature(1);
 			}
 			if (Mtimer_Cunt >= 10000)
 			{
@@ -845,7 +845,7 @@ BYTE Module_test(void)
 					SYSCTL_MODEN0 &= (~SMB2_EN);
 				}
 				sysctl_iomux_i2c2(I2C2_CLK_SEL);
-				I2c_Channel_Init(I2C_CHANNEL_2, I2C2_SPEED, I2C_MASTER_ROLE, 0x4c, 1);
+				I2C_Channel_Init(I2C_CHANNEL_2, I2C2_SPEED, I2C_MASTER_ROLE, 0x4c, 1);
 				dprint("perpare SMBUS2\n");
 				dprint("completing the jumper, then send any key to start test\n");//SMCLK2接TMP_SCL，SMDAT2接TMP_SDA
 				Uart_Int_Disable(PRINTF_UART_SWITCH, 0);
@@ -861,7 +861,7 @@ BYTE Module_test(void)
 			Mtimer_Cunt++;
 			if (Mtimer_Cunt % 1000 == 0)
 			{
-				get_temperature(2);
+				Get_Temperature(2);
 			}
 			if (Mtimer_Cunt >= 10000)
 			{
@@ -899,7 +899,7 @@ BYTE Module_test(void)
 					SYSCTL_MODEN0 &= (~SMB3_EN);
 				}
 				sysctl_iomux_i2c3();
-				I2c_Channel_Init(I2C_CHANNEL_3, I2C3_SPEED, I2C_MASTER_ROLE, 0x4c, 1);
+				I2C_Channel_Init(I2C_CHANNEL_3, I2C3_SPEED, I2C_MASTER_ROLE, 0x4c, 1);
 				dprint("perpare SMBUS3\n");
 				dprint("completing the jumper, then send any key to start test\n");//SMCLK3接TMP_SCL，SMDAT3接TMP_SDA
 				Uart_Int_Disable(PRINTF_UART_SWITCH, 0);
@@ -915,7 +915,7 @@ BYTE Module_test(void)
 			Mtimer_Cunt++;
 			if (Mtimer_Cunt % 1000 == 0)
 			{
-				get_temperature(3);
+				Get_Temperature(3);
 			}
 			if (Mtimer_Cunt >= 10000)
 			{
@@ -1902,7 +1902,7 @@ BYTE Module_test(void)
 					SYSCTL_MODEN1 &= (~SMB4_EN);
 				}
 				sysctl_iomux_i2c4();
-				I2c_Channel_Init(I2C_CHANNEL_4, I2C4_SPEED, I2C_MASTER_ROLE, 0x4c, 1);
+				I2C_Channel_Init(I2C_CHANNEL_4, I2C4_SPEED, I2C_MASTER_ROLE, 0x4c, 1);
 				dprint("perpare SMBUS4\n");
 				dprint("completing the jumper, then send any key to start test\n");//SMCLK3接TMP_SCL，SMDAT3接TMP_SDA
 				Uart_Int_Disable(PRINTF_UART_SWITCH, 0);
@@ -1918,7 +1918,7 @@ BYTE Module_test(void)
 			Mtimer_Cunt++;
 			if (Mtimer_Cunt % 1000 == 0)
 			{
-				get_temperature(4);
+				Get_Temperature(4);
 			}
 			if (Mtimer_Cunt >= 10000)
 			{
@@ -1955,7 +1955,7 @@ BYTE Module_test(void)
 					SYSCTL_MODEN1 &= (~SMB5_EN);
 				}
 				sysctl_iomux_i2c5();
-				I2c_Channel_Init(I2C_CHANNEL_5, I2C5_SPEED, I2C_MASTER_ROLE, 0x4c, 1);
+				I2C_Channel_Init(I2C_CHANNEL_5, I2C5_SPEED, I2C_MASTER_ROLE, 0x4c, 1);
 				dprint("perpare SMBUS5\n");
 				dprint("completing the jumper, then send any key to start test\n");//SMCLK3接TMP_SCL，SMDAT3接TMP_SDA
 				Uart_Int_Disable(PRINTF_UART_SWITCH, 0);
@@ -1971,7 +1971,7 @@ BYTE Module_test(void)
 			Mtimer_Cunt++;
 			if (Mtimer_Cunt % 1000 == 0)
 			{
-				get_temperature(5);
+				Get_Temperature(5);
 			}
 			if (Mtimer_Cunt >= 10000)
 			{
@@ -2934,7 +2934,7 @@ BYTE Module_test(void)
 					SYSCTL_MODEN1 &= (~SMB6_EN);
 				}
 				sysctl_iomux_i2c6();
-				I2c_Channel_Init(I2C_CHANNEL_6, I2C7_SPEED, I2C_MASTER_ROLE, 0x4c, 1);
+				I2C_Channel_Init(I2C_CHANNEL_6, I2C7_SPEED, I2C_MASTER_ROLE, 0x4c, 1);
 				dprint("perpare SMBUS6\n");
 				dprint("completing the jumper, then send any key to start test\n");
 				Uart_Int_Disable(PRINTF_UART_SWITCH, 0);
@@ -2950,7 +2950,7 @@ BYTE Module_test(void)
 			Mtimer_Cunt++;
 			if (Mtimer_Cunt % 1000 == 0)
 			{
-				get_temperature(6);
+				Get_Temperature(6);
 			}
 			if (Mtimer_Cunt >= 10000)
 			{
@@ -2987,7 +2987,7 @@ BYTE Module_test(void)
 					SYSCTL_MODEN1 &= (~SMB7_EN);
 				}
 				sysctl_iomux_i2c7();
-				I2c_Channel_Init(I2C_CHANNEL_7, I2C7_SPEED, I2C_MASTER_ROLE, 0x4c, 1);
+				I2C_Channel_Init(I2C_CHANNEL_7, I2C7_SPEED, I2C_MASTER_ROLE, 0x4c, 1);
 				dprint("perpare SMBUS7\n");
 				dprint("completing the jumper, then send any key to start test\n");
 				Uart_Int_Disable(PRINTF_UART_SWITCH, 0);
@@ -3003,7 +3003,7 @@ BYTE Module_test(void)
 			Mtimer_Cunt++;
 			if (Mtimer_Cunt % 1000 == 0)
 			{
-				get_temperature(7);
+				Get_Temperature(7);
 			}
 			if (Mtimer_Cunt >= 10000)
 			{
@@ -3040,7 +3040,7 @@ BYTE Module_test(void)
 					SYSCTL_MODEN1 &= (~SMB8_EN);
 				}
 				sysctl_iomux_i2c8();
-				I2c_Channel_Init(I2C_CHANNEL_8, I2C8_SPEED, I2C_MASTER_ROLE, 0x4c, 1);
+				I2C_Channel_Init(I2C_CHANNEL_8, I2C8_SPEED, I2C_MASTER_ROLE, 0x4c, 1);
 				dprint("perpare SMBUS8\n");
 				dprint("completing the jumper, then send any key to start test\n");
 				Uart_Int_Disable(PRINTF_UART_SWITCH, 0);
@@ -3056,7 +3056,7 @@ BYTE Module_test(void)
 			Mtimer_Cunt++;
 			if (Mtimer_Cunt % 1000 == 0)
 			{
-				get_temperature(8);
+				Get_Temperature(8);
 			}
 			if (Mtimer_Cunt >= 10000)
 			{

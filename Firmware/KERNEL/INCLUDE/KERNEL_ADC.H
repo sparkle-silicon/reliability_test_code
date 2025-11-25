@@ -17,9 +17,17 @@
 #define __KERNEL_ADC_H
 #include "AE_GLOBAL.H"
 #include "KERNEL_GPIO.H"
-
-#define ADC_TIMEOUT 30000
-
+/*-----------------------------------------------------------------------------
+ * ADC TIMEOUT
+ *---------------------------------------------------------------------------*/
+#define ADC_TIMEOUT 50000
+/*-----------------------------------------------------------------------------
+ * ADC Register Definition
+ *---------------------------------------------------------------------------*/
+#define ADC_CLOCK (CHIP_CLOCK_INT_HIGH / ((SYSCTL_CLKDIV_OSC96M_ADC&0x3F)+((SYSCTL_CLKDIV_OSC96M_ADC>>6)&0x3F)))
+/*-----------------------------------------------------------------------------
+ * ADC Channel
+ *---------------------------------------------------------------------------*/
 #define ADC_CHANNEL0 0
 #define ADC_CHANNEL1 1
 #define ADC_CHANNEL2 2
@@ -35,9 +43,9 @@
 #define ADC_CHANNEL12 12
 #define ADC_CHANNEL13 13
 #define ADC_CHANNEL14 14
-
-#define ADC_CLOCK (CHIP_CLOCK_INT_HIGH / ((SYSCTL_CLKDIV_OSC96M_ADC&0x3F)+((SYSCTL_CLKDIV_OSC96M_ADC>>6)&0x3F)))
-
+/*-----------------------------------------------------------------------------
+ * ADC Data Channel
+ *---------------------------------------------------------------------------*/
 #define ADC_DATA_CHANNEL0 0
 #define ADC_DATA_CHANNEL1 1
 #define ADC_DATA_CHANNEL2 2
@@ -47,11 +55,8 @@
 #define ADC_DATA_CHANNEL6 6
 #define ADC_DATA_CHANNEL7 7
 
-#define ADC_SINGLEENDED 0
-#define ADC_FULLYDIFFEENTIAL 1
-
 /*-----------------------------------------------------------------------------
- * ADC Register define
+ * ADC Register Definition
  *---------------------------------------------------------------------------*/
 #define ADC_CTRL_TRIGGER_SOFT       HEX00
 #define ADC_CTRL_TRIGGER_HARD       HEX80
@@ -84,7 +89,7 @@
 #define ADC_Int_Status(type)	((ADC_INTSTAT & (0x1<<type)) != 0)
 
 /*-----------------------------------------------------------------------------
- * ADC Interrupt mask define
+ * ADC Interrupt mask Definition
  *---------------------------------------------------------------------------*/
 #define  ADCData0_intrMask        HEX01
 #define  ADCData1_intrMask        HEX02
@@ -100,23 +105,21 @@
 #define  ADC_Cmp2fail_intrMask    0x400
 #define  ADC_AllData_intrMask     0x7FF
 /*-----------------------------------------------------------------------------
- * ADC mode define
+ * ADC Mode Definition
  *---------------------------------------------------------------------------*/
-#define  SINGLE_ENDED             0
-#define  DIFFERENTIAL             1
+#define ADC_SINGLEENDED 0
+#define ADC_FULLYDIFFEENTIAL 1
 #define  SW_SAMPLE                0
 #define  HW_SAMPLE                1
 #define  CONT_SAMPLE              2 
 #define  AUTO_SAMPLE              3
 
-
 #define OriginCode 0 //原码
 #define CompCode   1 //补码
 
 /*-----------------------------------------------------------------------------
- * Function prototype
+ * External Calling Prototype
  *---------------------------------------------------------------------------*/
-
 void ADC_TriggerMode_Config(uint8_t mode);
 void ADC_SampleMode_Config(uint8_t mode);
 void ADC_Channelx_Config(uint8_t channelx, uint8_t sw);

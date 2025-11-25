@@ -16,7 +16,9 @@
 #ifndef KERNEL_PORT6064_H
 #define KERNEL_PORT6064_H
 #include "AE_GLOBAL.H"
-
+/*-----------------------------------------------------------------------------
+ * KBC CTL Register Bit Definition
+ *---------------------------------------------------------------------------*/
 #define KBC_CTL_OBFKIE                          HEX01
 #define KBC_CTL_OBFMIE                          HEX02
 #define KBC_CTL_OBEIE                           HEX04
@@ -50,7 +52,7 @@
 #define _CMD_BYTE3              0x04
 #define _CMD_BYTE4              0x05
 
-  //KBC调试打印
+//KBC debug
 #if KBC_DEBUG 
 #define kbc_dprint dprint
 #else 

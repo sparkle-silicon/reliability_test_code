@@ -17,7 +17,9 @@
 #define KERNEL_MAILBOX_H
 
 #include "AE_GLOBAL.H"
-
+/*-----------------------------------------------------------------------------
+ * Mailbox Control Defination
+ *---------------------------------------------------------------------------*/
 #define MAX_TASK_COUNT 12  //最大任务数
 #define MAX_TASK_TIMEOUT 61 //设置超时时间至少（MAX_TASK_TIMEOUT-1）秒
 typedef void (*TaskFunction)(void*); // 定义任务函数类型，接受参数
@@ -39,7 +41,9 @@ typedef struct Task {
 } Task;
 extern Task* task_head; // 任务链表头
 extern volatile bool command_processed;
-
+/*-----------------------------------------------------------------------------
+ * Mailbox Command&Info Define
+ *---------------------------------------------------------------------------*/
 //设置宏过程，便携阅读
 #define MAILBOX_EC_CMD MAILBOX_E2CINFO0
 #define MAILBOX_EC_INFO1 MAILBOX_E2CINFO1
@@ -177,8 +181,9 @@ while(MAILBOX_OTHER_INT&MAILBOX_IRQ_BIT(irq_number)); \
 // #define MAILBOX_CMD//安全存储
 // #define MAILBOX_CMD//联想文档GetKey等5个命令
 // #define MAILBOX_CMD//ROM PATCH
-
-/*APB 共享模块使用情况定义*/
+/*-----------------------------------------------------------------------------
+ * APB Module define
+ *---------------------------------------------------------------------------*/
 #define APB_SMBUS0 BIT(0)
 #define APB_SMBUS1 BIT(1)
 #define APB_SMBUS2 BIT(2)
@@ -200,7 +205,9 @@ while(MAILBOX_OTHER_INT&MAILBOX_IRQ_BIT(irq_number)); \
 #define APB_ERR BIT(29)
 #define APB_REL BIT(30)
 #define APB_REQ BIT(31)
-
+/*-----------------------------------------------------------------------------
+ * External Calling Prototype
+ *---------------------------------------------------------------------------*/
 extern void Default_Mailbox_SetClockFrequency(BYTE ClockDiv);
 extern void Mailbox_Init(void);
 void Mailbox_Control();

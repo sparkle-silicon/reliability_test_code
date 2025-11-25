@@ -15,7 +15,7 @@
  */
 #include "CUSTOM_TEMPERATURE.H"
 #include "KERNEL_MEMORY.H"
-char get_temperature(WORD i2c_channel)
+char Get_Temperature(WORD i2c_channel)
 {
     if (i2c_channel == 0)
     {
@@ -51,9 +51,9 @@ char get_temperature(WORD i2c_channel)
     if (Slave_flag == 0)
     {
         /* read temperature */
-        temperature[0] = I2c_Master_Read_Byte(0x0, i2c_channel);
-        temperature[1] = I2c_Master_Read_Byte(0x1, i2c_channel);
-        temperature[2] = I2c_Master_Read_Byte(0x10, i2c_channel);
+        temperature[0] = I2C_Master_Read_Byte(0x0, i2c_channel);
+        temperature[1] = I2C_Master_Read_Byte(0x1, i2c_channel);
+        temperature[2] = I2C_Master_Read_Byte(0x10, i2c_channel);
         /* Write temp into ECSPACE_BASE_ADDR */
         // CPU_TEMP = temperature[0];
         SYSTEM_TEMP = temperature[1];

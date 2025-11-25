@@ -17,11 +17,21 @@
 #define KERNEL_UART_H
 #include "AE_GLOBAL.H"
 #include "KERNEL_GPIO.H"
+/*-----------------------------------------------------------------------------
+ * UART Channel
+ *---------------------------------------------------------------------------*/
 #define UART0_CHANNEL 0x0
 #define UART1_CHANNEL 0x1
 #define UARTA_CHANNEL 0x2//0xA
 #define UARTB_CHANNEL 0x3//0xB
-// bit index
+
+/*-----------------------------------------------------------------------------
+ * UART Clock
+ *---------------------------------------------------------------------------*/
+#define UART_CLOCK  (HIGH_CHIP_CLOCK / (SYSCTL_CLKDIV_UART+1)) // UART clock
+/*-----------------------------------------------------------------------------
+ * UART Define
+ *---------------------------------------------------------------------------*/
 // Interrupt enable
 #define UART_IER_PTIME BIT7
 #define UART_IER_EDSSI BIT3
@@ -68,8 +78,9 @@
 #define UART_IP_TXWM 0x1
 #define UART_IP_RXWM 0x2
 
-#define UART_CLOCK  (HIGH_CHIP_CLOCK / (SYSCTL_CLKDIV_UART+1)) // UART clock
-
+/*-----------------------------------------------------------------------------
+ * External Calling Prototype
+ *---------------------------------------------------------------------------*/
 extern BYTE Uart_Int_Enable(BYTE channel, BYTE type);
 extern BYTE Uart_Int_Disable(BYTE channel, BYTE type);
 extern BYTE Uart_Int_Enable_Read(BYTE channel, BYTE type);

@@ -2,10 +2,14 @@
 #define __KERNEL_DMA_H
 #include "AE_GLOBAL.H"
 
-//Interrupt Enable Bit
+/*-----------------------------------------------------------------------------
+ * Interrupt Enable Bit
+ *---------------------------------------------------------------------------*/
 #define DMA_INT_DIS HEX00
 #define DMA_INT_EN HEX01
-
+/*-----------------------------------------------------------------------------
+ * DMA Parameter Definition
+ *---------------------------------------------------------------------------*/
 //Destination Transfer Width
 #define DMA_DST_TR_WIDTH_8bits HEX00  
 #define DMA_DST_TR_WIDTH_16bits HEX01
@@ -143,24 +147,26 @@
 #define SUBUS2_DMA_RX  (((14 << 16)))
 #define SUBUS2_DMA_TX  (((15 << 24)))
 
-//DMA INIT STRUCT
+// DMA INITIALIZATION STRUCTURE
 typedef struct
 {
-    uint8_t DMA_Dest_Width;     //固定32bit
-    uint8_t DMA_Src_Width;      //固定32bit
-    uint8_t DMA_Dest_Inc;       //目标地址自增/自减/不变
-    uint8_t DMA_Src_Inc;        //源地址自增/自减/不变
-    uint8_t DMA_Dest_Msize;     //可默认设置DMA_DEST_MSIZE_32
-    uint8_t DMA_Src_Msize;      //可默认设置DMA_SRC_MSIZE_32
-    uint8_t DMA_Trans_Type;     //传输类型
-    uint32_t DMA_Periph_Type;    //外设类型（内存到内存可不配置）
-    uint32_t DMA_Block_Ts;      //块传输长度
-    uint8_t DMA_Priority;       //优先级
-    uint32_t DMA_Dest_Addr;     //目标地址
-    uint32_t DMA_Src_Addr;      //源地址
+    uint8_t DMA_Dest_Width;     // Fixed to 32bit
+    uint8_t DMA_Src_Width;      // Fixed to 32bit
+    uint8_t DMA_Dest_Inc;       // Destination address increment/decrement/no change
+    uint8_t DMA_Src_Inc;        // Source address increment/decrement/no change
+    uint8_t DMA_Dest_Msize;     // Can be default set to DMA_DEST_MSIZE_32
+    uint8_t DMA_Src_Msize;      // Can be default set to DMA_SRC_MSIZE_32
+    uint8_t DMA_Trans_Type;     // Transfer type
+    uint32_t DMA_Periph_Type;   // Peripheral type (not required for memory-to-memory transfer)
+    uint32_t DMA_Block_Ts;      // Block transfer length
+    uint8_t DMA_Priority;       // Priority level
+    uint32_t DMA_Dest_Addr;     // Destination address
+    uint32_t DMA_Src_Addr;      // Source address
 }DMA_InitTypeDef;
 #endif
 
-//function prototypes
+/*-----------------------------------------------------------------------------
+ * External Calling Prototype
+ *---------------------------------------------------------------------------*/
 extern void DMA_Init(DMA_InitTypeDef* DMA_Init_Struct);
 extern char DMA_Transfer_Done(uint8_t DMA_Channal);

@@ -18,7 +18,9 @@
 #include "AE_GLOBAL.H"
 #include "KERNEL_ACPI.H"
 #include "KERNEL_PORT6064.H"
- /*PMC1 Register bit definition*/
+/*-----------------------------------------------------------------------------
+ * PMC1 Status Register Definition
+ *---------------------------------------------------------------------------*/
 #define OBF1    BIT(0)
 #define IBF1    BIT(1)
 #define Busy    BIT(2)

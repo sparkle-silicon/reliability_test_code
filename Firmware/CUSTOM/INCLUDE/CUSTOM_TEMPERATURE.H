@@ -17,6 +17,8 @@
 #define CUSTOM_TEMPERATURE_H
 #include "AE_GLOBAL.H"
 #include "KERNEL_I2C.H"
-
-extern char get_temperature(WORD i2c_channel);
+/*-----------------------------------------------------------------------------
+ * External Calling Prototype
+ *---------------------------------------------------------------------------*/
+extern char Get_Temperature(WORD i2c_channel);
 #endif

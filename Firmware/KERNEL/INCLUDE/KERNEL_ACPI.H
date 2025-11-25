@@ -47,7 +47,6 @@
 #define _SCIEVT_FnF12 0x15   // Hotkey Fn+F12 Event
 #define _SCIEVT_SLEEP 0x31
 #define _SCIEVT_LCD 0x32
-
  /*-----------------------------------------------------------------------------
  * 标志位
  *---------------------------------------------------------------------------*/
@@ -58,7 +57,9 @@
 #define BURST_Mode              4
 #define SCI_EVENT               5
 #define SMI_EVENT               6
-
+ /*-----------------------------------------------------------------------------
+ * 中断控制
+ *---------------------------------------------------------------------------*/
 #define PMC1_Int_Enable(type) (PMC1_CTL |= (0x1 << (type)))
 #define PMC2_Int_Enable(type) (PMC2_CTL |= (0x1 << (type)))
 #define PMC3_Int_Enable(type) (PMC3_CTL |= (0x1 << (type)))
@@ -89,13 +90,12 @@
 #define SCIMode_Pending 0x01
 #define SCIMode_Force 0x02
 #define SCIMode_ACPI_SMBus 0x03
-  /*-----------------------------------------------------------------------------
-   * External Calling Process
-   *---------------------------------------------------------------------------*/
+/* SCI Event Buffer */
 #define EVENT_BUFFER_SIZE 9
 #define PENDING_BUFFER 8
-
-#define EC_SMB_SCI_Number 0x20 // ACPI EC SMBus Event
+/*-----------------------------------------------------------------------------
+ * External Calling Prototype
+ *---------------------------------------------------------------------------*/
 extern VBYTE SCI_Event_Buffer[10];
 extern VBYTE SMI_Event_Buffer[10];
 extern VBYTE PD_SCI_Event_Buffer[10];

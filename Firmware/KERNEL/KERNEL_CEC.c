@@ -23,7 +23,7 @@
  //  return :
  //              none
  //******************************************************************************
-void CEC_initiator_init(BYTE channel)
+void CEC_Initiator_Init(BYTE channel)
 {
     // enable the interrupt
     CECn_IER(channel) = CEC_Int_Send_Frame | CEC_Int_Send_Block | CEC_Int_erro;
@@ -38,7 +38,7 @@ void CEC_initiator_init(BYTE channel)
 //  return :
 //              none
 //******************************************************************************
-void CEC_follower_init(BYTE channel)
+void CEC_Follower_Init(BYTE channel)
 {
     // enable the interrup
     CECn_IER(channel) = CEC_Int_Receive_Head | CEC_Int_Receive_Block | CEC_Int_Receive_Frame | CEC_Int_erro;
@@ -54,7 +54,7 @@ void CEC_follower_init(BYTE channel)
 //  return :
 //              none
 //******************************************************************************
-void CEC_Frame_send(BYTE channel, char* data, BYTE len, BYTE broadcast)
+void CEC_Frame_Send(BYTE channel, char* data, BYTE len, BYTE broadcast)
 {
 
     if (len > 15)
@@ -82,10 +82,10 @@ void CEC_Init(uint8_t channel, uint8_t mode)
 {
     if (mode)
     {
-        CEC_initiator_init(channel);
+        CEC_Initiator_Init(channel);
     }
     else
     {
-        CEC_follower_init(channel);
+        CEC_Follower_Init(channel);
     }
 }
