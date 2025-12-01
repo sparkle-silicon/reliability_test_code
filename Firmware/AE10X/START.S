@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-12-01 17:25:04
+ * @LastEditTime: 2025-12-01 17:26:37
  * @Description: 
  * 
  * 
@@ -78,7 +78,7 @@ vector_base:
 _start://标签位置
     csrc CSR_MSTATUS, MSTATUS_MIE//中断全局关闭
     csrsi CSR_MCOUNTINHIBIT, 0x5//关闭全局计数
-#if 1//ROM可能没复位CACHE导致异常，所以使复位CACHE，保障正常启动
+#if 1//ROM可能没复位CACHE导致异常，所以使复位CACHE，保障正常启动,后续如果新版本ROM可以删除此行
 	la a0,0xBFFFF//复位CACHE
 	sb zero,0(a0)//复位CACHE
 #endif
