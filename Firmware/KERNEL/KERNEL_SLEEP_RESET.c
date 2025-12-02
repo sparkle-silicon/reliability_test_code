@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2025-10-21 16:37:36
  * @Description: This file applys for chip soft reset and chip sleep interface
  *
@@ -72,6 +72,26 @@ void Module_SoftReset(int reg_idx, int bit_no)
 	}
 
 }
+
+/* ----------------------------------------------------------------------------
+ * FUNCTION:   Reset_ALG_TRNG_AfterWakeup
+ *
+ * you must notice crypto system to reset alg and trng module when wake up from low power
+ *
+ * ------------------------------------------------------------------------- */
+void Reset_ALG_TRNG_AfterWakeup(void)
+{
+	SYSCTL_DVDD_EN |= BIT(11);//alg dvdd enable
+	nop; nop; nop; nop; nop; nop;
+	MAILBOX_SELF_CMD = 0xE0; // 命令字
+	MAILBOX_SET_IRQ(MAILBOX_Control_IRQ_NUMBER);   // 触发子系统中断
+	MAILBOX_WAIT_IRQ(0xE0, MAILBOX_Control_IRQ_NUMBER);
+	MAILBOX_CLEAR_IRQ(MAILBOX_Control_IRQ_NUMBER); // 清除中断状态
+	nop; nop; nop; nop; nop; nop;
+	SYSCTL_DVDD_EN &= ~((BIT(11)) << 12);//alg iso enable
+	nop; nop; nop; nop; nop; nop;
+}
+
 /* ----------------------------------------------------------------------------
  * FUNCTION:   CPU_SLP_RES
  *
@@ -289,6 +309,7 @@ void Enter_LowPower_Mode(void)
 	Smf_Ptr = Load_Smfi_To_Dram(CPU_SLP_RES, 0x600);
 	if (Smf_Ptr != 0)
 		(*Smf_Ptr)(); // Do Function at malloc address
+	Reset_ALG_TRNG_AfterWakeup();//唤醒后通知子系统复位alg/trng模块，以免算法出错
 	Enable_Interrupt_Main_Switch();
 	free(Smf_Ptr);  // 释放通过 malloc 分配的内存空间
 	Smf_Ptr = NULL; // 将指针设置为 NULL，以避免悬空指针问题
