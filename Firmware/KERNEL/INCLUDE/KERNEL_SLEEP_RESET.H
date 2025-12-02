@@ -45,5 +45,4 @@ extern void CHIP_Sleep(void);
 extern void CHIP_Deep_Sleep(void);
 extern void CHIP_Hibernation(void);
 extern void Service_LowPower(void);
-extern void Reset_ALG_TRNG_AfterWakeup(void);
 #endif
