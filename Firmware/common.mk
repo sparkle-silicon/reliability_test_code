@@ -55,7 +55,12 @@ O_OBJS2 			:= $(O_SRCS)
 LINK_LIBS2 			:= $(LINK_LIBS)
 CLEAN_OBJS		+= $(ASM_IBJS2) $(ASM_DBJS2) $(ASM_OBJS2)  $(C_IBJS2) $(C_SBJS2) $(C_DBJS2)  $(C_OBJS2)
 endif
-CLEAN_OBJS			:= $(CLEAN_OBJS) 
+ifeq ($(OS),Linux) #Linux
+CLEAN_OBJS 			:= $(CLEAN_OBJS)
+else #Windows
+CLEAN_OBJS 			:= $(patsubst ./%,%,$(CLEAN_OBJS))
+CLEAN_OBJS 			:= $(subst /,\,$(CLEAN_OBJS))
+endif
 
 # CFLAG
 CFLAGS 				+= $(CINCLUDE)

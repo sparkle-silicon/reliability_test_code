@@ -321,7 +321,7 @@ help: copyright_notice
 .PHONY:clean
 clean: copyright_notice
 ifeq ($(OS),Linux) #Linux
-	@$(MAKE) -f $(TOPDIR)/common.mk --no-print-directory clean OS=$(OS)
+	@$(MAKE) -f $(TOPDIR)/common.mk --no-print-directory clean
 	@$(RM) -f $(shell find -name "*.verilog")
 	@$(ECHO) RM -F *.VERILOG
 	@$(RM) -f $(shell find -name "*.readelf")
@@ -349,6 +349,7 @@ ifeq ($(OS),Linux) #Linux
 	@$(RM) -f $(shell find -name "*.asm")
 	@$(ECHO) RM -F *.ASM
 else #Windows or other commands
+	@$(MAKE) -f $(TOPDIR)/common.mk --no-print-directory clean
 	@$(RM) /q /f /s *.verilog
 	@$(RM) /q /f /s *.readelf
 	@$(RM) /q /f /s *.dump
