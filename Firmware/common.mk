@@ -13,83 +13,67 @@
  # Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
  # 版权所有 ©2021-2023龙晶石半导体科技(苏州)有限公司
 
-OS ?= $(shell uname)
-ifeq ($(OS),Linux)
-BUILD_DATE := $(shell date +'%y%m%d')#'%Y%m%d'
-BUILD_TIME := $(shell date +'%H%M%S')
-SHELL_TYPES := $(shell echo $$0)
-else #Windows_NT
-BUILD_DATE := $(shell powershell Get-Date -Format '%y%m%d')#'%Y%m%d'
-BUILD_TIME := $(shell powershell Get-Date -Format '%H%M%S')
-SHELL_TYPES := $(SHELL)
-endif
-PROGRAM ?= ec_main#project Object name
-PROGRAM_FILE ?= $(PROGRAM)_$(BUILD_DATE)$(BUILD_TIME).elf
-TARGET ?= $(PROGRAM_FILE)
-
-# See LICENSE for license details.
-DOWNLOAD ?= flash					#download flash
-RISCV_ARCH?=rv32ec
-RISCV_ABI?=ilp32e
-
-SIZE:=riscv-nuclei-elf-size
-CC:=riscv-nuclei-elf-gcc 
-OBJDUMP:=riscv-nuclei-elf-objdump 
-
-ENV_DIR = $(AE10X_DIR)/ENV
-ifeq ($(DUAL_BOOT_FLAG),0)
-ifeq ($(DOWNLOAD),flash) 
-LINKER_SCRIPT := $(ENV_DIR)/link_flash.lds
-else ifeq ($(DOWNLOAD),crypto) 
-LINKER_SCRIPT := $(ENV_DIR)/link_crypto.lds
-else ifeq ($(DOWNLOAD),ilm) 
-LINKER_SCRIPT := $(ENV_DIR)/link_ilm.lds
-endif
-LDFLAGS += -T $(LINKER_SCRIPT)  -nostartfiles  -Wl,--check-sections#      函数检查 #-Wl,--gc-sections #不链接未用函数,会导致中断异常
-else 
-LINKER_SCRIPT1 := $(ENV_DIR)/link_flash.lds
-LINKER_SCRIPT2 := $(ENV_DIR)/link_flash2.lds
-LDFLAGS1 += -T $(LINKER_SCRIPT1)  -nostartfiles  -Wl,--check-sections
-LDFLAGS2 += -T $(LINKER_SCRIPT2)  -nostartfiles  -Wl,--check-sections
-LINK_DEPS1 			+= $(LINKER_SCRIPT1)
-LINK_DEPS2 			+= $(LINKER_SCRIPT2)
-endif
-LDFLAGS += -L$(ENV_DIR)
-# download has three option:  flashxip, flash, ilm
+# Include the common makefile
 include $(AE10X_DIR)/Makefile
 include $(KERNEL_DIR)/Makefile
 include $(CUSTOM_DIR)/Makefile
+ifeq ($(VERSION),0.0.0)#未发布版本
 include $(TEST_DIR)/Makefile
-TARGET_BOOT1 = $(PROGRAM)_1_$(BUILD_DATE)$(BUILD_TIME).elf
-TARGET_BOOT2 = $(PROGRAM)_2_$(BUILD_DATE)$(BUILD_TIME).elf
-C_SRCS_BOOT	 += $(AE10X_DIR)/AE_INIT.c
-C_SRCS_BOOT1 += $(AE10X_DIR)/AE_INIT.c
-C_SRCS_BOOT2 += $(AE10X_DIR)/AE_INIT.c
-C_SRCS_BOOT	 += $(C_SRCS)
-C_SRCS_BOOT1 += $(C_SRCS)
-C_SRCS_BOOT2 += $(C_SRCS)
-# ASM_IBJS 		:= $(ASM_SRCS:.S=.i)
+endif
+ASM_IBJS 		:= $(ASM_SRCS:.S=.i)
+ASM_DBJS 		:= $(ASM_SRCS:.S=.d)
 ASM_OBJS 		:= $(ASM_SRCS:.S=.o)
-# C_IBJS 			:= $(C_SRCS_BOOT:.c=.i)
-# C_SBJS 			:= $(C_SRCS_BOOT:.c=.s)
-C_OBJS 			:= $(C_SRCS_BOOT:.c=.o)
-LINK_OBJS 		+= $(ASM_OBJS) $(C_OBJS)
-ASM_OBJS_BOOT1		:= $(ASM_OBJS:.o=1.o)
-# C_IBJS_BOOT1 		:= $(C_SRCS_BOOT1:.c=1.i)
-# C_SBJS_BOOT1 		:= $(C_SRCS_BOOT1:.c=1.s)
-C_OBJS_BOOT1		:= $(C_SRCS_BOOT1:.c=1.o)
-LINK_OBJS_BOOT1 	+= $(ASM_OBJS_BOOT1) $(C_OBJS_BOOT1) 
-ASM_OBJS_BOOT2		:= $(ASM_OBJS:.o=2.o)
-# C_IBJS_BOOT2 		:= $(C_SRCS_BOOT2:.c=2.i)
-# C_SBJS_BOOT2 		:= $(C_SRCS_BOOT2:.c=2.s)
-C_OBJS_BOOT2		:= $(C_SRCS_BOOT2:.c=2.o)
-LINK_OBJS_BOOT2 	+= $(ASM_OBJS_BOOT2) $(C_OBJS_BOOT2)
-LINK_DEPS 			+= $(LINKER_SCRIPT)
-CLEAN_OBJS 			+=  $(LINK_OBJS) 
-CLEAN_OBJS 			+= $(TARGET_BOOT1) 
-CLEAN_OBJS 			+= $(TARGET_BOOT2) 
+C_IBJS 			:= $(C_SRCS:.c=.i)
+C_SBJS 			:= $(C_SRCS:.c=.s)
+C_DBJS 			:= $(C_SRCS:.c=.d)
+C_OBJS 			:= $(C_SRCS:.c=.o)
+O_OBJS 			:= $(O_SRCS)
+LINK_LIBS 		:= $(LINK_LIBS)
+CLEAN_OBJS		+= $(ASM_IBJS) $(ASM_DBJS) $(ASM_OBJS)  $(C_IBJS) $(C_SBJS) $(C_DBJS)  $(C_OBJS)
+# Double Boot config
+ifeq ($(DUAL_BOOT_FLAG),1)
+# 定义主引导编译选项
+ASM_IBJS1 			:= $(ASM_SRCS:.S=1.i)
+ASM_DBJS1 		    := $(ASM_SRCS:.S=1.d)
+ASM_OBJS1			:= $(ASM_SRCS:.S=1.o)
+C_IBJS1 			:= $(C_SRCS:.c=1.i)
+C_SBJS1 			:= $(C_SRCS:.c=1.s)
+C_DBJS1 			:= $(C_SRCS:.c=1.d)
+C_OBJS1 			:= $(C_SRCS:.c=1.o)
+O_OBJS1 			:= $(O_SRCS)
+LINK_LIBS1 			:= $(LINK_LIBS)
+CLEAN_OBJS		+= $(ASM_IBJS1) $(ASM_DBJS1) $(ASM_OBJS1)  $(C_IBJS1) $(C_SBJS1) $(C_DBJS1)  $(C_OBJS1)
+# 定义辅引导编译选项
+ASM_IBJS2 			:= $(ASM_SRCS:.S=2.i)
+ASM_DBJS2 		    := $(ASM_SRCS:.S=2.d)
+ASM_OBJS2			:= $(ASM_SRCS:.S=2.o)
+C_IBJS2 			:= $(C_SRCS:.c=2.i)
+C_SBJS2 			:= $(C_SRCS:.c=2.s)
+C_DBJS2 			:= $(C_SRCS:.c=2.d)
+C_OBJS2 			:= $(C_SRCS:.c=2.o)
+O_OBJS2 			:= $(O_SRCS)
+LINK_LIBS2 			:= $(LINK_LIBS)
+CLEAN_OBJS		+= $(ASM_IBJS2) $(ASM_DBJS2) $(ASM_OBJS2)  $(C_IBJS2) $(C_SBJS2) $(C_DBJS2)  $(C_OBJS2)
+endif
+CLEAN_OBJS			:= $(CLEAN_OBJS) 
+
+# CFLAG
+CFLAGS 				+= $(CINCLUDE)
 ifdef CHIP
 CFLAGS += -D$(CHIP)
+endif
+ifeq ($(SAVE_TEMPS_FILE),1) 
+CFLAGS += -save-temps=obj
+endif
+# CFLAGS += -save-temps#保存中間
+ifeq ($(USER_RISCV_LIBC_A),0) 
+CFLAGS += -fno-builtin-printf 
+CFLAGS += -fno-builtin-memset
+CFLAGS += -DUSER_AE10X_LIBC_A 
+endif
+ifeq ($(USER_RISCV_LIBC_A),1) 
+CFLAGS += -DUSER_RISCV_LIBC_A 
+CFLAGS += -D_COMPILING_NEWLIB
 endif
 #检查函数问题
 CFLAGS += -Wall #启用常用警告信息
@@ -344,172 +328,177 @@ CFLAGS += -D$(DOWNLOAD)
 # #CFLAGS += -fcf-protection=full	#控制流完整性保护
 # Makefile 安全基线配置
 # CFLAGS += -Wall -Wextra -Wpedantic -Wconversion -Werror
-# LDFLAGS += -Wl,-z,defs -Wl,-z,noexecstack
-ifeq ($(SAVE_TEMPS_FILE),1) 
-CFLAGS += -save-temps=obj
-endif
-# CFLAGS += -save-temps#保存中間
-# $(C_OBJS): %.o: %.c $(HEADERS)
-# 	@$(CC) $(CFLAGS) -include sys/cdefs.h -Wp,-MD,$(idep_file) -E $< -o $@
-#CFLAGS +=  -std=gnu99 -std=c99
-ifeq ($(USER_RISCV_LIBC_A),0) 
-CFLAGS += -fno-builtin-printf 
-CFLAGS += -fno-builtin-memset
-CFLAGS += -DUSER_AE10X_LIBC_A 
-ifeq ($(OS),Linux)
-ifneq ($(wildcard $(AE10X_DIR)/libLinuxAE10X.a),)
-LDFLAGS += -L$(AE10X_DIR) -lLinuxAE10X
-endif
-else #Windows or other commands
-ifneq ($(wildcard $(AE10X_DIR)/libWinAE10X.a),)
-LDFLAGS += -L $(AE10X_DIR) -lWinAE10X
-endif
-endif
 
+# Double Boot config
+CFLAGS1 += $(CFLAGS)
+CFLAGS1 += -DROM_QIDONG
+CFLAGS1 += -DDUBLE_FIRMWARE1
+
+CFLAGS2 += $(CFLAGS)
+CFLAGS2 += -DDUBLE_FIRMWARE2
+
+# Linker script
+
+LDFLAGS += -L$(ENV_DIR)
+LDFLAGS += $(LINK_LIBS)
+# LDFLAGS += -Wl,-z,defs -Wl,-z,noexecstack
+ifeq ($(USER_RISCV_LIBC_A),0) 
 LDFLAGS += -nostdlib  -nodefaultlibs
-endif
-ifeq ($(USER_RISCV_LIBC_A),1) 
-CFLAGS += -DUSER_RISCV_LIBC_A 
-CFLAGS += -D_COMPILING_NEWLIB
+else
 LDFLAGS += --specs=nano.specs --specs=nosys.specs
 endif
+# Double Boot config
+LDFLAGS1 := $(LDFLAGS)
+LDFLAGS2 := $(LDFLAGS)
+
+#添加链接脚本
+LINKER_SCRIPT := $(ENV_DIR)/link_$(DOWNLOAD).lds
+LINK_DEPS 			+= $(LINKER_SCRIPT)
+LDFLAGS += -T $(LINKER_SCRIPT)  -nostartfiles  -Wl,--check-sections#      函数检查 #-Wl,--gc-sections #不链接未用函数,会导致中断异常
+LDFLAGS += -Wl,-Map=$(PROGRAM).map
+LINK_OBJS 		+= $(ASM_OBJS) $(C_OBJS) $(O_OBJS)
+
+# Double Boot config
+LINKER_SCRIPT1 := $(LINKER_SCRIPT)
+LINK_DEPS1 			+= $(LINKER_SCRIPT1)
+LDFLAGS1 += -T $(LINKER_SCRIPT1)  -nostartfiles  -Wl,--check-sections
+LDFLAGS1 += -Wl,-Map=$(PROGRAM)1.map
+LINK_OBJS1 			+= $(ASM_OBJS1) $(C_OBJS1) $(O_OBJS)
+
+LINKER_SCRIPT2 := $(ENV_DIR)/link_$(DOWNLOAD)2.lds
+LINK_DEPS2 			+= $(LINKER_SCRIPT2)
+LDFLAGS2 += -T $(LINKER_SCRIPT2)  -nostartfiles  -Wl,--check-sections
+LDFLAGS2 += -Wl,-Map=$(PROGRAM)2.map
+LINK_OBJS2 			+= $(ASM_OBJS2) $(C_OBJS2) $(O_OBJS)
+
+#.d文件依赖
 LINK_OBJS_WITHOUT_COMMENT := $(notdir $(LINK_OBJS))
 dep_files := $(foreach f,$(LINK_OBJS_WITHOUT_COMMENT), $(f).d)
 dep_files := $(wildcard $(dep_files))
-CFLAGS1 += -DROM_QIDONG
-CFLAGS1 += -DDUBLE_FIRMWARE1
-CFLAGS1 += $(CFLAGS)
-CFLAGS2 += -DDUBLE_FIRMWARE2
-CFLAGS2 += $(CFLAGS)
 ifneq ($(dep_files),)
   include $(dep_files)
 endif
-LDFLAGS1 += $(LDFLAGS)
-LDFLAGS2 += $(LDFLAGS)
+idep_file =$(@:.i=.d)
+odep_file =$(@:.o=.d)
+idep_file1 =$(@:1.i=1.d)
+odep_file1 =$(@:1.o=1.d)
+idep_file2 =$(@:2.i=2.d)
+odep_file2 =$(@:2.o=2.d)
 
-LDFLAGS += -Wl,-Map=$(PROGRAM).map
-LDFLAGS1 += -Wl,-Map=$(PROGRAM)_1.map
-LDFLAGS2 += -Wl,-Map=$(PROGRAM)_2.map
 .PHONY: Target
 #########################
 ifeq ($(DUAL_BOOT_FLAG),0)
-Target: $(TARGET)
-$(TARGET): $(LINK_OBJS) $(LINK_DEPS)
-	@$(CC) $(CFLAGS) $(LINK_OBJS) -o $@ $(LDFLAGS)
-	@echo CC  	$@
+Target: $(PROGRAM_ELF)
+$(PROGRAM_ELF): $(LINK_OBJS) $(LINK_DEPS)
+	@$(RISCV_GCC) $(CFLAGS) $(LINK_OBJS) -o $@ $(LDFLAGS)
+	@$(ECHO) CC  	$@
 ifeq ($(OS),Linux) #Linux
-	@echo "**********************************************************************************"
-	@echo " Embedded Controller  SPK32$(CHIP) Series Firmware SIZE:"
-	@echo ""
-	@$(SIZE) $@
-	@echo ""
-	@echo "Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved."
-	@echo "**********************************************************************************"
+	@$(ECHO) "**********************************************************************************"
+	@$(ECHO) " Embedded Controller  SPK32$(CHIP) Series Firmware RISCV_SIZE:"
+	@$(ECHO) ""
+	@$(RISCV_SIZE) $@
+	@$(ECHO) ""
+	@$(ECHO) "Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved."
+	@$(ECHO) "**********************************************************************************"
 else #Windows or other commands
-	@echo **********************************************************************************
-	@echo  Embedded Controller  SPK32$(CHIP) Series Firmware SIZE:
-	@$(SIZE) $@
-	@echo Copyright (c)2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
-	@echo **********************************************************************************
+	@$(ECHO) **********************************************************************************
+	@$(ECHO)  Embedded Controller  SPK32$(CHIP) Series Firmware RISCV_SIZE:
+	@$(RISCV_SIZE) $@
+	@$(ECHO) Copyright (c)2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+	@$(ECHO) **********************************************************************************
 endif
-# idep_file =$(@:.i=.d)
-odep_file =$(@:.o=.d)
 # $(C_OBJS): %.o: %.s  $(HEADERS)
-# 	@$(CC) $(CFLAGS)   -c $< -o $@ 
-# 	@$(OBJDUMP) -D $@ > $(<:.s=.asm)
-# 	@echo CC 	$(notdir $@)
+# 	@$(RISCV_GCC) $(CFLAGS)   -c $< -o $@ 
+# 	@$(RISCV_OBJDUMP) -D $@ > $(<:.s=.asm)
+# 	@$(ECHO) CC 	$(notdir $@)
 # $(C_SBJS): %.s: %.i  $(HEADERS)
-# 	@$(CC) $(CFLAGS)   -S $< -o $@
+# 	@$(RISCV_GCC) $(CFLAGS)   -S $< -o $@
 # $(C_IBJS): %.i: %.c $(HEADERS)
-# 	@$(CC) $(CFLAGS) -include sys/cdefs.h -Wp,-MD,$(idep_file) -E $< -o $@
+# 	@$(RISCV_GCC) $(CFLAGS) -include sys/cdefs.h -Wp,-MD,$(idep_file) -E $< -o $@
 $(C_OBJS): %.o: %.c $(HEADERS)
-	@$(CC) $(CFLAGS) $(CINCLUDES) -include sys/cdefs.h -Wp,-MD,$(odep_file) -c $< -o $@ 
-	@echo CC    $(notdir $@) 
+	@$(RISCV_GCC) $(CFLAGS) $(CINCLUDES) -include sys/cdefs.h -Wp,-MD,$(odep_file) -c $< -o $@ 
+	@$(ECHO) CC    $(notdir $@) 
 $(ASM_OBJS): %.o: %.S $(HEADERS)
-	@$(CC) $(CFLAGS) -Wp,-MD,$(odep_file) -c $< -o $@
-	@$(OBJDUMP) -D $@ > $(@:.o=.asm)
-	@echo CC 	$(notdir $@)
+	@$(RISCV_GCC) $(CFLAGS) -Wp,-MD,$(odep_file) -c $< -o $@
+	@$(RISCV_OBJDUMP) -D $@ > $(@:.o=.asm)
+	@$(ECHO) CC 	$(notdir $@)
 #########################
 #########################
 else ifeq ($(DUAL_BOOT_FLAG),1)
-Target: $(TARGET_BOOT1) $(TARGET_BOOT2)
-$(TARGET_BOOT1): $(LINK_OBJS_BOOT1) $(LINK_DEPS1)
-	@$(CC) $(CFLAGS1) $(LINK_OBJS_BOOT1) -o $@ $(LDFLAGS1)
-	@echo CC  	$@
+Target: $(PROGRAM_ELF1) $(PROGRAM_ELF2)
+$(PROGRAM_ELF1): $(LINK_OBJS1) $(LINK_DEPS1)
+	@$(RISCV_GCC) $(CFLAGS1) $(LINK_OBJS1) -o $@ $(LDFLAGS1)
+	@$(ECHO) CC  	$@
 ifeq ($(OS),Linux) #Linux
-	@echo "**********************************************************************************"
-	@echo " Embedded Controller  SPK32$(CHIP) Series Firmware SIZE:"
-	@echo ""
-	@$(SIZE) $@
-	@echo ""
-	@echo "Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved."
-	@echo "**********************************************************************************"
+	@$(ECHO) "**********************************************************************************"
+	@$(ECHO) " Embedded Controller  SPK32$(CHIP) Series Firmware RISCV_SIZE:"
+	@$(ECHO) ""
+	@$(RISCV_SIZE) $@
+	@$(ECHO) ""
+	@$(ECHO) "Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved."
+	@$(ECHO) "**********************************************************************************"
 else #Windows or other commands
-	@echo **********************************************************************************
-	@echo  Embedded Controller  SPK32$(CHIP) Series Firmware SIZE:
-	@$(SIZE) $@
-	@echo Copyright (c)2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
-	@echo **********************************************************************************
+	@$(ECHO) **********************************************************************************
+	@$(ECHO)  Embedded Controller  SPK32$(CHIP) Series Firmware RISCV_SIZE:
+	@$(RISCV_SIZE) $@
+	@$(ECHO) Copyright (c)2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+	@$(ECHO) **********************************************************************************
 endif
-$(TARGET_BOOT2): $(LINK_OBJS_BOOT2) $(LINK_DEPS2)
-	@$(CC) $(CFLAGS2) $(LINK_OBJS_BOOT2) -o $@ $(LDFLAGS2)
-	@echo CC  	$@
+$(PROGRAM_ELF2): $(LINK_OBJS2) $(LINK_DEPS2)
+	@$(RISCV_GCC) $(CFLAGS2) $(LINK_OBJS2) -o $@ $(LDFLAGS2)
+	@$(ECHO) CC  	$@
 ifeq ($(OS),Linux) #Linux
-	@echo "**********************************************************************************"
-	@echo " Embedded Controller  SPK32$(CHIP) Series Firmware SIZE:"
-	@echo ""
-	@$(SIZE) $@
-	@echo ""
-	@echo "Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved."
-	@echo "**********************************************************************************"
+	@$(ECHO) "**********************************************************************************"
+	@$(ECHO) " Embedded Controller  SPK32$(CHIP) Series Firmware RISCV_SIZE:"
+	@$(ECHO) ""
+	@$(RISCV_SIZE) $@
+	@$(ECHO) ""
+	@$(ECHO) "Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved."
+	@$(ECHO) "**********************************************************************************"
 else #Windows or other commands
-	@echo **********************************************************************************
-	@echo  Embedded Controller  SPK32$(CHIP) Series Firmware SIZE:
-	@$(SIZE) $@
-	@echo Copyright (c)2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
-	@echo **********************************************************************************
+	@$(ECHO) **********************************************************************************
+	@$(ECHO)  Embedded Controller  SPK32$(CHIP) Series Firmware RISCV_SIZE:
+	@$(RISCV_SIZE) $@
+	@$(ECHO) Copyright (c)2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+	@$(ECHO) **********************************************************************************
 endif
-# idep_file1 =$(@:1.i=1.d)
-odep_file1 =$(@:1.o=1.d)
-# idep_file2 =$(@:2.i=2.d)
-odep_file2 =$(@:2.o=2.d)
 
-$(C_OBJS_BOOT1): %1.o: %.c $(HEADERS)
-	@$(CC) $(CFLAGS1) $(CINCLUDES) -include sys/cdefs.h -Wp,-MD,$(odep_file1) -c $< -o $@ 
-	@echo CC    $(notdir $@) 
-$(ASM_OBJS_BOOT1): %1.o: %.S $(HEADERS)
-	@$(CC) $(CFLAGS1) -Wp,-MD,$(odep_file1) -c -o $@ $<
-	@$(OBJDUMP) -D $@ > $(@:.o=.asm)
-	@echo CC  	$(subst $(shell pwd)/,,$@)
-# $(C_OBJS_BOOT1): %1.o: %1.s $(HEADERS)
-# 	@$(CC) $(CFLAGS1)  -c $< -o $@ 
-# 	@echo CC  	$(subst $(shell pwd)/,,$@)
-# $(C_SBJS_BOOT1): %1.s: %1.i  $(HEADERS)
-# 	@$(CC) $(CFLAGS1)   -S $< -o $@
-# $(C_IBJS_BOOT1): %1.i: %.c $(HEADERS)
-# 	@$(CC) $(CFLAGS1) -include sys/cdefs.h -Wp,-MD,$(idep_file1) -E $< -o $@
+$(C_OBJS1): %1.o: %.c $(HEADERS)
+	@$(RISCV_GCC) $(CFLAGS1) $(CINCLUDES) -include sys/cdefs.h -Wp,-MD,$(odep_file1) -c $< -o $@ 
+	@$(ECHO) CC    $(notdir $@) 
+$(ASM_OBJS1): %1.o: %.S $(HEADERS)
+	@$(RISCV_GCC) $(CFLAGS1) -Wp,-MD,$(odep_file1) -c -o $@ $<
+	@$(RISCV_OBJDUMP) -D $@ > $(@:.o=.asm)
+	@$(ECHO) CC  	$(subst $(shell pwd)/,,$@)
+# $(C_OBJS1): %1.o: %1.s $(HEADERS)
+# 	@$(RISCV_GCC) $(CFLAGS1)  -c $< -o $@ 
+# 	@$(ECHO) CC  	$(subst $(shell pwd)/,,$@)
+# $(C_SBJS1): %1.s: %1.i  $(HEADERS)
+# 	@$(RISCV_GCC) $(CFLAGS1)   -S $< -o $@
+# $(C_IBJS1): %1.i: %.c $(HEADERS)
+# 	@$(RISCV_GCC) $(CFLAGS1) -include sys/cdefs.h -Wp,-MD,$(idep_file1) -E $< -o $@
 
-$(C_OBJS_BOOT2): %2.o: %.c $(HEADERS)
-	@$(CC) $(CFLAGS2) $(CINCLUDES) -include sys/cdefs.h  -Wp,-MD,$(odep_file2) -c $< -o $@ 
-	@echo CC    $(notdir $@) 
-$(ASM_OBJS_BOOT2): %2.o: %.S $(HEADERS)
-	@$(CC) $(CFLAGS2) -Wp,-MD,$(odep_file2) -c -o $@ $<
-	@$(OBJDUMP) -D $@ > $(@:.o=.asm)
-	@echo CC  	$(subst $(shell pwd)/,,$@)
-# $(C_OBJS_BOOT2): %2.o: %2.s $(HEADERS)
-# 	@$(CC) $(CFLAGS2)  -c $< -o $@ 
-# 	@echo CC  	$(subst $(shell pwd)/,,$@)
-# $(C_SBJS_BOOT2): %2.s: %2.i  $(HEADERS)
-# 	@$(CC) $(CFLAGS2)   -S $< -o $@
-# $(C_IBJS_BOOT2): %2.i: %.c $(HEADERS)
-# 	@$(CC) $(CFLAGS2) -include sys/cdefs.h -Wp,-MD,$(idep_file2) -E $< -o $@
+$(C_OBJS2): %2.o: %.c $(HEADERS)
+	@$(RISCV_GCC) $(CFLAGS2) $(CINCLUDES) -include sys/cdefs.h  -Wp,-MD,$(odep_file2) -c $< -o $@ 
+	@$(ECHO) CC    $(notdir $@) 
+$(ASM_OBJS2): %2.o: %.S $(HEADERS)
+	@$(RISCV_GCC) $(CFLAGS2) -Wp,-MD,$(odep_file2) -c -o $@ $<
+	@$(RISCV_OBJDUMP) -D $@ > $(@:.o=.asm)
+	@$(ECHO) CC  	$(subst $(shell pwd)/,,$@)
+# $(C_OBJS2): %2.o: %2.s $(HEADERS)
+# 	@$(RISCV_GCC) $(CFLAGS2)  -c $< -o $@ 
+# 	@$(ECHO) CC  	$(subst $(shell pwd)/,,$@)
+# $(C_SBJS2): %2.s: %2.i  $(HEADERS)
+# 	@$(RISCV_GCC) $(CFLAGS2)   -S $< -o $@
+# $(C_IBJS2): %2.i: %.c $(HEADERS)
+# 	@$(RISCV_GCC) $(CFLAGS2) -include sys/cdefs.h -Wp,-MD,$(idep_file2) -E $< -o $@
 endif
 #########################
 .PHONY: clean
 clean:
 ifeq ($(OS),Linux) #Linux
-	@rm -f $(CLEAN_OBJS)
-	@echo RM -F CLEAN_OBJS
+	@$(RM) -f $(CLEAN_OBJS)
+	@$(ECHO) RM  CLEAN_OBJS
 else #Windows or other commands
-	@del /q /f /s $(CLEAN_OBJS)
+	@$(RM) /q /f /s $(CLEAN_OBJS)
 endif
