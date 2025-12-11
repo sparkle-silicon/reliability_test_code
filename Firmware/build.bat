@@ -56,8 +56,8 @@ for %%f in (.\AE10X\*.o) do (
 @REM for %%f in (.\KERNEL\*.o) do (
 @REM     riscv-nuclei-elf-gcc-ar -r .\KERNEL\libWinKERNEL.a %%f
 @REM )
-make clean -j4
 make release -j4
+make clean -j4
 GOTO done
 ::-----------------------------------------------------------
 :: Done
