@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2025-10-24 11:11:24
  * @Description:
  *
@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 #include "AE_INCLUDE.H"
 #include "KERNEL_INCLUDE.H"
@@ -20,7 +20,7 @@
 \n\
 ************************************************************************************\n\
 *                    Embedded Controller  GDMEC01 Series Firmware                  *\n\
-* Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved. *\n\
+* Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved. *\n\
 ************************************************************************************\n\
 \n\
 "
@@ -302,12 +302,12 @@ void main_service(void)
 	if (_R1 >= HIGH_LEVEL_SERVICE_NUM)//开启高等级穿插式执行服务
 	{
 		(service_table[(_R1 % HIGH_LEVEL_SERVICE_NUM)])();
-#if (MIDDLE_LEVEL_SERVICE_NUM > 0)
+	#if (MIDDLE_LEVEL_SERVICE_NUM > 0)
 		if (_R1 >= (HIGH_LEVEL_SERVICE_NUM + MIDDLE_LEVEL_SERVICE_NUM))//开启中等级穿插式执行服务
 		{
 			(service_table[HIGH_LEVEL_SERVICE_NUM + (_R1 % (MIDDLE_LEVEL_SERVICE_NUM))])();
 		}
-#endif
+	#endif
 	}
 #endif
 #endif

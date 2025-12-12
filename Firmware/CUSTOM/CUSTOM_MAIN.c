@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2025-10-20 18:47:03
  * @Description: Custom function support
  *
@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 #include "AE_INCLUDE.H"
 #include "KERNEL_INCLUDE.H"
@@ -80,26 +80,21 @@ void __weak Hook_10msEventB(void)
 // Oem 50ms Events/Hook Here
 //-----------------------------------------------------------------------------
 void __weak Hook_50msEventA(void)
-{
-}
+{}
 //-----------------------------------------------------------------------------
 void __weak Hook_50msEventB(void)
-{
-}
+{}
 //-----------------------------------------------------------------------------
 void __weak Hook_50msEventC(void)
-{
-}
+{}
 //-----------------------------------------------------------------------------
 // Oem 100ms Events/Hook Here
 //-----------------------------------------------------------------------------
 void __weak Hook_100msEventA(void)
-{
-}
+{}
 //-----------------------------------------------------------------------------
 void __weak Hook_100msEventB(void)
-{
-}
+{}
 //-----------------------------------------------------------------------------
 void __weak Hook_100msEventC(void)
 {
@@ -120,13 +115,13 @@ void __weak Hook_100msEventC(void)
     if (System_PowerState == SYSTEM_S0)
     {
         Service_PECI();
-#if 0
+    #if 0
         Service_PECI_Command();
         while (PECI_FLAG & F_PECI_BUSY)
         {
             Service_PECI_Data();
         }
-#endif
+    #endif
     }
     else
     {
@@ -139,16 +134,13 @@ void __weak Hook_100msEventC(void)
 // Oem 500ms Events/Hook Here
 //-----------------------------------------------------------------------------
 void __weak Hook_500msEventA(void)
-{
-}
+{}
 //-----------------------------------------------------------------------------
 void __weak Hook_500msEventB(void)
-{
-}
+{}
 //-----------------------------------------------------------------------------
 void __weak Hook_500msEventC(void)
-{
-}
+{}
 //-----------------------------------------------------------------------------
 // Oem 1sec Events/Hook Here
 //-----------------------------------------------------------------------------

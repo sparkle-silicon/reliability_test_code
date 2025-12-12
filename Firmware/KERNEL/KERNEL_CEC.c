@@ -1,6 +1,6 @@
 /*
  * @Author: Yangxiaolong
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2025-10-18 20:30:22
  * @Description:
  *
@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 #include "KERNEL_CEC.H"
 #include "KERNEL_MEMORY.H"
@@ -54,7 +54,7 @@ void CEC_Follower_Init(BYTE channel)
 //  return :
 //              none
 //******************************************************************************
-void CEC_Frame_Send(BYTE channel, char* data, BYTE len, BYTE broadcast)
+void CEC_Frame_Send(BYTE channel, char *data, BYTE len, BYTE broadcast)
 {
 
     if (len > 15)

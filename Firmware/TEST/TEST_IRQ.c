@@ -1,6 +1,6 @@
 /*
  * @Author: Maple
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2024-02-29 14:06:41
  * @Description:
  *
@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 #include "TEST_IRQ.H"
 #include "AE_DEBUGGER.H"
@@ -36,7 +36,7 @@ void __interrupt CPUT_HANDLER(void)
 #endif
 	irqprint(irq_string, 1);
 #if SUPPORT_CPUTIMER_WAKEUP
-	if(Low_Power_Flag)
+	if (Low_Power_Flag)
 	{
 		// Low_Power_Flag = 0;
 		// Restore_Context();
@@ -67,14 +67,14 @@ void __interrupt SWUC_HANDLER(void)
 	irqprint(irq_string, 3);
 	irqprint("SWCHSTR status is %#x\n", SWUSTA);
 #if 1
-	if(SWUSTA & 0x80)
+	if (SWUSTA & 0x80)
 	{
 		SWUSTA |= 0x80;
 		irqprint("This is Logic Device Module trig interrupt!\n");
 	}
-	else if(SWUSTA & 0x40)
+	else if (SWUSTA & 0x40)
 	{
-		if(!(SWUCTL1 & 0x20))
+		if (!(SWUCTL1 & 0x20))
 		{
 			irqprint("This is Soft Event trig interrupt! HOST Clear!\n");
 		}
@@ -84,56 +84,56 @@ void __interrupt SWUC_HANDLER(void)
 			irqprint("This is Soft Event trig interrupt! EC Clear!\n");
 		}
 	}
-	else if(SWUSTA & 0x8)
+	else if (SWUSTA & 0x8)
 	{
 		SWUSTA |= 0x8;
 		irqprint("This is RING signal trig interrupt!\n");
 	}
-	else if(SWUSTA & 0x2)
+	else if (SWUSTA & 0x2)
 	{
 		SWUSTA |= 0x2;
 		irqprint("This is RI2 signal trig interrupt!\n");
 	}
-	else if(SWUSTA & 0x1)
+	else if (SWUSTA & 0x1)
 	{
 		SWUSTA |= 0x1;
 		irqprint("This is RI1 signal trig interrupt!\n");
 	}
-	else if((SWUCTL2 & 0x40) && (SWUIE & 0x40))
+	else if ((SWUCTL2 & 0x40) && (SWUIE & 0x40))
 	{
 		irqprint("This is legacy mode way scrdpbm_ec trig interrupt!\n");
 		SWUCTL2 |= 0x40;
 	}
-	else if((SWUCTL2 & 0x80) && (SWUIE & 0x80))
+	else if ((SWUCTL2 & 0x80) && (SWUIE & 0x80))
 	{
 		irqprint("This is legacy mode way scrdpso_ec trig interrupt!\n");
 		SWUCTL2 |= 0x80;
 	}
-	else if((SWUCTL2 & (0x02)))
+	else if ((SWUCTL2 & (0x02)))
 	{
 		irqprint("SWCTL2 data is %#x!\n", SWUCTL2);
 		irqprint("This is ACPI S1 request interrupt!\n");
 		(SWUCTL2) |= 0x02;
 	}
-	else if((SWUCTL2 & (0x04)))
+	else if ((SWUCTL2 & (0x04)))
 	{
 		irqprint("SWCTL2 data is %#x!\n", SWUCTL2);
 		irqprint("This is ACPI S2 request interrupt!\n");
 		(SWUCTL2) |= 0x04;
 	}
-	else if((SWUCTL2 & (0x08)))
+	else if ((SWUCTL2 & (0x08)))
 	{
 		irqprint("SWCTL2 data is %#x!\n", SWUCTL2);
 		irqprint("This is ACPI S3 request interrupt!\n");
 		SWUCTL2 |= 0x08;
 	}
-	else if((SWUCTL2 & (0x10)))
+	else if ((SWUCTL2 & (0x10)))
 	{
 		irqprint("SWCTL2 data is %#x!\n", SWUCTL2);
 		irqprint("This is ACPI S4 request interrupt!\n");
 		SWUCTL2 |= 0x10;
 	}
-	else if((SWUCTL2 & (0x20)))
+	else if ((SWUCTL2 & (0x20)))
 	{
 		irqprint("SWCTL2 data is %#x!\n", SWUCTL2);
 		irqprint("This is ACPI S5 request interrupt!\n");
@@ -158,7 +158,7 @@ void __interrupt PWRSW_HANDLER(void)
 	SYSCTL_PWRSWCSR |= 0x20; // clear interrupt status flag
 #endif
 #if SUPPORT_PWRSW_WAKEUP
-	if(Low_Power_Flag)
+	if (Low_Power_Flag)
 	{
 		// Low_Power_Flag = 0;
 		// Restore_Context();
@@ -173,9 +173,9 @@ void __interrupt PS2_0_HANDLER(void)
 	Intr_num[6]++;
 #endif
 	irqprint(irq_string, 6);
-	if(MS_Main_CHN == 1)
+	if (MS_Main_CHN == 1)
 		Handle_Mouse(MS_Main_CHN - 1);
-	else if(KB_Main_CHN == 1)
+	else if (KB_Main_CHN == 1)
 		Handle_Kbd(KB_Main_CHN - 1);
 };
 void __interrupt KBS_SDV_HANDLER(void)
@@ -186,9 +186,9 @@ void __interrupt KBS_SDV_HANDLER(void)
 	irqprint(irq_string, 7);
 	irqprint("KBS_SDV_HANDLER\n");
 #if SUPPORT_KBS_WAKEUP
-	if(Low_Power_Flag)
+	if (Low_Power_Flag)
 	{
-		if(SystemIsS3)
+		if (SystemIsS3)
 			Exit_LowPower_Mode(); // support KBS wake cpu up when S3
 	}
 #endif
@@ -359,7 +359,7 @@ void __interrupt WDT_HANDLER(void)
 #endif
 	irqprint(irq_string, 19);
 #if ENABLE_DEBUGGER_SUPPORT
-	if(0 == ResetChipFlag)
+	if (0 == ResetChipFlag)
 	{
 		WDT_FeedDog();
 	}
@@ -380,7 +380,7 @@ void __interrupt UART0_HANDLER(void)
 #endif
 	irqprint(irq_string, 21);
 #if (ENABLE_COMMAND_SUPPORT && COMMAND_UART_SWITCH == 0)
-	if(F_Service_CMD == 1)
+	if (F_Service_CMD == 1)
 	{
 		char temp = UART0_RX;
 	#if (!IRQC_DEBUG)
@@ -390,17 +390,17 @@ void __interrupt UART0_HANDLER(void)
 		return;
 	}
 	CMD_UART_BUFF[CMD_UART_CNT] = UART0_RX;
-	if(CMD_UART_BUFF[CMD_UART_CNT] == '\n' || CMD_UART_CNT == CMD_BUFF_MAX)
+	if (CMD_UART_BUFF[CMD_UART_CNT] == '\n' || CMD_UART_CNT == CMD_BUFF_MAX)
 	{
 		CMD_UART_BUFF[CMD_UART_CNT] = '\0';
-		if(CMD_UART_BUFF[CMD_UART_CNT - 1] == ' ')
+		if (CMD_UART_BUFF[CMD_UART_CNT - 1] == ' ')
 		{
 			CMD_UART_CNT--;
 			CMD_UART_BUFF[CMD_UART_CNT] = '\0';
 		}
 		F_Service_CMD = 1;
 	}
-	else if(CMD_UART_BUFF[CMD_UART_CNT] == '\r')
+	else if (CMD_UART_BUFF[CMD_UART_CNT] == '\r')
 		CMD_UART_BUFF[CMD_UART_CNT] = '\0';
 	else
 		CMD_UART_CNT++;
@@ -419,7 +419,7 @@ void __interrupt UARTA_HANDLER(void)
 #endif
 	irqprint(irq_string, 22);
 #if (ENABLE_COMMAND_SUPPORT && COMMAND_UART_SWITCH == 4)
-	if(F_Service_CMD == 1)
+	if (F_Service_CMD == 1)
 	{
 		char temp = UARTA_RX;
 	#if (!IRQC_DEBUG)
@@ -429,17 +429,17 @@ void __interrupt UARTA_HANDLER(void)
 		return;
 	}
 	CMD_UART_BUFF[CMD_UART_CNT] = UARTA_RX;
-	if(CMD_UART_BUFF[CMD_UART_CNT] == '\n' || CMD_UART_CNT == CMD_BUFF_MAX)
+	if (CMD_UART_BUFF[CMD_UART_CNT] == '\n' || CMD_UART_CNT == CMD_BUFF_MAX)
 	{
 		CMD_UART_BUFF[CMD_UART_CNT] = '\0';
-		if(CMD_UART_BUFF[CMD_UART_CNT - 1] == ' ')
+		if (CMD_UART_BUFF[CMD_UART_CNT - 1] == ' ')
 		{
 			CMD_UART_CNT--;
 			CMD_UART_BUFF[CMD_UART_CNT] = '\0';
 		}
 		F_Service_CMD = 1;
 	}
-	else if(CMD_UART_BUFF[CMD_UART_CNT] == '\r')
+	else if (CMD_UART_BUFF[CMD_UART_CNT] == '\r')
 		CMD_UART_BUFF[CMD_UART_CNT] = '\0';
 	else
 		CMD_UART_CNT++;
@@ -456,7 +456,7 @@ void __interrupt UARTB_HANDLER(void)
 #endif
 	irqprint(irq_string, 23);
 #if (ENABLE_COMMAND_SUPPORT && COMMAND_UART_SWITCH == 5)
-	if(F_Service_CMD == 1)
+	if (F_Service_CMD == 1)
 	{
 		char temp = UARTB_RX;
 	#if (!IRQC_DEBUG)
@@ -466,17 +466,17 @@ void __interrupt UARTB_HANDLER(void)
 		return;
 	}
 	CMD_UART_BUFF[CMD_UART_CNT] = UARTB_RX;
-	if(CMD_UART_BUFF[CMD_UART_CNT] == '\n' || CMD_UART_CNT == CMD_BUFF_MAX)
+	if (CMD_UART_BUFF[CMD_UART_CNT] == '\n' || CMD_UART_CNT == CMD_BUFF_MAX)
 	{
 		CMD_UART_BUFF[CMD_UART_CNT] = '\0';
-		if(CMD_UART_BUFF[CMD_UART_CNT - 1] == ' ')
+		if (CMD_UART_BUFF[CMD_UART_CNT - 1] == ' ')
 		{
 			CMD_UART_CNT--;
 			CMD_UART_BUFF[CMD_UART_CNT] = '\0';
 		}
 		F_Service_CMD = 1;
 	}
-	else if(CMD_UART_BUFF[CMD_UART_CNT] == '\r')
+	else if (CMD_UART_BUFF[CMD_UART_CNT] == '\r')
 		CMD_UART_BUFF[CMD_UART_CNT] = '\0';
 	else
 		CMD_UART_CNT++;
@@ -498,16 +498,16 @@ void __interrupt SM_EC_HANDLER(void)
 	nop;
 	nop;
 	*((volatile uint8_t *)(0x250a)) |= 0x1; // clear sm_ec interrupt status flag
-	if(SMF_CMD == 0x2)						// 写
+	if (SMF_CMD == 0x2)						// 写
 	{
 		unsigned short i = 0;
-		if(SMF_NUM > 4)
+		if (SMF_NUM > 4)
 		{
 			Write_buff[0] = SMF_DR0;
 			Write_buff[1] = SMF_DR1;
 			Write_buff[2] = SMF_DR2;
 			Write_buff[3] = SMF_DR3;
-			for(i = 4; i < SMF_NUM; i++)
+			for (i = 4; i < SMF_NUM; i++)
 			{
 				Write_buff[i] = *((volatile unsigned char *)(0x31000 + (SMF_SRA << 4) + (i - 4)));
 			}
@@ -525,13 +525,13 @@ void __interrupt SM_EC_HANDLER(void)
 		} */
 		RunSPIFE_WriteFromRAM((SMF_FADDR0 & 0xff) + ((SMF_FADDR1 << 8) & 0xff00) + ((SMF_FADDR2 << 16) & 0xff0000), Write_buff);
 	}
-	else if(SMF_CMD == 0x3) // 读
+	else if (SMF_CMD == 0x3) // 读
 	{
 	}
-	else if(SMF_CMD == 0x13) // firmware cycle 读
+	else if (SMF_CMD == 0x13) // firmware cycle 读
 	{
 	}
-	else if(SMF_CMD == 0x12) // firmware cycle 写
+	else if (SMF_CMD == 0x12) // firmware cycle 写
 	{
 		Write_buff[0] = SMF_DR0;
 		Write_buff[1] = SMF_DR1;
@@ -560,7 +560,7 @@ void __interrupt TIMER0_HANDLER(void)
 #if 0
 	irqprint(irq_string, 26);
 #endif
-	if((TIMER0_TIS & 0x1) == 0x1)
+	if ((TIMER0_TIS & 0x1) == 0x1)
 		TIMER0_TEOI; // clear int
 };
 void __interrupt TIMER1_HANDLER(void)
@@ -571,7 +571,7 @@ void __interrupt TIMER1_HANDLER(void)
 #if 0
 	irqprint(irq_string, 27);
 #endif
-	if(TIMER1_TIS & 0x1) // read int status
+	if (TIMER1_TIS & 0x1) // read int status
 	{
 		TIMER1_TEOI; // clear int
 	}
@@ -585,11 +585,11 @@ void __interrupt TIMER2_HANDLER(void)
 	irqprint(irq_string, 28);
 #endif
 	// irqprint ("%s","--------Begin TIMER2 handler----Vector mode\n");
-	if(TIMER2_TIS & 0x1)
+	if (TIMER2_TIS & 0x1)
 	{
 		TIMER2_TEOI;
 	}
-	if(!(F_Service_MS_1))
+	if (!(F_Service_MS_1))
 	{
 		F_Service_MS_1 = 1; // Request 5 mS timer service.
 	}
@@ -603,7 +603,7 @@ void __interrupt TIMER3_HANDLER(void)
 	irqprint(irq_string, 29);
 #endif
 	// irqprint ("%s","--------Begin TIMER3 handler----Vector mode\n");
-	if(TIMER3_TIS & 0x1)
+	if (TIMER3_TIS & 0x1)
 	{
 		TIMER3_TEOI;
 	}
@@ -621,19 +621,19 @@ void __interrupt INTC0_HANDLER(void)
 	int j = 0;
 	int num = 0;
 	int flag = 0;
-	for(i = 0; i < 8; i++)
+	for (i = 0; i < 8; i++)
 	{
 		intr_st = REG8(INTC0_REG_ADDR(INTC_ICTL_MASKSTATUS_L + i));
-		for(j = 0; j < 8; j++)
+		for (j = 0; j < 8; j++)
 		{
-			if(intr_st & (1 << j))
+			if (intr_st & (1 << j))
 			{
 				num = i * 8 + j;
 				flag = 1;
 				break;
 			}
 		}
-		if(flag == 1)
+		if (flag == 1)
 			break;
 	}
 	irqprint("intr0[%d]\n", num);
@@ -650,19 +650,19 @@ void __interrupt INTC1_HANDLER(void)
 	int j = 0;
 	int num = 0;
 	int flag = 0;
-	for(i = 0; i < 8; i++)
+	for (i = 0; i < 8; i++)
 	{
 		intr_st = REG8(INTC1_REG_ADDR(INTC_ICTL_MASKSTATUS_L + i));
-		for(j = 0; j < 8; j++)
+		for (j = 0; j < 8; j++)
 		{
-			if(intr_st & (1 << j))
+			if (intr_st & (1 << j))
 			{
 				num = i * 8 + j;
 				flag = 1;
 				break;
 			}
 		}
-		if(flag == 1)
+		if (flag == 1)
 			break;
 	}
 	irqprint("intr1[%d]\t", num);

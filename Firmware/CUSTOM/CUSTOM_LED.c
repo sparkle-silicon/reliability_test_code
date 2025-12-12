@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2025-10-10 17:27:10
  * @Description: This file is used for LED custom
  *
@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 #include "CUSTOM_LED.H"
 #include "CUSTOM_POWER.H"
@@ -49,7 +49,7 @@ void CAPLED_OFF()
 void OEM_Write_Leds(void)
 {
 #if SUPPORT_LED_SCROLLOCK
-    if(Led_Data_SCROLL) // Check ScrollLock LED Status
+    if (Led_Data_SCROLL) // Check ScrollLock LED Status
     {
         SCROLED_ON();
     }
@@ -59,7 +59,7 @@ void OEM_Write_Leds(void)
     }
 #endif
 #if SUPPORT_LED_NUMLOCK
-    if(Led_Data_NUM) // Check NumLock LED Status
+    if (Led_Data_NUM) // Check NumLock LED Status
     {
         NUMLED_ON();
     }
@@ -69,7 +69,7 @@ void OEM_Write_Leds(void)
     }
 #endif
 #if SUPPORT_LED_CAPSLOCK
-    if(Led_Data_CAPS) // Check CapsLock LED Status
+    if (Led_Data_CAPS) // Check CapsLock LED Status
     {
         CAPLED_ON();
     }
@@ -101,19 +101,19 @@ int BATLED1_TG()
 }
 void Service_LED_Indicator(void)
 {
-    if(System_PowerState == SYSTEM_S5)
+    if (System_PowerState == SYSTEM_S5)
     {
         return;
     }
-    if(ACPI_STATE_S0)
+    if (ACPI_STATE_S0)
     {
         PWRLED1_ON();
     }
-    else if(System_PowerState == SYSTEM_S3)
+    else if (System_PowerState == SYSTEM_S3)
     {
         PWRLED1_TG();
     }
-    if(STATE_CARD())
+    if (STATE_CARD())
     {
         CARD_LED_OFF(); // Hi->No Card
     }
@@ -145,11 +145,11 @@ BYTE Breathing_LED_Switch(BYTE channel, BYTE step)
     offset = PWM_DCR0_1_OFFSET + ((channel & 0x06));
     /**/
     register BYTE dcr = PWM_REG(offset) & (0xFF << ((channel & 0x1) * 8));
-    if(dcr > 95)
+    if (dcr > 95)
     {
         dir = -1;
     }
-    else if(dcr < 5)
+    else if (dcr < 5)
     {
         dir = 1;
     }

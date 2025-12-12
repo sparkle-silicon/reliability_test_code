@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
  //-------------------------------------------------
  // Common Header Include
@@ -21,11 +21,11 @@
 #include "AE_GLOBAL.H"
 #include "CUSTOM_MEMORY.H"
 
-extern VBYTE* Tmp_XPntr;
-extern VBYTE* Tmp_XPntr1;
-extern VBYTE* KBDataPending;
-extern VBYTE* MSDataPending;
-extern VBYTE* Tmp_code_pointer;
+extern VBYTE *Tmp_XPntr;
+extern VBYTE *Tmp_XPntr1;
+extern VBYTE *KBDataPending;
+extern VBYTE *MSDataPending;
+extern VBYTE *Tmp_code_pointer;
 
 // DRAM BASE ADDRESS DEFINITION
 #define MEMORY_BASE0_ADDR DRAM_BASE_ADDR

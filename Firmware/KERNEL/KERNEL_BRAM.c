@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2025-10-20 20:33:27
  * @Description:
  *
@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 #include "KERNEL_BRAM.H"
 #include "KERNEL_MEMORY.H"
@@ -50,7 +50,7 @@ void BRAM_SIOConfig(void)
 void BRAM_Write(void)
 {
   int i;
-  for(i = 0; i < 48; i++)
+  for (i = 0; i < 48; i++)
   {
     *((volatile uint8_t *)(BRAM_BASE_ADDR + i)) = 0xff;
   }
@@ -68,7 +68,7 @@ void BRAM_Write(void)
 void BRAM_Read(void)
 {
   uint8_t i;
-  for(i = 0; i <= 96; i++)
+  for (i = 0; i <= 96; i++)
   {
     BRAM_ReadBuff[i] = *((volatile uint8_t *)(BRAM_BASE_ADDR + i));
     dprint("bd[%d]:%#x\n", i, BRAM_ReadBuff[i]);
@@ -88,12 +88,12 @@ void BRAM_Read(void)
  */
 void BRAM_Config(uint8_t index_0, uint8_t index_1, uint8_t mask)
 {
-    REG32(0x3051C)&=~0xff;
-    REG32(0x3051C)|=index_0;
-    REG32(0x3051C)&=(~0xff)<<8;
-    REG32(0x3051C)|=(index_1<<8);
-    if(mask)
-        REG32(0x3051C)|=0x30000;
-    else
-        REG32(0x3051C)&=~0x30000;
+  REG32(0x3051C) &= ~0xff;
+  REG32(0x3051C) |= index_0;
+  REG32(0x3051C) &= (~0xff) << 8;
+  REG32(0x3051C) |= (index_1 << 8);
+  if (mask)
+    REG32(0x3051C) |= 0x30000;
+  else
+    REG32(0x3051C) &= ~0x30000;
 }

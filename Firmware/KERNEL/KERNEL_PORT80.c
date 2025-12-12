@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 #include "KERNEL_PORT80.H"
 #include "KERNEL_TIMER.H"
@@ -47,7 +47,7 @@ void Port80_Bram_PNP_Config(void)
  * @brief 配置捕获某个端口或者某个端口范围的数据存到SRAM+offset处，其中主机一帧数据存
  * 存到sram为四字节信息，总共fifo长度为16*4=64字节，其中BYTE0为数据，BYTE1/2为端口，BYTE3为空，例如：BYTE0=0x12,
  * BYTE1=0x80,BYTE2=0x00,BYTE3=0x00,则表示捕获到端口:0x0080,数据:0x12。
- * 
+ *
  * @param addr0 端口地址0捕获使能
  * @param addr1 端口地址1捕获使能
  * @param offset 放到SRAM的偏移，例如：offset=0x100，则存到SRAM的地址为0x31000+0x100=0x31100
@@ -71,14 +71,14 @@ void Port80_Config(uint16_t addr0, uint8_t addr1, uint32_t offset, uint8_t rgn_e
 char Get_Port80_Bufferdata(uint32_t *p_data)
 {
 	uint8_t pbuf_idx = 0;
-	if((P80_Idx == 0) && (Total_P80_Idx == 0))
+	if ((P80_Idx == 0) && (Total_P80_Idx == 0))
 		return 1;
-	if(Total_P80_Idx >= 16)
+	if (Total_P80_Idx >= 16)
 	{
 		pbuf_idx = P80_Idx * 4;
-		for(int i = 0; i < 16; i++)
+		for (int i = 0; i < 16; i++)
 		{
-			if(pbuf_idx == 0)
+			if (pbuf_idx == 0)
 				pbuf_idx = 64;
 			pbuf_idx -= 4;
 			p_data[i] = (REG8(SRAM_BASE_ADDR + ((SYSCTL_ESPI_P80_CFG & 0x1f) << 6) + pbuf_idx)) |
@@ -89,9 +89,9 @@ char Get_Port80_Bufferdata(uint32_t *p_data)
 	else
 	{
 		pbuf_idx = P80_Idx * 4;
-		for(int i = 0; i < Total_P80_Idx; i++)
+		for (int i = 0; i < Total_P80_Idx; i++)
 		{
-			if(pbuf_idx == 0)
+			if (pbuf_idx == 0)
 				pbuf_idx = 64;
 			pbuf_idx -= 4;
 			p_data[i] = (REG8(SRAM_BASE_ADDR + ((SYSCTL_ESPI_P80_CFG & 0x1f) << 6) + pbuf_idx)) |

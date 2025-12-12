@@ -9,8 +9,8 @@
  # Copyright has legal effects and violations will be prosecuted.
  # 版权具有法律效力，违反必究。
  #
- # Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- # 版权所有 ©2021-2023龙晶石半导体科技(苏州)有限公司
+ # Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ # 版权所有 ©2021-2025龙晶石半导体科技(苏州)有限公司
 
 #############################################################
 # Global Variables
@@ -125,8 +125,8 @@ export  ENV_DIR
 SECURITY_DIR 	= $(TOPDIR)/TOOLS/Security
 
 #includes Directory
-CINCLUDE 			+= -I $(KERNEL_DIR)/INCLUDE
 CINCLUDE 			+= -I $(AE10X_DIR)/INCLUDE
+CINCLUDE 			+= -I $(KERNEL_DIR)/INCLUDE
 CINCLUDE 			+= -I $(CUSTOM_DIR)/INCLUDE
 ifeq ($(VERSION),0.0.0)#未发布版本
 CINCLUDE 			+= -I $(TEST_DIR)/INCLUDE
@@ -247,8 +247,8 @@ ifeq ($(OS),Linux) #Linux
 	@$(COPY) ./ ../$(release_dir) -r
 	@$(RM) -f ../$(release_dir)/AE10X/*.c ../$(release_dir)/AE10X/*.S
 	@$(COPY) ./AE10X/AE_FLASHINFO.c ../$(release_dir)/AE10X/
-	@$(RMDIR) ../$(release_dir)/HARDWARE ../$(release_dir)/TEST
-	@$(RMDIR) ../$(release_dir)/$(release_dir).sh ../$(release_dir)/rom.sh
+	@$(RMDIR) ../$(release_dir)/TEST
+	@$(RMDIR) ../$(release_dir)/release.sh ../$(release_dir)/rom.sh
 	@$(RMDIR) ../$(release_dir)/TOOLS/app ../$(release_dir)/TOOLS/auto_test ../$(release_dir)/TOOLS/drive ../$(release_dir)/TOOLS/classic_benchmarks
 	@$(RMDIR) ../$(release_dir)/.v* ../$(release_dir)/.s*  ../$(release_dir)/.c* ../$(release_dir)/.g* ../$(release_dir)/.p* 
 else #Windows or other commands
@@ -320,8 +320,8 @@ help: copyright_notice
 	@$(ECHO)   clean compile build software program file.
 .PHONY:clean
 clean: copyright_notice
-ifeq ($(OS),Linux) #Linux
 	@$(MAKE) -f $(TOPDIR)/common.mk --no-print-directory clean
+ifeq ($(OS),Linux) #Linux
 	@$(RM) -f $(shell find -name "*.verilog")
 	@$(ECHO) RM -F *.VERILOG
 	@$(RM) -f $(shell find -name "*.readelf")
@@ -349,7 +349,6 @@ ifeq ($(OS),Linux) #Linux
 	@$(RM) -f $(shell find -name "*.asm")
 	@$(ECHO) RM -F *.ASM
 else #Windows or other commands
-	@$(MAKE) -f $(TOPDIR)/common.mk --no-print-directory clean
 	@$(RM) /q /f /s *.verilog
 	@$(RM) /q /f /s *.readelf
 	@$(RM) /q /f /s *.dump

@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2023-07-04 09:40:50
  * @Description: This file is used for handling CUSTOM PMC4 Commands
  *
@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 #include "CUSTOM_PMC4.H"
 #include "KERNEL_MEMORY.H"
@@ -207,7 +207,7 @@ void PMC4_Cmd_32(void)
 //----------------------------------------------------------------------------
 BYTE Set_PortPM4_Data_Handle(void)
 {
-    if(PM4Step == 0x00)
+    if (PM4Step == 0x00)
     {
         PM4Step = 0x01; // Set Next Port60 Data Handle again
         return (0);
@@ -220,7 +220,7 @@ BYTE Set_PortPM4_Data_Handle(void)
 }
 void PMC4_Cmd_33(void)
 {
-    if(Set_PortPM4_Data_Handle()) // Get PM4Data
+    if (Set_PortPM4_Data_Handle()) // Get PM4Data
     {
         PMC4_DOR = 0x00;
     #if ENABLE_DEBUGGER_SUPPORT
@@ -1403,7 +1403,7 @@ const FUNCT_PTR_V_V Port78_Table[16] =
 };
 void Service_PCI5_Main(void)
 {
-    if(PMC4_STR & C_D4)
+    if (PMC4_STR & C_D4)
     {
         PM4Cmd = PMC4_DIR;
     #if ENABLE_DEBUGGER_SUPPORT
@@ -1429,7 +1429,7 @@ void Service_PCI5_Main(void)
         PMC4_CTL |= IBF_INT_ENABLE;
     #endif
         dprint("PM4Data is %#x\n", PM4Data);
-        if(PM4Step != 0x00)
+        if (PM4Step != 0x00)
         {
             // Pls use PM4Step for Port 78 Routine Command
             (Port78_Table[PM4Cmd >> 4]());
@@ -1437,7 +1437,7 @@ void Service_PCI5_Main(void)
         else
         {
             PM4UnProcessCnt = 0;
-            while(PM4UnProcessCnt < 0xFF)
+            while (PM4UnProcessCnt < 0xFF)
             {
                 PM4UnProcessCnt++;
             }
@@ -1456,14 +1456,14 @@ void __weak Service_PCI5(void)
     return;
 #endif
 #if LPC_WAY_OPTION_SWITCH
-    if(Is_FLAG_CLEAR(PMC4_STR, IBF4))
+    if (Is_FLAG_CLEAR(PMC4_STR, IBF4))
         return;
     Service_PCI5_Main();
 #else
-    if(F_Service_PCI5 == 1)
+    if (F_Service_PCI5 == 1)
     {
         F_Service_PCI5 = 0;
-        if(Is_FLAG_CLEAR(PMC4_STR, IBF4))
+        if (Is_FLAG_CLEAR(PMC4_STR, IBF4))
             return;
         Service_PCI5_Main();
     }

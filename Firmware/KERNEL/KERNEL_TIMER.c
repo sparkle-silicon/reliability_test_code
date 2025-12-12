@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2025-10-18 20:23:05
  * @Description:
  *
@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 #include "AE_FUNC.H"
 #include "KERNEL_TIMER.H"
@@ -29,7 +29,7 @@ void OPTIMIZE1 udelay(DWORD delay)
 	{
 		delay--;
 	}
-	while(delay);
+	while (delay);
 }
 /**
  * @brief TIMER初始化
@@ -86,7 +86,7 @@ void TIMER_Enable(u8 index)
  */
 void TIMER_Int_Mask(u8 index, u8 int_mask)
 {
-	if(int_mask == 0)
+	if (int_mask == 0)
 	{
 		TIMER_REG(0x14 * index + TIMER_TCR_OFFSET) &= (~TIMER_MASK_EN);
 	}
@@ -104,7 +104,7 @@ void TIMER_Int_Mask(u8 index, u8 int_mask)
  */
 BYTE Timer_Int_Enable(BYTE channel)
 {
-	switch(channel)
+	switch (channel)
 	{
 		case TIMER0:
 			TIMER0_TCR &= ~TIMER_MASK_EN;
@@ -131,7 +131,7 @@ BYTE Timer_Int_Enable(BYTE channel)
  */
 BYTE Timer_Int_Disable(BYTE channel)
 {
-	switch(channel)
+	switch (channel)
 	{
 		case TIMER0:
 			TIMER0_TCR |= TIMER_MASK_EN;
@@ -158,7 +158,7 @@ BYTE Timer_Int_Disable(BYTE channel)
  */
 BYTE Timer_Int_Enable_Read(BYTE channel)
 {
-	switch(channel)
+	switch (channel)
 	{
 		case TIMER0:
 			return ((TIMER0_TCR & TIMER_MASK_EN) == 0);
@@ -181,7 +181,7 @@ BYTE Timer_Int_Enable_Read(BYTE channel)
  */
 BYTE Timer_Int_Status(BYTE channel)
 {
-	switch(channel)
+	switch (channel)
 	{
 		case TIMER0:
 			return ((TIMER0_TIS & TIMER_INT) != 0);
@@ -204,7 +204,7 @@ BYTE Timer_Int_Status(BYTE channel)
  */
 void Timer_Int_Clear(BYTE channel)
 {
-	switch(channel)
+	switch (channel)
 	{
 		case TIMER0:
 			TIMER0_TEOI;
@@ -226,10 +226,10 @@ void Timer_Int_Clear(BYTE channel)
 void vDelayXms(WORD bMS)
 {
 	TIMER_Disable(TIMER1);
-	for(; bMS != 0; bMS--)
+	for (; bMS != 0; bMS--)
 	{
 		TIMER_Init(TIMER1, TIMER1_1ms, 0x0, 0x1);
-		while((TIMER_TRIS & BIT(TIMER1)) == 0);
+		while ((TIMER_TRIS & BIT(TIMER1)) == 0);
 		TIMER1_TEOI;
 		TIMER_Disable(TIMER1);
 	}
@@ -241,7 +241,7 @@ void vDelayXus(DWORD bUS)
 {
 	TIMER_Disable(TIMER3);
 	TIMER_Init(TIMER3, TIMER3_1us * bUS, 0x0, 0x1);
-	while((TIMER_TRIS & BIT(TIMER3)) == 0);
+	while ((TIMER_TRIS & BIT(TIMER3)) == 0);
 	TIMER3_TEOI;
 	TIMER_Disable(TIMER3);
 }
@@ -251,6 +251,6 @@ void wait_seconds(size_t n)
 	// Don't start measuruing until we see an mtime tick
 	enable_mcycle_minstret(); // 打开定时器
 	start_mtime = mtime_lo();
-	while((mtime_lo() - start_mtime) <= (n * CPU_TIMER_FREQ));
+	while ((mtime_lo() - start_mtime) <= (n * CPU_TIMER_FREQ));
 	disable_mcycle_minstret(); // 关闭定时器
 }

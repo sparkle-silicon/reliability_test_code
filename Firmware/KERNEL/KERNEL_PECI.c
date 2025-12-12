@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2025-10-18 21:06:17
  * @Description:
  *
@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 #include "KERNEL_PECI.H"
 #include "KERNEL_MEMORY.H"
@@ -262,7 +262,7 @@ void PECI_CalcCRC8(BYTE sourcebyte)
 //              0 : error
 //
 //*****************************************************************************
-BYTE PECI_RdPkgConfig(BYTE addr, BYTE* ReadData, BYTE Domain, BYTE Retry, BYTE Index, BYTE LSB, BYTE MSB, BYTE ReadLen, BYTE WriteLen)
+BYTE PECI_RdPkgConfig(BYTE addr, BYTE *ReadData, BYTE Domain, BYTE Retry, BYTE Index, BYTE LSB, BYTE MSB, BYTE ReadLen, BYTE WriteLen)
 {
     BYTE done, cunt;
     done = 0x00;
@@ -353,7 +353,7 @@ BYTE PECI_RdPkgConfig(BYTE addr, BYTE* ReadData, BYTE Domain, BYTE Retry, BYTE I
 //              0 : error
 //
 //*****************************************************************************
-BYTE PECI_WrPkgConfig(BYTE addr, BYTE* WriteData, BYTE Domain, BYTE Retry, BYTE Index, BYTE LSB, BYTE MSB, BYTE ReadLen, BYTE WriteLen)
+BYTE PECI_WrPkgConfig(BYTE addr, BYTE *WriteData, BYTE Domain, BYTE Retry, BYTE Index, BYTE LSB, BYTE MSB, BYTE ReadLen, BYTE WriteLen)
 {
     BYTE done, cunt;
     done = 0x00;
@@ -456,7 +456,7 @@ BYTE PECI_WrPkgConfig(BYTE addr, BYTE* WriteData, BYTE Domain, BYTE Retry, BYTE 
 //              0 : error
 //
 //*****************************************************************************
-BYTE PECI_RdIAMSR(BYTE addr, BYTE* ReadData, BYTE Domain, BYTE Retry, BYTE ProcessorID, BYTE LSB, BYTE MSB, BYTE ReadLen, BYTE WriteLen)
+BYTE PECI_RdIAMSR(BYTE addr, BYTE *ReadData, BYTE Domain, BYTE Retry, BYTE ProcessorID, BYTE LSB, BYTE MSB, BYTE ReadLen, BYTE WriteLen)
 {
     BYTE done, cunt;
     done = 0x00;
@@ -572,7 +572,7 @@ BYTE PECI_Ping(BYTE addr, BYTE ReadLen, BYTE WriteLen)
 //              0 : error
 //
 //*****************************************************************************
-BYTE PECI_GetDIB(BYTE addr, BYTE* ReadData, BYTE ReadLen, BYTE WriteLen)
+BYTE PECI_GetDIB(BYTE addr, BYTE *ReadData, BYTE ReadLen, BYTE WriteLen)
 {
     BYTE done, index;
     done = 0x00;
@@ -655,7 +655,7 @@ BYTE PECI_ReadDIB(void)
 //              0 : error
 //
 //*****************************************************************************
-BYTE PECI_GetTemp(BYTE addr, BYTE* ReadData, BYTE Domain, BYTE ReadLen, BYTE WriteLen)
+BYTE PECI_GetTemp(BYTE addr, BYTE *ReadData, BYTE Domain, BYTE ReadLen, BYTE WriteLen)
 {
     BYTE done;
     done = 0x00;
@@ -791,11 +791,11 @@ BYTE PECI_ReadPowerUnit(void)
         PECI_PowerUnit = (PECI_ReadBuffer[0] & 0x0F);  /* Bit[3:0] */
         PECI_EnergyUnit = (PECI_ReadBuffer[1] & 0x1F); /* Bit[12:8] */
         PECI_TimeUnit = (PECI_ReadBuffer[2] & 0x0F);   /* Bit[19:16] */
-#if 1
+    #if 1
         PECI_UnitPower = 0x0008;
         PECI_UnitTime = 0x0400;
         PECI_UnitEnergy = 0x4000;
-#else
+    #else
         if (PECI_PowerUnit > 0)
         {
             PECI_UnitPower = 1 << PECI_PowerUnit;
@@ -808,7 +808,7 @@ BYTE PECI_ReadPowerUnit(void)
             PECI_UnitTime = 0x0400;
             PECI_UnitEnergy = 0x4000;
         }
-#endif
+    #endif
         return TRUE;
     }
     return FALSE;

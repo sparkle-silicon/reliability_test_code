@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2025-06-04 17:23:28
  * @Description:
  *
@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 #include "KERNEL_SWUC.H"
 #include "KERNEL_TIMER.H"
@@ -47,7 +47,7 @@ void SWUC_PNP_Config(void)
  */
 void SWUC_EventIRQ_Config(BYTE irq_type, BYTE sw)
 {
-	if(sw == DISABLE)
+	if (sw == DISABLE)
 	{
 		SWUHEIE &= (~irq_type);
 	}
@@ -60,7 +60,7 @@ void SWUC_EventIRQ_Config(BYTE irq_type, BYTE sw)
 // 软件唤醒
 void SWUC_SW_WakeUp_Config(uint8_t hsecm_ec)
 {
-	if(hsecm_ec == 0)
+	if (hsecm_ec == 0)
 	{
 		SWUCTL1 &= 0xdf;
 	}
@@ -72,7 +72,7 @@ void SWUC_SW_WakeUp_Config(uint8_t hsecm_ec)
 
 void SWUC_Int_Enable(BYTE type)
 {
-	if(type <= 0x7)
+	if (type <= 0x7)
 	{
 		SWUHEIE |= (0x1 << type);
 	}
@@ -91,7 +91,7 @@ void SWUC_Int_Enable(BYTE type)
  */
 void SWUC_ACPIIRQ_Config(BYTE irq_type, BYTE sw)
 {
-	if(sw == DISABLE)
+	if (sw == DISABLE)
 	{
 		SWUIE &= (~irq_type);
 	}
@@ -102,7 +102,7 @@ void SWUC_ACPIIRQ_Config(BYTE irq_type, BYTE sw)
 }
 void SWUC_Int_Disable(BYTE type)
 {
-	if(type <= 0x7)
+	if (type <= 0x7)
 	{
 		SWUHEIE &= ~(0x1 << type);
 	}
@@ -113,7 +113,7 @@ void SWUC_Int_Disable(BYTE type)
 }
 BYTE SWUC_Int_Enable_Read(BYTE type)
 {
-	if(type <= 0x7)
+	if (type <= 0x7)
 	{
 		return ((SWUHEIE & (0x1 << type)) != 0);
 	}
@@ -148,20 +148,20 @@ void SWUC_SMI_Init(void)
 // 3种方式选择KBRST
 void SWUC_KBRST_Init(uint8_t mode)
 {
-	if(mode == 1)
+	if (mode == 1)
 	{
 		KBC_KOB &= 0xfe;   // set KBCHIKDOR bit0 0
 		(SWUCTL1) |= 0x80; // set krstga20r 1
 	}
-	else if(mode == 2)
+	else if (mode == 2)
 	{
 		// sysctl_iomux_config(GPIOB, 6, 1); // set GPE6 lpc_pd
 		SWUCTL3 |= 0x2;					  // set lpcpf_ec 1
 	}
-	else if(mode == 3)
+	else if (mode == 3)
 	{
 		// sysctl_iomux_config(GPIOA, 14, 2);
-		for(BYTE i = 0; i < 20; i++)
+		for (BYTE i = 0; i < 20; i++)
 		{
 			SWUCTL1 &= 0xfe; // set hrst_ec 0
 			vDelayXms(5);
@@ -179,10 +179,10 @@ void SWUC_KBRST_Init(uint8_t mode)
  */
 void SWUC_GA20_Init(uint8_t mode)
 {
-	if(mode == 1)
+	if (mode == 1)
 	{
 		KBC_KOB &= 0xfd; // set KBCHIKDOR bit1 0
-		for(BYTE i = 0; i < 20; i++)
+		for (BYTE i = 0; i < 20; i++)
 		{
 			(SWUCTL1) &= 0x7f; // set krstga20r 0
 			vDelayXms(5);
@@ -198,9 +198,9 @@ void SWUC_GA20_Init(uint8_t mode)
 
 void SWUC_Init(uint8_t ga20, uint8_t ga20mode, uint8_t kbrst, uint8_t smi, uint8_t pwreq, uint8_t acpi)
 {
-	if(ga20 == 1)SWUC_GA20_Init(ga20mode);
-	if(kbrst == 1)SWUC_KBRST_Init(kbrst);
-	if(smi == 1)SWUC_SMI_Init();
-	if(pwreq == 1)SWUC_PWUREQ_Init();
-	if(acpi == 1)SWUC_ACPI_Init();
+	if (ga20 == 1)SWUC_GA20_Init(ga20mode);
+	if (kbrst == 1)SWUC_KBRST_Init(kbrst);
+	if (smi == 1)SWUC_SMI_Init();
+	if (pwreq == 1)SWUC_PWUREQ_Init();
+	if (acpi == 1)SWUC_ACPI_Init();
 }

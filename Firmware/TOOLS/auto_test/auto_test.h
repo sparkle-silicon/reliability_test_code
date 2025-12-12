@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 #ifndef _AUTO_TEST_H
 #define _AUTO_TEST_H
@@ -191,8 +191,7 @@ typedef unsigned long u32;
 typedef unsigned short u16;
 typedef unsigned char u8;
 typedef void *(*func_VP_VP) (void *);
-typedef struct peripheral_list
-{
+typedef struct peripheral_list{
     char *name;
     int select;
     pthread_t id;
@@ -203,8 +202,7 @@ typedef struct peripheral_list
     u32 SR_CMD;
     pthread_mutex_t *lock;
 }peripheral_list;
-typedef struct EC_Space
-{
+typedef struct EC_Space{
     char *name;
     u8 addr;
     u8 val;

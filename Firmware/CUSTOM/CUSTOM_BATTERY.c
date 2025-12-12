@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 #include "CUSTOM_BATTERY.H"
 #include "CUSTOM_GPIO.H"
@@ -69,7 +69,7 @@ const BatteryData BAT_PollingDataTable[] =
 {
 	/*发给电池的命令    电池数据暂存的16位全局变量  电池数据存入ecspace地址*/
 	{BATCmd_RSOC,		&BAT_RSOC,				{&BATTERY_RSOC,NULL}						},
-	{BATCmd_current, 	(VWORD*)&BAT_CURRENT,			{&BATTERY_CURRENT_L,&BATTERY_CURRENT_H}	},
+	{BATCmd_current, 	(VWORD *)&BAT_CURRENT,			{&BATTERY_CURRENT_L,&BATTERY_CURRENT_H}	},
 	{BATCmd_volt, 		&BAT_VOLT,				{&BATTERY_VOL_L,&BATTERY_VOL_H}			},
 	{BATCmd_RMcap, 		&BAT_RCAP,				{&BATTERY_RMCAP_L,&BATTERY_RMCAP_H}		},
 	{BATCmd_BatStatus, 	&BAT_ALARM,			{NULL,NULL}									},
@@ -234,50 +234,50 @@ void SetBATCtrlStep(BYTE ctrlstep)
 	Charger_TimeOut = 0x00;
 	switch (BAT_CtrlStep)
 	{
-	case BAT_Step_ID:
-		SetBATIDTimeOutCNT();
-		BAT_ID_Step = BATID_Step_GetDV;
-		break;
-	case BAT_Step_WC:
-		BATTERY_STATUS1 &= ~(bat_InCharge + bat_Dischg + bat_Full);
-		BATTERY_STATUS2 = 0x00;
-		WakeUpChrCunt = 0x0000;
-		WakeUpChrCunt_Min = 0x00;
-		CLEAR_MASK(BATTERY_STATUS1, bat_valid);
-		PF_CHARGE_FULL_LED_OFF();
-		SET_MASK(BATTERY_STATUS2, bat_WC);
-		break;
-	case BAT_Step_PC:
-		BATTERY_STATUS1 &= ~(bat_InCharge + bat_Dischg + bat_Full);
-		BATTERY_STATUS2 = 0x00;
-		PreChrCunt = 0x0000;
-		PreChrCunt_Min = 0x0000;
-		PF_CHARGE_FULL_LED_OFF();
-		SET_MASK(BATTERY_STATUS2, bat_PC);
-		break;
-	case BAT_Step_NC:
-		BATTERY_STATUS1 &= ~(bat_InCharge + bat_Dischg + bat_Full);
-		BATTERY_STATUS2 = 0x00;
-		NormalChrCunt = 0x0000;
-		NormalChrCunt_Min = 0x0000;
-		NearFullChrCunt = 0;
-		CHARGE_CURRENT_BK = 0x00;
-		CHARGE_VOLTAGE_BK = 0x00;
-		PF_CHARGE_FULL_LED_OFF();
-		SET_MASK(BATTERY_STATUS2, bat_NC);
-		break;
-	case BAT_Step_DC:
-		BATTERY_STATUS1 &= ~(bat_InCharge + bat_Dischg + bat_Full);
-		BATTERY_STATUS2 = 0x00;
-		PF_CHARGE_FULL_LED_OFF();
-		SET_MASK(BATTERY_STATUS2, bat_DC);
-		SET_MASK(BATTERY_STATUS1, bat_Dischg);
-		break;
-	case BAT_Step_FullyChg:
-		BATTERY_STATUS1 &= ~(bat_InCharge + bat_Dischg + bat_Full);
-		SET_MASK(BATTERY_STATUS1, bat_Full);
-		BATTERY_STATUS2 = 0x00;
-		break;
+		case BAT_Step_ID:
+			SetBATIDTimeOutCNT();
+			BAT_ID_Step = BATID_Step_GetDV;
+			break;
+		case BAT_Step_WC:
+			BATTERY_STATUS1 &= ~(bat_InCharge + bat_Dischg + bat_Full);
+			BATTERY_STATUS2 = 0x00;
+			WakeUpChrCunt = 0x0000;
+			WakeUpChrCunt_Min = 0x00;
+			CLEAR_MASK(BATTERY_STATUS1, bat_valid);
+			PF_CHARGE_FULL_LED_OFF();
+			SET_MASK(BATTERY_STATUS2, bat_WC);
+			break;
+		case BAT_Step_PC:
+			BATTERY_STATUS1 &= ~(bat_InCharge + bat_Dischg + bat_Full);
+			BATTERY_STATUS2 = 0x00;
+			PreChrCunt = 0x0000;
+			PreChrCunt_Min = 0x0000;
+			PF_CHARGE_FULL_LED_OFF();
+			SET_MASK(BATTERY_STATUS2, bat_PC);
+			break;
+		case BAT_Step_NC:
+			BATTERY_STATUS1 &= ~(bat_InCharge + bat_Dischg + bat_Full);
+			BATTERY_STATUS2 = 0x00;
+			NormalChrCunt = 0x0000;
+			NormalChrCunt_Min = 0x0000;
+			NearFullChrCunt = 0;
+			CHARGE_CURRENT_BK = 0x00;
+			CHARGE_VOLTAGE_BK = 0x00;
+			PF_CHARGE_FULL_LED_OFF();
+			SET_MASK(BATTERY_STATUS2, bat_NC);
+			break;
+		case BAT_Step_DC:
+			BATTERY_STATUS1 &= ~(bat_InCharge + bat_Dischg + bat_Full);
+			BATTERY_STATUS2 = 0x00;
+			PF_CHARGE_FULL_LED_OFF();
+			SET_MASK(BATTERY_STATUS2, bat_DC);
+			SET_MASK(BATTERY_STATUS1, bat_Dischg);
+			break;
+		case BAT_Step_FullyChg:
+			BATTERY_STATUS1 &= ~(bat_InCharge + bat_Dischg + bat_Full);
+			SET_MASK(BATTERY_STATUS1, bat_Full);
+			BATTERY_STATUS2 = 0x00;
+			break;
 	}
 }
 
@@ -644,23 +644,23 @@ void IdentifyBAT(void)
 {
 	switch (BAT_ID_Step)
 	{
-	case BATID_Step_GetDV:
-		BATID_GetDesignVoltage();//Get Design Voltage
-		break;
-	case BATID_Step_Auth:
-		BATID_CheckBatAuth();//Reserved for checking battery authentication 
-		break;
-	case BATID_Step_MFName:
-		BATID_CheckDeviceName();//Reserved for checking device name
-		break;
-	case BATID_Step_FirstData:
-		BATID_GetAllInfo();
-		break;
-	case BATID_Step_InitOK:
-		BATID_InitOK();
-		break;
-	default:
-		break;
+		case BATID_Step_GetDV:
+			BATID_GetDesignVoltage();//Get Design Voltage
+			break;
+		case BATID_Step_Auth:
+			BATID_CheckBatAuth();//Reserved for checking battery authentication 
+			break;
+		case BATID_Step_MFName:
+			BATID_CheckDeviceName();//Reserved for checking device name
+			break;
+		case BATID_Step_FirstData:
+			BATID_GetAllInfo();
+			break;
+		case BATID_Step_InitOK:
+			BATID_InitOK();
+			break;
+		default:
+			break;
 	}
 }
 
@@ -933,16 +933,13 @@ void BATSetFail(void)
 }
 
 void BATForceDischarge(void)
-{
-}
+{}
 
 void BATForceCharge(void)
-{
-}
+{}
 
 void BATAutoLearning(void)
-{
-}
+{}
 
 //Call once every 10 ms 
 void BatChgControlCenter(void)
@@ -974,47 +971,47 @@ void BatChgControlCenter(void)
 	}
 	switch (BAT_CtrlStep)
 	{
-	case BAT_Step_ID:
-		IdentifyBAT();
-		break;
-	case BAT_Step_WC:
-		BATWakeUpCharge();
-		break;
-	case BAT_Step_PC:
-		BAT_PreCharge();
-		break;
-	case BAT_Step_NC:
-		BAT_NormalCharge();
-		break;
-	case BAT_Step_DC:
-		BATDisCharge();
-		break;
-	case BAT_Step_FullyChg:
-		BATFullyCharged();
-		break;
-	case BAT_Step_FullyDisChg:
-		BATFullyDisharged();
-		break;
-	case BAT_Step_SetFail:
-		BATSetFail();
-		break;
-	case BAT_Step_Fail:
-		break;
-	case BAT_Step_ForceDC:
-		BATForceDischarge();
-		break;
-	case BAT_Step_ForceC:
-		BATForceCharge();
-		break;
-	case BAT_Step_AutoLN:
-		BATAutoLearning();
-		break;
-	case BAT_Step_ChargerFail:
-		break;
-	case BAT_Step_Out:
-		break;
-	default:
-		break;
+		case BAT_Step_ID:
+			IdentifyBAT();
+			break;
+		case BAT_Step_WC:
+			BATWakeUpCharge();
+			break;
+		case BAT_Step_PC:
+			BAT_PreCharge();
+			break;
+		case BAT_Step_NC:
+			BAT_NormalCharge();
+			break;
+		case BAT_Step_DC:
+			BATDisCharge();
+			break;
+		case BAT_Step_FullyChg:
+			BATFullyCharged();
+			break;
+		case BAT_Step_FullyDisChg:
+			BATFullyDisharged();
+			break;
+		case BAT_Step_SetFail:
+			BATSetFail();
+			break;
+		case BAT_Step_Fail:
+			break;
+		case BAT_Step_ForceDC:
+			BATForceDischarge();
+			break;
+		case BAT_Step_ForceC:
+			BATForceCharge();
+			break;
+		case BAT_Step_AutoLN:
+			BATAutoLearning();
+			break;
+		case BAT_Step_ChargerFail:
+			break;
+		case BAT_Step_Out:
+			break;
+		default:
+			break;
 	}
 }
 

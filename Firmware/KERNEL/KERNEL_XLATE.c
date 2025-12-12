@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2025-11-04 16:06:31
  * @Description: This file is used for Code xlate
  *
@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 #include "AE_PRINTF.H"
 #include "KERNEL_XLATE.H"
@@ -154,7 +154,7 @@ void Transmit_Key(BYTE table_entry, BYTE event)
         **********************************************************************/
         temp = table_entry - SSKEY2_SPE_CODE;
         table_entry = sskey2_A2_table[temp].comb;
-        BYTE* pntr = (BYTE*)sskey2_A2_table[temp].pntr;
+        BYTE *pntr = (BYTE *)sskey2_A2_table[temp].pntr;
         pntr += Get_Comb_Index(table_entry, temp_table_entry, event);
         table_entry = *pntr;
     }
@@ -624,32 +624,32 @@ BYTE Get_Comb_Index(BYTE comb, BYTE table_entry, BYTE event)
     }
     if (comb & BIT(4))
     {   // Combination has Num Lock.
-#if 1//NumLock_Key lock state wait break code ,unlock state wait last break code
+    #if 1//NumLock_Key lock state wait break code ,unlock state wait last break code
         if (NumLockKey)
         { // Fn is pressed.
             offset |= (1 << bit_num);
         }
-#else//NumLock_Key lock state wait Make code  ,unlock state wait break code
+    #else//NumLock_Key lock state wait Make code  ,unlock state wait break code
         if (KBD_SCAN_STATE.index.num_lock)
         {   								// NumLock has been pressed.
             offset |= (1 << bit_num);
         }
-#endif
+    #endif
         bit_num++; 	 						// Increment bit position.
     }
     if (comb & BIT(5))
     { // Combination has Fn.
-#if 1
+    #if 1
         if (Check_FnKey_Related_Flag(table_entry, event) == 0x01)
         {
             offset |= (1 << bit_num);
         }
-#else
+    #else
         if (KBD_SCAN_STATE.index.Fn)
         {   								// Fn is pressed.
             offset |= (1 << bit_num);
         }
-#endif
+    #endif
         bit_num++; // Increment bit position.
     }
     if (comb & BIT(6))

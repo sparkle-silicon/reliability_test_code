@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2023-09-18 13:56:49
  * @Description: This file is used for handling CUSTOM PMC1 Commands
  *
@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 #include "CUSTOM_PMC1.H"
 #include "KERNEL_MEMORY.H"
@@ -694,7 +694,7 @@ void EC62_Data_Step0(void)
 void EC62_Data_Step4(void)
 {
 #if SUPPORT_MATRIX_UTILITY
-    switch(PM1StepSP)
+    switch (PM1StepSP)
     {
         case 2:
             PM1Data1 = PM1Data; // address high
@@ -713,15 +713,15 @@ void EC62_Data_Step4(void)
 void EC62_Data_Step5(void)
 {
 #if SUPPORT_MATRIX_UTILITY
-    if(PM1StepSP == 0x03)
+    if (PM1StepSP == 0x03)
     {
         PM1Data2 = PM1Data; // address high
     }
-    else if(PM1StepSP == 0x02)
+    else if (PM1StepSP == 0x02)
     {
         PM1Data1 = PM1Data; // address low
     }
-    else if(PM1StepSP == 0x01)
+    else if (PM1StepSP == 0x01)
     {
         Write_Ext_RAMSpace();
     }
@@ -750,24 +750,24 @@ BYTE OEM_Get_Port62_Data(void)
     iLOOP = WaitECDataDelay;
     do
     {
-        if(IS_SET(PMC1_STR, 1))
+        if (IS_SET(PMC1_STR, 1))
         {
-            if(PMC1_STR & KBC_STA_A2)
+            if (PMC1_STR & KBC_STA_A2)
             {
                 return 0x00;
             }
             else
             {
                 PM1Data = PMC1_DIR; // Load data
-                #if ENABLE_DEBUGGER_SUPPORT
+            #if ENABLE_DEBUGGER_SUPPORT
                 Debugger_KBC_PMC_Record(0, 1, PM1Data);
-                #endif
+            #endif
                 return 0x01;
             }
         }
         iLOOP--;
     }
-    while(iLOOP != 0);
+    while (iLOOP != 0);
     return 0x00;
 }
 //----------------------------------------------------------------------------

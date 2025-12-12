@@ -1,6 +1,6 @@
 /*
  * @Author: Linyu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2024-10-19 15:16:56
  * @Description:
  *
@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  *
  * Portions of this firmware library utilize the ANX7447 driver, which is copyrighted by Analogix Semiconductor, Inc.
  * 本固件库的部分代码使用了 ANX7447 驱动程序，其版权归 Analogix Semiconductor, Inc. 所有。
@@ -191,11 +191,11 @@ u32 ANXXDATA pdo_max_tmp;
 void ucsi_ppm_connector_change_detect()
 {
     /* Connector change notification is disabled */
-    if(ne.ConnectChange == 0)
+    if (ne.ConnectChange == 0)
         return;
 
-    for(i = 0; i < PD_MAX_INSTANCE; i++)
-        if((context[i].csc.connector_change_indicator) != 0)
+    for (i = 0; i < PD_MAX_INSTANCE; i++)
+        if ((context[i].csc.connector_change_indicator) != 0)
         {
             cci->ConnectorChangeIndicator = i + 1;
             break;
@@ -215,7 +215,7 @@ static void set_notification_enable_ack()
 
     ucsi_ppm_connector_change_detect();
 
-    if(result == UCSI_COMMAND_SUCC)
+    if (result == UCSI_COMMAND_SUCC)
         cci->ErrorIndicator = 0;
     else
         cci->ErrorIndicator = 1;
@@ -280,7 +280,7 @@ static void connector_reset_ack()
 
     ucsi_ppm_connector_change_detect();
 
-    if(result != UCSI_COMMAND_SUCC)
+    if (result != UCSI_COMMAND_SUCC)
         cci->ErrorIndicator = 1;
 
     cci->CommandCompletedIndicator = 1;
@@ -311,7 +311,7 @@ static void reset_ack()
 {
     S_CLEAR(cci, struct cci_status);
 
-    if(result == UCSI_COMMAND_SUCC)
+    if (result == UCSI_COMMAND_SUCC)
         cci->ResetCompletedIndicator = 1;
 }
 
@@ -328,7 +328,7 @@ static void get_capability_ack()
 
     ucsi_ppm_connector_change_detect();
 
-    if(result == UCSI_COMMAND_SUCC)
+    if (result == UCSI_COMMAND_SUCC)
         cci->DataLength = 0x10;
     else
         cci->ErrorIndicator = 0x1;
@@ -349,7 +349,7 @@ static void get_connector_capability_ack()
 
     ucsi_ppm_connector_change_detect();
 
-    if(result == UCSI_COMMAND_SUCC)
+    if (result == UCSI_COMMAND_SUCC)
         cci->DataLength = 2;
     else
         cci->ErrorIndicator = 1;
@@ -370,7 +370,7 @@ static void set_uor_ack()
 
     //ucsi_ppm_connector_change_detect();
 
-    if(result == UCSI_COMMAND_FAIL)
+    if (result == UCSI_COMMAND_FAIL)
         cci->ErrorIndicator = 1;
 
     cci->CommandCompletedIndicator = 1;
@@ -389,7 +389,7 @@ static void set_pdr_ack()
 
     //ucsi_ppm_connector_change_detect();
 
-    if(result == UCSI_COMMAND_FAIL)
+    if (result == UCSI_COMMAND_FAIL)
         cci->ErrorIndicator = 1;
 
     cci->CommandCompletedIndicator = 1;
@@ -408,7 +408,7 @@ static void get_connector_status_ack()
 
     //ucsi_ppm_connector_change_detect();
 
-    if(result == UCSI_COMMAND_SUCC)
+    if (result == UCSI_COMMAND_SUCC)
         cci->DataLength = 0x09;
     else
         cci->ErrorIndicator = 1;
@@ -429,7 +429,7 @@ static void get_error_status_ack()
 
     //ucsi_ppm_connector_change_detect();
 
-    if(result == UCSI_COMMAND_SUCC)
+    if (result == UCSI_COMMAND_SUCC)
         //Currently, we do not support Vendor Defined Error Code
         cci->DataLength = 0x10;
     else
@@ -452,7 +452,7 @@ static void get_cable_property_ack()
 
     ucsi_ppm_connector_change_detect();
 
-    if(result == UCSI_COMMAND_SUCC)
+    if (result == UCSI_COMMAND_SUCC)
         //Currently, we do not support Vendor Defined Error Code
         cci->DataLength = 0x05;
     else
@@ -477,7 +477,7 @@ static void get_pdos_ack()
 
     //ucsi_ppm_connector_change_detect();
 
-    if(result == UCSI_COMMAND_SUCC)
+    if (result == UCSI_COMMAND_SUCC)
     {
         cci->DataLength = DataLength;
     }
@@ -504,7 +504,7 @@ static void set_new_cam_ack()
 
     ucsi_ppm_connector_change_detect();
 
-    if(result == UCSI_COMMAND_SUCC)
+    if (result == UCSI_COMMAND_SUCC)
     {
         cci->DataLength = 0;
     }
@@ -531,7 +531,7 @@ static void get_current_cam_ack()
 
     ucsi_ppm_connector_change_detect();
 
-    if(result == UCSI_COMMAND_SUCC)
+    if (result == UCSI_COMMAND_SUCC)
     {
         cci->DataLength = 1;
     }
@@ -559,7 +559,7 @@ static void get_cam_supported_ack()
 
     ucsi_ppm_connector_change_detect();
 
-    if(result == UCSI_COMMAND_SUCC)
+    if (result == UCSI_COMMAND_SUCC)
     {
         cci->DataLength = DataLength;
     }
@@ -587,7 +587,7 @@ static void get_alt_modes_ack()
 
     ucsi_ppm_connector_change_detect();
 
-    if(result == UCSI_COMMAND_SUCC)
+    if (result == UCSI_COMMAND_SUCC)
     {
         cci->DataLength = DataLength;
     }
@@ -653,7 +653,7 @@ static u8 check_connector_exist(struct cci_status *cci, u8 connectorId)
     //Add more connector checking code here.
     return ret;
 #else
-    if(connectorId != 1)
+    if (connectorId != 1)
     {
         ucsi_errno = ERR_NON_EXIST;
         //set_error_data(cci, ERR_NON_EXIST);
@@ -680,7 +680,7 @@ static u8 ppm_get_alt_modes()
     //u8 i;
     //u8 Offset, Altnum;
 
-    if(gam->ConnectorNumber > PD_MAX_INSTANCE)
+    if (gam->ConnectorNumber > PD_MAX_INSTANCE)
     {
         ucsi_errno = ERR_NON_EXIST;
         set_error_data();
@@ -694,7 +694,7 @@ static u8 ppm_get_alt_modes()
 
     //if (gam->Recipient != R_CONNECTOR)
     //    DETECT_POWER_ON(port_index);
-    if(gam->AlternateModeOffset > pup.alt_mode_support_num)
+    if (gam->AlternateModeOffset > pup.alt_mode_support_num)
     {
 //ucsi_errno = ERR_INVALID;
 //set_error_data();
@@ -702,16 +702,16 @@ static u8 ppm_get_alt_modes()
         goto out;
     }
 
-    if(gam->NumofAlternateMode >
+    if (gam->NumofAlternateMode >
             (pup.alt_mode_support_num - gam->AlternateModeOffset))
         gam->NumofAlternateMode =
         (pup.alt_mode_support_num - gam->AlternateModeOffset);
 
 /* Currently, we only support connector and SOP as recipient */
-    switch(gam->Recipient)
+    switch (gam->Recipient)
     {
         case R_CONNECTOR:
-            for(i = 0; i < gam->NumofAlternateMode; i++)
+            for (i = 0; i < gam->NumofAlternateMode; i++)
             {
                 amd[i] = pup.alt_mode[gam->AlternateModeOffset + i];
             #ifdef EC_ANX_BIG_ENDIAN
@@ -725,7 +725,7 @@ static u8 ppm_get_alt_modes()
             break;
         case R_SOP1:
             DataLength = 0;
-            switch(context[port_index].peer_svid_length)
+            switch (context[port_index].peer_svid_length)
             {
                 case 4:
                     pup.alt_mode_support_bitmap = 1;
@@ -758,7 +758,7 @@ static u8 ppm_get_alt_modes()
             }
             break;
         default:
-            for(i = 0; i < gam->NumofAlternateMode; i++)
+            for (i = 0; i < gam->NumofAlternateMode; i++)
             {
                 S_CLEAR(&amd[i], struct alt_modes_data);
             }
@@ -787,14 +787,14 @@ static u8 ppm_get_cam_supported()
 {
     //u8 DataLength;
 
-    if(gcs->ConnectorNumber > PD_MAX_INSTANCE)
+    if (gcs->ConnectorNumber > PD_MAX_INSTANCE)
     {
         ucsi_errno = ERR_NON_EXIST;
         set_error_data();
         return UCSI_COMMAND_FAIL;
     }
 
-    if(context[gcs->ConnectorNumber].peer_svid_length == 0)
+    if (context[gcs->ConnectorNumber].peer_svid_length == 0)
     {
         DataLength = 0;
         goto out;
@@ -802,7 +802,7 @@ static u8 ppm_get_cam_supported()
 
     *(char *)&msg->msgi = pup.alt_mode_support_bitmap;
 
-    if(pup.alt_mode_support_bitmap)
+    if (pup.alt_mode_support_bitmap)
         DataLength = (pup.alt_mode_support_num % 8) + 1;
     else
         DataLength = 0;
@@ -826,14 +826,14 @@ out:
 #if UCSI_ALT_SUPPORT
 static u8 ppm_get_current_cam()
 {
-    if(gcc->ConnectorNumber > PD_MAX_INSTANCE)
+    if (gcc->ConnectorNumber > PD_MAX_INSTANCE)
     {
         ucsi_errno = ERR_NON_EXIST;
         set_error_data();
         return UCSI_COMMAND_FAIL;
     }
 
-    if(context[gcc->ConnectorNumber].peer_svid_length == 0)
+    if (context[gcc->ConnectorNumber].peer_svid_length == 0)
     {
         *(char *)&msg->msgi = 0;
         goto out;
@@ -859,20 +859,20 @@ out:
 #if UCSI_ALT_OR_SUPPORT
 static u8 ppm_set_new_cam()
 {
-    if(snc->ConnectorNumber > PD_MAX_INSTANCE)
+    if (snc->ConnectorNumber > PD_MAX_INSTANCE)
     {
         ucsi_errno = ERR_NON_EXIST;
         set_error_data();
         return UCSI_COMMAND_FAIL;
     }
 
-    if(context[gcc->ConnectorNumber].peer_svid_length == 0)
+    if (context[gcc->ConnectorNumber].peer_svid_length == 0)
     {
 //*(char *)&msg->msgi = 0;
         goto out;
     }
 
-    if(snc->EnterOrExit == 1)
+    if (snc->EnterOrExit == 1)
     {
         dp_alt_enter_mode();
     }
@@ -904,7 +904,7 @@ static u8 ppm_get_pdos()
     //u8 DataLength;
     //u8 pdo_index;
 
-    if(gp->ConnectorNumber > PD_MAX_INSTANCE)
+    if (gp->ConnectorNumber > PD_MAX_INSTANCE)
     {
         ucsi_errno = ERR_NON_EXIST;
         set_error_data();
@@ -919,16 +919,16 @@ static u8 ppm_get_pdos()
                (gp->PartnerPDO == 0) ? "connector" : "partner",
                (gp->SourceOrSinkPDOs) ? "source" : "sink", gp->PDOOffset,
                gp->NumberOfPDOs, context[port_index].partner_pdo_length);
-    if(gp->PartnerPDO == 0)
+    if (gp->PartnerPDO == 0)
     {
-        if(gp->SourceOrSinkPDOs == 1)
+        if (gp->SourceOrSinkPDOs == 1)
         {
-            switch(gp->SourceCapabilities)
+            switch (gp->SourceCapabilities)
             {
                 case SCTCURRENT_SUPPORTED_SOURCE_CAPABILITIES:
                 case SCTMAXIMUM_SUPPORTED_SOURCE_CAPABILITIES:
                 case SCTADVERTISED_CAPABILITIES:
-                    if(gp->PDOOffset <= 1)
+                    if (gp->PDOOffset <= 1)
                     {
                         memcpy(&pd->PDO[0], &context[port_index].pd_src_pdo[0],
                                4);
@@ -951,7 +951,7 @@ static u8 ppm_get_pdos()
         }
         else
         {
-            if(gp->PDOOffset <= 1)
+            if (gp->PDOOffset <= 1)
             {
                 memcpy(&pd->PDO[0], &context[port_index].pd_snk_pdo, 4);
                 //#ifdef EC_ANX_BIG_ENDIAN
@@ -971,7 +971,7 @@ static u8 ppm_get_pdos()
     }
     else
     {
-        if(gp->PDOOffset * 4 < context[port_index].partner_pdo_length)
+        if (gp->PDOOffset * 4 < context[port_index].partner_pdo_length)
         {
 
 //memcpy((void *)&pd->PDO, &context[port_index].partner_pdo[4 * gp->PDOOffset],
@@ -1003,7 +1003,7 @@ static u8 ppm_get_pdos()
 
     result = UCSI_COMMAND_SUCC;
     ucsi_debug("***********   get PDO from OS : ");
-    for(i = 0; i < DataLength; i++)
+    for (i = 0; i < DataLength; i++)
     {
         ucsi_debug("%#x ", ((u8 *)&pd->PDO[0])[i]);
     }
@@ -1026,7 +1026,7 @@ static u8 ppm_get_pdos()
 #if UCSI_CABLE_SUPPORT
 static u8 ppm_get_cable_property()
 {
-    if(gcp->ConnectorNumber > PD_MAX_INSTANCE)
+    if (gcp->ConnectorNumber > PD_MAX_INSTANCE)
     {
         ucsi_errno = ERR_NON_EXIST;
         set_error_data();
@@ -1039,11 +1039,11 @@ static u8 ppm_get_cable_property()
 
     DETECT_POWER_ON(port_index);
 
-    if((context[port_index].pd_capability & PD_HAS_CABLE_VDO) &&
+    if ((context[port_index].pd_capability & PD_HAS_CABLE_VDO) &&
             (*(u32 *)&context[port_index].cv != 0))
     {
         cpd->VBUSInCable = context[port_index].cv.vbus_thru_cable;
-        switch(context[port_index].cv.vbus_current)
+        switch (context[port_index].cv.vbus_current)
         {
             case VBUS_3A:
                 cpd->bCurrentCapability = 60;
@@ -1059,7 +1059,7 @@ static u8 ppm_get_cable_property()
         cpd->CableType = 0;     //Passive cable
         cpd->ModeSupport = 0;
         cpd->PlugEndType = context[port_index].cv.cable_type;
-        if(context[port_index].cv.SSTX1_sup
+        if (context[port_index].cv.SSTX1_sup
                 || context[port_index].cv.SSTX2_sup
                 || context[port_index].cv.SSRX1_sup
                 || context[port_index].cv.SSRX2_sup)
@@ -1069,7 +1069,7 @@ static u8 ppm_get_cable_property()
 
         //need more investigation
         cpd->bmSpeedSupported = 0;
-        switch(context[port_index].cv.supper_speed_signal)
+        switch (context[port_index].cv.supper_speed_signal)
         {
             case SUPPER_SPEED_USB_2_0:
                 cpd->bmSpeedSupported = (480 << 2) | 2;     //480Mbps
@@ -1090,7 +1090,7 @@ static u8 ppm_get_cable_property()
         goto out;
     }
     //Need firmware support
-    switch(context[port_index].ct)
+    switch (context[port_index].ct)
     {
         case CABLE_TYPE_A:
             cpd->PlugEndType = PLUG_TYPEA;
@@ -1136,7 +1136,7 @@ out:
  */
 static u8 ppm_get_error_status()
 {
-    if(*(u16 *)&(esd.ErrorInformation) != 0)
+    if (*(u16 *)&(esd.ErrorInformation) != 0)
     {
         result = UCSI_COMMAND_SUCC;
         get_error_status_ack();
@@ -1168,7 +1168,7 @@ static u8 ppm_get_connector_status()
 {
     ucsi_debug("********   connector number is %#x **** \n",
                gcs->ConnectorNumber);
-    if(gcs->ConnectorNumber > PD_MAX_INSTANCE)
+    if (gcs->ConnectorNumber > PD_MAX_INSTANCE)
     {
 //printf("didn't find connector .\n");
     #ifdef HLK_RS2
@@ -1193,7 +1193,7 @@ static u8 ppm_get_connector_status()
     csd->ConnectStatus =
         context[port_index].anx_power_status & context[port_index].
         enable_report_power_on;
-    if(csd->ConnectStatus)
+    if (csd->ConnectStatus)
     {
         csd->RequestDataObject = context[port_index].ucsi_partner_rdo;
     #ifdef EC_ANX_BIG_ENDIAN
@@ -1202,12 +1202,12 @@ static u8 ppm_get_connector_status()
 
             //if (ne.ConnectorPartnerChange)
         {
-            if(context[port_index].ConnectorPartner)
+            if (context[port_index].ConnectorPartner)
                 csd->ConnectorPartner = context[port_index].ConnectorPartner;
             else
                 csd->ConnectorPartner = 1;
 
-            switch(context[port_index].ucsi_connector_partner_type)
+            switch (context[port_index].ucsi_connector_partner_type)
             {
                 case CPT_AUDIO_ACC:
                 case CPT_CAB_DEBUG_ACC:
@@ -1215,14 +1215,14 @@ static u8 ppm_get_connector_status()
                 default:
                     port_id = port_index;
                     role = get_data_role();
-                    if(!role)
+                    if (!role)
                     {        //UFP(DFP Attached)
                         context[port_index].ucsi_connector_partner_type =
                             CPT_DFP_ATTACHED;
                     }
                     else
                     {        //DFP(UFP Attached)
-                        if(context[port_index].ucsi_connector_partner_type ==
+                        if (context[port_index].ucsi_connector_partner_type ==
                                 CPT_DFP_ATTACHED)
                             context[port_index].ucsi_connector_partner_type =
                             CPT_UFP_ATTACHED;
@@ -1238,19 +1238,19 @@ static u8 ppm_get_connector_status()
 
         ucsi_debug("port index(%#x), anx_vbus_status is %#x.\n",
                    port_index, context[port_index].anx_vbus_status);
-        if(context[port_index].power_sink == 0)
+        if (context[port_index].power_sink == 0)
             csd->PowerDirection = PD_PROVIDER;
         else
             csd->PowerDirection = PD_CONSUMER;
         csd->BatteryChargingStatus = context[port_index].BatteryCharging;
 
-        if(context[port_index].ucsi_partner_rdo != 0)
+        if (context[port_index].ucsi_partner_rdo != 0)
             csd->PowerOperationMode = PO_PD;
         else
             csd->PowerOperationMode = context[port_index].power_op_mode;
     }
 
-    if(context[port_index].csc.csc.Connect)
+    if (context[port_index].csc.csc.Connect)
     {
         csd->csc.Connect = 1;
         context[port_index].csc.csc.Connect = 0;
@@ -1258,17 +1258,17 @@ static u8 ppm_get_connector_status()
         goto out;
     }
 
-    if(csd->ConnectStatus == 0)
+    if (csd->ConnectStatus == 0)
         goto out;
 
-    if(context[port_index].csc.csc.ConnectorPartner)
+    if (context[port_index].csc.csc.ConnectorPartner)
     {
         context[port_index].csc.csc.ConnectorPartner = 0;
         csd->csc.ConnectorPartner = 1;
         //goto out;
     }
 
-    if(ne.SupportedProviderCapabilitiesChange
+    if (ne.SupportedProviderCapabilitiesChange
             && context[port_index].csc.csc.SupportedProviderCap)
     {
         context[port_index].csc.csc.SupportedProviderCap = 0;
@@ -1276,7 +1276,7 @@ static u8 ppm_get_connector_status()
         //goto out;
     }
 
-    if(ne.ExternalSupplyChange
+    if (ne.ExternalSupplyChange
             && context[port_index].csc.csc.ExternalSupply)
     {
         context[port_index].csc.csc.ExternalSupply = 0;
@@ -1284,7 +1284,7 @@ static u8 ppm_get_connector_status()
         //goto out;
     }
 
-    if(ne.PowerDirectionChange
+    if (ne.PowerDirectionChange
             && context[port_index].csc.csc.PowerDirection)
     {
         context[port_index].csc.csc.PowerDirection = 0;
@@ -1292,7 +1292,7 @@ static u8 ppm_get_connector_status()
         //goto out;
     }
 
-    if(ne.PowerOperationModeChange
+    if (ne.PowerOperationModeChange
             && context[port_index].csc.csc.PowerOperationMode)
     {
         context[port_index].csc.csc.PowerOperationMode = 0;
@@ -1300,28 +1300,28 @@ static u8 ppm_get_connector_status()
         //goto out;
     }
 
-    if(ne.PDResetComplete && context[port_index].csc.csc.PDResetComplete)
+    if (ne.PDResetComplete && context[port_index].csc.csc.PDResetComplete)
     {
         context[port_index].csc.csc.PDResetComplete = 0;
         csd->csc.PDResetComplete = 1;
         //goto out;
     }
 
-    if(ne.Error && context[port_index].csc.csc.Error)
+    if (ne.Error && context[port_index].csc.csc.Error)
     {
         context[port_index].csc.csc.Error = 0;
         csd->csc.Error = 1;
         //goto out;
     }
     //Fix JIRA LBT-429
-    if(ne.SupportedCAMChange && context[port_index].csc.csc.SupportedCAM)
+    if (ne.SupportedCAMChange && context[port_index].csc.csc.SupportedCAM)
     {
         context[port_index].csc.csc.SupportedCAM = 0;
         csd->csc.SupportedCAM = 1;
         //goto out;
     }
 
-    if(ne.NegotiatedPowerLevelChange
+    if (ne.NegotiatedPowerLevelChange
             && context[port_index].csc.csc.NegotiatedPowerLevel)
     {
         context[port_index].csc.csc.NegotiatedPowerLevel = 0;
@@ -1330,7 +1330,7 @@ static u8 ppm_get_connector_status()
         //goto out;
     }
 
-    if(ne.BatteryChargingStatusChange
+    if (ne.BatteryChargingStatusChange
             && context[port_index].csc.csc.BatteryChargingStatus)
     {
         context[port_index].csc.csc.BatteryChargingStatus = 0;
@@ -1338,7 +1338,7 @@ static u8 ppm_get_connector_status()
         //goto out;
     }
 
-    if(context[port_index].csc.connector_change_indicator)
+    if (context[port_index].csc.connector_change_indicator)
     {
         ucsi_debug("port index(%#x), have event pending %x, just ignore.\n",
                    port_index,
@@ -1355,7 +1355,7 @@ out:
     //ucsi_async_checking_timer = 0;
 
     /* Fix JIRA LBT-429, waiting for system send GET_PDO command */
-    if(csd->csc.Connect == 1)
+    if (csd->csc.Connect == 1)
         ucsi_async_checking_timer = 200;
 
     return result;
@@ -1375,7 +1375,7 @@ static u8 ppm_set_pdm()
 #ifdef EC_ANX_BIG_ENDIAN
     SWAP_WORD((VBYTE *)spdm + 2);
 #endif
-    if(spdm->ConnectorNumber > PD_MAX_INSTANCE)
+    if (spdm->ConnectorNumber > PD_MAX_INSTANCE)
     {
         ucsi_errno = ERR_NON_EXIST;
         set_error_data();
@@ -1383,7 +1383,7 @@ static u8 ppm_set_pdm()
     }
 
     port_index = spdm->ConnectorNumber - 1;
-    if(context[port_index].dfp_only
+    if (context[port_index].dfp_only
             && spdm->PowerDirectionMode != PW_PROVIDER)
     {
         ucsi_errno = ERR_INVALID;
@@ -1395,22 +1395,22 @@ static u8 ppm_set_pdm()
     result = UCSI_COMMAND_SUCC;
     //context[port_index].power_operation_mode_pdm = (((((VBYTE *)spdm)[3])&0x80) >> 6) | (((((VBYTE *)spdm)[2])&0x3) << 1);
 #ifdef EC_ANX_BIG_ENDIAN
-    if((((VBYTE *)spdm)[3]) & 0x80)
+    if ((((VBYTE *)spdm)[3]) & 0x80)
         context[port_index].power_operation_mode_pdm |= PW_PROVIDER;
-    if((((VBYTE *)spdm)[2]) & 0x1)
+    if ((((VBYTE *)spdm)[2]) & 0x1)
         context[port_index].power_operation_mode_pdm |= PW_CONSUMER;
-    if((((VBYTE *)spdm)[2]) & 0x2)
+    if ((((VBYTE *)spdm)[2]) & 0x2)
         context[port_index].power_operation_mode_pdm |= PW_DRP;
 #else
-    if((((VBYTE *)spdm)[2]) & 0x80)
+    if ((((VBYTE *)spdm)[2]) & 0x80)
         context[port_index].power_operation_mode_pdm |= PW_PROVIDER;
-    if((((VBYTE *)spdm)[3]) & 0x1)
+    if ((((VBYTE *)spdm)[3]) & 0x1)
         context[port_index].power_operation_mode_pdm |= PW_CONSUMER;
-    if((((VBYTE *)spdm)[3]) & 0x2)
+    if ((((VBYTE *)spdm)[3]) & 0x2)
         context[port_index].power_operation_mode_pdm |= PW_DRP;
 #endif
 
-    switch(context[port_index].power_operation_mode_pdm)
+    switch (context[port_index].power_operation_mode_pdm)
     {
         case 1:                    //Provider
             context[port_index].trysrc_enable = 1;
@@ -1447,13 +1447,13 @@ static u8 ppm_set_pdr_process()
 
     port_id = set_pdr_port_id;
     ucsi_debug("set pdr process(port %#x)\n", port_id);
-    if(ucsi_command_process_delay == UCSI_PDR_WAITING_TIME)
+    if (ucsi_command_process_delay == UCSI_PDR_WAITING_TIME)
         send_pd_msg(TYPE_PSWAP_REQ, 0, 0, SOP_TYPE);
-    if(ucsi_command_process_delay)
+    if (ucsi_command_process_delay)
     {
-        if(--ucsi_command_process_delay == 0)
+        if (--ucsi_command_process_delay == 0)
         {
-            switch(get_power_role())
+            switch (get_power_role())
             {
                 case 1:            //DFP
                     role = PW_PROVIDER;
@@ -1462,7 +1462,7 @@ static u8 ppm_set_pdr_process()
                     role = PW_CONSUMER;
                     break;
             }
-            if(context[port_id].power_operation_mode_pdr & role)
+            if (context[port_id].power_operation_mode_pdr & role)
             {
                 set_uor_ack();
                 cancel_all_timer();
@@ -1498,7 +1498,7 @@ static u8 ppm_set_pdr()
     SWAP_WORD((VBYTE *)spdr + 2);
 #endif
 
-    if(spdr->ConnectorNumber > PD_MAX_INSTANCE)
+    if (spdr->ConnectorNumber > PD_MAX_INSTANCE)
     {
         ucsi_errno = ERR_NON_EXIST;
         set_error_data();
@@ -1511,22 +1511,22 @@ static u8 ppm_set_pdr()
     context[port_index].power_operation_mode_pdr = 0;
     //context[port_index].power_operation_mode_pdr = (((((VBYTE *)spdr)[3])&0x80) >> 6) | (((((VBYTE *)spdr)[2])&0x3) << 1);
 #ifdef EC_ANX_BIG_ENDIAN
-    if((((VBYTE *)spdr)[3]) & 0x80)
+    if ((((VBYTE *)spdr)[3]) & 0x80)
         context[port_index].power_operation_mode_pdr |= PW_PROVIDER;
-    if((((VBYTE *)spdr)[2]) & 0x1)
+    if ((((VBYTE *)spdr)[2]) & 0x1)
         context[port_index].power_operation_mode_pdr |= PW_CONSUMER;
-    if((((VBYTE *)spdr)[2]) & 0x2)
+    if ((((VBYTE *)spdr)[2]) & 0x2)
         context[port_index].power_operation_mode_pdr |= PW_DRP;
 #else
-    if((((VBYTE *)spdr)[2]) & 0x80)
+    if ((((VBYTE *)spdr)[2]) & 0x80)
         context[port_index].power_operation_mode_pdr |= PW_PROVIDER;
-    if((((VBYTE *)spdr)[3]) & 0x1)
+    if ((((VBYTE *)spdr)[3]) & 0x1)
         context[port_index].power_operation_mode_pdr |= PW_CONSUMER;
-    if((((VBYTE *)spdr)[3]) & 0x2)
+    if ((((VBYTE *)spdr)[3]) & 0x2)
         context[port_index].power_operation_mode_pdr |= PW_DRP;
 #endif
 
-    if(context[port_index].dfp_only
+    if (context[port_index].dfp_only
             && context[port_index].power_operation_mode_pdr != PW_PROVIDER)
     {
         ucsi_errno = ERR_INVALID;
@@ -1539,7 +1539,7 @@ static u8 ppm_set_pdr()
 
     send_source_sink_capability();
 
-    switch(get_power_role())
+    switch (get_power_role())
     {
         case 1:                    //DFP
             role = PW_PROVIDER;
@@ -1555,20 +1555,20 @@ static u8 ppm_set_pdr()
                context[port_index].power_operation_mode_pdr, role);
 
     result = UCSI_COMMAND_SUCC;
-    switch(context[port_index].power_operation_mode_pdr)
+    switch (context[port_index].power_operation_mode_pdr)
     {
         case PW_PROVIDER:
-            if(role == PW_CONSUMER)
+            if (role == PW_CONSUMER)
             {
 //send_pd_msg(TYPE_PSWAP_REQ, 0, 0, SOP_TYPE);
-                if(!
+                if (!
                         (context[port_index].
                             pd_capability & PD_HAS_RETURN_STATUS))
                 {
                     send_pd_msg(TYPE_PSWAP_REQ, 0, 0, SOP_TYPE);
                     DelayXms(POWER_ROLE_SWAP_DELAY_MS);
                     port_id = port_index;
-                    if(get_power_role() != 1)
+                    if (get_power_role() != 1)
                     {
                         ucsi_errno = ERR_NEGOTIATION_FAIL;
                         set_error_data();
@@ -1584,16 +1584,16 @@ static u8 ppm_set_pdr()
             }
             break;
         case PW_CONSUMER:
-            if(role == PW_PROVIDER)
+            if (role == PW_PROVIDER)
             {
 //send_pd_msg(TYPE_PSWAP_REQ, 0, 0, SOP_TYPE);
-                if(!
+                if (!
                         (context[port_index].
                             pd_capability & PD_HAS_RETURN_STATUS))
                 {
                     send_pd_msg(TYPE_PSWAP_REQ, 0, 0, SOP_TYPE);
                     DelayXms(POWER_ROLE_SWAP_DELAY_MS);
-                    if(get_power_role() != 0)
+                    if (get_power_role() != 0)
                     {
                         ucsi_errno = ERR_NEGOTIATION_FAIL;
                         set_error_data();
@@ -1613,16 +1613,16 @@ static u8 ppm_set_pdr()
             result = UCSI_COMMAND_SUCC;
             break;
         case PW_DRP_CONSUMER:
-            if(role == PW_PROVIDER)
+            if (role == PW_PROVIDER)
             {
 //send_pd_msg(TYPE_PSWAP_REQ, 0, 0, SOP_TYPE);
-                if(!
+                if (!
                         (context[port_index].
                             pd_capability & PD_HAS_RETURN_STATUS))
                 {
                     send_pd_msg(TYPE_PSWAP_REQ, 0, 0, SOP_TYPE);
                     DelayXms(POWER_ROLE_SWAP_DELAY_MS);
-                    if(get_power_role() != 0)
+                    if (get_power_role() != 0)
                     {
                         ucsi_errno = ERR_NEGOTIATION_FAIL;
                         set_error_data();
@@ -1638,17 +1638,17 @@ static u8 ppm_set_pdr()
             }
             break;
         case PW_DRP_PROVIDER:
-            if(role == PW_CONSUMER)
+            if (role == PW_CONSUMER)
             {
 //send_pd_msg(TYPE_PSWAP_REQ, 0, 0, SOP_TYPE);
-                if(!
+                if (!
                         (context[port_index].
                             pd_capability & PD_HAS_RETURN_STATUS))
                 {
                     send_pd_msg(TYPE_PSWAP_REQ, 0, 0, SOP_TYPE);
                     DelayXms(POWER_ROLE_SWAP_DELAY_MS);
                     port_id = port_index;
-                    if(get_power_role() != 1)
+                    if (get_power_role() != 1)
                     {
                         ucsi_errno = ERR_NEGOTIATION_FAIL;
                         set_error_data();
@@ -1689,7 +1689,7 @@ static u8 ppm_set_uom()
     SWAP_WORD((VBYTE *)suom + 2);
 #endif
 
-    if(suom->ConnectorNumber > PD_MAX_INSTANCE)
+    if (suom->ConnectorNumber > PD_MAX_INSTANCE)
     {
         ucsi_errno = ERR_NON_EXIST;
         set_error_data();
@@ -1698,7 +1698,7 @@ static u8 ppm_set_uom()
 
     port_index = suom->ConnectorNumber - 1;
 
-    if(context[port_index].dfp_only && suom->USBOperationMode != OP_DFP)
+    if (context[port_index].dfp_only && suom->USBOperationMode != OP_DFP)
     {
         ucsi_errno = ERR_INVALID;
         set_error_data();
@@ -1709,7 +1709,7 @@ static u8 ppm_set_uom()
     context[port_index].data_operation_mode_uom = 0;
 
     result = UCSI_COMMAND_SUCC;
-    switch(suom->USBOperationMode)
+    switch (suom->USBOperationMode)
     {
         case 1:                    //UFP
         case 2:                    //DRP
@@ -1722,18 +1722,18 @@ static u8 ppm_set_uom()
                        suom->USBOperationMode,
                        context[port_index].data_operation_mode_uom);
         #ifdef EC_ANX_BIG_ENDIAN
-            if((((VBYTE *)suom)[3]) & 0x80)
+            if ((((VBYTE *)suom)[3]) & 0x80)
                 context[port_index].data_operation_mode_uom |= OP_DFP;
-            if((((VBYTE *)suom)[2]) & 0x1)
+            if ((((VBYTE *)suom)[2]) & 0x1)
                 context[port_index].data_operation_mode_uom |= OP_UFP;
-            if((((VBYTE *)suom)[2]) & 0x2)
+            if ((((VBYTE *)suom)[2]) & 0x2)
                 context[port_index].data_operation_mode_uom |= OP_DRP;
         #else
-            if((((VBYTE *)suom)[2]) & 0x80)
+            if ((((VBYTE *)suom)[2]) & 0x80)
                 context[port_index].data_operation_mode_uom |= OP_DFP;
-            if((((VBYTE *)suom)[3]) & 0x1)
+            if ((((VBYTE *)suom)[3]) & 0x1)
                 context[port_index].data_operation_mode_uom |= OP_UFP;
-            if((((VBYTE *)suom)[3]) & 0x2)
+            if ((((VBYTE *)suom)[3]) & 0x2)
                 context[port_index].data_operation_mode_uom |= OP_DRP;
         #endif
             ucsi_debug("processed %#x, %#x, %#x.\n",
@@ -1751,9 +1751,9 @@ static u8 ppm_set_uom()
     RamDebug(0x80 | context[port_index].data_operation_mode_uom);
     set_uor_ack();
 #if 0
-    if(result == UCSI_COMMAND_SUCC)
+    if (result == UCSI_COMMAND_SUCC)
     {
-        if((role != context[port_index].data_operation_mode_uom) &&
+        if ((role != context[port_index].data_operation_mode_uom) &&
                 (context[port_index].anx_power_status == 0))
         {
             chip_power_on(port_index);
@@ -1775,13 +1775,13 @@ static u8 ppm_set_uor_process()
     /* LBT-864 */
     port_id = set_uor_port_id;
     ucsi_debug("set uor process(port %#x)\n", port_id);
-    if(ucsi_command_process_delay == UCSI_UOR_WAITING_TIME)
+    if (ucsi_command_process_delay == UCSI_UOR_WAITING_TIME)
         send_pd_msg(TYPE_DSWAP_REQ, 0, 0, SOP_TYPE);
-    if(ucsi_command_process_delay)
+    if (ucsi_command_process_delay)
     {
-        if(--ucsi_command_process_delay == 0)
+        if (--ucsi_command_process_delay == 0)
         {
-            switch(get_data_role())
+            switch (get_data_role())
             {
                 case 1:            //DFP
                     role = OP_DFP;
@@ -1794,9 +1794,9 @@ static u8 ppm_set_uor_process()
                         CPT_DFP_ATTACHED;
                     break;
             }
-            if(context[port_id].data_operation_mode_uor & role)
+            if (context[port_id].data_operation_mode_uor & role)
             {
-                if(context[port_id].csc.csc.PowerDirection == 1)
+                if (context[port_id].csc.csc.PowerDirection == 1)
                 {
                     context[port_id].csc.connector_change_indicator = 0;
                     context[port_id].csc.csc.PowerDirection = 1;
@@ -1838,7 +1838,7 @@ static u8 ppm_set_uor()
     SWAP_WORD((VBYTE *)suor + 2);
 #endif
 
-    if(suor->ConnectorNumber > PD_MAX_INSTANCE)
+    if (suor->ConnectorNumber > PD_MAX_INSTANCE)
     {
         ucsi_errno = ERR_NON_EXIST;
         set_error_data();
@@ -1853,22 +1853,22 @@ static u8 ppm_set_uor()
     context[port_index].data_operation_mode_uor = 0;
 
 #ifdef EC_ANX_BIG_ENDIAN
-    if((((VBYTE *)suor)[3]) & 0x80)
+    if ((((VBYTE *)suor)[3]) & 0x80)
         context[port_index].data_operation_mode_uor |= OP_DFP;
-    if((((VBYTE *)suor)[2]) & 0x1)
+    if ((((VBYTE *)suor)[2]) & 0x1)
         context[port_index].data_operation_mode_uor |= OP_UFP;
-    if((((VBYTE *)suor)[2]) & 0x2)
+    if ((((VBYTE *)suor)[2]) & 0x2)
         context[port_index].data_operation_mode_uor |= OP_DRP;
 #else
-    if((((VBYTE *)suor)[2]) & 0x80)
+    if ((((VBYTE *)suor)[2]) & 0x80)
         context[port_index].data_operation_mode_uor |= OP_DFP;
-    if((((VBYTE *)suor)[3]) & 0x1)
+    if ((((VBYTE *)suor)[3]) & 0x1)
         context[port_index].data_operation_mode_uor |= OP_UFP;
-    if((((VBYTE *)suor)[3]) & 0x2)
+    if ((((VBYTE *)suor)[3]) & 0x2)
         context[port_index].data_operation_mode_uor |= OP_DRP;
 #endif
 
-    if(context[port_index].dfp_only
+    if (context[port_index].dfp_only
             && context[port_index].data_operation_mode_uor != OP_DFP)
     {
         ucsi_errno = ERR_INVALID;
@@ -1876,7 +1876,7 @@ static u8 ppm_set_uor()
         return UCSI_COMMAND_FAIL;
     }
     port_id = port_index;
-    switch(get_data_role())
+    switch (get_data_role())
     {
         case 1:                    //DFP
             role = OP_DFP;
@@ -1895,17 +1895,17 @@ static u8 ppm_set_uor()
 
     send_source_sink_capability();
 
-    switch(context[port_index].data_operation_mode_uor)
+    switch (context[port_index].data_operation_mode_uor)
     {
         case OP_DFP:
-            if(role == OP_UFP)
+            if (role == OP_UFP)
             {
-                if(!(context[port_index].pd_capability & PD_HAS_RETURN_STATUS))
+                if (!(context[port_index].pd_capability & PD_HAS_RETURN_STATUS))
                 {
                     send_pd_msg(TYPE_DSWAP_REQ, 0, 0, SOP_TYPE);
                     DelayXms(DATA_ROLE_SWAP_DELAY_MS);
 
-                    if(get_data_role() != OP_DFP)
+                    if (get_data_role() != OP_DFP)
                     {
                         ucsi_errno = ERR_NEGOTIATION_FAIL;
                         set_error_data();
@@ -1922,14 +1922,14 @@ static u8 ppm_set_uor()
                 result = UCSI_COMMAND_SUCC;
             break;
         case OP_UFP:
-            if(role == OP_DFP)
+            if (role == OP_DFP)
             {
-                if(!(context[port_index].pd_capability & PD_HAS_RETURN_STATUS))
+                if (!(context[port_index].pd_capability & PD_HAS_RETURN_STATUS))
                 {
                     send_pd_msg(TYPE_DSWAP_REQ, 0, 0, SOP_TYPE);
                     DelayXms(DATA_ROLE_SWAP_DELAY_MS);
 
-                    if(get_data_role() != OP_UFP)
+                    if (get_data_role() != OP_UFP)
                     {
                         ucsi_errno = ERR_NEGOTIATION_FAIL;
                         set_error_data();
@@ -1950,16 +1950,16 @@ static u8 ppm_set_uor()
             result = UCSI_COMMAND_SUCC;
             break;
         case OP_DRP_DFP:
-            if(role == OP_UFP)
+            if (role == OP_UFP)
             {
 //send_pd_msg(TYPE_DSWAP_REQ, 0, 0, SOP_TYPE);
-                if(!
+                if (!
                         (context[port_index].
                             pd_capability & PD_HAS_RETURN_STATUS))
                 {
                     send_pd_msg(TYPE_DSWAP_REQ, 0, 0, SOP_TYPE);
                     DelayXms(DATA_ROLE_SWAP_DELAY_MS);
-                    if(get_data_role() != OP_DFP)
+                    if (get_data_role() != OP_DFP)
                     {
                         ucsi_errno = ERR_NEGOTIATION_FAIL;
                         set_error_data();
@@ -1976,14 +1976,14 @@ static u8 ppm_set_uor()
                 result = UCSI_COMMAND_SUCC;
             break;
         case OP_DRP_UFP:
-            if(role == OP_DFP)
+            if (role == OP_DFP)
             {
 //send_pd_msg(TYPE_DSWAP_REQ, 0, 0, SOP_TYPE);
-                if(!(context[port_index].pd_capability & PD_HAS_RETURN_STATUS))
+                if (!(context[port_index].pd_capability & PD_HAS_RETURN_STATUS))
                 {
                     send_pd_msg(TYPE_DSWAP_REQ, 0, 0, SOP_TYPE);
                     DelayXms(DATA_ROLE_SWAP_DELAY_MS);
-                    if(get_data_role() != OP_UFP)
+                    if (get_data_role() != OP_UFP)
                     {
                         ucsi_errno = ERR_NEGOTIATION_FAIL;
                         set_error_data();
@@ -2016,7 +2016,7 @@ static u8 ppm_set_uor()
  */
 static u8 ppm_get_connector_capability()
 {
-    if(gcc->ConnectorNumber > PD_MAX_INSTANCE)
+    if (gcc->ConnectorNumber > PD_MAX_INSTANCE)
     {
         ucsi_errno = ERR_NON_EXIST;
         set_error_data();
@@ -2029,7 +2029,7 @@ static u8 ppm_get_connector_capability()
 
     //DETECT_POWER_ON(port_index);
 
-    if(context[port_index].dfp_only)
+    if (context[port_index].dfp_only)
         ccd->OperationMode = OM_DFP_ONLY | OM_USB2_SUP | OM_USB3_SUP |
         OM_AUDIO_SUP | OM_DEBUG_ACC_SUP;
     else
@@ -2045,7 +2045,7 @@ static u8 ppm_get_connector_capability()
     ccd->OperationMode |= OM_ALT_SUP;
 #endif
     ccd->Provider = 1;
-    if(!context[port_index].dfp_only)
+    if (!context[port_index].dfp_only)
         ccd->Consumer = 1;
 
 
@@ -2096,11 +2096,11 @@ static u8 ppm_get_capability()
 
 static void ppm_init()
 {
-    for(i = 0; i < PD_MAX_INSTANCE; i++)
+    for (i = 0; i < PD_MAX_INSTANCE; i++)
     {
         context[i].power_operation_mode_pdm = PW_DRP;
         context[i].power_operation_mode_pdr = PW_DRP;
-        if(!context[i].anx_power_status)
+        if (!context[i].anx_power_status)
             chip_power_on(i);
         context[i].data_operation_mode_uom = OP_DRP;
         context[i].data_operation_mode_uor = OP_DRP;
@@ -2109,8 +2109,8 @@ static void ppm_init()
 
 static void ppm_init_source_sink_capability()
 {
-    for(port_id = 0; port_id < PD_MAX_INSTANCE; port_id++)
-        if(context[port_id].anx_power_status == 1)
+    for (port_id = 0; port_id < PD_MAX_INSTANCE; port_id++)
+        if (context[port_id].anx_power_status == 1)
             send_source_sink_capability();
 }
 
@@ -2133,7 +2133,7 @@ static u8 ppm_reset()
     reset_ack();
     memcpy((void *)&UCSI_DS_CCI0, (const void *)cci, 4);
 
-    for(i = 0; i < PD_MAX_INSTANCE; i++)
+    for (i = 0; i < PD_MAX_INSTANCE; i++)
         chip_power_on(i);
 
     //PPM_RESET just need to to IDLE status
@@ -2151,7 +2151,7 @@ static u8 ppm_reset()
  */
 static u8 ppm_cancel()
 {
-    if(current_pending_command)
+    if (current_pending_command)
     {
         result = UCSI_COMMAND_SUCC;
         cancel_ack();
@@ -2183,10 +2183,10 @@ static u8 ppm_ack_cc_ci()
     result = UCSI_COMMAND_SUCC;
     ack_cc_ci_ack();
 
-    if(acc->ConnectorChangeAcknowledge)
+    if (acc->ConnectorChangeAcknowledge)
         connector_change_need_ack = 0;
 
-    if(acc->CommandCompletedAcknowledge)
+    if (acc->CommandCompletedAcknowledge)
         command_complete_need_ack = 0;
 
     return UCSI_COMMAND_SUCC;
@@ -2195,11 +2195,11 @@ static u8 ppm_ack_cc_ci()
 static u8 ppm_connector_reset_process()
 {
     u8 ret = UCSI_COMMAND_FAIL;
-    if(ucsi_command_process_delay)
+    if (ucsi_command_process_delay)
     {
-        if(--ucsi_command_process_delay == 0)
+        if (--ucsi_command_process_delay == 0)
         {
-            if(context[port_index].csc.csc.PDResetComplete)
+            if (context[port_index].csc.csc.PDResetComplete)
             {
                 connector_reset_ack();
                 ret = UCSI_COMMAND_SUCC;
@@ -2231,7 +2231,7 @@ static u8 ppm_connector_reset()
 {
     port_index = cr->ConnectorNumber - 1;
 
-    if(cr->ConnectorNumber > PD_MAX_INSTANCE)
+    if (cr->ConnectorNumber > PD_MAX_INSTANCE)
     {
         ucsi_errno = ERR_NON_EXIST;
         set_error_data();
@@ -2239,7 +2239,7 @@ static u8 ppm_connector_reset()
     }
     //DETECT_POWER_ON(port_index);
 
-    if(IS_BATTERY1_OUT() || (IS_BATTERY1_IN() && xEC_Bt1RSOC <= 3))//if(IS_BATTERY1_OUT() || (IS_BATTERY1_IN() && xEC_Bt1RSOC <= 3))
+    if (IS_BATTERY1_OUT() || (IS_BATTERY1_IN() && xEC_Bt1RSOC <= 3))//if(IS_BATTERY1_OUT() || (IS_BATTERY1_IN() && xEC_Bt1RSOC <= 3))
     {
         ucsi_errno = ERR_CMD_UNSUCCESS_DUE_TO_DEAD_BATTERY;
         set_error_data();
@@ -2249,7 +2249,7 @@ static u8 ppm_connector_reset()
     result = UCSI_COMMAND_SUCC;
     port_id = port_index;
 
-    if(cr->HardReset)
+    if (cr->HardReset)
         send_pd_msg(TYPE_HARD_RST, NULL, 0, SOP_TYPE);
     else
         send_pd_msg(TYPE_SOFT_RST, NULL, 0, SOP_TYPE);
@@ -2299,12 +2299,12 @@ static void ppm_alert(void)
 
 static void ucsi_command_complete_notify_opm(void)
 {
-    if(ne.CommandCompleted)
+    if (ne.CommandCompleted)
     {
         memcpy((void *)&UCSI_DS_CCI0, (const void *)cci, 4);
         memcpy((void *)&UCSI_DS_MGI, (const void *)msg->msgi, 16);
         ucsi_debug("++++    CTRL message -> ");
-        for(i = 0; i < 16; i++)
+        for (i = 0; i < 16; i++)
         {
             ucsi_debug("%#x ", (&UCSI_DS_MGI + i));
         }
@@ -2315,9 +2315,9 @@ static void ucsi_command_complete_notify_opm(void)
 
 static u8 ucsi_command_process_timeout_checking(void)
 {
-    if(current_pending_command_timeout)
+    if (current_pending_command_timeout)
     {
-        if(--current_pending_command_timeout == 0)
+        if (--current_pending_command_timeout == 0)
         {
             ucsi_debug
             ("%s:%d command timeout, pending command(%#x), state(%#x).\n",
@@ -2341,22 +2341,22 @@ void cancel_all_timer()
 static void async_notify_opm(void)
 {
     S_CLEAR(cci, struct cci_status);
-    if((ucsi_async_restore >= 5) && (ucsi_async_checking_timer == 0))
+    if ((ucsi_async_restore >= 5) && (ucsi_async_checking_timer == 0))
     {
         ucsi_async_checking_timer = ucsi_async_restore;
         ucsi_async_restore = 0;
         ucsi_debug("%s:%d ucsi reset async timer as %#x.\n",
                    __func__, __LINE__, ucsi_async_checking_timer);
     }
-    if(ucsi_async_checking_timer)
+    if (ucsi_async_checking_timer)
     {
-        if(--ucsi_async_checking_timer == 0)
+        if (--ucsi_async_checking_timer == 0)
         {
             ucsi_ppm_connector_change_detect();
             ucsi_debug
             ("%s:%d ucsi connector change (%#x) async notify opm.\n",
              __func__, __LINE__, cci->ConnectorChangeIndicator);
-            if(cci->ConnectorChangeIndicator)
+            if (cci->ConnectorChangeIndicator)
             {
                 ucsi_connector_change_notify_opm(0,
                                                  cci->
@@ -2378,12 +2378,12 @@ static void async_notify_opm(void)
 static u8 ppm_nd_process(void)
 {
     u8 ret = UCSI_COMMAND_FAIL;
-    switch(current_pending_command)
+    switch (current_pending_command)
     {
         case UCSI_COMMAND_NOTIFICATION_ENABLE:
             ppm_set_notification_enable();
 
-            if(ne.CommandCompleted)
+            if (ne.CommandCompleted)
             {
                 wait_for_ack_back = 250;
                 GOTO_STATE(PPM_WCCA);
@@ -2404,7 +2404,7 @@ static u8 ppm_nd_process(void)
     current_pending_command = 0;
     ucsi_debug("%s:%d UCSI state(ND), Command(%d).\n",
                __func__, __LINE__, sne->header.Command);
-    if(ret == UCSI_COMMAND_SUCC)
+    if (ret == UCSI_COMMAND_SUCC)
         ucsi_command_complete_notify_opm();
     return ret;
 }
@@ -2422,7 +2422,7 @@ static void ppm_pc_process()
     u8 ret = UCSI_COMMAND_FAIL;
 
     ret = ucsi_command_process_timeout_checking();
-    if(ret == UCSI_COMMAND_SUCC)
+    if (ret == UCSI_COMMAND_SUCC)
     {
         current_pending_command = 0;
         wait_for_ack_back = 250;
@@ -2430,7 +2430,7 @@ static void ppm_pc_process()
         return;
     }
     ucsi_debug("%s:%d ucsi pc process.\n", __func__, __LINE__);
-    switch(ch->Command)
+    switch (ch->Command)
     {
         default:
             ucsi_debug("%s:%d Warning: received unsupported command(0x%x)"
@@ -2450,7 +2450,7 @@ static void ppm_pc_process()
             break;
     }
 
-    if(ret == UCSI_COMMAND_CONTINUE)
+    if (ret == UCSI_COMMAND_CONTINUE)
         return;
     current_pending_command = 0;
     ucsi_command_complete_notify_opm();
@@ -2471,7 +2471,7 @@ static u8 ppm_busy_process(u8 Command)
     u8 ret = UCSI_COMMAND_FAIL;
 
     S_CLEAR(cci, sizeof(struct cci_status));
-    switch(Command)
+    switch (Command)
     {
         default:
             ucsi_debug("%s:%d Warning: received unsupported command(0x%x)"
@@ -2495,7 +2495,7 @@ static u8 ppm_busy_process(u8 Command)
             current_pending_command = 0;
             break;
     }
-    if(ret != UCSI_COMMAND_NOT_NOTIFY)
+    if (ret != UCSI_COMMAND_NOT_NOTIFY)
         ucsi_command_complete_notify_opm();
 
     return ret;
@@ -2513,7 +2513,7 @@ static u8 ppm_waea_process()
 {
     u8 ret = UCSI_COMMAND_FAIL;
 
-    switch(ch->Command)
+    switch (ch->Command)
     {
         case UCSI_COMMAND_ACK_CC_CI:
             ret = ppm_ack_cc_ci();
@@ -2536,7 +2536,7 @@ static u8 ppm_waea_process()
     }
 
     current_pending_command = 0;
-    if(UCSI_COMMAND_SUCC)
+    if (UCSI_COMMAND_SUCC)
         ucsi_command_complete_notify_opm();
     return ret;
 }
@@ -2555,7 +2555,7 @@ static u8 ppm_wcca_process()
     u8 ret = UCSI_COMMAND_FAIL;
 
     current_pending_command_timeout = 0;
-    switch(ch->Command)
+    switch (ch->Command)
     {
         case UCSI_COMMAND_ACK_CC_CI:
             ret = ppm_ack_cc_ci();
@@ -2568,13 +2568,13 @@ static u8 ppm_wcca_process()
         default:
             wait_for_ack_back--;
         #ifdef UCSI_TIMEOUT_NOTIFY
-            if((wait_for_ack_back == 120) || (wait_for_ack_back == 1))
+            if ((wait_for_ack_back == 120) || (wait_for_ack_back == 1))
             {
                 ucsi_debug(" ack timeout, re-notify OPM.\n");
                 ucsi_command_complete_notify_opm();
             }
         #endif
-            if(wait_for_ack_back == 0)
+            if (wait_for_ack_back == 0)
             {
                 ucsi_debug
                 (" ack timeout, goto idle notification enable status.\n");
@@ -2585,7 +2585,7 @@ static u8 ppm_wcca_process()
     }
 
     current_pending_command = 0;
-    if(UCSI_COMMAND_SUCC)
+    if (UCSI_COMMAND_SUCC)
         ucsi_command_complete_notify_opm();
     return ret;
 }
@@ -2605,7 +2605,7 @@ static u8 ppm_ne_process()
 
 
 
-    switch(ch->Command)
+    switch (ch->Command)
     {
         case UCSI_COMMAND_PPM_RESET:
             ppm_reset();
@@ -2696,7 +2696,7 @@ static u8 ppm_ne_process()
             break;
     }
 
-    switch(ret)
+    switch (ret)
     {
         case UCSI_COMMAND_NOT_NOTIFY:
             current_pending_command = 0;
@@ -2742,33 +2742,33 @@ u8 ucsi_connector_change_notify_opm(u8 ack, u8 connector_index,
     u8 invalid = 1;
 
     //Ignore notify OPM under NOTIFICATION DISABLE STAE
-    if(ucsi_ppm_state == PPM_IDLE_ND)
+    if (ucsi_ppm_state == PPM_IDLE_ND)
         return UCSI_COMMAND_FAIL;
 
     //If current PPM is not under PPM_IDLE_NE, no need notify OPM.
-    if((ack == 0) && (wait_for_ack == 0) &&
+    if ((ack == 0) && (wait_for_ack == 0) &&
             (ucsi_ppm_state != PPM_IDLE_NE))
         return UCSI_COMMAND_SUCC;
 
     S_CLEAR(cci, struct cci_status);
     S_CLEAR_L((void *)&msg->msgi, 16);
 
-    if((connector_index) && (ne.ConnectChange == 1))
+    if ((connector_index) && (ne.ConnectChange == 1))
     {
         cci->ConnectorChangeIndicator = connector_index;
         invalid = 0;
     }
 
-    if(ack && ne.CommandCompleted)
+    if (ack && ne.CommandCompleted)
     {
         invalid = 0;
         cci->CommandCompletedIndicator = 1;
     }
 
-    if(invalid)
+    if (invalid)
         return UCSI_COMMAND_FAIL;
 
-    if(ne.CommandCompleted)
+    if (ne.CommandCompleted)
     {
 
         memcpy((void *)&UCSI_DS_CCI0, (const void *)cci, 4);
@@ -2789,11 +2789,11 @@ u8 ucsi_connector_change_notify_opm(u8 ack, u8 connector_index,
  */
 void checking_opm_command(void)
 {
-    if(ucsi_received_command == 1)
+    if (ucsi_received_command == 1)
     {
         ucsi_received_command = 0;
 
-        if(current_pending_command == 0)
+        if (current_pending_command == 0)
         {
             memcpy((void *)&msg->CONTROL, (const void *)&UCSI_COMMAND, 8);
             ucsi_debug("%s:%d received command %#x.\n", __func__,
@@ -2956,7 +2956,7 @@ void anx_initial_context(u8 port_index)
     context[port_index].hpd_status = 0;
     S_CLEAR(&context[port_index].csc.csc, struct connector_status_change);
     context[port_index].mux_mode = NO_CONNECT;
-    if(port_index == supply_1500ma_port && supply_1500ma_flag == 1)
+    if (port_index == supply_1500ma_port && supply_1500ma_flag == 1)
     {
         supply_1500ma_port = 0;
         supply_1500ma_flag = 0;
@@ -2966,9 +2966,9 @@ void anx_initial_context(u8 port_index)
 
 static void pd_initialization(void)
 {
-    for(i = 0; i < PD_MAX_INSTANCE; i++)
+    for (i = 0; i < PD_MAX_INSTANCE; i++)
     {
-        if(context[i].anx_power_status == 1
+        if (context[i].anx_power_status == 1
                 && context[i].anx_initial_status)
         {
             port_id = i;
@@ -2979,15 +2979,15 @@ static void pd_initialization(void)
 
 void ucsi_async_notify_raise_up(u8 ms)
 {
-    switch(ucsi_ppm_state)
+    switch (ucsi_ppm_state)
     {
         case PPM_IDLE_ND:
             break;
         case PPM_IDLE_NE:
             ucsi_async_checking_timer = ms;
-            if(ucsi_async_checking_timer < ms)
+            if (ucsi_async_checking_timer < ms)
                 ucsi_async_checking_timer = ms;
-            if(ms == 2)
+            if (ms == 2)
                 ucsi_async_checking_timer = 2;
             break;
         default:
@@ -3006,7 +3006,7 @@ void ucsi_async_notify_raise_up(u8 ms)
  */
 void ucsi_opm_handler(void)
 {
-    switch(ucsi_ppm_state)
+    switch (ucsi_ppm_state)
     {
         case PPM_IDLE_ND:
             ppm_nd_process();
@@ -3031,14 +3031,14 @@ void ucsi_opm_handler(void)
 /* LBT-866 */
 void pd_fw_update_checking()
 {
-    if(pd_fw_updated)
+    if (pd_fw_updated)
     {
-        for(i = 0; i < PD_MAX_INSTANCE; i++)
+        for (i = 0; i < PD_MAX_INSTANCE; i++)
             chip_power_down(i);
 
         mdelay(2);
 
-        for(i = 0; i < PD_MAX_INSTANCE; i++)
+        for (i = 0; i < PD_MAX_INSTANCE; i++)
             chip_power_on(i);
         pd_fw_updated = 0;
     }
@@ -3059,16 +3059,16 @@ void ANX_HOOK_1ms(void)
 
 #ifdef HAS_PORT0
     port_id = 0;
-    if(PORT0_DETECT_INTERRUPT)
+    if (PORT0_DETECT_INTERRUPT)
     {
-        if(context[port_id].error_count < 100)
+        if (context[port_id].error_count < 100)
         {
             anx_alert_message_isr();
             ++context[port_id].error_count;
         }
         else
         {
-            if(timer1msCount == 200)
+            if (timer1msCount == 200)
             {
                 RamDebug(0xA0);
                 anx_alert_message_isr();
@@ -3084,16 +3084,16 @@ void ANX_HOOK_1ms(void)
 
 #ifdef HAS_PORT1
     port_id = 1;
-    if(PORT1_DETECT_INTERRUPT)
+    if (PORT1_DETECT_INTERRUPT)
     {
-        if(context[port_id].error_count < 100)
+        if (context[port_id].error_count < 100)
         {
             anx_alert_message_isr();
             ++context[port_id].error_count;
         }
         else
         {
-            if(timer1msCount == 200)
+            if (timer1msCount == 200)
             {
                 RamDebug(0xA1);
                 anx_alert_message_isr();

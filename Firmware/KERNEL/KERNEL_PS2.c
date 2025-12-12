@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2025-10-18 20:35:46
  * @Description: This file is used to handling PS2 interface
  *
@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 #include "KERNEL_PS2.H"
 #include "KERNEL_SOC_FUNC.H"
@@ -156,7 +156,8 @@ static int PS2_PortN_Wait(BYTE channel)
 			return 0; /* OK */
 		udelay(1000);
 		timeout--;
-	} while (timeout);
+	}
+	while (timeout);
 	return 1;
 }
 //----------------------------------------------------------------------------
@@ -228,7 +229,8 @@ static int Send_Mouse_Data(BYTE data, BYTE channel)
 				return 0;
 			}
 		}
-	} while (retries-- > 0);
+	}
+	while (retries-- > 0);
 	return -1;
 }
 //-----------------------------------------------------------------
@@ -310,7 +312,8 @@ BYTE Wait_PS2_Device_Ack_Timeout(BYTE channel)
 			ms_cnt++;
 			Timer_Int_Clear(TIMER1); // clear timer interrupt flag
 		}
-	} while (ms_cnt <= 10); // 10ms timeout
+	}
+	while (ms_cnt <= 10); // 10ms timeout
 	TIMER_Disable(TIMER1);
 	if (ms_cnt >= 10)
 	{
@@ -354,48 +357,48 @@ void PS2_Main_Device_Confirm(void)
 	dprint("PS2_PORT_FLAG:%#x\n", PS2_PORT0_FLAG | PS2_PORT1_FLAG);
 	switch (PS2_PORT0_FLAG | PS2_PORT1_FLAG)
 	{
-	case 0x00:
-		MS_Main_CHN = 0;
-		KB_Main_CHN = 0;
-		break;
-	case 0x01:
-		if (PS2_PORT0_FLAG & PORT0_DEVICE_IS_MOUSE)
-		{
-			MS_Main_CHN = 0x1;
-		}
-		else
-		{
-			MS_Main_CHN = 0x2;
-		}
-		KB_Main_CHN = 0;
-		break;
-	case 0x02:
-		if (PS2_PORT0_FLAG & PORT0_DEVICE_IS_KEYBOARD)
-		{
-			KB_Main_CHN = 0x1;
-		}
-		else
-		{
-			KB_Main_CHN = 0x2;
-		}
-		MS_Main_CHN = 0;
-		break;
-	case 0x03:
-		if (PS2_PORT0_FLAG & PORT0_DEVICE_IS_MOUSE)
-		{
-			MS_Main_CHN = 0x1;
-			KB_Main_CHN = 0x2;
-		}
-		else
-		{
-			MS_Main_CHN = 0x2;
-			KB_Main_CHN = 0x1;
-		}
-		break;
-	default:
-		MS_Main_CHN = 0;
-		KB_Main_CHN = 0;
-		break;
+		case 0x00:
+			MS_Main_CHN = 0;
+			KB_Main_CHN = 0;
+			break;
+		case 0x01:
+			if (PS2_PORT0_FLAG & PORT0_DEVICE_IS_MOUSE)
+			{
+				MS_Main_CHN = 0x1;
+			}
+			else
+			{
+				MS_Main_CHN = 0x2;
+			}
+			KB_Main_CHN = 0;
+			break;
+		case 0x02:
+			if (PS2_PORT0_FLAG & PORT0_DEVICE_IS_KEYBOARD)
+			{
+				KB_Main_CHN = 0x1;
+			}
+			else
+			{
+				KB_Main_CHN = 0x2;
+			}
+			MS_Main_CHN = 0;
+			break;
+		case 0x03:
+			if (PS2_PORT0_FLAG & PORT0_DEVICE_IS_MOUSE)
+			{
+				MS_Main_CHN = 0x1;
+				KB_Main_CHN = 0x2;
+			}
+			else
+			{
+				MS_Main_CHN = 0x2;
+				KB_Main_CHN = 0x1;
+			}
+			break;
+		default:
+			MS_Main_CHN = 0;
+			KB_Main_CHN = 0;
+			break;
 	}
 	dprint("MS_Main_CHN:%#x,KB_Main_CHN:%#x\n", MS_Main_CHN, KB_Main_CHN);
 }
@@ -449,7 +452,8 @@ void Send_ResetCmd_To_MS_WaitACK(BYTE PortNum)
 		{
 			ack = PS2_PortN_Read_Input(PortNum);
 		}
-	} while (((TIMER_TRIS & 0x1) != 0x1) && (ack != 0x0)); // waitting for overflow flag
+	}
+	while (((TIMER_TRIS & 0x1) != 0x1) && (ack != 0x0)); // waitting for overflow flag
 	TIMER_Disable(0x0);
 	if (PortNum == 0) // 等到取出ACK后再重新使能中断
 	{
@@ -563,7 +567,8 @@ void Stop_MS_Reporting(VBYTE port)
 			dprint("0xF5 ack 0x%x,\n", ack);
 			break;
 		}
-	} while ((TIMER_TRIS & 0x2) != 0x2); // waitting for overflow flag
+	}
+	while ((TIMER_TRIS & 0x2) != 0x2); // waitting for overflow flag
 	TIMER_Disable(TIMER1);
 }
 //-----------------------------------------------------------------
@@ -597,7 +602,8 @@ char Disable_Aux_Data_Reporting(BYTE channel)
 			TIMER_Disable(TIMER1);
 			return 1;
 		}
-	} while ((TIMER_TRIS & 0x2) != 0x2); // waitting for overflow flag
+	}
+	while ((TIMER_TRIS & 0x2) != 0x2); // waitting for overflow flag
 	TIMER_Disable(TIMER1);
 	return 0;
 }
@@ -608,9 +614,9 @@ int AE10x_PS2_Init(void)
 {
 	/*enable ps2 channel 0/1 device for scan ps2 channel*/
 	PS2_PortN_Write_Command_W(CCMD_WRITE, 0);
-	PS2_PortN_Write_Output_W((PS2_CR_MS_EN|PS2_CR_KB_EN), 0);
+	PS2_PortN_Write_Output_W((PS2_CR_MS_EN | PS2_CR_KB_EN), 0);
 	PS2_PortN_Write_Command_W(CCMD_WRITE, 1);
-	PS2_PortN_Write_Output_W((PS2_CR_MS_EN|PS2_CR_KB_EN), 1);
+	PS2_PortN_Write_Output_W((PS2_CR_MS_EN | PS2_CR_KB_EN), 1);
 	// KBD_SCAN ps2 device
 	PS2_Channel_Device_Scan();
 	// confirm ps2 main devices
@@ -660,13 +666,13 @@ void Handle_Mouse(BYTE channel)
 		if (!(status & (KBD_STAT_PERR)))
 		{
 			mouse_val = scancode;
-#if 0
+		#if 0
 			if ((TP_ACK_CUNT == 0) && (IS_MASK_CLEAR(KBC_STA, BIT(1)))) // 避开初始化命令流，只在TP正常工作时检查
 			{
 				MS_DriverType_Check(mouse_val);			// 检查MS的驱动类型
 				MS_DataValid_Check(mouse_val, channel); // MS数据有效性检查
 			}
-#endif
+		#endif
 			if (IS_SET(KBC_STA, 0) || (Host_Flag & 0x20) || MSPendingRXCount > 0)
 			{
 				MS_Data_Suspend(mouse_val);
@@ -902,50 +908,50 @@ void Send_Cmd_To_PS2_Mouse(BYTE PortNum)
 	}
 	switch (KBHIData)
 	{
-	case 0xE8: // Set Resolution (2 byte)
-		MS_Resolution = 0xFF;
-		AUX2ByteCommand = 1;
-		break;
-	case 0xF3: // Set Sampling Rate (2 byte)
-		MS_Sampling_Rate = 0xFF;
-		AUX2ByteCommand = 1;
-		break;
-	case 0xF4:
-		EnableTP = 1;
-		MS_Report_Flag = 1;
-		break;
-	case 0xF5:
-		MS_Report_Flag = 0;
-		break;
-	case 0xE6:
-		break;
-	case 0xE7:
-		break;
-	case 0xEA:
-		break;
-	case 0xEC:
-		break;
-	case 0xEE:
-		break;
-	case 0xF0:
-		break;
-	case 0xF6:
-		break;
-	case 0xE9:
-		break;
-	case 0xF2:
-		MS_ID_Count = 2;
-		break;
-	case 0xEB:
-	case 0xFE:
-		break;
-	case 0xFF:
-		MS_Report_Flag = 0;
-		EnableTP = 0;
-		// TP_ACK_CUNT = 0x03;		// ACK 3 bytes
-		break;
-	default: // Invalid command
-		break;
+		case 0xE8: // Set Resolution (2 byte)
+			MS_Resolution = 0xFF;
+			AUX2ByteCommand = 1;
+			break;
+		case 0xF3: // Set Sampling Rate (2 byte)
+			MS_Sampling_Rate = 0xFF;
+			AUX2ByteCommand = 1;
+			break;
+		case 0xF4:
+			EnableTP = 1;
+			MS_Report_Flag = 1;
+			break;
+		case 0xF5:
+			MS_Report_Flag = 0;
+			break;
+		case 0xE6:
+			break;
+		case 0xE7:
+			break;
+		case 0xEA:
+			break;
+		case 0xEC:
+			break;
+		case 0xEE:
+			break;
+		case 0xF0:
+			break;
+		case 0xF6:
+			break;
+		case 0xE9:
+			break;
+		case 0xF2:
+			MS_ID_Count = 2;
+			break;
+		case 0xEB:
+		case 0xFE:
+			break;
+		case 0xFF:
+			MS_Report_Flag = 0;
+			EnableTP = 0;
+			// TP_ACK_CUNT = 0x03;		// ACK 3 bytes
+			break;
+		default: // Invalid command
+			break;
 	}
 	if (KBHIData == 0xFF) // Reset command
 	{
@@ -1062,53 +1068,53 @@ BYTE PS2_PinSelect(void)
 	BYTE ret0 = 0, ret1 = 0;
 	switch (PS2_0_CLK_SEL)
 	{
-	case 0:
-		ret0 = IS_GPIOB8(HIGH);
-		break;
-	case 1:
-		ret0 = IS_GPIOB10(HIGH);
-		break;
-	case 2:
-		ret0 = IS_GPIOB27(HIGH);
-		break;
-	default:
-		break;
+		case 0:
+			ret0 = IS_GPIOB8(HIGH);
+			break;
+		case 1:
+			ret0 = IS_GPIOB10(HIGH);
+			break;
+		case 2:
+			ret0 = IS_GPIOB27(HIGH);
+			break;
+		default:
+			break;
 	}
 	switch (PS2_0_DAT_SEL)
 	{
-	case 0:
-		ret0 = ret0 && IS_GPIOB9(HIGH);
-		break;
-	case 1:
-		ret0 = ret0 && IS_GPIOB11(HIGH);
-		break;
-	case 2:
-		ret0 = ret0 && IS_GPIOB28(HIGH);
-		break;
-	default:
-		break;
+		case 0:
+			ret0 = ret0 && IS_GPIOB9(HIGH);
+			break;
+		case 1:
+			ret0 = ret0 && IS_GPIOB11(HIGH);
+			break;
+		case 2:
+			ret0 = ret0 && IS_GPIOB28(HIGH);
+			break;
+		default:
+			break;
 	}
 	switch (PS2_1_CLK_SEL)
 	{
-	case 0:
-		ret1 = IS_GPIOB12(HIGH);
-		break;
-	case 1:
-		ret1 = IS_GPIOB10(HIGH);
-		break;
-	default:
-		break;
+		case 0:
+			ret1 = IS_GPIOB12(HIGH);
+			break;
+		case 1:
+			ret1 = IS_GPIOB10(HIGH);
+			break;
+		default:
+			break;
 	}
 	switch (PS2_1_DAT_SEL)
 	{
-	case 0:
-		ret1 = ret1 && IS_GPIOB13(HIGH);
-		break;
-	case 1:
-		ret1 = ret1 && IS_GPIOB11(HIGH);
-		break;
-	default:
-		break;
+		case 0:
+			ret1 = ret1 && IS_GPIOB13(HIGH);
+			break;
+		case 1:
+			ret1 = ret1 && IS_GPIOB11(HIGH);
+			break;
+		default:
+			break;
 	}
 	return (ret0 || ret1);
 }
@@ -1123,7 +1129,7 @@ void InitAndIdentifyPS2(void)
 	static BYTE s0_attempts = 0;             // S0状态下的尝试次数
 	bool should_attempt = FALSE;
 	// 检查电源状态变化
-	if(prev_power_state == SYSTEM_S5 && System_PowerState == SYSTEM_S5_S0)
+	if (prev_power_state == SYSTEM_S5 && System_PowerState == SYSTEM_S5_S0)
 	{
 		// 从S5切换到S0，重置S0状态下的尝试次数
 		s0_attempts = 0;
@@ -1143,13 +1149,13 @@ void InitAndIdentifyPS2(void)
 			if (_10MS_Cunt >= IdentifyTimeOut)//100ms
 			{
 				// 上电初期（默认初始状态为S5）且尝试次数未满3次
-				if(power_on_attempts < 3 && prev_power_state == SYSTEM_S5)
+				if (power_on_attempts < 3 && prev_power_state == SYSTEM_S5)
 				{
 					should_attempt = TRUE;
 					power_on_attempts++;
 				}
 				// 处于S0状态且尝试次数未满3次
-				else if(s0_attempts < 3 && prev_power_state == SYSTEM_S0)
+				else if (s0_attempts < 3 && prev_power_state == SYSTEM_S0)
 				{
 					should_attempt = TRUE;
 					s0_attempts++;
@@ -1158,7 +1164,7 @@ void InitAndIdentifyPS2(void)
 				{
 					should_attempt = FALSE;
 				}
-				if(should_attempt == FALSE)
+				if (should_attempt == FALSE)
 					return;
 				//PS2 RESET
 				SYSCTL_RST0 |= (PS2M_RST);
@@ -1174,14 +1180,14 @@ void InitAndIdentifyPS2(void)
 					SYSCTL_PIO2_CFG = Temp_SYSCTLPIO2;
 					switch (KB_Main_CHN)
 					{
-					case 1:
-						sysctl_iomux_ps2_0(PS2_0_CLK_SEL, PS2_0_DAT_SEL);
-						break;
-					case 2:
-						sysctl_iomux_ps2_1(PS2_1_CLK_SEL, PS2_1_DAT_SEL);
-						break;
-					default:
-						break;
+						case 1:
+							sysctl_iomux_ps2_0(PS2_0_CLK_SEL, PS2_0_DAT_SEL);
+							break;
+						case 2:
+							sysctl_iomux_ps2_1(PS2_1_CLK_SEL, PS2_1_DAT_SEL);
+							break;
+						default:
+							break;
 					}
 				}
 				else if (KB_Main_CHN == 0)
@@ -1189,14 +1195,14 @@ void InitAndIdentifyPS2(void)
 					SYSCTL_PIO2_CFG = Temp_SYSCTLPIO2;
 					switch (MS_Main_CHN)
 					{
-					case 1:
-						sysctl_iomux_ps2_0(PS2_0_CLK_SEL, PS2_0_DAT_SEL);
-						break;
-					case 2:
-						sysctl_iomux_ps2_1(PS2_1_CLK_SEL, PS2_1_DAT_SEL);
-						break;
-					default:
-						break;
+						case 1:
+							sysctl_iomux_ps2_0(PS2_0_CLK_SEL, PS2_0_DAT_SEL);
+							break;
+						case 2:
+							sysctl_iomux_ps2_1(PS2_1_CLK_SEL, PS2_1_DAT_SEL);
+							break;
+						default:
+							break;
 					}
 				}
 				_10MS_Cunt = 0;

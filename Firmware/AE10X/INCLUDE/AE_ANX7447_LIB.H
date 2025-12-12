@@ -1,6 +1,6 @@
 /*
  * @Author: Linyu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2024-03-06 19:18:39
  * @Description:
  *
@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  *
  * Portions of this firmware library utilize the ANX7447 driver, which is copyrighted by Analogix Semiconductor, Inc.
  * 本固件库的部分代码使用了 ANX7447 驱动程序，其版权归 Analogix Semiconductor, Inc. 所有。
@@ -145,8 +145,7 @@
 #define MA 1
 #define MW 1
 
-typedef enum
-{
+typedef enum{
     TYPE_PWR_SRC_CAP = 0x00,
     TYPE_PWR_SNK_CAP = 0x01,
     TYPE_DP_SNK_IDENTITY = 0x02,
@@ -210,15 +209,13 @@ typedef enum
     TYPE_SET_VAR = 0xFD         // set variable value
 } PD_MSG_TYPE;
 
-typedef enum
-{                  // TRANSMIT_SOP_TYPE
+typedef enum{                  // TRANSMIT_SOP_TYPE
     SOP_TYPE = 0x00,
     SOP1_TYPE = 0x01,
     SOP2_TYPE = 0x02,
 } PD_SOP_TYPE;
 
-struct cable_vdo
-{
+struct cable_vdo{
     u8 hardware_version : 4;
     u8 firmware_version : 4;
     u16 reserved : 4;
@@ -242,8 +239,7 @@ struct cable_vdo
 #define SUPPER_SPEED_USB_3_1_2  2
 } ANXPACK;
 
-typedef enum
-{
+typedef enum{
 // for TYPE_GET_VAR and TYPE_SET_VAR
 // use correct offset and length for each variable type
 // do not use no define variable type
@@ -259,8 +255,7 @@ typedef enum
     IF_VAR_sink_identity = 0x19,        // offset:0, length:16
 } PD_MSG_VAR_TYPE;
 
-typedef enum
-{
+typedef enum{
     AttachWait_SNK = 0x00,
     AttachWait_SRC = 0x01,
     TRY_SNK = 0x02,
@@ -275,16 +270,14 @@ typedef enum
     Error_SNK = 0x0B
 } TYPEC_STATE;
 
-typedef enum
-{
+typedef enum{
     CABLE_TYPE_A = 1,
     CABLE_TYPE_B,
     CABLE_TYPE_C,
 } cable_type;
 
 /*Comands status*/
-enum interface_status
-{
+enum interface_status{
     CMD_SUCCESS,
     CMD_REJECT,
     CMD_FAIL,
@@ -292,14 +285,12 @@ enum interface_status
     CMD_STATUS
 };
 
-struct anx_cam
-{
+struct anx_cam{
     u16 svid;
     u32 mid;
 } ANXPACK;
 
-struct anx_context
-{
+struct anx_context{
 /* initial data */
     u8 anx_power_status;
     u8 anx_power_role;
@@ -351,8 +342,7 @@ struct anx_context
 #define USB_INVALID            4
 
     //struct connector_status_change anx_csc;
-    union
-    {
+    union{
         u16 connector_change_indicator;
         struct connector_status_change csc;
     } csc;

@@ -1,6 +1,6 @@
 /*
  * @Author: Maple
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2025-10-18 20:51:25
  * @Description: This file is used for soc module initiliazation and configuration
  *
@@ -10,12 +10,12 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 #include "TEST_SOC_FUNC.H"
 #if TEST
-char* err = "PS2 %d self check error\n";
+char *err = "PS2 %d self check error\n";
 void ps2_0_init_test(void)
 {
 	register u8 timeout;
@@ -24,7 +24,8 @@ void ps2_0_init_test(void)
 	do
 	{
 		if (PS2_PORT0_IBUF == 0x55)break;
-	} while (--timeout);
+	}
+	while (--timeout);
 	if (!timeout)
 		dprint(err, 0);
 }
@@ -37,7 +38,8 @@ void ps2_1_init_test(void)
 	do
 	{
 		if (PS2_PORT1_IBUF == 0x55)break;
-	} while (--timeout);
+	}
+	while (--timeout);
 	if (!timeout)
 		dprint(err, 1);
 }

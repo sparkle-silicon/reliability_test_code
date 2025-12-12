@@ -15,8 +15,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 #include "AE_DEBUGGER.H"
 #include "KERNEL_I2C.H"
@@ -93,18 +93,18 @@ void Service_Debugger(void)
 		F_Service_Debugger_Rrq = 0;
 		switch (DEBUGGER_I2C_CHANNEL) // 打开RD_REQ中断
 		{
-		case I2C_CHANNEL_0:
-			I2C0_INTR_MASK |= 0x20;
-		case I2C_CHANNEL_1:
-			I2C1_INTR_MASK |= 0x20;
-		case I2C_CHANNEL_2:
-			I2C2_INTR_MASK |= 0x20;
-		case I2C_CHANNEL_3:
-			I2C3_INTR_MASK |= 0x20;
-		case I2C_CHANNEL_4:
-			I2C4_INTR_MASK |= 0x20;
-		case I2C_CHANNEL_5:
-			I2C5_INTR_MASK |= 0x20;
+			case I2C_CHANNEL_0:
+				I2C0_INTR_MASK |= 0x20;
+			case I2C_CHANNEL_1:
+				I2C1_INTR_MASK |= 0x20;
+			case I2C_CHANNEL_2:
+				I2C2_INTR_MASK |= 0x20;
+			case I2C_CHANNEL_3:
+				I2C3_INTR_MASK |= 0x20;
+			case I2C_CHANNEL_4:
+				I2C4_INTR_MASK |= 0x20;
+			case I2C_CHANNEL_5:
+				I2C5_INTR_MASK |= 0x20;
 		}
 	}
 }
@@ -123,7 +123,7 @@ void Service_Debugger(void)
 //		and then empty the array for further data storage.
 //		Therefore, the data in the pending array should be printed first in order
 //*****************************************************************************
-void KBC_PMC_DataPending(char* KBC_PMC_PendingData)
+void KBC_PMC_DataPending(char *KBC_PMC_PendingData)
 {
 	if (KBC_PMC_PendingRXCount >= KBC_PMC_PendingTXCount)
 	{
@@ -312,168 +312,168 @@ void Deubgger_Cmd_Parsing(BYTE data)
 		data == STOP_RECOARD_KBC_PMC_DATA || data == RESET_CHIP_USE_WATCHDOG || data == SLAVE_READ_DATA ||
 		data == SWITCH_KEYBOARD_CODE || data == FIRMWARE_UPDATE || data == INTERRUPT_FUNCTION || data == HANDSHAKE_REQUEST))
 	{
-#if DEBUGGER_DEBUG
+	#if DEBUGGER_DEBUG
 		assert_print("cmd:%#x", data);
-#endif
+	#endif
 		switch (data)
 		{
-		case GET_DEBUG_TEMP:
-			Slave_flag = 0;
-			if (DEBUGGER_OUTPUT_SWITCH == 1)
-				I2C0_INTR_MASK &= ~(1 << 2);
-			break;
-		case SLAVE_READ_DATA:
-			Slave_flag = 1;
-			break;
-		case KBD_READ_REQUEST:
-#if DEBUGGER_DEBUG
-			assert_print();
-#endif
-			F_Service_KBL = 1;
-			KBD_Overflag = 0;
-			break;
-		case CANCEL_KBD_READ_REQUEST:
-#if DEBUGGER_DEBUG
-			assert_print();
-#endif
-			F_Service_KBL = 0;
-			if (DEBUGGER_OUTPUT_SWITCH == 1)
-			{
-				iicFeedback = 0;
-				pos = 0;
-			}
-			break;
-		case RECOARD_KBC_PMC_DATA:
-#if DEBUGGER_DEBUG
-			assert_print();
-#endif
-			KBC_PMC_Flag = 1;
-			for (int i = 0; i < DEBUGGER_BUFF_SIZE; i++)
-				KBC_PMC_Event[i] = 0; // clear
-			KBC_PMC_Event_Num = 0;
-			KBC_PMC_Pending_Num = 0;
-			break;
-		case STOP_RECOARD_KBC_PMC_DATA:
-#if DEBUGGER_DEBUG
-			assert_print();
-#endif
-			KBC_PMC_Flag = 0;
-			break;
-		case RESET_CHIP_USE_WATCHDOG: // reset chip
-#if DEBUGGER_DEBUG
-			assert_print();
-#endif
-			WDT_Init(0, 0);
-			break;
-		case SWITCH_KEYBOARD_CODE: // change keyboard code type
-#if DEBUGGER_DEBUG
-			assert_print();
-#endif
-			Host_Flag_XLATE_PC = !Host_Flag_XLATE_PC;
-			break;
-		case FIRMWARE_UPDATE:
-			update_reg_ptr = (VDWORD)DEBUGGER_UART;
-			while (Debugger_Cmd[F_Service_Debugger_Cmd - 1] != '\n')//0xa是换行符的十六进制
-			{
-				if (Debugger_Cmd[F_Service_Debugger_Cmd - 1] == '-')
-					if (Debugger_Cmd[F_Service_Debugger_Cmd] == 'c' || Debugger_Cmd[F_Service_Debugger_Cmd] == 'C')
-					{
-						uart_updata_flag |= 2;
-					}
-				if (Debugger_Cmd[F_Service_Debugger_Cmd - 1] == (char)0xEE)
+			case GET_DEBUG_TEMP:
+				Slave_flag = 0;
+				if (DEBUGGER_OUTPUT_SWITCH == 1)
+					I2C0_INTR_MASK &= ~(1 << 2);
+				break;
+			case SLAVE_READ_DATA:
+				Slave_flag = 1;
+				break;
+			case KBD_READ_REQUEST:
+			#if DEBUGGER_DEBUG
+				assert_print();
+			#endif
+				F_Service_KBL = 1;
+				KBD_Overflag = 0;
+				break;
+			case CANCEL_KBD_READ_REQUEST:
+			#if DEBUGGER_DEBUG
+				assert_print();
+			#endif
+				F_Service_KBL = 0;
+				if (DEBUGGER_OUTPUT_SWITCH == 1)
 				{
-					F_Service_Debugger_Cmd = F_Service_Debugger_Cnt = 0;
-					return;
+					iicFeedback = 0;
+					pos = 0;
 				}
-			}
-			F_Service_Debugger_Cmd = F_Service_Debugger_Cnt = 0;
-			UPDATE_IER = 0; // 关闭中断
-			uart_updata_flag |= 0x1;
-			Flash_Update_Function();
-		case HANDSHAKE_REQUEST:
-			Buf_num = 0;
-			Buf_flag = 1;
-			Debug_Temp = data;
-			Debug_Timeout_Count = 0xffffffff;
-			break;
-		default:
-#if DEBUGGER_DEBUG
-			assert_print();
-#endif
-			int_buf_index = 0;
-			Buf_num = 0;
-			Buf_flag = 1;
-			Debug_Temp = data;
-			return;
+				break;
+			case RECOARD_KBC_PMC_DATA:
+			#if DEBUGGER_DEBUG
+				assert_print();
+			#endif
+				KBC_PMC_Flag = 1;
+				for (int i = 0; i < DEBUGGER_BUFF_SIZE; i++)
+					KBC_PMC_Event[i] = 0; // clear
+				KBC_PMC_Event_Num = 0;
+				KBC_PMC_Pending_Num = 0;
+				break;
+			case STOP_RECOARD_KBC_PMC_DATA:
+			#if DEBUGGER_DEBUG
+				assert_print();
+			#endif
+				KBC_PMC_Flag = 0;
+				break;
+			case RESET_CHIP_USE_WATCHDOG: // reset chip
+			#if DEBUGGER_DEBUG
+				assert_print();
+			#endif
+				WDT_Init(0, 0);
+				break;
+			case SWITCH_KEYBOARD_CODE: // change keyboard code type
+			#if DEBUGGER_DEBUG
+				assert_print();
+			#endif
+				Host_Flag_XLATE_PC = !Host_Flag_XLATE_PC;
+				break;
+			case FIRMWARE_UPDATE:
+				update_reg_ptr = (VDWORD)DEBUGGER_UART;
+				while (Debugger_Cmd[F_Service_Debugger_Cmd - 1] != '\n')//0xa是换行符的十六进制
+				{
+					if (Debugger_Cmd[F_Service_Debugger_Cmd - 1] == '-')
+						if (Debugger_Cmd[F_Service_Debugger_Cmd] == 'c' || Debugger_Cmd[F_Service_Debugger_Cmd] == 'C')
+						{
+							uart_updata_flag |= 2;
+						}
+					if (Debugger_Cmd[F_Service_Debugger_Cmd - 1] == (char)0xEE)
+					{
+						F_Service_Debugger_Cmd = F_Service_Debugger_Cnt = 0;
+						return;
+					}
+				}
+				F_Service_Debugger_Cmd = F_Service_Debugger_Cnt = 0;
+				UPDATE_IER = 0; // 关闭中断
+				uart_updata_flag |= 0x1;
+				Flash_Update_Function();
+			case HANDSHAKE_REQUEST:
+				Buf_num = 0;
+				Buf_flag = 1;
+				Debug_Temp = data;
+				Debug_Timeout_Count = 0xffffffff;
+				break;
+			default:
+			#if DEBUGGER_DEBUG
+				assert_print();
+			#endif
+				int_buf_index = 0;
+				Buf_num = 0;
+				Buf_flag = 1;
+				Debug_Temp = data;
+				return;
 		}
 		if (data != HANDSHAKE_REQUEST)
 			DEBUGER_putchar(data);
 	}
 	if (Buf_flag)
 	{
-#if DEBUGGER_DEBUG
+	#if DEBUGGER_DEBUG
 		assert_print("data:0x%x", data);
-#endif
+	#endif
 		switch (Debug_Temp)
 		{
-		case READ_REQUEST:
-#if DEBUGGER_DEBUG
-			assert_print();
-#endif
-			buf[Buf_num] = data; // store received addr
-			Buf_num++;
-			if (Buf_num == 4) // received addr finished
-			{
-				Buf_flag = 0; // clear flag
-				Debug_Temp = 0;
-#if DEBUGGER_DEBUG
-				assert_print("buf[3]:%d", buf[3]);
-#endif
-				DEBUGGER_DATA(); // enable DEBUGGER_DATA function in main loop
-			}
-			break;
-		case WRITE_REQUEST:
-#if DEBUGGER_DEBUG
-			assert_print("Write_Request");
-#endif
-			buf[Buf_num] = data;
-			Buf_num++;
-			if (Buf_num == 7)
-			{
-				Buf_flag = 0;
-				Debug_Temp = 0;
-				DEBUGGER_Change(); // enable DEBUGGER_Change function in main loop
-			}
-			break;
-		case INTERRUPT_FUNCTION:
-#if DEBUGGER_DEBUG
-			assert_print();
-#endif
-			dbg_int_buf[int_buf_index] = data;
-			int_buf_index++;
-			if (int_buf_index == 3)
-			{
-				int_buf_index = 0;
-				Buf_flag = 0; // clear flag
-				Debug_Temp = 0;
-				DEBUGGER_Int(); // enable DEBUGGER_Int function in main loop
-			}
-			break;
-		case HANDSHAKE_REQUEST:
-#if DEBUGGER_DEBUG
-			assert_print();
-#endif
-			if (Debugger_Handshake(data))// handshake success
-			{
-				Buf_flag = 0; // clear flag
-				Debug_Temp = 0;
-			}
-			else
-			{
-			}
-			break;
-		default:
-			break;
+			case READ_REQUEST:
+			#if DEBUGGER_DEBUG
+				assert_print();
+			#endif
+				buf[Buf_num] = data; // store received addr
+				Buf_num++;
+				if (Buf_num == 4) // received addr finished
+				{
+					Buf_flag = 0; // clear flag
+					Debug_Temp = 0;
+				#if DEBUGGER_DEBUG
+					assert_print("buf[3]:%d", buf[3]);
+				#endif
+					DEBUGGER_DATA(); // enable DEBUGGER_DATA function in main loop
+				}
+				break;
+			case WRITE_REQUEST:
+			#if DEBUGGER_DEBUG
+				assert_print("Write_Request");
+			#endif
+				buf[Buf_num] = data;
+				Buf_num++;
+				if (Buf_num == 7)
+				{
+					Buf_flag = 0;
+					Debug_Temp = 0;
+					DEBUGGER_Change(); // enable DEBUGGER_Change function in main loop
+				}
+				break;
+			case INTERRUPT_FUNCTION:
+			#if DEBUGGER_DEBUG
+				assert_print();
+			#endif
+				dbg_int_buf[int_buf_index] = data;
+				int_buf_index++;
+				if (int_buf_index == 3)
+				{
+					int_buf_index = 0;
+					Buf_flag = 0; // clear flag
+					Debug_Temp = 0;
+					DEBUGGER_Int(); // enable DEBUGGER_Int function in main loop
+				}
+				break;
+			case HANDSHAKE_REQUEST:
+			#if DEBUGGER_DEBUG
+				assert_print();
+			#endif
+				if (Debugger_Handshake(data))// handshake success
+				{
+					Buf_flag = 0; // clear flag
+					Debug_Temp = 0;
+				}
+				else
+				{
+				}
+				break;
+			default:
+				break;
 		}
 	}
 }
@@ -485,16 +485,16 @@ void Debugger_Cmd_IRQ(BYTE debug_data)
 	}
 	if (F_Service_Debugger_Cmd >= 0xff)
 	{
-#if DEBUGGER_DEBUG
+	#if DEBUGGER_DEBUG
 		assert_print("warring %#x", F_Service_Debugger_Cmd);
-#endif
+	#endif
 		return;
 	}
 	else
 	{
-#if DEBUGGER_DEBUG
+	#if DEBUGGER_DEBUG
 		dprint("F_Service_Debugger_Cmd:0x%x data:0x%x\n", F_Service_Debugger_Cmd, debug_data);
-#endif
+	#endif
 		Debugger_Cmd[F_Service_Debugger_Cmd++] = debug_data;
 		F_Service_Debugger = 1;
 		if (DEBUGGER_OUTPUT_SWITCH == 1)
@@ -535,37 +535,37 @@ void Debugger_I2c_Req(WORD channel)
 		// assert_print("iicFeedback %#x", iicFeedback);
 		switch (iicFeedback)
 		{
-		case 0:
-			//  return "fe dd" mean the master read while slave does not recive any command
-			I2C_Slave_Write_Byte(0xFE, channel);
-			I2C_Slave_Write_Byte(0xDD, channel);
-			return;
-		case 1:
-		{
-			// return two byte data to indicate master the "255 +1" datas need to be read
-			I2C_Slave_Write_Byte(0x01, channel);
-			I2C_Slave_Write_Byte(buf[3], channel);
-			iic_count = Num_flag = 0; // clear the count num// the number of datas have send by iic
-		}
-		break;
-		case 2:// int mode 
-		case 3:
-		{
-			// return two byte data to indicate master the "0 +1" datas need to be read
-			I2C_Slave_Write_Byte(0x00, channel);
-			I2C_Slave_Write_Byte(0x01, channel);
-		}
-		break;
-		case 4:
-		{					   // kbc send
-			F_Service_KBL = 0; // stop the kbd record until the datas have been sent
-			I2C_Slave_Write_Byte(0x00, channel);
-			I2C_Slave_Write_Byte(pos, channel);
-			iic_count = Num_flag = 0; // clear the count num// the number of datas have send by iic
-		}
-		break;
-		default:
-			return;
+			case 0:
+				//  return "fe dd" mean the master read while slave does not recive any command
+				I2C_Slave_Write_Byte(0xFE, channel);
+				I2C_Slave_Write_Byte(0xDD, channel);
+				return;
+			case 1:
+				{
+					// return two byte data to indicate master the "255 +1" datas need to be read
+					I2C_Slave_Write_Byte(0x01, channel);
+					I2C_Slave_Write_Byte(buf[3], channel);
+					iic_count = Num_flag = 0; // clear the count num// the number of datas have send by iic
+				}
+				break;
+			case 2:// int mode 
+			case 3:
+				{
+					// return two byte data to indicate master the "0 +1" datas need to be read
+					I2C_Slave_Write_Byte(0x00, channel);
+					I2C_Slave_Write_Byte(0x01, channel);
+				}
+				break;
+			case 4:
+				{					   // kbc send
+					F_Service_KBL = 0; // stop the kbd record until the datas have been sent
+					I2C_Slave_Write_Byte(0x00, channel);
+					I2C_Slave_Write_Byte(pos, channel);
+					iic_count = Num_flag = 0; // clear the count num// the number of datas have send by iic
+				}
+				break;
+			default:
+				return;
 		}
 		iic_flag = 1;
 
@@ -592,130 +592,130 @@ void Debugger_I2c_Send(WORD channel)
 	volatile BYTE int_status;
 	switch (iicFeedback)
 	{
-	case 0:
-		break;
-	case 1:
-	{
-		for (int i = 0; i < 8; i++)
-		{
-			wdata[i] = Debugger_Data[i + Num_flag * 8];
-			iic_count++;
-			if (iic_count == buf[3] + 1)
+		case 0:
+			break;
+		case 1:
 			{
-				char temp = iic_count % 8; // 计算剩余待发送字节
-				if (temp == 0)
+				for (int i = 0; i < 8; i++)
 				{
-					if (Num_flag == 31)
-						break;
-					temp = 8;
+					wdata[i] = Debugger_Data[i + Num_flag * 8];
+					iic_count++;
+					if (iic_count == buf[3] + 1)
+					{
+						char temp = iic_count % 8; // 计算剩余待发送字节
+						if (temp == 0)
+						{
+							if (Num_flag == 31)
+								break;
+							temp = 8;
+						}
+						I2C_Slave_Write_Block(wdata, temp, channel);
+						int_status = SMBUSn_INTR_MASK0(channel);
+						int_status |= I2C_INTR_RD_REQ;
+						int_status &= (~I2C_INTR_TX_EMPTY);
+						// enable the tx_empty irqc and mask the req irqc to star transmit datas
+						SMBUSn_INTR_MASK0(channel) = int_status;
+						iicFeedback = 0;
+						return;
+					}
 				}
-				I2C_Slave_Write_Block(wdata, temp, channel);
+				Num_flag++;
+				I2C_Slave_Write_Block(wdata, 8, channel); // i2c slave send data to fifo
+				/* Finish data send*/
+				if (Num_flag == 32)
+				{
+					int_status = SMBUSn_INTR_MASK0(channel);
+					int_status |= I2C_INTR_RD_REQ;
+					int_status &= (~I2C_INTR_TX_EMPTY);
+					// enable the tx_empty irqc and mask the req irqc to star transmit datas
+					SMBUSn_INTR_MASK0(channel) = int_status;
+					iicFeedback = 0;
+				}
+			}
+			break;
+		case 2:
+			{ // int mode
+				// the real data master want to read
+				I2C_Slave_Write_Byte(0xFF, channel);
 				int_status = SMBUSn_INTR_MASK0(channel);
 				int_status |= I2C_INTR_RD_REQ;
 				int_status &= (~I2C_INTR_TX_EMPTY);
 				// enable the tx_empty irqc and mask the req irqc to star transmit datas
 				SMBUSn_INTR_MASK0(channel) = int_status;
 				iicFeedback = 0;
-				return;
 			}
-		}
-		Num_flag++;
-		I2C_Slave_Write_Block(wdata, 8, channel); // i2c slave send data to fifo
-		/* Finish data send*/
-		if (Num_flag == 32)
-		{
-			int_status = SMBUSn_INTR_MASK0(channel);
-			int_status |= I2C_INTR_RD_REQ;
-			int_status &= (~I2C_INTR_TX_EMPTY);
-			// enable the tx_empty irqc and mask the req irqc to star transmit datas
-			SMBUSn_INTR_MASK0(channel) = int_status;
-			iicFeedback = 0;
-		}
-	}
-	break;
-	case 2:
-	{ // int mode
-		// the real data master want to read
-		I2C_Slave_Write_Byte(0xFF, channel);
-		int_status = SMBUSn_INTR_MASK0(channel);
-		int_status |= I2C_INTR_RD_REQ;
-		int_status &= (~I2C_INTR_TX_EMPTY);
-		// enable the tx_empty irqc and mask the req irqc to star transmit datas
-		SMBUSn_INTR_MASK0(channel) = int_status;
-		iicFeedback = 0;
-	}
-	break;
-	case 3:
-	{
-		if (iic_int_flag == 1)
-		{
-			I2C_Slave_Write_Byte(0x01, channel);
-		}
-		else if (iic_int_flag == 2)
-		{
-			I2C_Slave_Write_Byte(0x00, channel);
-		}
-		else if (iic_int_flag == 3)
-		{
-			I2C_Slave_Write_Byte(0x11, channel);
-		}
-		else
-		{
-			I2C_Slave_Write_Byte(0xDD, channel);
-		}
-		int_status = SMBUSn_INTR_MASK0(channel);
-		int_status |= I2C_INTR_RD_REQ;
-		int_status &= (~I2C_INTR_TX_EMPTY);
-		// enable the tx_empty irqc and mask the req irqc to star transmit datas
-		SMBUSn_INTR_MASK0(channel) = int_status;
-		iicFeedback = 0;
-	}
-	break;
-	case 4:
-	{ // kbc send
-		for (int i = 0; i < 16; i++)
-		{
-			wdata[i] = Debugger_Data[i + Num_flag * 16];
-			iic_count++;
-			if (iic_count == pos)
+			break;
+		case 3:
 			{
-				char temp = iic_count % 16; // 计算剩余待发送字节
-				if (temp == 0)
+				if (iic_int_flag == 1)
 				{
-					if (Num_flag == 15)
-						break;
-					temp = 16;
+					I2C_Slave_Write_Byte(0x01, channel);
 				}
-				I2C_Slave_Write_Block(wdata, temp, channel);
-				/* Complete sending; Restore the Context*/
-				F_Service_KBL = 1;
-				iicFeedback = 0;
-				pos = 0;
+				else if (iic_int_flag == 2)
+				{
+					I2C_Slave_Write_Byte(0x00, channel);
+				}
+				else if (iic_int_flag == 3)
+				{
+					I2C_Slave_Write_Byte(0x11, channel);
+				}
+				else
+				{
+					I2C_Slave_Write_Byte(0xDD, channel);
+				}
 				int_status = SMBUSn_INTR_MASK0(channel);
 				int_status |= I2C_INTR_RD_REQ;
 				int_status &= (~I2C_INTR_TX_EMPTY);
 				// enable the tx_empty irqc and mask the req irqc to star transmit datas
-				SMBUSn_INTR_MASK0(channel) = int_status;					return;
+				SMBUSn_INTR_MASK0(channel) = int_status;
+				iicFeedback = 0;
 			}
-		}
-		Num_flag++;
-		I2C_Slave_Write_Block(wdata, 16, channel); // i2c slave send data to fifo
-		/* Complete sending; Restore the Context*/
-		if (Num_flag == 16)
-		{
-			F_Service_KBL = 1;
-			iicFeedback = 0;
-			pos = 0;
-			int_status = SMBUSn_INTR_MASK0(channel);
-			int_status |= I2C_INTR_RD_REQ;
-			int_status &= (~I2C_INTR_TX_EMPTY);
-			// enable the tx_empty irqc and mask the req irqc to star transmit datas
-			SMBUSn_INTR_MASK0(channel) = int_status;
-		}
-	}
-	break;
-	default:
-		return;
+			break;
+		case 4:
+			{ // kbc send
+				for (int i = 0; i < 16; i++)
+				{
+					wdata[i] = Debugger_Data[i + Num_flag * 16];
+					iic_count++;
+					if (iic_count == pos)
+					{
+						char temp = iic_count % 16; // 计算剩余待发送字节
+						if (temp == 0)
+						{
+							if (Num_flag == 15)
+								break;
+							temp = 16;
+						}
+						I2C_Slave_Write_Block(wdata, temp, channel);
+						/* Complete sending; Restore the Context*/
+						F_Service_KBL = 1;
+						iicFeedback = 0;
+						pos = 0;
+						int_status = SMBUSn_INTR_MASK0(channel);
+						int_status |= I2C_INTR_RD_REQ;
+						int_status &= (~I2C_INTR_TX_EMPTY);
+						// enable the tx_empty irqc and mask the req irqc to star transmit datas
+						SMBUSn_INTR_MASK0(channel) = int_status;					return;
+					}
+				}
+				Num_flag++;
+				I2C_Slave_Write_Block(wdata, 16, channel); // i2c slave send data to fifo
+				/* Complete sending; Restore the Context*/
+				if (Num_flag == 16)
+				{
+					F_Service_KBL = 1;
+					iicFeedback = 0;
+					pos = 0;
+					int_status = SMBUSn_INTR_MASK0(channel);
+					int_status |= I2C_INTR_RD_REQ;
+					int_status &= (~I2C_INTR_TX_EMPTY);
+					// enable the tx_empty irqc and mask the req irqc to star transmit datas
+					SMBUSn_INTR_MASK0(channel) = int_status;
+				}
+			}
+			break;
+		default:
+			return;
 	}
 }
 //*****************************************************************************
@@ -818,49 +818,49 @@ void DEBUGGER_DATA(void) // Debugger Function read
 				}
 			}
 		}
-#if DEBUGGER_DEBUG
+	#if DEBUGGER_DEBUG
 		printf("PendingRXCount:0x%x PendingTXCount:0x%x Pending_Num:0x%x Event_Num:0x%x\n", KBC_PMC_PendingRXCount, KBC_PMC_PendingTXCount, KBC_PMC_Pending_Num, KBC_PMC_Event_Num);
-#endif
+	#endif
 	}
 	/* read value form addr */
 	else
 	{
 		switch (length)
 		{
-		case 1:
-			for (int i = 0; i < 256; i++)
-			{
-				temp1 = (*((uint8_t*)(data_base)));
-				Debugger_Data[i] = temp1 & 0xff;
-				data_base++;
-			}
-			break;
-		case 2:
-			for (int i = 0; i < 128; i++)
-			{
-				temp2 = (*((uint16_t*)(data_base)));
-				Debugger_Data[i * 2] = temp2 & 0xff;
-				Debugger_Data[i * 2 + 1] = (temp2 >> 8) & 0xff;
-				data_base += 2;
-			}
-			break;
-		case 4:
-			for (int i = 0; i < 64; i++)
-			{
-				temp4 = (*((uint32_t*)(data_base)));
-				Debugger_Data[i * 4] = temp4 & 0xff;
-				Debugger_Data[i * 4 + 1] = (temp4 >> 8) & 0xff;
-				Debugger_Data[i * 4 + 2] = (temp4 >> 16) & 0xff;
-				Debugger_Data[i * 4 + 3] = (temp4 >> 24) & 0xff;
-				data_base += 4;
-			}
-			break;
-		default:
-			for (int i = 0; i < DEBUGGER_BUFF_SIZE; i++)
-			{
-				Debugger_Data[i] = i;
-			}
-			break;
+			case 1:
+				for (int i = 0; i < 256; i++)
+				{
+					temp1 = (*((uint8_t *)(data_base)));
+					Debugger_Data[i] = temp1 & 0xff;
+					data_base++;
+				}
+				break;
+			case 2:
+				for (int i = 0; i < 128; i++)
+				{
+					temp2 = (*((uint16_t *)(data_base)));
+					Debugger_Data[i * 2] = temp2 & 0xff;
+					Debugger_Data[i * 2 + 1] = (temp2 >> 8) & 0xff;
+					data_base += 2;
+				}
+				break;
+			case 4:
+				for (int i = 0; i < 64; i++)
+				{
+					temp4 = (*((uint32_t *)(data_base)));
+					Debugger_Data[i * 4] = temp4 & 0xff;
+					Debugger_Data[i * 4 + 1] = (temp4 >> 8) & 0xff;
+					Debugger_Data[i * 4 + 2] = (temp4 >> 16) & 0xff;
+					Debugger_Data[i * 4 + 3] = (temp4 >> 24) & 0xff;
+					data_base += 4;
+				}
+				break;
+			default:
+				for (int i = 0; i < DEBUGGER_BUFF_SIZE; i++)
+				{
+					Debugger_Data[i] = i;
+				}
+				break;
 		}
 	}
 #if (DEBUGGER_OUTPUT_SWITCH == 1)
@@ -955,42 +955,42 @@ void DEBUGGER_Change(void)
 	/* write value to addr */
 	switch (length)
 	{
-	case 1:
-#if DEBUGGER_DEBUG
-		printf("vaule:0x%x\n", (buf[6]));
-#endif
-		* ((uint8_t*)(data_base)) = buf[6];
-		break;
-	case 2:
-#if DEBUGGER_DEBUG
-		printf("vaule:0x%x\n", (buf[6] | (buf[5] << 8)));
-#endif
-		if (data_base % 2 != 0)//2字节访问防止访问到奇数地址
-		{
-			*((uint16_t*)(data_base - 1)) = ((*((uint16_t*)(data_base - 1)) & 0xff) | (buf[6] << 8));
-		}
-		else
-		{
-			*((uint16_t*)(data_base)) = (buf[6] | (buf[5] << 8));
-		}
-		break;
-	case 4:
-#if DEBUGGER_DEBUG
-		printf("vaule:0x%x\n", (buf[6] | (buf[5] << 8) | (buf[4] << 16) | (buf[3] << 24)));
-#endif
-		if (data_base % 4 != 0)//4字节访问防止访问到奇数地址
-		{
-			int Correct_address = data_base - (data_base % 4);
-			uint32_t temp_data = (*((uint32_t*)(Correct_address)));
-			uint32_t mask = 0xFF << ((data_base % 4) * 8);
-			temp_data &= ~mask;  // 清除指定字节
-			(*((uint32_t*)(Correct_address))) = (temp_data | (buf[6] << ((data_base % 4) * 8)));
-		}
-		else
-		{
-			*((uint32_t*)(data_base)) = (buf[6] | (buf[5] << 8) | (buf[4] << 16) | (buf[3] << 24));
-		}
-		break;
+		case 1:
+		#if DEBUGGER_DEBUG
+			printf("vaule:0x%x\n", (buf[6]));
+		#endif
+			*((uint8_t *)(data_base)) = buf[6];
+			break;
+		case 2:
+		#if DEBUGGER_DEBUG
+			printf("vaule:0x%x\n", (buf[6] | (buf[5] << 8)));
+		#endif
+			if (data_base % 2 != 0)//2字节访问防止访问到奇数地址
+			{
+				*((uint16_t *)(data_base - 1)) = ((*((uint16_t *)(data_base - 1)) & 0xff) | (buf[6] << 8));
+			}
+			else
+			{
+				*((uint16_t *)(data_base)) = (buf[6] | (buf[5] << 8));
+			}
+			break;
+		case 4:
+		#if DEBUGGER_DEBUG
+			printf("vaule:0x%x\n", (buf[6] | (buf[5] << 8) | (buf[4] << 16) | (buf[3] << 24)));
+		#endif
+			if (data_base % 4 != 0)//4字节访问防止访问到奇数地址
+			{
+				int Correct_address = data_base - (data_base % 4);
+				uint32_t temp_data = (*((uint32_t *)(Correct_address)));
+				uint32_t mask = 0xFF << ((data_base % 4) * 8);
+				temp_data &= ~mask;  // 清除指定字节
+				(*((uint32_t *)(Correct_address))) = (temp_data | (buf[6] << ((data_base % 4) * 8)));
+			}
+			else
+			{
+				*((uint32_t *)(data_base)) = (buf[6] | (buf[5] << 8) | (buf[4] << 16) | (buf[3] << 24));
+			}
+			break;
 	}
 #if (DEBUGGER_OUTPUT_SWITCH == 1)
 	/* Output from I2C */
@@ -1022,159 +1022,159 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 		int index = dbg_int_buf[0] - 0x0;
 		switch (dbg_int_buf[1])
 		{
-		case 0x0:
-			CPU_Int_Enable(index);
-			break;
-		case 0x1:
-			CPU_Int_Disable(index);
-			break;
-		case 0x4:
-			CPU_Int_Type_Edge(index);
-			break;
-		case 0x5:
-			CPU_Int_Type_Level(index);
-			break;
-		case 0x8:
-			value = CPU_Int_Enable_Read(index);
-			read_flag = 1;
-			break;
-		case 0xA:
-			value = CPU_Int_Type_Read(index);
-			read_flag = 1;
-			break;
-		case 0xB:
-			value = CPU_Int_Polarity_Read(index);
-			read_flag = 1;
-			break;
-		default:
-			illegal_operation = 1;
-			break;
+			case 0x0:
+				CPU_Int_Enable(index);
+				break;
+			case 0x1:
+				CPU_Int_Disable(index);
+				break;
+			case 0x4:
+				CPU_Int_Type_Edge(index);
+				break;
+			case 0x5:
+				CPU_Int_Type_Level(index);
+				break;
+			case 0x8:
+				value = CPU_Int_Enable_Read(index);
+				read_flag = 1;
+				break;
+			case 0xA:
+				value = CPU_Int_Type_Read(index);
+				read_flag = 1;
+				break;
+			case 0xB:
+				value = CPU_Int_Polarity_Read(index);
+				read_flag = 1;
+				break;
+			default:
+				illegal_operation = 1;
+				break;
 		}
 	}
 	if (dbg_int_buf[0] == 0x3)
 	{
 		switch (dbg_int_buf[1])
 		{
-		case 0x0:
-			SWUC_Int_Enable(dbg_int_buf[2]);
-			break;
-		case 0x1:
-			SWUC_Int_Disable(dbg_int_buf[2]);
-			break;
-		case 0x8:
-			value = SWUC_Int_Enable_Read(dbg_int_buf[2]);
-			read_flag = 1;
-			break;
-		case 0xC:
-			value = SWUC_Int_Status(dbg_int_buf[2]);
-			read_flag = 1;
-			break;
-		default:
-			illegal_operation = 1;
-			break;
+			case 0x0:
+				SWUC_Int_Enable(dbg_int_buf[2]);
+				break;
+			case 0x1:
+				SWUC_Int_Disable(dbg_int_buf[2]);
+				break;
+			case 0x8:
+				value = SWUC_Int_Enable_Read(dbg_int_buf[2]);
+				read_flag = 1;
+				break;
+			case 0xC:
+				value = SWUC_Int_Status(dbg_int_buf[2]);
+				read_flag = 1;
+				break;
+			default:
+				illegal_operation = 1;
+				break;
 		}
 	}
 	if (dbg_int_buf[0] == 0x4)//LPC_RST中断
 	{
 		switch (dbg_int_buf[1])
 		{
-		case 0x0:
-			CPU_Int_Enable(4);
-			break;
-		case 0x1:
-			CPU_Int_Disable(4);
-			break;
-		case 0x4:
-			CPU_Int_Type_Edge(4);
-			break;
-		case 0x5:
-			CPU_Int_Type_Level(4);
-			break;
-		case 0x6:
-			CPU_Int_Polarity_HIGH(4);
-			break;
-		case 0x7:
-			CPU_Int_Polarity_LOW(4);
-			break;
-		case 0x8:
-			value = CPU_Int_Enable_Read(4);
-			read_flag = 1;
-			break;
-		case 0xA:
-			value = CPU_Int_Type_Read(4);
-			read_flag = 1;
-			break;
-		case 0xB:
-			value = CPU_Int_Polarity_Read(4);
-			read_flag = 1;
-			break;
-		default:
-			illegal_operation = 1;
-			break;
+			case 0x0:
+				CPU_Int_Enable(4);
+				break;
+			case 0x1:
+				CPU_Int_Disable(4);
+				break;
+			case 0x4:
+				CPU_Int_Type_Edge(4);
+				break;
+			case 0x5:
+				CPU_Int_Type_Level(4);
+				break;
+			case 0x6:
+				CPU_Int_Polarity_HIGH(4);
+				break;
+			case 0x7:
+				CPU_Int_Polarity_LOW(4);
+				break;
+			case 0x8:
+				value = CPU_Int_Enable_Read(4);
+				read_flag = 1;
+				break;
+			case 0xA:
+				value = CPU_Int_Type_Read(4);
+				read_flag = 1;
+				break;
+			case 0xB:
+				value = CPU_Int_Polarity_Read(4);
+				read_flag = 1;
+				break;
+			default:
+				illegal_operation = 1;
+				break;
 		}
 	}
 	if (dbg_int_buf[0] == 0x5)
 	{
 		switch (dbg_int_buf[1])
 		{
-		case 0x0:
-			PWRSW_Config(0, 0);//enable
-			break;
-		case 0x1:
-			SYSCTL_PWRSWCSR &= ~0x1; //disable
-			break;
-		case 0x8:
-			value = 0;
-			if (((SYSCTL_PWRSWCSR & 0x1) != 0) && ((SYSCTL_PWRSWCSR & 0x10) == 0))
-			{
-				value = 1;
-			}
-			read_flag = 1;
-			break;
-		default:
-			illegal_operation = 1;
-			break;
+			case 0x0:
+				PWRSW_Config(0, 0);//enable
+				break;
+			case 0x1:
+				SYSCTL_PWRSWCSR &= ~0x1; //disable
+				break;
+			case 0x8:
+				value = 0;
+				if (((SYSCTL_PWRSWCSR & 0x1) != 0) && ((SYSCTL_PWRSWCSR & 0x10) == 0))
+				{
+					value = 1;
+				}
+				read_flag = 1;
+				break;
+			default:
+				illegal_operation = 1;
+				break;
 		}
 	}
 	if (dbg_int_buf[0] == 0x6)
 	{
 		switch (dbg_int_buf[1])
 		{
-		case 0x0:
-			PS2_PORT0_CR = CCMD_WRITE;
-			PS2_PORT0_OBUF |= 0x2;
-			break;
-		case 0x1:
-			PS2_PORT0_CR = CCMD_WRITE;
-			PS2_PORT0_OBUF &= ~0x2;
-			break;
-		case 0x8:
-			PS2_PORT0_CR = CCMD_READ;
-			value = (PS2_PORT0_IBUF & 0x2);
-			read_flag = 1;
-			break;
-		default:
-			illegal_operation = 1;
-			break;
+			case 0x0:
+				PS2_PORT0_CR = CCMD_WRITE;
+				PS2_PORT0_OBUF |= 0x2;
+				break;
+			case 0x1:
+				PS2_PORT0_CR = CCMD_WRITE;
+				PS2_PORT0_OBUF &= ~0x2;
+				break;
+			case 0x8:
+				PS2_PORT0_CR = CCMD_READ;
+				value = (PS2_PORT0_IBUF & 0x2);
+				read_flag = 1;
+				break;
+			default:
+				illegal_operation = 1;
+				break;
 		}
 	}
 	if (dbg_int_buf[0] >= 0x7 && dbg_int_buf[0] <= 0x8)
 	{
 		switch (dbg_int_buf[1])
 		{
-		case 0x0:
-			KBD_Int_Enable;
-			break;
-		case 0x1:
-			KBD_Int_Disable;
-			break;
-		case 0x8:
-			value = KBD_Int_Enable_Read;
-			read_flag = 1;
-			break;
-		default:
-			illegal_operation = 1;
-			break;
+			case 0x0:
+				KBD_Int_Enable;
+				break;
+			case 0x1:
+				KBD_Int_Disable;
+				break;
+			case 0x8:
+				value = KBD_Int_Enable_Read;
+				read_flag = 1;
+				break;
+			default:
+				illegal_operation = 1;
+				break;
 		}
 	}
 	if (dbg_int_buf[0] >= 0x9 && dbg_int_buf[0] <= 0xC)
@@ -1182,19 +1182,19 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 		int index = dbg_int_buf[0] - 0x9;
 		switch (dbg_int_buf[1])
 		{
-		case 0x0:
-			Tach_Int_Enable(index);
-			break;
-		case 0x1:
-			Tach_Int_Disable(index);
-			break;
-		case 0x8:
-			value = Tach_Int_Enable_Read(index);
-			read_flag = 1;
-			break;
-		default:
-			illegal_operation = 1;
-			break;
+			case 0x0:
+				Tach_Int_Enable(index);
+				break;
+			case 0x1:
+				Tach_Int_Disable(index);
+				break;
+			case 0x8:
+				value = Tach_Int_Enable_Read(index);
+				read_flag = 1;
+				break;
+			default:
+				illegal_operation = 1;
+				break;
 		}
 	}
 	if (dbg_int_buf[0] >= 0xD && dbg_int_buf[0] <= 0xE)
@@ -1202,19 +1202,19 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 		int index = dbg_int_buf[0] - 0xD;
 		switch (dbg_int_buf[1])
 		{
-		case 0x0:
-			KBC_Int_Enable(3 - index);
-			break;
-		case 0x1:
-			KBC_Int_Disable(3 - index);
-			break;
-		case 0x8:
-			value = KBC_Int_Enable_Read(3 - index);
-			read_flag = 1;
-			break;
-		default:
-			illegal_operation = 1;
-			break;
+			case 0x0:
+				KBC_Int_Enable(3 - index);
+				break;
+			case 0x1:
+				KBC_Int_Disable(3 - index);
+				break;
+			case 0x8:
+				value = KBC_Int_Enable_Read(3 - index);
+				read_flag = 1;
+				break;
+			default:
+				illegal_operation = 1;
+				break;
 		}
 	}
 	if (dbg_int_buf[0] >= 0xF && dbg_int_buf[0] <= 0x10)
@@ -1222,19 +1222,19 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 		int index = dbg_int_buf[0] - 0xF;
 		switch (dbg_int_buf[1])
 		{
-		case 0x0:
-			PMC1_Int_Enable(index);
-			break;
-		case 0x1:
-			PMC1_Int_Disable(index);
-			break;
-		case 0x8:
-			value = PMC1_Int_Enable_Read(index);
-			read_flag = 1;
-			break;
-		default:
-			illegal_operation = 1;
-			break;
+			case 0x0:
+				PMC1_Int_Enable(index);
+				break;
+			case 0x1:
+				PMC1_Int_Disable(index);
+				break;
+			case 0x8:
+				value = PMC1_Int_Enable_Read(index);
+				read_flag = 1;
+				break;
+			default:
+				illegal_operation = 1;
+				break;
 		}
 	}
 	if (dbg_int_buf[0] >= 0x11 && dbg_int_buf[0] <= 0x12)
@@ -1242,90 +1242,90 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 		int index = dbg_int_buf[0] - 0x11;
 		switch (dbg_int_buf[1])
 		{
-		case 0x0:
-			PMC2_Int_Enable(index);
-			break;
-		case 0x1:
-			PMC2_Int_Disable(index);
-			break;
-		case 0x8:
-			value = PMC2_Int_Enable_Read(index);
-			read_flag = 1;
-			break;
-		default:
-			illegal_operation = 1;
-			break;
+			case 0x0:
+				PMC2_Int_Enable(index);
+				break;
+			case 0x1:
+				PMC2_Int_Disable(index);
+				break;
+			case 0x8:
+				value = PMC2_Int_Enable_Read(index);
+				read_flag = 1;
+				break;
+			default:
+				illegal_operation = 1;
+				break;
 		}
 	}
 	if (dbg_int_buf[0] == 0x13)//修改
 	{
 		switch (dbg_int_buf[1])
 		{
-		case 0x0:
-			WDT_Init(0x1, 0xa);
-			break;
-		case 0x1:
-			WDT_CR &= ~0x1;
-			break;
-		case 0x2:
-			break;
-		case 0x8:
-			value = (WDT_CR & 0x1);
-			read_flag = 1;
-			break;
-		case 0xC:
-			value = Wdt_Int_Status;
-			read_flag = 1;
-			break;
-		default:
-			illegal_operation = 1;
-			break;
+			case 0x0:
+				WDT_Init(0x1, 0xa);
+				break;
+			case 0x1:
+				WDT_CR &= ~0x1;
+				break;
+			case 0x2:
+				break;
+			case 0x8:
+				value = (WDT_CR & 0x1);
+				read_flag = 1;
+				break;
+			case 0xC:
+				value = Wdt_Int_Status;
+				read_flag = 1;
+				break;
+			default:
+				illegal_operation = 1;
+				break;
 		}
 	}
 	if (dbg_int_buf[0] == 0x14)//修改
 	{
 		switch (dbg_int_buf[1])
 		{
-		case 0x2:
-			ADC_Int_Mask(dbg_int_buf[2]);
-			break;
-		case 0x3:
-			ADC_Int_Unmask(dbg_int_buf[2]);
-			break;
-		case 0x9:
-			value = ADC_Int_Mask_Read(dbg_int_buf[2]);
-			read_flag = 1;
-			break;
-		case 0xC:
-			value = ADC_Int_Status(dbg_int_buf[2]);
-			read_flag = 1;
-			break;
-		default:
-			illegal_operation = 1;
-			break;
+			case 0x2:
+				ADC_Int_Mask(dbg_int_buf[2]);
+				break;
+			case 0x3:
+				ADC_Int_Unmask(dbg_int_buf[2]);
+				break;
+			case 0x9:
+				value = ADC_Int_Mask_Read(dbg_int_buf[2]);
+				read_flag = 1;
+				break;
+			case 0xC:
+				value = ADC_Int_Status(dbg_int_buf[2]);
+				read_flag = 1;
+				break;
+			default:
+				illegal_operation = 1;
+				break;
 		}
 	}
 	if (dbg_int_buf[0] == 0x15)
 	{
 		switch (dbg_int_buf[1])
 		{
-		case 0x0:
-			Uart_Int_Enable(0, dbg_int_buf[2]);
-			break;
-		case 0x1:
-			Uart_Int_Disable(0, dbg_int_buf[2]);
-			break;
-		case 0x8:
-			value = Uart_Int_Enable_Read(0, dbg_int_buf[2]);
-			read_flag = 1;
-			break;
-		case 0xC:
-			value = Uart_Int_Status(0, dbg_int_buf[2]);
-			read_flag = 1;
-			break;
-		default:
-			illegal_operation = 1;
-			break;
+			case 0x0:
+				Uart_Int_Enable(0, dbg_int_buf[2]);
+				break;
+			case 0x1:
+				Uart_Int_Disable(0, dbg_int_buf[2]);
+				break;
+			case 0x8:
+				value = Uart_Int_Enable_Read(0, dbg_int_buf[2]);
+				read_flag = 1;
+				break;
+			case 0xC:
+				value = Uart_Int_Status(0, dbg_int_buf[2]);
+				read_flag = 1;
+				break;
+			default:
+				illegal_operation = 1;
+				break;
 		}
 	}
 	if (dbg_int_buf[0] >= 0x16 && dbg_int_buf[0] <= 0x17)
@@ -1333,40 +1333,40 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 		int index = dbg_int_buf[0] - 0x16;
 		switch (dbg_int_buf[1])
 		{
-		case 0x0:
-			Uart_Int_Enable(4 + index, dbg_int_buf[2]);
-			break;
-		case 0x1:
-			Uart_Int_Disable(4 + index, dbg_int_buf[2]);
-			break;
-		case 0x8:
-			value = Uart_Int_Enable_Read(4 + index, dbg_int_buf[2]);
-			read_flag = 1;
-			break;
-		case 0xC:
-			value = Uart_Int_Status(4 + index, dbg_int_buf[2]);
-			read_flag = 1;
-			break;
-		default:
-			illegal_operation = 1;
-			break;
+			case 0x0:
+				Uart_Int_Enable(4 + index, dbg_int_buf[2]);
+				break;
+			case 0x1:
+				Uart_Int_Disable(4 + index, dbg_int_buf[2]);
+				break;
+			case 0x8:
+				value = Uart_Int_Enable_Read(4 + index, dbg_int_buf[2]);
+				read_flag = 1;
+				break;
+			case 0xC:
+				value = Uart_Int_Status(4 + index, dbg_int_buf[2]);
+				read_flag = 1;
+				break;
+			default:
+				illegal_operation = 1;
+				break;
 		}
 	}
 	if (dbg_int_buf[0] == 0x18)//修改
 	{
 		switch (dbg_int_buf[1])
 		{
-		case 0x0:
-			SMSEC_Int_Enable(dbg_int_buf[1]);
-			break;
-		case 0x1:
-			SMSEC_Int_Disable(dbg_int_buf[1]);
-			break;
-		case 0x8:
-			break;
-		default:
-			illegal_operation = 1;
-			break;
+			case 0x0:
+				SMSEC_Int_Enable(dbg_int_buf[1]);
+				break;
+			case 0x1:
+				SMSEC_Int_Disable(dbg_int_buf[1]);
+				break;
+			case 0x8:
+				break;
+			default:
+				illegal_operation = 1;
+				break;
 		}
 	}
 	if (dbg_int_buf[0] == 0x19)
@@ -1379,9 +1379,9 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 			// case 0x1:
 			// 	SMSHOST_Int_Disable(dbg_int_buf[1]);
 			// 	break;
-		default:
-			illegal_operation = 1;
-			break;
+			default:
+				illegal_operation = 1;
+				break;
 		}
 	}
 	if (dbg_int_buf[0] >= 0x1A && dbg_int_buf[0] <= 0x1D)
@@ -1389,149 +1389,149 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 		int index = dbg_int_buf[0] - 0x1A;
 		switch (dbg_int_buf[1])
 		{
-		case 0x0:
-			Timer_Int_Enable(index);
-			break;
-		case 0x1:
-			Timer_Int_Disable(index);
-			break;
-		case 0x8:
-			value = Timer_Int_Enable_Read(index);
-			read_flag = 1;
-			break;
-		case 0xC:
-			value = Timer_Int_Status(index);
-			read_flag = 1;
-			break;
-		default:
-			illegal_operation = 1;
-			break;
+			case 0x0:
+				Timer_Int_Enable(index);
+				break;
+			case 0x1:
+				Timer_Int_Disable(index);
+				break;
+			case 0x8:
+				value = Timer_Int_Enable_Read(index);
+				read_flag = 1;
+				break;
+			case 0xC:
+				value = Timer_Int_Status(index);
+				read_flag = 1;
+				break;
+			default:
+				illegal_operation = 1;
+				break;
 		}
 	}
 	if (dbg_int_buf[0] == 0x1E)
 	{
 		switch (dbg_int_buf[1])
 		{
-		case 0x0:
-			ICTL0_INTEN0 = 0xff; ICTL0_INTEN1 = 0xff;
-			ICTL0_INTEN2 = 0xff; ICTL0_INTEN3 = 0xff;
-			ICTL0_INTEN4 = 0xff; ICTL0_INTEN5 = 0xff;
-			ICTL0_INTEN6 = 0xff; ICTL0_INTEN7 = 0x7;
-			break;
-		case 0x1:
-			ICTL0_INTEN0 = 0x00; ICTL0_INTEN1 = 0x00;
-			ICTL0_INTEN2 = 0x00; ICTL0_INTEN3 = 0x00;
-			ICTL0_INTEN4 = 0x00; ICTL0_INTEN5 = 0x00;
-			ICTL0_INTEN6 = 0x00; ICTL0_INTEN7 = 0x00;
-			break;
-		case 0x2:
-			ICTL0_INTMASK0 = 0xff; ICTL0_INTMASK1 = 0xff;
-			ICTL0_INTMASK2 = 0xff; ICTL0_INTMASK3 = 0xff;
-			ICTL0_INTMASK4 = 0xff; ICTL0_INTMASK5 = 0xff;
-			ICTL0_INTMASK6 = 0xff; ICTL0_INTMASK7 = 0xff;
-			break;
-		case 0x3:
-			ICTL0_INTMASK0 = 0x00; ICTL0_INTMASK1 = 0x00;
-			ICTL0_INTMASK2 = 0x00; ICTL0_INTMASK3 = 0x00;
-			ICTL0_INTMASK4 = 0x00; ICTL0_INTMASK5 = 0x00;
-			ICTL0_INTMASK6 = 0x00; ICTL0_INTMASK7 = 0xf8;
-			break;
-		case 0x8:
-			if (ICTL0_INTEN0 == 0xff && ICTL0_INTEN1 == 0xff && ICTL0_INTEN2 == 0xff
-				&& ICTL0_INTEN3 == 0xff && ICTL0_INTEN4 == 0xff && ICTL0_INTEN5 == 0xff
-				&& ICTL0_INTEN6 == 0xff && ((ICTL0_INTEN7 & 0x7) == 0x7))
-			{
-				value = 1;
-			}
-			else
-			{
-				value = 0;
-			}
-			read_flag = 1;
-			break;
-		case 0x9://是否屏蔽中断
-			if (ICTL0_INTMASK0 == 0xff && ICTL0_INTMASK1 == 0xff && ICTL0_INTMASK2 == 0xff
-				&& ICTL0_INTMASK3 == 0xff && ICTL0_INTMASK4 == 0xff && ICTL0_INTMASK5 == 0xff
-				&& ICTL0_INTMASK6 == 0xff && ((ICTL0_INTMASK7 & 0x7) == 0x7))
-			{
-				value = 1;
-			}
-			else
-			{
-				value = 0;
-			}
-			read_flag = 1;
-			break;
-		case 0xC:
-			value = Int_Control0_Status(dbg_int_buf[2]);
-			read_flag = 1;
-			break;
-		default:
-			illegal_operation = 1;
-			break;
+			case 0x0:
+				ICTL0_INTEN0 = 0xff; ICTL0_INTEN1 = 0xff;
+				ICTL0_INTEN2 = 0xff; ICTL0_INTEN3 = 0xff;
+				ICTL0_INTEN4 = 0xff; ICTL0_INTEN5 = 0xff;
+				ICTL0_INTEN6 = 0xff; ICTL0_INTEN7 = 0x7;
+				break;
+			case 0x1:
+				ICTL0_INTEN0 = 0x00; ICTL0_INTEN1 = 0x00;
+				ICTL0_INTEN2 = 0x00; ICTL0_INTEN3 = 0x00;
+				ICTL0_INTEN4 = 0x00; ICTL0_INTEN5 = 0x00;
+				ICTL0_INTEN6 = 0x00; ICTL0_INTEN7 = 0x00;
+				break;
+			case 0x2:
+				ICTL0_INTMASK0 = 0xff; ICTL0_INTMASK1 = 0xff;
+				ICTL0_INTMASK2 = 0xff; ICTL0_INTMASK3 = 0xff;
+				ICTL0_INTMASK4 = 0xff; ICTL0_INTMASK5 = 0xff;
+				ICTL0_INTMASK6 = 0xff; ICTL0_INTMASK7 = 0xff;
+				break;
+			case 0x3:
+				ICTL0_INTMASK0 = 0x00; ICTL0_INTMASK1 = 0x00;
+				ICTL0_INTMASK2 = 0x00; ICTL0_INTMASK3 = 0x00;
+				ICTL0_INTMASK4 = 0x00; ICTL0_INTMASK5 = 0x00;
+				ICTL0_INTMASK6 = 0x00; ICTL0_INTMASK7 = 0xf8;
+				break;
+			case 0x8:
+				if (ICTL0_INTEN0 == 0xff && ICTL0_INTEN1 == 0xff && ICTL0_INTEN2 == 0xff
+					&& ICTL0_INTEN3 == 0xff && ICTL0_INTEN4 == 0xff && ICTL0_INTEN5 == 0xff
+					&& ICTL0_INTEN6 == 0xff && ((ICTL0_INTEN7 & 0x7) == 0x7))
+				{
+					value = 1;
+				}
+				else
+				{
+					value = 0;
+				}
+				read_flag = 1;
+				break;
+			case 0x9://是否屏蔽中断
+				if (ICTL0_INTMASK0 == 0xff && ICTL0_INTMASK1 == 0xff && ICTL0_INTMASK2 == 0xff
+					&& ICTL0_INTMASK3 == 0xff && ICTL0_INTMASK4 == 0xff && ICTL0_INTMASK5 == 0xff
+					&& ICTL0_INTMASK6 == 0xff && ((ICTL0_INTMASK7 & 0x7) == 0x7))
+				{
+					value = 1;
+				}
+				else
+				{
+					value = 0;
+				}
+				read_flag = 1;
+				break;
+			case 0xC:
+				value = Int_Control0_Status(dbg_int_buf[2]);
+				read_flag = 1;
+				break;
+			default:
+				illegal_operation = 1;
+				break;
 		}
 	}
 	if (dbg_int_buf[0] == 0x1F)
 	{
 		switch (dbg_int_buf[1])
 		{
-		case 0x0:
-			ICTL1_INTEN0 = 0xff; ICTL1_INTEN1 = 0xff;
-			ICTL1_INTEN2 = 0xff; ICTL1_INTEN3 = 0xff;
-			ICTL1_INTEN4 = 0xff; ICTL1_INTEN5 = 0xff;
-			ICTL1_INTEN6 = 0xff; ICTL1_INTEN7 = 0xff;
-			break;
-		case 0x1:
-			ICTL1_INTEN0 = 0x00; ICTL1_INTEN1 = 0x00;
-			ICTL1_INTEN2 = 0x00; ICTL1_INTEN3 = 0x00;
-			ICTL1_INTEN4 = 0x00; ICTL1_INTEN5 = 0x00;
-			ICTL1_INTEN6 = 0x00; ICTL1_INTEN7 = 0x00;
-			break;
-		case 0x2:
-			ICTL1_INTMASK0 = 0xff; ICTL1_INTMASK1 = 0xff;
-			ICTL1_INTMASK2 = 0xff; ICTL1_INTMASK3 = 0xff;
-			ICTL1_INTMASK4 = 0xff; ICTL1_INTMASK5 = 0xff;
-			ICTL1_INTMASK6 = 0xff; ICTL1_INTMASK7 = 0xff;
-			break;
-		case 0x3:
-			ICTL1_INTMASK0 = 0x00; ICTL1_INTMASK1 = 0x00;
-			ICTL1_INTMASK2 = 0x00; ICTL1_INTMASK3 = 0x00;
-			ICTL1_INTMASK4 = 0x00; ICTL1_INTMASK5 = 0x00;
-			ICTL1_INTMASK6 = 0x00; ICTL1_INTMASK7 = 0x00;
-			break;
-		case 0x8://是否使能
-			if (ICTL1_INTEN0 == 0xff && ICTL1_INTEN1 == 0xff && ICTL1_INTEN2 == 0xff
-				&& ICTL1_INTEN3 == 0xff && ICTL1_INTEN4 == 0xff && ICTL1_INTEN5 == 0xff
-				&& ICTL1_INTEN6 == 0xff && ((ICTL1_INTEN7 & 0x7) == 0x7))
-			{
-				value = 1;
-			}
-			else
-			{
-				value = 0;
-			}
-			read_flag = 1;
-			break;
-		case 0x9:
-			if (ICTL1_INTMASK0 == 0xff && ICTL1_INTMASK1 == 0xff && ICTL1_INTMASK2 == 0xff
-				&& ICTL1_INTMASK3 == 0xff && ICTL1_INTMASK4 == 0xff && ICTL1_INTMASK5 == 0xff
-				&& ICTL1_INTMASK6 == 0xff && ((ICTL1_INTMASK7 & 0x7) == 0x7))
-			{
-				value = 1;
-			}
-			else
-			{
-				value = 0;
-			}
-			read_flag = 1;
-			break;
-		case 0xC:
-			value = Int_Control1_Status(dbg_int_buf[2]);
-			read_flag = 1;
-			break;
-		default:
-			illegal_operation = 1;
-			break;
+			case 0x0:
+				ICTL1_INTEN0 = 0xff; ICTL1_INTEN1 = 0xff;
+				ICTL1_INTEN2 = 0xff; ICTL1_INTEN3 = 0xff;
+				ICTL1_INTEN4 = 0xff; ICTL1_INTEN5 = 0xff;
+				ICTL1_INTEN6 = 0xff; ICTL1_INTEN7 = 0xff;
+				break;
+			case 0x1:
+				ICTL1_INTEN0 = 0x00; ICTL1_INTEN1 = 0x00;
+				ICTL1_INTEN2 = 0x00; ICTL1_INTEN3 = 0x00;
+				ICTL1_INTEN4 = 0x00; ICTL1_INTEN5 = 0x00;
+				ICTL1_INTEN6 = 0x00; ICTL1_INTEN7 = 0x00;
+				break;
+			case 0x2:
+				ICTL1_INTMASK0 = 0xff; ICTL1_INTMASK1 = 0xff;
+				ICTL1_INTMASK2 = 0xff; ICTL1_INTMASK3 = 0xff;
+				ICTL1_INTMASK4 = 0xff; ICTL1_INTMASK5 = 0xff;
+				ICTL1_INTMASK6 = 0xff; ICTL1_INTMASK7 = 0xff;
+				break;
+			case 0x3:
+				ICTL1_INTMASK0 = 0x00; ICTL1_INTMASK1 = 0x00;
+				ICTL1_INTMASK2 = 0x00; ICTL1_INTMASK3 = 0x00;
+				ICTL1_INTMASK4 = 0x00; ICTL1_INTMASK5 = 0x00;
+				ICTL1_INTMASK6 = 0x00; ICTL1_INTMASK7 = 0x00;
+				break;
+			case 0x8://是否使能
+				if (ICTL1_INTEN0 == 0xff && ICTL1_INTEN1 == 0xff && ICTL1_INTEN2 == 0xff
+					&& ICTL1_INTEN3 == 0xff && ICTL1_INTEN4 == 0xff && ICTL1_INTEN5 == 0xff
+					&& ICTL1_INTEN6 == 0xff && ((ICTL1_INTEN7 & 0x7) == 0x7))
+				{
+					value = 1;
+				}
+				else
+				{
+					value = 0;
+				}
+				read_flag = 1;
+				break;
+			case 0x9:
+				if (ICTL1_INTMASK0 == 0xff && ICTL1_INTMASK1 == 0xff && ICTL1_INTMASK2 == 0xff
+					&& ICTL1_INTMASK3 == 0xff && ICTL1_INTMASK4 == 0xff && ICTL1_INTMASK5 == 0xff
+					&& ICTL1_INTMASK6 == 0xff && ((ICTL1_INTMASK7 & 0x7) == 0x7))
+				{
+					value = 1;
+				}
+				else
+				{
+					value = 0;
+				}
+				read_flag = 1;
+				break;
+			case 0xC:
+				value = Int_Control1_Status(dbg_int_buf[2]);
+				read_flag = 1;
+				break;
+			default:
+				illegal_operation = 1;
+				break;
 		}
 	}
 	if (dbg_int_buf[0] >= 0x20 && dbg_int_buf[0] <= 0x27)
@@ -1539,53 +1539,53 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 		int index = dbg_int_buf[0] - 0x20;
 		switch (dbg_int_buf[1])
 		{
-		case 0x0:
-			GPIOA0_7_Int_Enable(index);
-			break;
-		case 0x1:
-			GPIOA0_7_Int_Disable(index);
-			break;
-		case 0x2:
-			GPIOA0_7_Int_Mask(index);
-			break;
-		case 0x3:
-			GPIOA0_7_Int_Unmask(index);
-			break;
-		case 0x4:
-			GPIOA0_7_Int_Type_Edge(index);
-			break;
-		case 0x5:
-			GPIOA0_7_Int_Type_Level(index);
-			break;
-		case 0x6:
-			GPIOA0_7_Int_Polarity_High(index);
-			break;
-		case 0x7:
-			GPIOA0_7_Int_Polarity_Low(index);
-			break;
-		case 0x8:
-			value = GPIOA0_7_Int_Enable_Read(index);
-			read_flag = 1;
-			break;
-		case 0x9:
-			value = GPIOA0_7_Int_Mask_Read(index);
-			read_flag = 1;
-			break;
-		case 0xA:
-			value = GPIOA0_7_Int_Type_Read(index);
-			read_flag = 1;
-			break;
-		case 0xB:
-			value = GPIOA0_7_Int_Polarity_Read(index);
-			read_flag = 1;
-			break;
-		case 0xC:
-			value = GPIOA0_7_Int_Status(index);
-			read_flag = 1;
-			break;
-		default:
-			illegal_operation = 1;
-			break;
+			case 0x0:
+				GPIOA0_7_Int_Enable(index);
+				break;
+			case 0x1:
+				GPIOA0_7_Int_Disable(index);
+				break;
+			case 0x2:
+				GPIOA0_7_Int_Mask(index);
+				break;
+			case 0x3:
+				GPIOA0_7_Int_Unmask(index);
+				break;
+			case 0x4:
+				GPIOA0_7_Int_Type_Edge(index);
+				break;
+			case 0x5:
+				GPIOA0_7_Int_Type_Level(index);
+				break;
+			case 0x6:
+				GPIOA0_7_Int_Polarity_High(index);
+				break;
+			case 0x7:
+				GPIOA0_7_Int_Polarity_Low(index);
+				break;
+			case 0x8:
+				value = GPIOA0_7_Int_Enable_Read(index);
+				read_flag = 1;
+				break;
+			case 0x9:
+				value = GPIOA0_7_Int_Mask_Read(index);
+				read_flag = 1;
+				break;
+			case 0xA:
+				value = GPIOA0_7_Int_Type_Read(index);
+				read_flag = 1;
+				break;
+			case 0xB:
+				value = GPIOA0_7_Int_Polarity_Read(index);
+				read_flag = 1;
+				break;
+			case 0xC:
+				value = GPIOA0_7_Int_Status(index);
+				read_flag = 1;
+				break;
+			default:
+				illegal_operation = 1;
+				break;
 		}
 	}
 	if (dbg_int_buf[0] >= 0x28 && dbg_int_buf[0] <= 0x2F)
@@ -1593,53 +1593,53 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 		int index = dbg_int_buf[0] - 0x28;
 		switch (dbg_int_buf[1])
 		{
-		case 0x0:
-			GPIOA8_15_Int_Enable(index);
-			break;
-		case 0x1:
-			GPIOA8_15_Int_Disable(index);
-			break;
-		case 0x2:
-			GPIOA8_15_Int_Mask(index);
-			break;
-		case 0x3:
-			GPIOA8_15_Int_Unmask(index);
-			break;
-		case 0x4:
-			GPIOA8_15_Int_Type_Edge(index);
-			break;
-		case 0x5:
-			GPIOA8_15_Int_Type_Level(index);
-			break;
-		case 0x6:
-			GPIOA8_15_Int_Polarity_High(index);
-			break;
-		case 0x7:
-			GPIOA8_15_Int_Polarity_Low(index);
-			break;
-		case 0x8:
-			value = GPIOA8_15_Int_Enable_Read(index);
-			read_flag = 1;
-			break;
-		case 0x9:
-			value = GPIOA8_15_Int_Mask_Read(index);
-			read_flag = 1;
-			break;
-		case 0xA:
-			value = GPIOA8_15_Int_Type_Read(index);
-			read_flag = 1;
-			break;
-		case 0xB:
-			value = GPIOA8_15_Int_Polarity_Read(index);
-			read_flag = 1;
-			break;
-		case 0xC:
-			value = GPIOA8_15_Int_Status(index);
-			read_flag = 1;
-			break;
-		default:
-			illegal_operation = 1;
-			break;
+			case 0x0:
+				GPIOA8_15_Int_Enable(index);
+				break;
+			case 0x1:
+				GPIOA8_15_Int_Disable(index);
+				break;
+			case 0x2:
+				GPIOA8_15_Int_Mask(index);
+				break;
+			case 0x3:
+				GPIOA8_15_Int_Unmask(index);
+				break;
+			case 0x4:
+				GPIOA8_15_Int_Type_Edge(index);
+				break;
+			case 0x5:
+				GPIOA8_15_Int_Type_Level(index);
+				break;
+			case 0x6:
+				GPIOA8_15_Int_Polarity_High(index);
+				break;
+			case 0x7:
+				GPIOA8_15_Int_Polarity_Low(index);
+				break;
+			case 0x8:
+				value = GPIOA8_15_Int_Enable_Read(index);
+				read_flag = 1;
+				break;
+			case 0x9:
+				value = GPIOA8_15_Int_Mask_Read(index);
+				read_flag = 1;
+				break;
+			case 0xA:
+				value = GPIOA8_15_Int_Type_Read(index);
+				read_flag = 1;
+				break;
+			case 0xB:
+				value = GPIOA8_15_Int_Polarity_Read(index);
+				read_flag = 1;
+				break;
+			case 0xC:
+				value = GPIOA8_15_Int_Status(index);
+				read_flag = 1;
+				break;
+			default:
+				illegal_operation = 1;
+				break;
 		}
 	}
 	if (dbg_int_buf[0] >= 0x30 && dbg_int_buf[0] <= 0x37)
@@ -1647,53 +1647,53 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 		int index = dbg_int_buf[0] - 0x30;
 		switch (dbg_int_buf[1])
 		{
-		case 0x0:
-			GPIOA16_23_Int_Enable(index);
-			break;
-		case 0x1:
-			GPIOA16_23_Int_Disable(index);
-			break;
-		case 0x2:
-			GPIOA16_23_Int_Mask(index);
-			break;
-		case 0x3:
-			GPIOA16_23_Int_Unmask(index);
-			break;
-		case 0x4:
-			GPIOA16_23_Int_Type_Edge(index);
-			break;
-		case 0x5:
-			GPIOA16_23_Int_Type_Level(index);
-			break;
-		case 0x6:
-			GPIOA16_23_Int_Polarity_High(index);
-			break;
-		case 0x7:
-			GPIOA16_23_Int_Polarity_Low(index);
-			break;
-		case 0x8:
-			value = GPIOA16_23_Int_Enable_Read(index);
-			read_flag = 1;
-			break;
-		case 0x9:
-			value = GPIOA16_23_Int_Mask_Read(index);
-			read_flag = 1;
-			break;
-		case 0xA:
-			value = GPIOA16_23_Int_Type_Read(index);
-			read_flag = 1;
-			break;
-		case 0xB:
-			value = GPIOA16_23_Int_Polarity_Read(index);
-			read_flag = 1;
-			break;
-		case 0xC:
-			value = GPIOA16_23_Int_Status(index);
-			read_flag = 1;
-			break;
-		default:
-			illegal_operation = 1;
-			break;
+			case 0x0:
+				GPIOA16_23_Int_Enable(index);
+				break;
+			case 0x1:
+				GPIOA16_23_Int_Disable(index);
+				break;
+			case 0x2:
+				GPIOA16_23_Int_Mask(index);
+				break;
+			case 0x3:
+				GPIOA16_23_Int_Unmask(index);
+				break;
+			case 0x4:
+				GPIOA16_23_Int_Type_Edge(index);
+				break;
+			case 0x5:
+				GPIOA16_23_Int_Type_Level(index);
+				break;
+			case 0x6:
+				GPIOA16_23_Int_Polarity_High(index);
+				break;
+			case 0x7:
+				GPIOA16_23_Int_Polarity_Low(index);
+				break;
+			case 0x8:
+				value = GPIOA16_23_Int_Enable_Read(index);
+				read_flag = 1;
+				break;
+			case 0x9:
+				value = GPIOA16_23_Int_Mask_Read(index);
+				read_flag = 1;
+				break;
+			case 0xA:
+				value = GPIOA16_23_Int_Type_Read(index);
+				read_flag = 1;
+				break;
+			case 0xB:
+				value = GPIOA16_23_Int_Polarity_Read(index);
+				read_flag = 1;
+				break;
+			case 0xC:
+				value = GPIOA16_23_Int_Status(index);
+				read_flag = 1;
+				break;
+			default:
+				illegal_operation = 1;
+				break;
 		}
 	}
 	if (dbg_int_buf[0] >= 0x38 && dbg_int_buf[0] <= 0x3F)
@@ -1701,53 +1701,53 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 		int index = dbg_int_buf[0] - 0x38;
 		switch (dbg_int_buf[1])
 		{
-		case 0x0:
-			GPIOA24_31_Int_Enable(index);
-			break;
-		case 0x1:
-			GPIOA24_31_Int_Disable(index);
-			break;
-		case 0x2:
-			GPIOA24_31_Int_Mask(index);
-			break;
-		case 0x3:
-			GPIOA24_31_Int_Unmask(index);
-			break;
-		case 0x4:
-			GPIOA24_31_Int_Type_Edge(index);
-			break;
-		case 0x5:
-			GPIOA24_31_Int_Type_Level(index);
-			break;
-		case 0x6:
-			GPIOA24_31_Int_Polarity_High(index);
-			break;
-		case 0x7:
-			GPIOA24_31_Int_Polarity_Low(index);
-			break;
-		case 0x8:
-			value = GPIOA24_31_Int_Enable_Read(index);
-			read_flag = 1;
-			break;
-		case 0x9:
-			value = GPIOA24_31_Int_Mask_Read(index);
-			read_flag = 1;
-			break;
-		case 0xA:
-			value = GPIOA24_31_Int_Type_Read(index);
-			read_flag = 1;
-			break;
-		case 0xB:
-			value = GPIOA24_31_Int_Polarity_Read(index);
-			read_flag = 1;
-			break;
-		case 0xC:
-			value = GPIOA24_31_Int_Status(index);
-			read_flag = 1;
-			break;
-		default:
-			illegal_operation = 1;
-			break;
+			case 0x0:
+				GPIOA24_31_Int_Enable(index);
+				break;
+			case 0x1:
+				GPIOA24_31_Int_Disable(index);
+				break;
+			case 0x2:
+				GPIOA24_31_Int_Mask(index);
+				break;
+			case 0x3:
+				GPIOA24_31_Int_Unmask(index);
+				break;
+			case 0x4:
+				GPIOA24_31_Int_Type_Edge(index);
+				break;
+			case 0x5:
+				GPIOA24_31_Int_Type_Level(index);
+				break;
+			case 0x6:
+				GPIOA24_31_Int_Polarity_High(index);
+				break;
+			case 0x7:
+				GPIOA24_31_Int_Polarity_Low(index);
+				break;
+			case 0x8:
+				value = GPIOA24_31_Int_Enable_Read(index);
+				read_flag = 1;
+				break;
+			case 0x9:
+				value = GPIOA24_31_Int_Mask_Read(index);
+				read_flag = 1;
+				break;
+			case 0xA:
+				value = GPIOA24_31_Int_Type_Read(index);
+				read_flag = 1;
+				break;
+			case 0xB:
+				value = GPIOA24_31_Int_Polarity_Read(index);
+				read_flag = 1;
+				break;
+			case 0xC:
+				value = GPIOA24_31_Int_Status(index);
+				read_flag = 1;
+				break;
+			default:
+				illegal_operation = 1;
+				break;
 		}
 	}
 	if (dbg_int_buf[0] >= 0x40 && dbg_int_buf[0] <= 0x47)
@@ -1755,53 +1755,53 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 		int index = dbg_int_buf[0] - 0x40;
 		switch (dbg_int_buf[1])
 		{
-		case 0x0:
-			GPIOB0_7_Int_Enable(index);
-			break;
-		case 0x1:
-			GPIOB0_7_Int_Disable(index);
-			break;
-		case 0x2:
-			GPIOB0_7_Int_Mask(index);
-			break;
-		case 0x3:
-			GPIOB0_7_Int_Unmask(index);
-			break;
-		case 0x4:
-			GPIOB0_7_Int_Type_Edge(index);
-			break;
-		case 0x5:
-			GPIOB0_7_Int_Type_Level(index);
-			break;
-		case 0x6:
-			GPIOB0_7_Int_Polarity_High(index);
-			break;
-		case 0x7:
-			GPIOB0_7_Int_Polarity_Low(index);
-			break;
-		case 0x8:
-			value = GPIOB0_7_Int_Enable_Read(index);
-			read_flag = 1;
-			break;
-		case 0x9:
-			value = GPIOB0_7_Int_Mask_Read(index);
-			read_flag = 1;
-			break;
-		case 0xA:
-			value = GPIOB0_7_Int_Type_Read(index);
-			read_flag = 1;
-			break;
-		case 0xB:
-			value = GPIOB0_7_Int_Polarity_Read(index);
-			read_flag = 1;
-			break;
-		case 0xC:
-			value = GPIOB0_7_Int_Status(index);
-			read_flag = 1;
-			break;
-		default:
-			illegal_operation = 1;
-			break;
+			case 0x0:
+				GPIOB0_7_Int_Enable(index);
+				break;
+			case 0x1:
+				GPIOB0_7_Int_Disable(index);
+				break;
+			case 0x2:
+				GPIOB0_7_Int_Mask(index);
+				break;
+			case 0x3:
+				GPIOB0_7_Int_Unmask(index);
+				break;
+			case 0x4:
+				GPIOB0_7_Int_Type_Edge(index);
+				break;
+			case 0x5:
+				GPIOB0_7_Int_Type_Level(index);
+				break;
+			case 0x6:
+				GPIOB0_7_Int_Polarity_High(index);
+				break;
+			case 0x7:
+				GPIOB0_7_Int_Polarity_Low(index);
+				break;
+			case 0x8:
+				value = GPIOB0_7_Int_Enable_Read(index);
+				read_flag = 1;
+				break;
+			case 0x9:
+				value = GPIOB0_7_Int_Mask_Read(index);
+				read_flag = 1;
+				break;
+			case 0xA:
+				value = GPIOB0_7_Int_Type_Read(index);
+				read_flag = 1;
+				break;
+			case 0xB:
+				value = GPIOB0_7_Int_Polarity_Read(index);
+				read_flag = 1;
+				break;
+			case 0xC:
+				value = GPIOB0_7_Int_Status(index);
+				read_flag = 1;
+				break;
+			default:
+				illegal_operation = 1;
+				break;
 		}
 	}
 	if (dbg_int_buf[0] >= 0x48 && dbg_int_buf[0] <= 0x4F)
@@ -1809,53 +1809,53 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 		int index = dbg_int_buf[0] - 0x48;
 		switch (dbg_int_buf[1])
 		{
-		case 0x0:
-			GPIOB8_15_Int_Enable(index);
-			break;
-		case 0x1:
-			GPIOB8_15_Int_Disable(index);
-			break;
-		case 0x2:
-			GPIOB8_15_Int_Mask(index);
-			break;
-		case 0x3:
-			GPIOB8_15_Int_Unmask(index);
-			break;
-		case 0x4:
-			GPIOB8_15_Int_Type_Edge(index);
-			break;
-		case 0x5:
-			GPIOB8_15_Int_Type_Level(index);
-			break;
-		case 0x6:
-			GPIOB8_15_Int_Polarity_High(index);
-			break;
-		case 0x7:
-			GPIOB8_15_Int_Polarity_Low(index);
-			break;
-		case 0x8:
-			value = GPIOB8_15_Int_Enable_Read(index);
-			read_flag = 1;
-			break;
-		case 0x9:
-			value = GPIOB8_15_Int_Mask_Read(index);
-			read_flag = 1;
-			break;
-		case 0xA:
-			value = GPIOB8_15_Int_Type_Read(index);
-			read_flag = 1;
-			break;
-		case 0xB:
-			value = GPIOB8_15_Int_Polarity_Read(index);
-			read_flag = 1;
-			break;
-		case 0xC:
-			value = GPIOB8_15_Int_Status(index);
-			read_flag = 1;
-			break;
-		default:
-			illegal_operation = 1;
-			break;
+			case 0x0:
+				GPIOB8_15_Int_Enable(index);
+				break;
+			case 0x1:
+				GPIOB8_15_Int_Disable(index);
+				break;
+			case 0x2:
+				GPIOB8_15_Int_Mask(index);
+				break;
+			case 0x3:
+				GPIOB8_15_Int_Unmask(index);
+				break;
+			case 0x4:
+				GPIOB8_15_Int_Type_Edge(index);
+				break;
+			case 0x5:
+				GPIOB8_15_Int_Type_Level(index);
+				break;
+			case 0x6:
+				GPIOB8_15_Int_Polarity_High(index);
+				break;
+			case 0x7:
+				GPIOB8_15_Int_Polarity_Low(index);
+				break;
+			case 0x8:
+				value = GPIOB8_15_Int_Enable_Read(index);
+				read_flag = 1;
+				break;
+			case 0x9:
+				value = GPIOB8_15_Int_Mask_Read(index);
+				read_flag = 1;
+				break;
+			case 0xA:
+				value = GPIOB8_15_Int_Type_Read(index);
+				read_flag = 1;
+				break;
+			case 0xB:
+				value = GPIOB8_15_Int_Polarity_Read(index);
+				read_flag = 1;
+				break;
+			case 0xC:
+				value = GPIOB8_15_Int_Status(index);
+				read_flag = 1;
+				break;
+			default:
+				illegal_operation = 1;
+				break;
 		}
 	}
 	// sws----------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1864,53 +1864,53 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 		int index = dbg_int_buf[0] - 0x50;
 		switch (dbg_int_buf[1])
 		{
-		case 0x0:
-			GPIOB16_19_Int_Enable(index);
-			break;
-		case 0x1:
-			GPIOB16_19_Int_Disable(index);
-			break;
-		case 0x2:
-			GPIOB16_19_Int_Mask(index);
-			break;
-		case 0x3:
-			GPIOB16_19_Int_Unmask(index);
-			break;
-		case 0x4:
-			GPIOB16_19_Int_Type_Edge(index);
-			break;
-		case 0x5:
-			GPIOB16_19_Int_Type_Level(index);
-			break;
-		case 0x6:
-			GPIOB16_19_Int_Polarity_High(index);
-			break;
-		case 0x7:
-			GPIOB16_19_Int_Polarity_Low(index);
-			break;
-		case 0x8:
-			value = GPIOB16_19_Int_Enable_Read(index);
-			read_flag = 1;
-			break;
-		case 0x9:
-			value = GPIOB16_19_Int_Mask_Read(index);
-			read_flag = 1;
-			break;
-		case 0xA:
-			value = GPIOB16_19_Int_Type_Read(index);
-			read_flag = 1;
-			break;
-		case 0xB:
-			value = GPIOB16_19_Int_Polarity_Read(index);
-			read_flag = 1;
-			break;
-		case 0xC:
-			value = GPIOB16_19_Int_Status(index);
-			read_flag = 1;
-			break;
-		default:
-			illegal_operation = 1;
-			break;
+			case 0x0:
+				GPIOB16_19_Int_Enable(index);
+				break;
+			case 0x1:
+				GPIOB16_19_Int_Disable(index);
+				break;
+			case 0x2:
+				GPIOB16_19_Int_Mask(index);
+				break;
+			case 0x3:
+				GPIOB16_19_Int_Unmask(index);
+				break;
+			case 0x4:
+				GPIOB16_19_Int_Type_Edge(index);
+				break;
+			case 0x5:
+				GPIOB16_19_Int_Type_Level(index);
+				break;
+			case 0x6:
+				GPIOB16_19_Int_Polarity_High(index);
+				break;
+			case 0x7:
+				GPIOB16_19_Int_Polarity_Low(index);
+				break;
+			case 0x8:
+				value = GPIOB16_19_Int_Enable_Read(index);
+				read_flag = 1;
+				break;
+			case 0x9:
+				value = GPIOB16_19_Int_Mask_Read(index);
+				read_flag = 1;
+				break;
+			case 0xA:
+				value = GPIOB16_19_Int_Type_Read(index);
+				read_flag = 1;
+				break;
+			case 0xB:
+				value = GPIOB16_19_Int_Polarity_Read(index);
+				read_flag = 1;
+				break;
+			case 0xC:
+				value = GPIOB16_19_Int_Status(index);
+				read_flag = 1;
+				break;
+			default:
+				illegal_operation = 1;
+				break;
 		}
 	}
 	if (dbg_int_buf[0] >= 0x54 && dbg_int_buf[0] <= 0x5A)
@@ -1918,53 +1918,53 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 		int index = dbg_int_buf[0] - 0x54;
 		switch (dbg_int_buf[1])
 		{
-		case 0x0:
-			GPIOB20_26_Int_Enable(index);
-			break;
-		case 0x1:
-			GPIOB20_26_Int_Disable(index);
-			break;
-		case 0x2:
-			GPIOB20_26_Int_Mask(index);
-			break;
-		case 0x3:
-			GPIOB20_26_Int_Unmask(index);
-			break;
-		case 0x4:
-			GPIOB20_26_Int_Type_Edge(index);
-			break;
-		case 0x5:
-			GPIOB20_26_Int_Type_Level(index);
-			break;
-		case 0x6:
-			GPIOB20_26_Int_Polarity_High(index);
-			break;
-		case 0x7:
-			GPIOB20_26_Int_Polarity_Low(index);
-			break;
-		case 0x8:
-			value = GPIOB20_26_Int_Enable_Read(index);
-			read_flag = 1;
-			break;
-		case 0x9:
-			value = GPIOB20_26_Int_Mask_Read(index);
-			read_flag = 1;
-			break;
-		case 0xA:
-			value = GPIOB20_26_Int_Type_Read(index);
-			read_flag = 1;
-			break;
-		case 0xB:
-			value = GPIOB20_26_Int_Polarity_Read(index);
-			read_flag = 1;
-			break;
-		case 0xC:
-			value = GPIOB20_26_Int_Status(index);
-			read_flag = 1;
-			break;
-		default:
-			illegal_operation = 1;
-			break;
+			case 0x0:
+				GPIOB20_26_Int_Enable(index);
+				break;
+			case 0x1:
+				GPIOB20_26_Int_Disable(index);
+				break;
+			case 0x2:
+				GPIOB20_26_Int_Mask(index);
+				break;
+			case 0x3:
+				GPIOB20_26_Int_Unmask(index);
+				break;
+			case 0x4:
+				GPIOB20_26_Int_Type_Edge(index);
+				break;
+			case 0x5:
+				GPIOB20_26_Int_Type_Level(index);
+				break;
+			case 0x6:
+				GPIOB20_26_Int_Polarity_High(index);
+				break;
+			case 0x7:
+				GPIOB20_26_Int_Polarity_Low(index);
+				break;
+			case 0x8:
+				value = GPIOB20_26_Int_Enable_Read(index);
+				read_flag = 1;
+				break;
+			case 0x9:
+				value = GPIOB20_26_Int_Mask_Read(index);
+				read_flag = 1;
+				break;
+			case 0xA:
+				value = GPIOB20_26_Int_Type_Read(index);
+				read_flag = 1;
+				break;
+			case 0xB:
+				value = GPIOB20_26_Int_Polarity_Read(index);
+				read_flag = 1;
+				break;
+			case 0xC:
+				value = GPIOB20_26_Int_Status(index);
+				read_flag = 1;
+				break;
+			default:
+				illegal_operation = 1;
+				break;
 		}
 	}
 	if (dbg_int_buf[0] >= 0x5B && dbg_int_buf[0] <= 0x62)
@@ -1972,53 +1972,53 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 		int index = dbg_int_buf[0] - 0x5B;
 		switch (dbg_int_buf[1])
 		{
-		case 0x0:
-			GPIOC0_7_Int_Enable(index);
-			break;
-		case 0x1:
-			GPIOC0_7_Int_Disable(index);
-			break;
-		case 0x2:
-			GPIOC0_7_Int_Mask(index);
-			break;
-		case 0x3:
-			GPIOC0_7_Int_Unmask(index);
-			break;
-		case 0x4:
-			GPIOC0_7_Int_Type_Edge(index);
-			break;
-		case 0x5:
-			GPIOC0_7_Int_Type_Level(index);
-			break;
-		case 0x6:
-			GPIOC0_7_Int_Polarity_High(index);
-			break;
-		case 0x7:
-			GPIOC0_7_Int_Polarity_Low(index);
-			break;
-		case 0x8:
-			value = GPIOC0_7_Int_Enable_Read(index);
-			read_flag = 1;
-			break;
-		case 0x9:
-			value = GPIOC0_7_Int_Mask_Read(index);
-			read_flag = 1;
-			break;
-		case 0xA:
-			value = GPIOC0_7_Int_Type_Read(index);
-			read_flag = 1;
-			break;
-		case 0xB:
-			value = GPIOC0_7_Int_Polarity_Read(index);
-			read_flag = 1;
-			break;
-		case 0xC:
-			value = GPIOC0_7_Int_Status(index);
-			read_flag = 1;
-			break;
-		default:
-			illegal_operation = 1;
-			break;
+			case 0x0:
+				GPIOC0_7_Int_Enable(index);
+				break;
+			case 0x1:
+				GPIOC0_7_Int_Disable(index);
+				break;
+			case 0x2:
+				GPIOC0_7_Int_Mask(index);
+				break;
+			case 0x3:
+				GPIOC0_7_Int_Unmask(index);
+				break;
+			case 0x4:
+				GPIOC0_7_Int_Type_Edge(index);
+				break;
+			case 0x5:
+				GPIOC0_7_Int_Type_Level(index);
+				break;
+			case 0x6:
+				GPIOC0_7_Int_Polarity_High(index);
+				break;
+			case 0x7:
+				GPIOC0_7_Int_Polarity_Low(index);
+				break;
+			case 0x8:
+				value = GPIOC0_7_Int_Enable_Read(index);
+				read_flag = 1;
+				break;
+			case 0x9:
+				value = GPIOC0_7_Int_Mask_Read(index);
+				read_flag = 1;
+				break;
+			case 0xA:
+				value = GPIOC0_7_Int_Type_Read(index);
+				read_flag = 1;
+				break;
+			case 0xB:
+				value = GPIOC0_7_Int_Polarity_Read(index);
+				read_flag = 1;
+				break;
+			case 0xC:
+				value = GPIOC0_7_Int_Status(index);
+				read_flag = 1;
+				break;
+			default:
+				illegal_operation = 1;
+				break;
 		}
 	}
 	if (dbg_int_buf[0] >= 0x63 && dbg_int_buf[0] <= 0x68)
@@ -2026,53 +2026,53 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 		int index = dbg_int_buf[0] - 0x63;
 		switch (dbg_int_buf[1])
 		{
-		case 0x0:
-			GPIOC8_13_Int_Enable(index);
-			break;
-		case 0x1:
-			GPIOC8_13_Int_Disable(index);
-			break;
-		case 0x2:
-			GPIOC8_13_Int_Mask(index);
-			break;
-		case 0x3:
-			GPIOC8_13_Int_Unmask(index);
-			break;
-		case 0x4:
-			GPIOC8_13_Int_Type_Edge(index);
-			break;
-		case 0x5:
-			GPIOC8_13_Int_Type_Level(index);
-			break;
-		case 0x6:
-			GPIOC8_13_Int_Polarity_High(index);
-			break;
-		case 0x7:
-			GPIOC8_13_Int_Polarity_Low(index);
-			break;
-		case 0x8:
-			value = GPIOC8_13_Int_Enable_Read(index);
-			read_flag = 1;
-			break;
-		case 0x9:
-			value = GPIOC8_13_Int_Mask_Read(index);
-			read_flag = 1;
-			break;
-		case 0xA:
-			value = GPIOC8_13_Int_Type_Read(index);
-			read_flag = 1;
-			break;
-		case 0xB:
-			value = GPIOC8_13_Int_Polarity_Read(index);
-			read_flag = 1;
-			break;
-		case 0xC:
-			value = GPIOC8_13_Int_Status(index);
-			read_flag = 1;
-			break;
-		default:
-			illegal_operation = 1;
-			break;
+			case 0x0:
+				GPIOC8_13_Int_Enable(index);
+				break;
+			case 0x1:
+				GPIOC8_13_Int_Disable(index);
+				break;
+			case 0x2:
+				GPIOC8_13_Int_Mask(index);
+				break;
+			case 0x3:
+				GPIOC8_13_Int_Unmask(index);
+				break;
+			case 0x4:
+				GPIOC8_13_Int_Type_Edge(index);
+				break;
+			case 0x5:
+				GPIOC8_13_Int_Type_Level(index);
+				break;
+			case 0x6:
+				GPIOC8_13_Int_Polarity_High(index);
+				break;
+			case 0x7:
+				GPIOC8_13_Int_Polarity_Low(index);
+				break;
+			case 0x8:
+				value = GPIOC8_13_Int_Enable_Read(index);
+				read_flag = 1;
+				break;
+			case 0x9:
+				value = GPIOC8_13_Int_Mask_Read(index);
+				read_flag = 1;
+				break;
+			case 0xA:
+				value = GPIOC8_13_Int_Type_Read(index);
+				read_flag = 1;
+				break;
+			case 0xB:
+				value = GPIOC8_13_Int_Polarity_Read(index);
+				read_flag = 1;
+				break;
+			case 0xC:
+				value = GPIOC8_13_Int_Status(index);
+				read_flag = 1;
+				break;
+			default:
+				illegal_operation = 1;
+				break;
 		}
 	}
 	if (dbg_int_buf[0] >= 0x69 && dbg_int_buf[0] <= 0x70)
@@ -2080,53 +2080,53 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 		int index = dbg_int_buf[0] - 0x69;
 		switch (dbg_int_buf[1])
 		{
-		case 0x0:
-			GPIOE0_7_Int_Enable(index);
-			break;
-		case 0x1:
-			GPIOE0_7_Int_Disable(index);
-			break;
-		case 0x2:
-			GPIOE0_7_Int_Mask(index);
-			break;
-		case 0x3:
-			GPIOE0_7_Int_Unmask(index);
-			break;
-		case 0x4:
-			GPIOE0_7_Int_Type_Edge(index);
-			break;
-		case 0x5:
-			GPIOE0_7_Int_Type_Level(index);
-			break;
-		case 0x6:
-			GPIOE0_7_Int_Polarity_High(index);
-			break;
-		case 0x7:
-			GPIOE0_7_Int_Polarity_Low(index);
-			break;
-		case 0x8:
-			value = GPIOE0_7_Int_Enable_Read(index);
-			read_flag = 1;
-			break;
-		case 0x9:
-			value = GPIOE0_7_Int_Mask_Read(index);
-			read_flag = 1;
-			break;
-		case 0xA:
-			value = GPIOE0_7_Int_Type_Read(index);
-			read_flag = 1;
-			break;
-		case 0xB:
-			value = GPIOE0_7_Int_Polarity_Read(index);
-			read_flag = 1;
-			break;
-		case 0xC:
-			value = GPIOE0_7_Int_Status(index);
-			read_flag = 1;
-			break;
-		default:
-			illegal_operation = 1;
-			break;
+			case 0x0:
+				GPIOE0_7_Int_Enable(index);
+				break;
+			case 0x1:
+				GPIOE0_7_Int_Disable(index);
+				break;
+			case 0x2:
+				GPIOE0_7_Int_Mask(index);
+				break;
+			case 0x3:
+				GPIOE0_7_Int_Unmask(index);
+				break;
+			case 0x4:
+				GPIOE0_7_Int_Type_Edge(index);
+				break;
+			case 0x5:
+				GPIOE0_7_Int_Type_Level(index);
+				break;
+			case 0x6:
+				GPIOE0_7_Int_Polarity_High(index);
+				break;
+			case 0x7:
+				GPIOE0_7_Int_Polarity_Low(index);
+				break;
+			case 0x8:
+				value = GPIOE0_7_Int_Enable_Read(index);
+				read_flag = 1;
+				break;
+			case 0x9:
+				value = GPIOE0_7_Int_Mask_Read(index);
+				read_flag = 1;
+				break;
+			case 0xA:
+				value = GPIOE0_7_Int_Type_Read(index);
+				read_flag = 1;
+				break;
+			case 0xB:
+				value = GPIOE0_7_Int_Polarity_Read(index);
+				read_flag = 1;
+				break;
+			case 0xC:
+				value = GPIOE0_7_Int_Status(index);
+				read_flag = 1;
+				break;
+			default:
+				illegal_operation = 1;
+				break;
 		}
 	}
 	if (dbg_int_buf[0] >= 0x71 && dbg_int_buf[0] <= 0x78)
@@ -2134,53 +2134,53 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 		int index = dbg_int_buf[0] - 0x71;
 		switch (dbg_int_buf[1])
 		{
-		case 0x0:
-			GPIOE8_15_Int_Enable(index);
-			break;
-		case 0x1:
-			GPIOE8_15_Int_Disable(index);
-			break;
-		case 0x2:
-			GPIOE8_15_Int_Mask(index);
-			break;
-		case 0x3:
-			GPIOE8_15_Int_Unmask(index);
-			break;
-		case 0x4:
-			GPIOE8_15_Int_Type_Edge(index);
-			break;
-		case 0x5:
-			GPIOE8_15_Int_Type_Level(index);
-			break;
-		case 0x6:
-			GPIOE8_15_Int_Polarity_High(index);
-			break;
-		case 0x7:
-			GPIOE8_15_Int_Polarity_Low(index);
-			break;
-		case 0x8:
-			value = GPIOE8_15_Int_Enable_Read(index);
-			read_flag = 1;
-			break;
-		case 0x9:
-			value = GPIOE8_15_Int_Mask_Read(index);
-			read_flag = 1;
-			break;
-		case 0xA:
-			value = GPIOE8_15_Int_Type_Read(index);
-			read_flag = 1;
-			break;
-		case 0xB:
-			value = GPIOE8_15_Int_Polarity_Read(index);
-			read_flag = 1;
-			break;
-		case 0xC:
-			value = GPIOE8_15_Int_Status(index);
-			read_flag = 1;
-			break;
-		default:
-			illegal_operation = 1;
-			break;
+			case 0x0:
+				GPIOE8_15_Int_Enable(index);
+				break;
+			case 0x1:
+				GPIOE8_15_Int_Disable(index);
+				break;
+			case 0x2:
+				GPIOE8_15_Int_Mask(index);
+				break;
+			case 0x3:
+				GPIOE8_15_Int_Unmask(index);
+				break;
+			case 0x4:
+				GPIOE8_15_Int_Type_Edge(index);
+				break;
+			case 0x5:
+				GPIOE8_15_Int_Type_Level(index);
+				break;
+			case 0x6:
+				GPIOE8_15_Int_Polarity_High(index);
+				break;
+			case 0x7:
+				GPIOE8_15_Int_Polarity_Low(index);
+				break;
+			case 0x8:
+				value = GPIOE8_15_Int_Enable_Read(index);
+				read_flag = 1;
+				break;
+			case 0x9:
+				value = GPIOE8_15_Int_Mask_Read(index);
+				read_flag = 1;
+				break;
+			case 0xA:
+				value = GPIOE8_15_Int_Type_Read(index);
+				read_flag = 1;
+				break;
+			case 0xB:
+				value = GPIOE8_15_Int_Polarity_Read(index);
+				read_flag = 1;
+				break;
+			case 0xC:
+				value = GPIOE8_15_Int_Status(index);
+				read_flag = 1;
+				break;
+			default:
+				illegal_operation = 1;
+				break;
 		}
 	}
 	if (dbg_int_buf[0] >= 0x79 && dbg_int_buf[0] <= 0x80)
@@ -2188,53 +2188,53 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 		int index = dbg_int_buf[0] - 0x79;
 		switch (dbg_int_buf[1])
 		{
-		case 0x0:
-			GPIOE16_23_Int_Enable(index);
-			break;
-		case 0x1:
-			GPIOE16_23_Int_Disable(index);
-			break;
-		case 0x2:
-			GPIOE16_23_Int_Mask(index);
-			break;
-		case 0x3:
-			GPIOE16_23_Int_Unmask(index);
-			break;
-		case 0x4:
-			GPIOE16_23_Int_Type_Edge(index);
-			break;
-		case 0x5:
-			GPIOE16_23_Int_Type_Level(index);
-			break;
-		case 0x6:
-			GPIOE16_23_Int_Polarity_High(index);
-			break;
-		case 0x7:
-			GPIOE16_23_Int_Polarity_Low(index);
-			break;
-		case 0x8:
-			value = GPIOE16_23_Int_Enable_Read(index);
-			read_flag = 1;
-			break;
-		case 0x9:
-			value = GPIOE16_23_Int_Mask_Read(index);
-			read_flag = 1;
-			break;
-		case 0xA:
-			value = GPIOE16_23_Int_Type_Read(index);
-			read_flag = 1;
-			break;
-		case 0xB:
-			value = GPIOE16_23_Int_Polarity_Read(index);
-			read_flag = 1;
-			break;
-		case 0xC:
-			value = GPIOE16_23_Int_Status(index);
-			read_flag = 1;
-			break;
-		default:
-			illegal_operation = 1;
-			break;
+			case 0x0:
+				GPIOE16_23_Int_Enable(index);
+				break;
+			case 0x1:
+				GPIOE16_23_Int_Disable(index);
+				break;
+			case 0x2:
+				GPIOE16_23_Int_Mask(index);
+				break;
+			case 0x3:
+				GPIOE16_23_Int_Unmask(index);
+				break;
+			case 0x4:
+				GPIOE16_23_Int_Type_Edge(index);
+				break;
+			case 0x5:
+				GPIOE16_23_Int_Type_Level(index);
+				break;
+			case 0x6:
+				GPIOE16_23_Int_Polarity_High(index);
+				break;
+			case 0x7:
+				GPIOE16_23_Int_Polarity_Low(index);
+				break;
+			case 0x8:
+				value = GPIOE16_23_Int_Enable_Read(index);
+				read_flag = 1;
+				break;
+			case 0x9:
+				value = GPIOE16_23_Int_Mask_Read(index);
+				read_flag = 1;
+				break;
+			case 0xA:
+				value = GPIOE16_23_Int_Type_Read(index);
+				read_flag = 1;
+				break;
+			case 0xB:
+				value = GPIOE16_23_Int_Polarity_Read(index);
+				read_flag = 1;
+				break;
+			case 0xC:
+				value = GPIOE16_23_Int_Status(index);
+				read_flag = 1;
+				break;
+			default:
+				illegal_operation = 1;
+				break;
 		}
 	}
 	if (dbg_int_buf[0] >= 0x81 && dbg_int_buf[0] <= 0x82)
@@ -2242,19 +2242,19 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 		int index = dbg_int_buf[0] - 0x81;
 		switch (dbg_int_buf[1])
 		{
-		case 0x0:
-			PMC3_Int_Enable(index);
-			break;
-		case 0x1:
-			PMC3_Int_Disable(index);
-			break;
-		case 0x8:
-			value = PMC3_Int_Enable_Read(index);
-			read_flag = 1;
-			break;
-		default:
-			illegal_operation = 1;
-			break;
+			case 0x0:
+				PMC3_Int_Enable(index);
+				break;
+			case 0x1:
+				PMC3_Int_Disable(index);
+				break;
+			case 0x8:
+				value = PMC3_Int_Enable_Read(index);
+				read_flag = 1;
+				break;
+			default:
+				illegal_operation = 1;
+				break;
 		}
 	}
 	if (dbg_int_buf[0] >= 0x83 && dbg_int_buf[0] <= 0x84)
@@ -2262,19 +2262,19 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 		int index = dbg_int_buf[0] - 0x83;
 		switch (dbg_int_buf[1])
 		{
-		case 0x0:
-			PMC4_Int_Enable(index);
-			break;
-		case 0x1:
-			PMC4_Int_Disable(index);
-			break;
-		case 0x8:
-			value = PMC4_Int_Enable_Read(index);
-			read_flag = 1;
-			break;
-		default:
-			illegal_operation = 1;
-			break;
+			case 0x0:
+				PMC4_Int_Enable(index);
+				break;
+			case 0x1:
+				PMC4_Int_Disable(index);
+				break;
+			case 0x8:
+				value = PMC4_Int_Enable_Read(index);
+				read_flag = 1;
+				break;
+			default:
+				illegal_operation = 1;
+				break;
 		}
 	}
 	if (dbg_int_buf[0] >= 0x85 && dbg_int_buf[0] <= 0x86)
@@ -2282,41 +2282,41 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 		int index = dbg_int_buf[0] - 0x85;
 		switch (dbg_int_buf[1])
 		{
-		case 0x0:
-			PMC5_Int_Enable(index);
-			break;
-		case 0x1:
-			PMC5_Int_Disable(index);
-			break;
-		case 0x8:
-			value = PMC5_Int_Enable_Read(index);
-			read_flag = 1;
-			break;
-		default:
-			illegal_operation = 1;
-			break;
+			case 0x0:
+				PMC5_Int_Enable(index);
+				break;
+			case 0x1:
+				PMC5_Int_Disable(index);
+				break;
+			case 0x8:
+				value = PMC5_Int_Enable_Read(index);
+				read_flag = 1;
+				break;
+			default:
+				illegal_operation = 1;
+				break;
 		}
 	}
 	if (dbg_int_buf[0] == 0x87)
 	{
 		switch (dbg_int_buf[1])
 		{
-		case 0x0:
-			PS2_PORT1_CR = CCMD_WRITE;
-			PS2_PORT1_OBUF |= 0x1;
-			break;
-		case 0x1:
-			PS2_PORT1_CR = CCMD_WRITE;
-			PS2_PORT1_OBUF &= ~0x1;
-			break;
-		case 0x8:
-			PS2_PORT1_CR = 0x20;
-			value = (PS2_PORT1_IBUF & 0x1);
-			read_flag = 1;
-			break;
-		default:
-			illegal_operation = 1;
-			break;
+			case 0x0:
+				PS2_PORT1_CR = CCMD_WRITE;
+				PS2_PORT1_OBUF |= 0x1;
+				break;
+			case 0x1:
+				PS2_PORT1_CR = CCMD_WRITE;
+				PS2_PORT1_OBUF &= ~0x1;
+				break;
+			case 0x8:
+				PS2_PORT1_CR = 0x20;
+				value = (PS2_PORT1_IBUF & 0x1);
+				read_flag = 1;
+				break;
+			default:
+				illegal_operation = 1;
+				break;
 		}
 	}
 	if (dbg_int_buf[0] >= 0x88 && dbg_int_buf[0] <= 0x8A)
@@ -2324,46 +2324,46 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 		int index = dbg_int_buf[0] - 0x87;
 		switch (dbg_int_buf[1])
 		{
-		case 0x0:
-			Uart_Int_Enable(index, dbg_int_buf[2]);
-			break;
-		case 0x1:
-			Uart_Int_Disable(index, dbg_int_buf[2]);
-			break;
-		case 0x8:
-			value = Uart_Int_Enable_Read(index, dbg_int_buf[2]);
-			read_flag = 1;
-			break;
-		case 0xC:
-			value = Uart_Int_Status(index, dbg_int_buf[2]);
-			read_flag = 1;
-			break;
-		default:
-			illegal_operation = 1;
-			break;
+			case 0x0:
+				Uart_Int_Enable(index, dbg_int_buf[2]);
+				break;
+			case 0x1:
+				Uart_Int_Disable(index, dbg_int_buf[2]);
+				break;
+			case 0x8:
+				value = Uart_Int_Enable_Read(index, dbg_int_buf[2]);
+				read_flag = 1;
+				break;
+			case 0xC:
+				value = Uart_Int_Status(index, dbg_int_buf[2]);
+				read_flag = 1;
+				break;
+			default:
+				illegal_operation = 1;
+				break;
 		}
 	}
 	if (dbg_int_buf[0] == 0x8B)//修改
 	{
 		switch (dbg_int_buf[1])
 		{
-		case 0x2:
-			Spim_Int_Mask(4);//接收满中断
-			break;
-		case 0x3:
-			Spim_Int_Unmask(4);
-			break;
-		case 0x9:
-			value = Spim_Int_Mask_Read(4);
-			read_flag = 1;
-			break;
-		case 0xC:
-			value = Spim_Int_Status(dbg_int_buf[2]);
-			read_flag = 1;
-			break;
-		default:
-			illegal_operation = 1;
-			break;
+			case 0x2:
+				Spim_Int_Mask(4);//接收满中断
+				break;
+			case 0x3:
+				Spim_Int_Unmask(4);
+				break;
+			case 0x9:
+				value = Spim_Int_Mask_Read(4);
+				read_flag = 1;
+				break;
+			case 0xC:
+				value = Spim_Int_Status(dbg_int_buf[2]);
+				read_flag = 1;
+				break;
+			default:
+				illegal_operation = 1;
+				break;
 		}
 	}
 	if (dbg_int_buf[0] >= 0x8C && dbg_int_buf[0] <= 0x8F)//修改
@@ -2371,32 +2371,32 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 		int index = dbg_int_buf[0] - 0x8C;
 		switch (dbg_int_buf[1])
 		{
-		case 0x2:
-			I2C_Int_Mask(index, 2);//接收满
-			break;
-		case 0x3:
-			I2C_Int_Unmask(index, 2);//接收满
-			break;
-		case 0x9:
-			value = I2C_Int_Mask_Read(index, 2);//接收满
-			read_flag = 1;
-			break;
-		case 0xC:
-			value = I2C_Int_Status(index, 2);//接收满
-			read_flag = 1;
-			break;
-		default:
-			illegal_operation = 1;
-			break;
+			case 0x2:
+				I2C_Int_Mask(index, 2);//接收满
+				break;
+			case 0x3:
+				I2C_Int_Unmask(index, 2);//接收满
+				break;
+			case 0x9:
+				value = I2C_Int_Mask_Read(index, 2);//接收满
+				read_flag = 1;
+				break;
+			case 0xC:
+				value = I2C_Int_Status(index, 2);//接收满
+				read_flag = 1;
+				break;
+			default:
+				illegal_operation = 1;
+				break;
 		}
 	}
 	if (dbg_int_buf[0] >= 0x90 && dbg_int_buf[0] <= 0x93)//修改
 	{
 		switch (dbg_int_buf[1])
 		{
-		default:
-			illegal_operation = 1;
-			break;
+			default:
+				illegal_operation = 1;
+				break;
 		}
 	}
 	if (dbg_int_buf[0] == 0x94)
@@ -2426,23 +2426,23 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 	{
 		switch (dbg_int_buf[1])
 		{
-		case 0x0:
-			Por_Int_Enable(dbg_int_buf[2]);
-			break;
-		case 0x1:
-			Por_Int_Disable(dbg_int_buf[2]);
-			break;
-		case 0x8:
-			value = Por_Int_Enable_Read(dbg_int_buf[2]);
-			read_flag = 1;
-			break;
-		case 0xC:
-			value = Por_Int_Status(dbg_int_buf[2]);
-			read_flag = 1;
-			break;
-		default:
-			illegal_operation = 1;
-			break;
+			case 0x0:
+				Por_Int_Enable(dbg_int_buf[2]);
+				break;
+			case 0x1:
+				Por_Int_Disable(dbg_int_buf[2]);
+				break;
+			case 0x8:
+				value = Por_Int_Enable_Read(dbg_int_buf[2]);
+				read_flag = 1;
+				break;
+			case 0xC:
+				value = Por_Int_Status(dbg_int_buf[2]);
+				read_flag = 1;
+				break;
+			default:
+				illegal_operation = 1;
+				break;
 		}
 	}
 	if (dbg_int_buf[0] == 0x96)
@@ -2463,9 +2463,9 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 			// 	value = Mon_Int_Mask_Read(dbg_int_buf[2]);
 			// 	read_flag = 1;
 			// 	break;
-		default:
-			illegal_operation = 1;
-			break;
+			default:
+				illegal_operation = 1;
+				break;
 		}
 	}
 	if (!(dbg_int_buf[0] <= 0x96))
@@ -2476,58 +2476,58 @@ void DEBUGGER_Int(void) // Debugger Interrupt Function
 	{
 		if (1 == read_flag)
 		{
-#if DEBUGGER_DEBUG
+		#if DEBUGGER_DEBUG
 			dprint("send back read value:0x%x \n", value);
-#endif
+		#endif
 			if (value != 0)
 			{
-#if (DEBUGGER_OUTPUT_SWITCH == 1)
-				/* Output from I2C */
+			#if (DEBUGGER_OUTPUT_SWITCH == 1)
+							/* Output from I2C */
 				iicFeedback = 3;
 				iic_int_flag = 1;
-#else
-				/* Output from UART */
+			#else
+							/* Output from UART */
 				DEBUGER_putchar(0x01);
-#endif
+			#endif
 				return;
 			}
 			else
 			{
-#if (DEBUGGER_OUTPUT_SWITCH == 1)
-				/* Output from I2C */
+			#if (DEBUGGER_OUTPUT_SWITCH == 1)
+							/* Output from I2C */
 				iicFeedback = 3;
 				iic_int_flag = 2;
-#else
-				/* Output from UART */
+			#else
+							/* Output from UART */
 				DEBUGER_putchar(0x00);
-#endif
+			#endif
 				return;
 			}
 		}
 		else
 		{
-#if (DEBUGGER_OUTPUT_SWITCH == 1)
-			/* Output from I2C */
+		#if (DEBUGGER_OUTPUT_SWITCH == 1)
+					/* Output from I2C */
 			iicFeedback = 3;
 			iic_int_flag = 3;
-#else
-			/* Output from UART */
-	// dprint("send back 0x11 \n");
+		#else
+					/* Output from UART */
+			// dprint("send back 0x11 \n");
 			DEBUGER_putchar(0x11);
-#endif
+		#endif
 			return;
 		}
 	}
 	else
 	{
-#if (DEBUGGER_OUTPUT_SWITCH == 1)
+	#if (DEBUGGER_OUTPUT_SWITCH == 1)
 		iicFeedback = 3;
 		iic_int_flag = 4;
-#else
-		/* Output from UART */
-	// dprint("send back 0xDD \n");
+	#else
+			/* Output from UART */
+		// dprint("send back 0xDD \n");
 		DEBUGER_putchar(0xDD);
-#endif
+	#endif
 		return;
 	}
 }
@@ -2794,67 +2794,67 @@ void Debugger_Master_Retrans(BYTE debuger)
 	{
 		switch (Debuger_Cmd_Data)
 		{
-		case 0x88:
-			I2c_Disconnect();
-			break;
-		case 0xDD:
-			I2c_Connect();
-			break;
-		case 0xAA:
-			DEBUGER_putchar(0xAA);
-			Debugger_Master_Write_Byte(0xAA, 0);
-			break;
-		case 0xBB:
-			DEBUGER_putchar(0xBB);
-			Debugger_Master_Write_Byte(0xBB, 0);
-			break;
-		case 0xE0: // reset chip
-			DEBUGER_putchar(0xE0);
-			Debugger_Master_Write_Byte(0xE0, 0);
-			break;
-		case 0xB0: // change keyboard code type
-			DEBUGER_putchar(0xB0);
-			Debugger_Master_Write_Byte(0xB0, 0);
-			break;
-		default:
-			Buf_Num = 0;
-			Buf_Flag = 1;
-			Debug_Temp = Debuger_Cmd_Data;
-			return;
+			case 0x88:
+				I2c_Disconnect();
+				break;
+			case 0xDD:
+				I2c_Connect();
+				break;
+			case 0xAA:
+				DEBUGER_putchar(0xAA);
+				Debugger_Master_Write_Byte(0xAA, 0);
+				break;
+			case 0xBB:
+				DEBUGER_putchar(0xBB);
+				Debugger_Master_Write_Byte(0xBB, 0);
+				break;
+			case 0xE0: // reset chip
+				DEBUGER_putchar(0xE0);
+				Debugger_Master_Write_Byte(0xE0, 0);
+				break;
+			case 0xB0: // change keyboard code type
+				DEBUGER_putchar(0xB0);
+				Debugger_Master_Write_Byte(0xB0, 0);
+				break;
+			default:
+				Buf_Num = 0;
+				Buf_Flag = 1;
+				Debug_Temp = Debuger_Cmd_Data;
+				return;
 		}
 	}
 	if (Buf_Flag)
 	{
 		switch (Debug_Temp)
 		{
-		case 0x55:
-			buf[Buf_Num] = Debuger_Cmd_Data;
-			Buf_Num++;
-			if (Buf_Num == 4)
-			{
-				Buf_Flag = 0;
-				Debug_Temp = 0;
-				Debugger_Master_Read(buf, 0);
-			}
-			break;
-		case 0xFF:
-			buf[Buf_Num] = Debuger_Cmd_Data;
-			Buf_Num++;
-			if (Buf_Num == 7)
-			{
-				Buf_Flag = 0;
-				Debug_Temp = 0;
-				Debugger_Master_Write(buf, 0);
-			}
-			break;
-		default:
-			break;
+			case 0x55:
+				buf[Buf_Num] = Debuger_Cmd_Data;
+				Buf_Num++;
+				if (Buf_Num == 4)
+				{
+					Buf_Flag = 0;
+					Debug_Temp = 0;
+					Debugger_Master_Read(buf, 0);
+				}
+				break;
+			case 0xFF:
+				buf[Buf_Num] = Debuger_Cmd_Data;
+				Buf_Num++;
+				if (Buf_Num == 7)
+				{
+					Buf_Flag = 0;
+					Debug_Temp = 0;
+					Debugger_Master_Write(buf, 0);
+				}
+				break;
+			default:
+				break;
 		}
 	}
 }
 
 
-char Check_Debugger_Data(const char* buffer, short write_index)
+char Check_Debugger_Data(const char *buffer, short write_index)
 {
 	// 在缓冲区中查找匹配的数据串
 	for (short i = 0; i < UART_BUFFER_SIZE; ++i)

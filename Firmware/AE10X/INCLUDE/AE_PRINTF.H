@@ -1,6 +1,6 @@
 /*
  * @Author: Linyu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2024-06-19 19:10:34
  * @Description:
  *
@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 #ifndef AE_PRINTF_H
 #define AE_PRINTF_H
@@ -22,8 +22,8 @@
 #include "AE_SOFT_FP.H"
 
 #if SUPPORT_REAL_OR_DELAY_PRINTF
-extern int printr(const char* fmt, ...);//实时输出
-extern int printd(const char* fmt, ...);//延时输出
+extern int printr(const char *fmt, ...);//实时输出
+extern int printd(const char *fmt, ...);//延时输出
 #define REAL_PRINT_ON F_Service_PUTC = 1;//开启实时输出
 #define DELAY_PRINT_ON F_Service_PUTC = 0;//开启延时输出
 #else

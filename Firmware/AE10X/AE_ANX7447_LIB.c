@@ -1,6 +1,6 @@
 /*
  * @Author: Linyu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2024-09-19 10:05:22
  * @Description:
  *
@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  *
  * Portions of this firmware library utilize the ANX7447 driver, which is copyrighted by Analogix Semiconductor, Inc.
  * 本固件库的部分代码使用了 ANX7447 驱动程序，其版权归 Analogix Semiconductor, Inc. 所有。
@@ -234,16 +234,14 @@
 #define PD_MIN_POWER   0x02     /* 1W */
 
 // Battery Status
-struct battery_status_data_obj
-{
+struct battery_status_data_obj{
     u8 reserved;                // Reserved
     u8 battery_info;            // Battery Info
     u16 battery_pc;             // Battery PC
 };
 
 // Alert Message
-struct alert_data_obj
-{
+struct alert_data_obj{
     u16 reserved : 16;            // Reserved
     u8 hot_swappable_batteries : 4;       // Battery Info
     u8 fixed_batteries : 4;       // Battery Info
@@ -251,8 +249,7 @@ struct alert_data_obj
 };
 
 // Source Capabilities Extended
-struct source_cap_extended
-{
+struct source_cap_extended{
     u16 VID;
     u16 PID;
     u32 XID;
@@ -272,8 +269,7 @@ struct source_cap_extended
 };
 
 // Sink Capabilities Extended
-struct sink_cap_extended
-{
+struct sink_cap_extended{
     u16 VID;
     u16 PID;
     u32 XID;
@@ -287,8 +283,7 @@ struct sink_cap_extended
 
 
 // Status Message
-struct status_data
-{
+struct status_data{
     u8 internal_temp;
     u8 present_input;
     u8 present_battery_input;
@@ -299,8 +294,7 @@ struct status_data
 };
 
 // Battery Cap
-struct battery_cap
-{
+struct battery_cap{
     u16 VID;
     u16 PID;
     u16 battery_design_cap;
@@ -309,30 +303,26 @@ struct battery_cap
 };
 
 // Manufacturer Info
-struct manufacturer_info
-{
+struct manufacturer_info{
     u8 manufacturer_info_target;
     u8 manufacturer_info_ref;
 };
 
 // Manufacturer Info Data
-struct manufacturer_info_data
-{
+struct manufacturer_info_data{
     u16 VID;
     u16 PID;
     u8 manufacturer_string[22];
 };
 
 // PPS Status Message
-struct pps_status_data
-{
+struct pps_status_data{
     u16 output_voltage;
     u8 output_current;
     u8 real_time_flags;
 };
 
-struct ext_message_header
-{
+struct ext_message_header{
     u16 data_size : 9;            // Data Size
     u16 reserved : 1;             // Reserved
     u16 request_chunk : 1;        // Request Chunk
@@ -643,7 +633,7 @@ s8 *interface_to_str(u8 header_type)
 {
 #if 1
     s8 *str;
-    switch(header_type)
+    switch (header_type)
     {
         case TYPE_PWR_SRC_CAP:
             str = (s8 *)"PWR_SRC_CAP";
@@ -860,33 +850,33 @@ u8 get_power_role()
 /* default request max RDO */
 void build_rdo_from_source_caps_new(u8 obj_cnt, u8 *buf)
 {
-    if(context[port_id].sel_voltage_pdo_index + 1 > obj_cnt)
+    if (context[port_id].sel_voltage_pdo_index + 1 > obj_cnt)
     {
-        for(ANX7447_i = 0; ANX7447_i < obj_cnt; ANX7447_i++)
+        for (ANX7447_i = 0; ANX7447_i < obj_cnt; ANX7447_i++)
         {
             {
                 ((unsigned char *)&pdo_max_tmp)[0] = buf[4 * ANX7447_i + 3];
                 ((unsigned char *)&pdo_max_tmp)[1] = buf[4 * ANX7447_i + 2];
                 ((unsigned char *)&pdo_max_tmp)[2] = buf[4 * ANX7447_i + 1];
                 ((unsigned char *)&pdo_max_tmp)[3] = buf[4 * ANX7447_i + 0];
-                switch(GET_PDO_TYPE(pdo_max_tmp))
+                switch (GET_PDO_TYPE(pdo_max_tmp))
                 {
                     case (PDO_TYPE_FIXED >> 30):
-                        if((GET_PDO_FIXED_VOLT(pdo_max_tmp)) > pdo_max)
+                        if ((GET_PDO_FIXED_VOLT(pdo_max_tmp)) > pdo_max)
                         {
                             pdo_max = GET_PDO_FIXED_VOLT(pdo_max_tmp);
                             context[port_id].sel_voltage_pdo_index = ANX7447_i;
                         }
                         break;
                     case (PDO_TYPE_VARIABLE >> 30):
-                        if(GET_VAR_MAX_VOLT(pdo_max_tmp) > pdo_max)
+                        if (GET_VAR_MAX_VOLT(pdo_max_tmp) > pdo_max)
                         {
                             pdo_max = GET_VAR_MAX_VOLT(pdo_max_tmp);
                             context[port_id].sel_voltage_pdo_index = ANX7447_i;
                         }
                         break;
                     case (PDO_TYPE_BATTERY >> 30):
-                        if(GET_BATT_MAX_VOLT(pdo_max_tmp) > pdo_max)
+                        if (GET_BATT_MAX_VOLT(pdo_max_tmp) > pdo_max)
                         {
                             pdo_max = GET_BATT_MAX_VOLT(pdo_max_tmp);
                             context[port_id].sel_voltage_pdo_index = ANX7447_i;
@@ -908,7 +898,7 @@ void build_rdo_from_source_caps_new(u8 obj_cnt, u8 *buf)
             buf[context[port_id].sel_voltage_pdo_index * 4 + 1];
         ((unsigned char *)&pdo_max_tmp)[3] =
             buf[context[port_id].sel_voltage_pdo_index * 4 + 0];
-        switch(GET_PDO_TYPE(pdo_max_tmp))
+        switch (GET_PDO_TYPE(pdo_max_tmp))
         {
             case (PDO_TYPE_FIXED >> 30):
                 pdo_max = GET_PDO_FIXED_VOLT(pdo_max_tmp);
@@ -931,11 +921,11 @@ void build_rdo_from_source_caps_new(u8 obj_cnt, u8 *buf)
         buf[context[port_id].sel_voltage_pdo_index * 4 + 1];
     ((unsigned char *)&pdo_max_tmp)[3] =
         buf[context[port_id].sel_voltage_pdo_index * 4 + 0];
-    switch(GET_PDO_TYPE(pdo_max_tmp))
+    switch (GET_PDO_TYPE(pdo_max_tmp))
     {
         case (PDO_TYPE_FIXED >> 30):
         case (PDO_TYPE_VARIABLE >> 30):
-            if(GET_PDO_FIXED_CURR(pdo_max_tmp) >= MAX_REQUEST_CURRENT)
+            if (GET_PDO_FIXED_CURR(pdo_max_tmp) >= MAX_REQUEST_CURRENT)
             {
                 context[port_id].ucsi_partner_rdo =
                     RDO_FIXED(context[port_id].sel_voltage_pdo_index + 1,
@@ -951,7 +941,7 @@ void build_rdo_from_source_caps_new(u8 obj_cnt, u8 *buf)
             }
             break;
         case (PDO_TYPE_BATTERY >> 30):
-            if((GET_BATT_OP_POWER(pdo_max_tmp) >> 2) >=
+            if ((GET_BATT_OP_POWER(pdo_max_tmp) >> 2) >=
                     (MAX_REQUEST_CURRENT * (MAX_REQUEST_VOLTAGE / 1000)) >> 2)
             {
                 context[port_id].ucsi_partner_rdo =
@@ -987,7 +977,7 @@ static u8 build_rdo_from_source_caps(u8 obj_cnt, u8 *buf)
     obj_cnt &= 0x07;
 
     /* find the max voltage pdo */
-    for(ANX7447_i = 0; ANX7447_i < obj_cnt; ANX7447_i++)
+    for (ANX7447_i = 0; ANX7447_i < obj_cnt; ANX7447_i++)
     {
 
 /* get max voltage now */
@@ -996,7 +986,7 @@ static u8 build_rdo_from_source_caps(u8 obj_cnt, u8 *buf)
                 0xf) << 6) | ((((u16)buf[ANX7447_i * 4 + 1] << 8) |
                     (buf[ANX7447_i * 4 + 0])) >> 10)) & 0x3ff) *
                    50);
-        if(pdo_max_tmp > pdo_max)
+        if (pdo_max_tmp > pdo_max)
         {
             pdo_max = pdo_max_tmp;
             pdo_l = (((u16)buf[ANX7447_i * 4 + 1] << 8) | (buf[ANX7447_i * 4 + 0]));
@@ -1006,11 +996,11 @@ static u8 build_rdo_from_source_caps(u8 obj_cnt, u8 *buf)
     }
     ucsi_debug("maxV=%d, cnt %d index %d\n", pdo_max_tmp, obj_cnt,
                context[port_id].sel_voltage_pdo_index);
-    if((pdo_h & (3 << 14)) != (PDO_TYPE_BATTERY >> 16))
+    if ((pdo_h & (3 << 14)) != (PDO_TYPE_BATTERY >> 16))
     {
         ucsi_debug("maxMa %d\n", (u16)((pdo_l & 0x3ff) * 10));
         /* less than 900mA */
-        if((u16)((pdo_l & 0x3ff) * 10) < MAX_REQUEST_CURRENT)
+        if ((u16)((pdo_l & 0x3ff) * 10) < MAX_REQUEST_CURRENT)
         {
             pdo_max =
                 RDO_FIXED(context[port_id].sel_voltage_pdo_index + 1,
@@ -1056,7 +1046,7 @@ static u32 change_bit_order(const u8 *pbuf)
 
 static u8 pd_check_requested_voltage()
 {
-    if(!(context[port_id].ucsi_partner_rdo >> 28)
+    if (!(context[port_id].ucsi_partner_rdo >> 28)
             || (context[port_id].ucsi_partner_rdo >> 28) >
             context[port_id].pd_src_pdo_cnt)
     {
@@ -1073,9 +1063,9 @@ static u8 pd_check_requested_voltage()
                    (((context[port_id].ucsi_partner_rdo >> 28) -
                        1) * 4)) & 0x3ff));
         /* check current ... */
-    if(((context[port_id].ucsi_partner_rdo >> 10) & 0x3FF) > (change_bit_order(context[port_id].pd_src_pdo + (((context[port_id].ucsi_partner_rdo >> 28) - 1) * 4)) & 0x3ff))  //Update to pass TD.PD.SRC.E12 Reject Request
+    if (((context[port_id].ucsi_partner_rdo >> 10) & 0x3FF) > (change_bit_order(context[port_id].pd_src_pdo + (((context[port_id].ucsi_partner_rdo >> 28) - 1) * 4)) & 0x3ff))  //Update to pass TD.PD.SRC.E12 Reject Request
         return 0;               /* too much op current */
-    if((context[port_id].ucsi_partner_rdo & 0x3FF) > (change_bit_order(context[port_id].pd_src_pdo + (((context[port_id].ucsi_partner_rdo >> 28) - 1) * 4)) & 0x3ff))  //Update to pass TD.PD.SRC.E12 Reject Request
+    if ((context[port_id].ucsi_partner_rdo & 0x3FF) > (change_bit_order(context[port_id].pd_src_pdo + (((context[port_id].ucsi_partner_rdo >> 28) - 1) * 4)) & 0x3ff))  //Update to pass TD.PD.SRC.E12 Reject Request
         return 0;               /* too much max current */
 
     return 1;
@@ -1099,7 +1089,7 @@ void send_source_capability(void)
            sizeof(dfp_caps));
 #else
 #ifdef ECR_CHECKING
-    if((supply_1500ma_port == port_id) && (supply_1500ma_flag == 1))
+    if ((supply_1500ma_port == port_id) && (supply_1500ma_flag == 1))
         memcpy(context[port_id].pd_src_pdo, (u8 *)&src_caps, 4);
     else
     #endif
@@ -1110,10 +1100,10 @@ void send_source_capability(void)
     SWAP_DWORD(&context[port_id].pd_src_pdo);
 #endif
     //Fix JIRA LBT-410
-    if((context[port_id].data_operation_mode_uor & OP_DRP) &&
+    if ((context[port_id].data_operation_mode_uor & OP_DRP) &&
             ((context[port_id].data_operation_mode_uom & OP_DRP)))
     {
-        if((context[port_id].power_operation_mode_pdr & PW_DRP) &&
+        if ((context[port_id].power_operation_mode_pdr & PW_DRP) &&
                 ((context[port_id].power_operation_mode_pdm & PW_DRP)))
             context[port_id].pd_src_pdo[3] |=
             PDO_FIXED_HIGH_BYTE_DATA_SWAP |
@@ -1124,7 +1114,7 @@ void send_source_capability(void)
     }
     else
     {
-        if((context[port_id].power_operation_mode_pdr & PW_DRP) &&
+        if ((context[port_id].power_operation_mode_pdr & PW_DRP) &&
                 ((context[port_id].power_operation_mode_pdm & PW_DRP)))
             context[port_id].pd_src_pdo[3] |=
             PDO_FIXED_HIGH_BYTE_DUAL_ROLE;
@@ -1145,10 +1135,10 @@ void send_sink_capability(void)
     SWAP_DWORD((u8 *)&context[port_id].pd_snk_pdo + 4);
 #endif
     //Fix JIRA LBT-410
-    if((context[port_id].data_operation_mode_uor & OP_DRP) &&
+    if ((context[port_id].data_operation_mode_uor & OP_DRP) &&
             ((context[port_id].data_operation_mode_uom & OP_DRP)))
     {
-        if((context[port_id].power_operation_mode_pdr & PW_DRP) &&
+        if ((context[port_id].power_operation_mode_pdr & PW_DRP) &&
                 ((context[port_id].power_operation_mode_pdm & PW_DRP)))
             context[port_id].pd_snk_pdo[3] |=
             PDO_FIXED_HIGH_BYTE_DATA_SWAP |
@@ -1159,7 +1149,7 @@ void send_sink_capability(void)
     }
     else
     {
-        if((context[port_id].power_operation_mode_pdr & PW_DRP) &&
+        if ((context[port_id].power_operation_mode_pdr & PW_DRP) &&
                 ((context[port_id].power_operation_mode_pdm & PW_DRP)))
             context[port_id].pd_snk_pdo[3] |=
             PDO_FIXED_HIGH_BYTE_DUAL_ROLE;
@@ -1208,7 +1198,7 @@ void anx_get_batt_sts(u8 battery_id)
 void anx_get_batt_cap_response(u8 battery_id, u16 design_cap,
                                u16 last_full_charge_cap)
 {
-    if(battery_id == 0)
+    if (battery_id == 0)
     {      //battery 0
 //customer may need change the following code to match battery present status
         pd_battery_cap.VID = BYTE_CONST_SWAP(VENDOR_ID);
@@ -1235,10 +1225,10 @@ void anx_get_batt_cap_response(u8 battery_id, u16 design_cap,
  */
 void anx_get_batt_sts_response(u8 battery_id, u16 battery_pc)
 {
-    if(battery_id == 0)
+    if (battery_id == 0)
     {
 //customer may need change the following code to match battery present status
-        if(context[port_id].anx_power_role == 0)
+        if (context[port_id].anx_power_role == 0)
             pd_battery_status.battery_info = 2;
         else
             pd_battery_status.battery_info = 6;
@@ -1301,25 +1291,25 @@ static u8 Recv_PD_Commands_Default_Callback()
 
     ANX7447_l = 1;                      // 0: Fail, 1: Pass
 
-    if(TYPE_HARD_RST != recvd_msg_type())
+    if (TYPE_HARD_RST != recvd_msg_type())
         context[port_id].ct = CABLE_TYPE_C;
 
     /*ChengLin: Special Check for Specific Commands */
-    if(recvd_msg_type() == TYPE_PWR_SRC_CAP)
+    if (recvd_msg_type() == TYPE_PWR_SRC_CAP)
     {
-        if(recvd_msg_len() % 4 != 0)
+        if (recvd_msg_len() % 4 != 0)
             return 0;
     }
-    else if(recvd_msg_type() == TYPE_PWR_SNK_CAP)
+    else if (recvd_msg_type() == TYPE_PWR_SNK_CAP)
     {
     }
-    else if(recvd_msg_type() == TYPE_PWR_OBJ_REQ)
+    else if (recvd_msg_type() == TYPE_PWR_OBJ_REQ)
     {
-        if(recvd_msg_len() != 4)
+        if (recvd_msg_len() != 4)
             return 1;
     }
 
-    switch(recvd_msg_type())
+    switch (recvd_msg_type())
     {
         case TYPE_PWR_SRC_CAP:     //0x00
         #ifndef AUTO_RDO_ENABLE
@@ -1357,11 +1347,11 @@ static u8 Recv_PD_Commands_Default_Callback()
             context[port_id].csc.csc.ExternalSupply = 1;
         #endif
                 /* LBT-865 */
-            if(context[port_id].anx_power >= VERY_SLOW_CHARGING_POWER)
+            if (context[port_id].anx_power >= VERY_SLOW_CHARGING_POWER)
             {
-                if(context[port_id].anx_power >= NORMAL_CHARGING_POWER)
+                if (context[port_id].anx_power >= NORMAL_CHARGING_POWER)
                     context[port_id].BatteryCharging = BCS_NOMINAL_CHARGING;
-                else if(context[port_id].anx_power >= SLOW_CHARGING_POWER)
+                else if (context[port_id].anx_power >= SLOW_CHARGING_POWER)
                     context[port_id].BatteryCharging = BCS_SLOW_CHARGING;
                 else
                     context[port_id].BatteryCharging = BCS_TRICKLE_CHARGING;
@@ -1386,7 +1376,7 @@ static u8 Recv_PD_Commands_Default_Callback()
             context[port_id].partner_pdo_sink_or_source = 0;
             memcpy(context[port_id].partner_pdo, recvd_msg_buf(),
                    min(VDO_SIZE, recvd_msg_len()));
-            if(recvd_msg_len() > VDO_SIZE)
+            if (recvd_msg_len() > VDO_SIZE)
             {
                 ANX7447_l = 0;
                 break;
@@ -1417,7 +1407,7 @@ static u8 Recv_PD_Commands_Default_Callback()
             break;
         case TYPE_DSWAP_REQ:       //0x11
             context[port_id].csc.csc.ConnectorPartner = 1;
-            if(get_data_role() == 1)
+            if (get_data_role() == 1)
                 context[port_id].ucsi_connector_partner_type =
                 CPT_UFP_ATTACHED;
             else
@@ -1441,7 +1431,7 @@ static u8 Recv_PD_Commands_Default_Callback()
         case TYPE_DP_ALT_ENTER:    //0x19
             svid = (recvd_msg_buf()[3] << 8) | recvd_msg_buf()[2];
             ucsi_debug("enter mode :%x.\n", svid);
-            if(svid == 0xFF01)
+            if (svid == 0xFF01)
             {
                 send_pd_msg(TYPE_GET_DP_CONFIGURE, 0, 0, SOP_TYPE);
                 context[port_id].ConnectorPartner |= CP_ALT_MODE;
@@ -1462,7 +1452,7 @@ static u8 Recv_PD_Commands_Default_Callback()
         case TYPE_PWR_OBJ_REQ:     //0x16
             //pdo = (u8 *)para;
 
-            if(recvd_msg_len() != 4)
+            if (recvd_msg_len() != 4)
                 break;
             context[port_id].ucsi_partner_rdo =
                 recvd_msg_buf()[0] | ((u32)recvd_msg_buf()[1] << 8) | ((u32)
@@ -1471,7 +1461,7 @@ static u8 Recv_PD_Commands_Default_Callback()
                         << 16)
                 | ((u32)recvd_msg_buf()[3] << 24);
         #ifdef ECR_CHECKING
-            if((context[port_id].anx_vbus_status == 1) &&
+            if ((context[port_id].anx_vbus_status == 1) &&
                     (recvd_msg_buf()[3] & _BIT2) && supply_1500ma_flag == 0)
                 Send_mismatch_source_caps();
             ucsi_debug("RDO : %lx, vbus(%#x), supply_flag(%#x).\n",
@@ -1486,12 +1476,12 @@ static u8 Recv_PD_Commands_Default_Callback()
         #endif
         #ifdef AUTO_RDO_ENABLE
                 //ucsi_async_notify_raise_up(50);
-            if(context[port_id].partner_pdo_sink_or_source)
+            if (context[port_id].partner_pdo_sink_or_source)
                 anx_get_rdo_event(port_id, context[port_id].ucsi_partner_rdo);
 
             break;
         #endif
-            if(pd_check_requested_voltage())
+            if (pd_check_requested_voltage())
             {
                 ANX7447_l = send_pd_msg(TYPE_ACCEPT, NULL, 0, SOP_TYPE);
             }
@@ -1509,44 +1499,44 @@ static u8 Recv_PD_Commands_Default_Callback()
             /* Fix JIRA LBT-501 */
             ANX7447_l = recvd_msg_buf()[2];
 
-            if(recvd_msg_buf()[3] & 0x02)
+            if (recvd_msg_buf()[3] & 0x02)
             {
-                if(ANX7447_l & 0x1)
+                if (ANX7447_l & 0x1)
                 {
                     ANX7447_k = 0x04;
                     send_pd_msg(TYPE_EXT_GET_BATT_STS, &ANX7447_k, 1, SOP_TYPE);
                 }
-                if(ANX7447_l & 0x2)
+                if (ANX7447_l & 0x2)
                 {
                     ANX7447_k = 0x05;
                     send_pd_msg(TYPE_EXT_GET_BATT_STS, &ANX7447_k, 1, SOP_TYPE);
                 }
-                if(ANX7447_l & 0x4)
+                if (ANX7447_l & 0x4)
                 {
                     ANX7447_k = 0x06;
                     send_pd_msg(TYPE_EXT_GET_BATT_STS, &ANX7447_k, 1, SOP_TYPE);
                 }
-                if(ANX7447_l & 0x8)
+                if (ANX7447_l & 0x8)
                 {
                     ANX7447_k = 0x07;
                     send_pd_msg(TYPE_EXT_GET_BATT_STS, &ANX7447_k, 1, SOP_TYPE);
                 }
-                if(ANX7447_l & 0x10)
+                if (ANX7447_l & 0x10)
                 {
                     ANX7447_k = 0x00;
                     send_pd_msg(TYPE_EXT_GET_BATT_STS, &ANX7447_k, 1, SOP_TYPE);
                 }
-                if(ANX7447_l & 0x20)
+                if (ANX7447_l & 0x20)
                 {
                     ANX7447_k = 0x01;
                     send_pd_msg(TYPE_EXT_GET_BATT_STS, &ANX7447_k, 1, SOP_TYPE);
                 }
-                if(ANX7447_l & 0x40)
+                if (ANX7447_l & 0x40)
                 {
                     ANX7447_k = 0x02;
                     send_pd_msg(TYPE_EXT_GET_BATT_STS, &ANX7447_k, 1, SOP_TYPE);
                 }
-                if(ANX7447_l & 0x80)
+                if (ANX7447_l & 0x80)
                 {
                     ANX7447_k = 0x03;
                     send_pd_msg(TYPE_EXT_GET_BATT_STS, &ANX7447_k, 1, SOP_TYPE);
@@ -1591,7 +1581,7 @@ static u8 Recv_PD_Commands_Default_Callback()
             break;
         case TYPE_EXT_GET_MFR_INFO:        //0x35
             /* Fix JIRA LBT-501 *//* fix JIRA LBT-563 */
-            if(recvd_msg_buf()[2] == 0)
+            if (recvd_msg_buf()[2] == 0)
                 send_pd_msg(TYPE_EXT_MFR_INFO,
                             (unsigned char *)&pd_manufacturer_info_data, 26,
                             SOP_TYPE);
@@ -1628,7 +1618,7 @@ static u8 Recv_PD_Commands_Default_Callback()
         #ifdef ReportPDResetComplete
             ucsi_debug("received hardware reset event.\n");
             /* Fix LBT-541 */
-            if((recvd_msg_len() == 0) || recvd_msg_buf()[0] & _BIT1)
+            if ((recvd_msg_len() == 0) || recvd_msg_buf()[0] & _BIT1)
             {
                 context[port_id].csc.csc.PDResetComplete = 1;
                 ucsi_async_notify_raise_up(4);
@@ -1658,7 +1648,7 @@ static u8 Recv_PD_Cmd_Rsp_Default_Callback()
                interface_to_str(RESPONSE_REQ_TYPE()),
                result_to_str(RESPONSE_REQ_RESULT()));
 
-    switch(RESPONSE_REQ_TYPE())
+    switch (RESPONSE_REQ_TYPE())
     {
         case TYPE_DSWAP_REQ:
             //need_notice_pd_cmd  =1;
@@ -1715,12 +1705,12 @@ static u8 Recv_PD_Cmd_Rsp_Default_Callback()
 static u8 Recv_PD_VDM_Defalut_Callback()
 {
     u16 svid;
-    if((recvd_msg_sop_type() == SOP_TYPE)
+    if ((recvd_msg_sop_type() == SOP_TYPE)
             && (recvd_msg_type() == TYPE_VDM))
     {
         svid = (recvd_msg_buf()[3] << 8) | recvd_msg_buf()[2];
 
-        if(svid == CUST_SVID)
+        if (svid == CUST_SVID)
             anx_ucsi_vdm_callback(port_id, recvd_msg_buf(), recvd_msg_len());
         else
             /* Fix JIRA LBT-501 return unsupport msg */
@@ -1728,10 +1718,10 @@ static u8 Recv_PD_VDM_Defalut_Callback()
         return 1;
     }
 
-    if((recvd_msg_sop_type() == SOP1_TYPE)
+    if ((recvd_msg_sop_type() == SOP1_TYPE)
             && ((recvd_msg_buf()[0] & 0x0F) == 0x1))
     {
-        if(recvd_msg_len() < 20)
+        if (recvd_msg_len() < 20)
         {
             ucsi_debug("no cable vdo.\n");
             return 1;
@@ -1750,76 +1740,76 @@ static u8 Recv_PD_VDM_Defalut_Callback()
 
 static u8 Recv_Debug_Callback()
 {
-    switch(recvd_msg_type())
+    switch (recvd_msg_type())
     {
         case TYPE_GET_VAR:
-            if(recvd_msg_buf()[0] == 0)
+            if (recvd_msg_buf()[0] == 0)
             {  // idata
                 ucsi_debug("read 0x%x idata = ",
                            ((u16)recvd_msg_buf()[1] << 8) +
                            recvd_msg_buf()[2]);
             }
-            else if(recvd_msg_buf()[0] == 1)
+            else if (recvd_msg_buf()[0] == 1)
             {   // xdata
                 ucsi_debug("read 0x%x xdata = ",
                            ((u16)recvd_msg_buf()[1] << 8) +
                            recvd_msg_buf()[2]);
             }
-            else if(recvd_msg_buf()[0] == IF_VAR_fw_var_reg)
+            else if (recvd_msg_buf()[0] == IF_VAR_fw_var_reg)
             {   // REG_FW_VAR
                 ucsi_debug("read REG_FW_VAR[0x%x] = ",
                            ((u16)recvd_msg_buf()[1] << 8) +
                            recvd_msg_buf()[2]);
             }
-            else if(recvd_msg_buf()[0] == IF_VAR_pd_src_pdo)
+            else if (recvd_msg_buf()[0] == IF_VAR_pd_src_pdo)
             {
                 ucsi_debug("read pd_src_pdo[0x%x] = ",
                            ((u16)recvd_msg_buf()[1] << 8) +
                            recvd_msg_buf()[2]);
             }
-            else if(recvd_msg_buf()[0] == IF_VAR_pd_snk_pdo)
+            else if (recvd_msg_buf()[0] == IF_VAR_pd_snk_pdo)
             {
                 ucsi_debug("read pd_snk_pdo[0x%x] = ",
                            ((u16)recvd_msg_buf()[1] << 8) +
                            recvd_msg_buf()[2]);
             }
-            else if(recvd_msg_buf()[0] == IF_VAR_pd_rdo_bak)
+            else if (recvd_msg_buf()[0] == IF_VAR_pd_rdo_bak)
             {
                 ucsi_debug("read pd_rdo_bak[0x%x] = ",
                            ((u16)recvd_msg_buf()[1] << 8) +
                            recvd_msg_buf()[2]);
             }
-            else if(recvd_msg_buf()[0] == IF_VAR_pd_rdo)
+            else if (recvd_msg_buf()[0] == IF_VAR_pd_rdo)
             {
                 ucsi_debug("read pd_rdo[0x%x] = ",
                            ((u16)recvd_msg_buf()[1] << 8) +
                            recvd_msg_buf()[2]);
             }
-            else if(recvd_msg_buf()[0] == IF_VAR_DP_caps)
+            else if (recvd_msg_buf()[0] == IF_VAR_DP_caps)
             {
                 ucsi_debug("read DP_cap[0x%x] = ",
                            ((u16)recvd_msg_buf()[1] << 8) +
                            recvd_msg_buf()[2]);
             }
-            else if(recvd_msg_buf()[0] == IF_VAR_configure_DP_caps)
+            else if (recvd_msg_buf()[0] == IF_VAR_configure_DP_caps)
             {    // REG_FW_VAR
                 ucsi_debug("read configure_DP_caps[0x%x] = ",
                            ((u16)recvd_msg_buf()[1] << 8) +
                            recvd_msg_buf()[2]);
             }
-            else if(recvd_msg_buf()[0] == IF_VAR_src_dp_status)
+            else if (recvd_msg_buf()[0] == IF_VAR_src_dp_status)
             { // REG_FW_VAR
                 ucsi_debug("read src_dp_status[0x%x] = ",
                            ((u16)recvd_msg_buf()[1] << 8) +
                            recvd_msg_buf()[2]);
             }
-            else if(recvd_msg_buf()[0] == IF_VAR_sink_svid_vdo)
+            else if (recvd_msg_buf()[0] == IF_VAR_sink_svid_vdo)
             { // REG_FW_VAR
                 ucsi_debug("read sink_svid_vdo[0x%x] = ",
                            ((u16)recvd_msg_buf()[1] << 8) +
                            recvd_msg_buf()[2]);
             }
-            else if(recvd_msg_buf()[0] == IF_VAR_sink_identity)
+            else if (recvd_msg_buf()[0] == IF_VAR_sink_identity)
             { // REG_FW_VAR
                 ucsi_debug("read sink_identity[0x%x] = ",
                            ((u16)recvd_msg_buf()[1] << 8) +
@@ -1842,10 +1832,10 @@ static u8 Recv_Debug_Callback()
 /*ChengLin: To integrate all send_xxx DATA Messages to one function for reduce code size*/
 static u8 Send_PD_Data_Messages(u8 type_msg, u8 *DataBuff, u8 size)
 {
-    if(NULL == DataBuff)
+    if (NULL == DataBuff)
         return CMD_FAIL;
 
-    if(type_msg == TYPE_DP_SNK_CFG)
+    if (type_msg == TYPE_DP_SNK_CFG)
     {
         memcpy(context[port_id].configure_DP_caps, DataBuff, 4);
         memcpy(context[port_id].InterfaceSendBuf + 2, DataBuff, 4);
@@ -1854,7 +1844,7 @@ static u8 Send_PD_Data_Messages(u8 type_msg, u8 *DataBuff, u8 size)
     }
     else
     {
-        if(type_msg == TYPE_DP_SNK_IDENTITY)
+        if (type_msg == TYPE_DP_SNK_IDENTITY)
             memcpy(context[port_id].src_dp_caps, DataBuff, size);
         memcpy(context[port_id].InterfaceSendBuf + 2, DataBuff, size);
         context[port_id].InterfaceSendBuf[0] = size + 1;        // + cmd
@@ -1869,16 +1859,16 @@ static u8 Send_PD_Data_Messages(u8 type_msg, u8 *DataBuff, u8 size)
 static u8 Send_PD_Extend_Messages(u8 type_msg, u8 *buff_ref, u8 size,
                                   u8 type_sop)
 {
-    if(type_msg == TYPE_EXT_PDFU_REQUEST
+    if (type_msg == TYPE_EXT_PDFU_REQUEST
             || type_msg == TYPE_EXT_COUNTRY_INFO
             || type_msg == TYPE_EXT_COUNTRY_CODE)
     {
-        if(size > 26)
+        if (size > 26)
         {
             context[port_id].InterfaceSendBuf[0] = (26 + 2 + 1) | (type_sop << 6);      //        + ext_header + cmd
             memcpy(context[port_id].InterfaceSendBuf + 4, buff_ref, 26);
 
-            if(type_msg == TYPE_EXT_COUNTRY_INFO
+            if (type_msg == TYPE_EXT_COUNTRY_INFO
                     || type_msg == TYPE_EXT_COUNTRY_CODE)
                 anx_write_block_reg(context[port_id].PD_EMTB_slave_id, 0,
                                     size - 26,
@@ -1930,9 +1920,9 @@ unsigned char Send_Interface_Messages(u8 type_msg, u8 *DataBuff, u8 size)
 /* Add VDM interface, LBT-437 */
 u8 send_vdm(u8 type_sop, u8 *vdm, unsigned char size)
 {
-    if(NULL == vdm)
+    if (NULL == vdm)
         return CMD_FAIL;
-    if((size < 4) || (size > 28) || (size % 4 != 0))
+    if ((size < 4) || (size > 28) || (size % 4 != 0))
         return CMD_FAIL;
 
     context[port_id].InterfaceSendBuf[0] = (size + 1) | (type_sop << 6);        // + cmd
@@ -1959,7 +1949,7 @@ u8 send_pd_msg(PD_MSG_TYPE type, u8 *buf, u8 size, u8 type_sop)
 {
     ucsi_debug("SendMSG ->%s: \n", interface_to_str(type));
 #if 1
-    switch(type)
+    switch (type)
     {
 //Send Control Messages
         case TYPE_GET_DP_SNK_CAP:  //send 4
@@ -1985,7 +1975,7 @@ u8 send_pd_msg(PD_MSG_TYPE type, u8 *buf, u8 size, u8 type_sop)
         case TYPE_DSWAP_REQ:       //send 11
         case TYPE_GOTO_MIN_REQ:    //send 12
         case TYPE_VCONN_SWAP_REQ:  //send 13
-            if(Send_PD_Control_Messages(type) == CMD_SUCCESS)
+            if (Send_PD_Control_Messages(type) == CMD_SUCCESS)
                 ANX7447_l = CMD_SUCCESS;
             else
                 ANX7447_l = CMD_FAIL;
@@ -2007,7 +1997,7 @@ u8 send_pd_msg(PD_MSG_TYPE type, u8 *buf, u8 size, u8 type_sop)
             ANX7447_l = Send_PD_Data_Messages(type, buf, size);
             break;
         case TYPE_PWR_OBJ_REQ:     //send 16
-            if(Send_PD_Data_Messages(type, buf, size) == CMD_SUCCESS)
+            if (Send_PD_Data_Messages(type, buf, size) == CMD_SUCCESS)
                 ANX7447_l = CMD_SUCCESS;
             else
                 ANX7447_l = CMD_FAIL;
@@ -2063,7 +2053,7 @@ u8 send_pd_msg(PD_MSG_TYPE type, u8 *buf, u8 size, u8 type_sop)
  */
 static u8 dispatch_rcvd_pd_msg()
 {
-    switch(recvd_msg_type())
+    switch (recvd_msg_type())
     {
         case TYPE_VDM:             //0x14
             ANX7447_l = Recv_PD_VDM_Defalut_Callback();
@@ -2092,15 +2082,15 @@ static void pd_cc_status_default_func(u8 cc_status)
     role = get_data_role();
     context[port_id].anx_data_role = role;
 
-    if(role == 0)
+    if (role == 0)
         context[port_id].ucsi_connector_partner_type = CPT_DFP_ATTACHED;
     else
         context[port_id].ucsi_connector_partner_type = CPT_UFP_ATTACHED;
 
-    switch((cc_status & 0xF))
+    switch ((cc_status & 0xF))
     {
         case 1:
-            switch(((cc_status >> 4) & 0xF))
+            switch (((cc_status >> 4) & 0xF))
             {
                 case 0:
                     // CC1 Rd
@@ -2121,7 +2111,7 @@ static void pd_cc_status_default_func(u8 cc_status)
             }
             break;
         case 2:
-            switch(((cc_status >> 4) & 0xF))
+            switch (((cc_status >> 4) & 0xF))
             {
                 case 0:
                     //CC1 Ra
@@ -2141,7 +2131,7 @@ static void pd_cc_status_default_func(u8 cc_status)
             }
             break;
         case 0:
-            switch(((cc_status >> 4) & 0xF))
+            switch (((cc_status >> 4) & 0xF))
             {
                 case 1:
                     //CC1 Open
@@ -2170,7 +2160,7 @@ static void pd_cc_status_default_func(u8 cc_status)
             break;
     }
 
-    switch(((cc_status >> 4) & 0xF))
+    switch (((cc_status >> 4) & 0xF))
     {
         case 0x04:
             context[port_id].power_op_mode = PO_USB_DEFAULT;
@@ -2194,19 +2184,19 @@ static u8 interface_send_msg()
     len = send_msg_len() + 2;
     ANX7447_c = anx_read_reg(context[port_id].anx_spi, InterfaceSendBuf_Addr);
     // retry
-    if(ANX7447_c)
+    if (ANX7447_c)
     {
         count = 250;
-        while(count)
+        while (count)
         {
             mdelay(2);
             ANX7447_c = anx_read_reg(context[port_id].anx_spi, InterfaceSendBuf_Addr);
-            if(ANX7447_c == 0)
+            if (ANX7447_c == 0)
                 break;
             count--;
         }
     }
-    if(ANX7447_c == 0)
+    if (ANX7447_c == 0)
     {
         anx_write_block_reg(context[port_id].anx_spi,
                             InterfaceSendBuf_Addr + 1, len - 1,
@@ -2230,19 +2220,19 @@ static u8 interface_send_ctr_msg()
     len = 3;
     ANX7447_c = anx_read_reg(context[port_id].anx_spi, InterfaceSendBuf_Addr);
     // retry
-    if(ANX7447_c)
+    if (ANX7447_c)
     {
         count = 250;
-        while(count)
+        while (count)
         {
             mdelay(1);
             ANX7447_c = anx_read_reg(context[port_id].anx_spi, InterfaceSendBuf_Addr);
-            if(ANX7447_c == 0)
+            if (ANX7447_c == 0)
                 break;
             count--;
         }
     }
-    if(ANX7447_c == 0)
+    if (ANX7447_c == 0)
     {
         anx_write_block_reg(context[port_id].anx_spi,
                             InterfaceSendBuf_Addr + 1, len - 1,
@@ -2278,10 +2268,10 @@ static u8 interface_recvd_msg()
     anx_read_block_reg(context[port_id].anx_spi, InterfaceRecvBuf_Addr, 32,
                        (u8 *)context[port_id].InterfaceRecvBuf);
 #endif
-    if(context[port_id].InterfaceRecvBuf[0] != 0)
+    if (context[port_id].InterfaceRecvBuf[0] != 0)
     {
     #ifdef ANX_I2C_BUFF_FAST_READ
-        if(recvd_msg_len() > 4)
+        if (recvd_msg_len() > 4)
             anx_read_block_reg(context[port_id].anx_spi,
                                InterfaceRecvBuf_Addr + 7,
                                recvd_msg_len() - 4,
@@ -2289,11 +2279,11 @@ static u8 interface_recvd_msg()
     #endif
         anx_write_reg(context[port_id].anx_spi, InterfaceRecvBuf_Addr, 0);
         ANX7447_j = 0;
-        for(ANX7447_i = 0; ANX7447_i < recvd_msg_len() + 2 + 1; ANX7447_i++)
+        for (ANX7447_i = 0; ANX7447_i < recvd_msg_len() + 2 + 1; ANX7447_i++)
         {
             ANX7447_j += context[port_id].InterfaceRecvBuf[ANX7447_i];
         }
-        if(ANX7447_j == 0)
+        if (ANX7447_j == 0)
         {
             return CMD_SUCCESS;
         }
@@ -2307,7 +2297,7 @@ static u8 interface_recvd_msg()
 
 static void handle_intr_vector()
 {
-    if(interface_recvd_msg() == CMD_SUCCESS)
+    if (interface_recvd_msg() == CMD_SUCCESS)
     {
         ucsi_debug("rev <- %s\n", interface_to_str((PD_MSG_TYPE)
             context[port_id].
@@ -2335,7 +2325,7 @@ unsigned char isCalibrated()
 {
     unsigned char buf[3];
     eFuseRead(0, 3, buf);
-    if(!buf[0] || !buf[1] || !buf[2])
+    if (!buf[0] || !buf[1] || !buf[2])
         return 0;
     return 1;
 }
@@ -2343,7 +2333,7 @@ unsigned char isCalibrated()
 
 void send_initialized_setting()
 {
-    switch(context[port_id].anx_initial_status)
+    switch (context[port_id].anx_initial_status)
     {
         case INIT_STAGE_1:
             //send_source_capability();
@@ -2376,10 +2366,10 @@ void send_initialized_setting()
             ucsi_debug("power on 550ms, data operation mode is %#x.\n",
                        context[port_id].data_operation_mode_uom);
         #if 1
-            if((context[port_id].data_operation_mode_uom == 0) ||
+            if ((context[port_id].data_operation_mode_uom == 0) ||
                     (context[port_id].data_operation_mode_uom & OP_DRP))
                 break;
-            switch(get_data_role())
+            switch (get_data_role())
             {
                 case 1:                //DFP
                     role = OP_DFP;
@@ -2388,7 +2378,7 @@ void send_initialized_setting()
                     role = OP_UFP;
                     break;
             }
-            if(context[port_id].data_operation_mode_uom & role)
+            if (context[port_id].data_operation_mode_uom & role)
                 break;
             //send_pd_msg(TYPE_DSWAP_REQ, 0, 0, SOP_TYPE);
             /* fix JIRA LBT-552 */
@@ -2400,10 +2390,10 @@ void send_initialized_setting()
             context[port_id].anx_initial_status++;
             ucsi_debug("power on 560ms, power operation mode is %#x.\n",
                        context[port_id].power_operation_mode_pdm);
-            if((context[port_id].power_operation_mode_pdm == 0) ||
+            if ((context[port_id].power_operation_mode_pdm == 0) ||
                     (context[port_id].power_operation_mode_pdm & PW_DRP))
                 break;
-            switch(get_power_role())
+            switch (get_power_role())
             {
                 case 1:                //PW_PROVIDER
                     role = PW_PROVIDER;
@@ -2412,7 +2402,7 @@ void send_initialized_setting()
                     role = PW_CONSUMER;
                     break;
             }
-            if(context[port_id].power_operation_mode_pdm & role)
+            if (context[port_id].power_operation_mode_pdm & role)
                 break;
             send_pd_msg(TYPE_PSWAP_REQ, 0, 0, SOP_TYPE);
             break;
@@ -2420,7 +2410,7 @@ void send_initialized_setting()
             context[port_id].anx_initial_status = 0;
             //Fix JIRA LBT-404
         #ifdef ANX_SEND_GET_SOURCE_CAPS
-            if(request_src_caps_flag[port_id] == 1)
+            if (request_src_caps_flag[port_id] == 1)
             {
                 request_src_caps_flag[port_id] = 0;
                 send_pd_msg(TYPE_GET_SRC_CAP, 0, 0, SOP_TYPE);
@@ -2440,12 +2430,12 @@ void send_initialized_setting()
 static void drp_toggle_enable()
 {
     ANX7447_c = anx_read_reg(context[port_id].anx_spi, 0x95);
-    if(context[port_id].data_operation_mode_uom & OP_DFP)
+    if (context[port_id].data_operation_mode_uom & OP_DFP)
     {
         anx_write_reg(context[port_id].anx_addr1, TCPC_ROLE_CONTROL, 0x5);   //CC with  Rp + 1.5A
         ucsi_debug("set tcpc role as Rp(0x5), reg 0xaa(%#x)\n", ANX7447_c);
     }
-    else if(context[port_id].data_operation_mode_uom & OP_UFP)
+    else if (context[port_id].data_operation_mode_uom & OP_UFP)
     {
         anx_write_reg(context[port_id].anx_addr1, TCPC_ROLE_CONTROL, 0xA);   //CC with  RD
         ucsi_debug("set tcpc role as Rd(0xa), reg 0xaa(%#x)\n", ANX7447_c);
@@ -2455,7 +2445,7 @@ static void drp_toggle_enable()
         anx_write_reg(context[port_id].anx_addr1, ANALOG_CTRL_10, 0x80);
         anx_write_reg(context[port_id].anx_addr1, TCPC_ROLE_CONTROL, 0x4A);  //CC with  RD
         ucsi_debug("set tcpc role as Rd + DRP en(0x4A), %#x chip\n", ANX7447_c);
-        if(ANX7447_c >= 0xAC && ANX7447_c != 0xFF)
+        if (ANX7447_c >= 0xAC && ANX7447_c != 0xFF)
         {
             anx_write_reg(context[port_id].anx_addr1, TCPC_COMMAND, 0x99);   //DRP en
         }
@@ -2493,11 +2483,11 @@ static void usb_pd_function_init(void)
 {
 #ifdef PATCH_NOT_CALIBRATED_CHIP
     ANX7447_c = anx_read_reg(context[port_id].anx_spi, 0x95);
-    if(!isCalibrated())
+    if (!isCalibrated())
     {
         ucsi_debug("Not calibrate chip.\n");
         anx_write_reg(context[port_id].anx_addr1, RING_OSC_CTRL, 0xb7);      //27M clock
-        if(ANX7447_c >= 0xAC && ANX7447_c != 0xFF)
+        if (ANX7447_c >= 0xAC && ANX7447_c != 0xFF)
         {
             anx_write_reg(context[port_id].anx_addr1, ADC_CTRL_2, 0x26);     ////adc                AA: 0x0f    AC:0x26
         }
@@ -2526,7 +2516,7 @@ static void usb_pd_function_init(void)
     anx_write_reg(context[port_id].anx_spi, MIN_POWER, PD_MIN_POWER);
 #endif
 #if (PD_MAX_INSTANCE == 2)
-    if(context[0].anx_power_status == 0 && context[1].anx_power_status == 0)
+    if (context[0].anx_power_status == 0 && context[1].anx_power_status == 0)
         random_data = (timer1msCount % 256);
     anx_write_reg(context[port_id].anx_addr1, 0xef, random_data);
 #endif
@@ -2539,7 +2529,7 @@ static void usb_pd_function_init(void)
      */
     ANX7447_k = ANX7447_k | 0x3;
     ANX7447_k = ANX7447_k | (0x1 << 2);
-    if(context[port_id].pd_capability & PD_HAS_ANX_REDRIVER)
+    if (context[port_id].pd_capability & PD_HAS_ANX_REDRIVER)
         ANX7447_k = ANX7447_k | _BIT4;
 #ifdef ANX_FRS_EN_AT_I2C_ADR
     ANX7447_k = ANX7447_k | _BIT7;              /* Enable FRS_EN at pin I2C_ADR_1 */
@@ -2609,7 +2599,7 @@ void chip_power_down(u8 port)
 #ifdef ECR_CHECKING
 static void anx_ecr_checking(void)
 {
-    if(((context[port_id].ucsi_partner_rdo >> 10) & 0x3ff)
+    if (((context[port_id].ucsi_partner_rdo >> 10) & 0x3ff)
             == (PD_CURRENT_1500MA / 10))
     {
         supply_1500ma_flag = 0;
@@ -2624,13 +2614,13 @@ static void anx_detect_voltage_and_current(u8 port)
         anx_read_reg(context[port].anx_spi, SYSTEM_STSTUS);
     change_int =
         anx_read_reg(context[port_id].anx_spi, CHANGE_INT);
-    if(change_status & _BIT4)
+    if (change_status & _BIT4)
     {
         self_charging_error = 1;
         return;
     }
 
-    if(((change_status & VBUS_STATUS) == 0)
+    if (((change_status & VBUS_STATUS) == 0)
             || (change_int & PR_CONSUMER_GOT_POWER))
     {
         context[port].anx_power_role = 0;
@@ -2638,14 +2628,14 @@ static void anx_detect_voltage_and_current(u8 port)
             anx_read_reg(context[port].anx_spi, 0xb1);
         context[port].anx_voltage_in_100mv =
             anx_read_reg(context[port].anx_spi, 0xaf);
-        if((context[port].anx_current_in_50ma == 0)
+        if ((context[port].anx_current_in_50ma == 0)
                 || (context[port].anx_voltage_in_100mv == 0))
         {
             change_status =
                 anx_read_reg(context[port].anx_spi, NEW_CC_STATUS);
             pd_cc_status_default_func(change_status);
             context[port].anx_voltage_in_100mv = 50;
-            switch(context[port].power_op_mode)
+            switch (context[port].power_op_mode)
             {
                 default:
                 case PO_USB_DEFAULT:
@@ -2668,10 +2658,10 @@ static void anx_detect_voltage_and_current(u8 port)
 
 void anx_dead_battery_checking_2(u8 port)
 {
-    if(context[port].anx_power_status == 0)
+    if (context[port].anx_power_status == 0)
     {
         change_status = anx_read_reg(context[port].anx_spi, NEW_CC_STATUS);
-        if(change_status == 0)
+        if (change_status == 0)
             return;       //return if no cc connection
         context[port].anx_power_status = 1;
     }
@@ -2680,40 +2670,40 @@ void anx_dead_battery_checking_2(u8 port)
 
 void anx_dead_battery_checking_1()
 {
-    for(ANX7447_i = 0; ANX7447_i < PD_MAX_INSTANCE; ANX7447_i++)
+    for (ANX7447_i = 0; ANX7447_i < PD_MAX_INSTANCE; ANX7447_i++)
     {
-        if(context[ANX7447_i].anx_power_status == 0)
+        if (context[ANX7447_i].anx_power_status == 0)
         {
             change_status =
                 anx_read_reg(context[ANX7447_i].anx_spi, NEW_CC_STATUS);
-            if(change_status != 0)
+            if (change_status != 0)
             {
                 context[ANX7447_i].anx_power_status = 1;
                 pd_cc_status_default_func(change_status);
                 change_status =
                     anx_read_reg(context[ANX7447_i].anx_spi, SYSTEM_STSTUS);
-                if(change_status & VBUS_CHANGE)
+                if (change_status & VBUS_CHANGE)
                     context[ANX7447_i].anx_power_role = 1;
                 else
                     //debug only
                     context[ANX7447_i].anx_power_role = 0;
-                if(change_status & _BIT4)
+                if (change_status & _BIT4)
                 {
                     self_charging_error = 1;
                     return;
                 }
 
-                if(context[ANX7447_i].anx_power_role == 0)
+                if (context[ANX7447_i].anx_power_role == 0)
                 {
                     context[ANX7447_i].anx_current_in_50ma =
                         anx_read_reg(context[port_id].anx_spi, 0xb1);
                     context[ANX7447_i].anx_voltage_in_100mv =
                         anx_read_reg(context[port_id].anx_spi, 0xaf);
-                    if(context[ANX7447_i].anx_current_in_50ma == 0
+                    if (context[ANX7447_i].anx_current_in_50ma == 0
                             || context[ANX7447_i].anx_voltage_in_100mv == 0)
                     {
                         context[ANX7447_i].anx_voltage_in_100mv = 50;
-                        switch(context[port_id].power_op_mode)
+                        switch (context[port_id].power_op_mode)
                         {
                             default:
                             case PO_USB_DEFAULT:
@@ -2739,7 +2729,7 @@ void anx_dead_battery_checking_1()
 #if UCSI_SET_UOM_SUPPORT
 static u8 anx_check_uom()
 {
-    switch(get_data_role())
+    switch (get_data_role())
     {
         case 1:                //DFP
             role = OP_DFP;
@@ -2753,10 +2743,10 @@ static u8 anx_check_uom()
     ucsi_debug("check uom port(%#x) role(%#x), need role(%#x)\n",
                port_id, role, context[port_id].data_operation_mode_uom);
 
-    if(context[port_id].data_operation_mode_uom == OP_DRP)
+    if (context[port_id].data_operation_mode_uom == OP_DRP)
         return 0;
 
-    if(context[port_id].data_operation_mode_uom & role)
+    if (context[port_id].data_operation_mode_uom & role)
         return 0;
 
     ucsi_debug("port(%#x) force power of, role(%#x), need role(%#x)\n",
@@ -2770,9 +2760,9 @@ static u8 anx_check_uom()
 
 void anx_alert_message_isr()
 {
-    if(0 == context[port_id].anx_power_status)
+    if (0 == context[port_id].anx_power_status)
     {
-        if(anx_read_reg(context[port_id].anx_spi, OCM_VERSION_REG)
+        if (anx_read_reg(context[port_id].anx_spi, OCM_VERSION_REG)
                 == 0x00)
         {
             anx_write_reg(context[port_id].anx_addr1, 0x10, 0xFF);
@@ -2795,13 +2785,13 @@ void anx_alert_message_isr()
     //anx_write_reg(context[port_id].anx_addr1, INTR_ALERT_1, intr_alert_1);
 
     /* power on process */
-    if((intr_alert_0 & INTR_SOFTWARE_INT) && (change_int & OCM_BOOT_UP))
+    if ((intr_alert_0 & INTR_SOFTWARE_INT) && (change_int & OCM_BOOT_UP))
     {
         usb_pd_function_init();
         retimer_power_ctrl(port_id, 1);
         ANX7447_j = anx_read_reg(context[port_id].anx_spi, OCM_VERSION_REG);
         ANX7447_k = anx_read_reg(context[port_id].anx_spi, OCM_VERSION_REG + 1);
-        if(port_id == 0)
+        if (port_id == 0)
         {
             PDPort0MainVersion = ANX7447_j;
             PDPort0SubVersion = ANX7447_k;
@@ -2815,7 +2805,7 @@ void anx_alert_message_isr()
                    port_id, (ANX7447_j >> 4) & 0xf, ANX7447_j & 0xf, ANX7447_k);
 
     #if UCSI_SET_UOM_SUPPORT
-        if(anx_check_uom())
+        if (anx_check_uom())
             return;
     #endif
 
@@ -2849,7 +2839,7 @@ void anx_alert_message_isr()
         RamDebug(0xE8 | port_id);
     }
 
-    if(intr_alert_1 & INTR_INTP_POW_OFF)
+    if (intr_alert_1 & INTR_INTP_POW_OFF)
     {
         chip_power_down(port_id);
         ucsi_debug("port(%#x) power off, alert0(%#x), alert1(%#x).\n",
@@ -2869,33 +2859,33 @@ void anx_alert_message_isr()
     }
 
     /*Received interface message */
-    if(intr_alert_0 & INTR_RECEIVED_MSG)
+    if (intr_alert_0 & INTR_RECEIVED_MSG)
     {
         handle_intr_vector();
     }
 
     /*Received software interrupt */
-    if(intr_alert_0 & INTR_SOFTWARE_INT)
+    if (intr_alert_0 & INTR_SOFTWARE_INT)
     {
 
-        if(change_int & HPD_STATUS_CHANGE)
+        if (change_int & HPD_STATUS_CHANGE)
         {
             context[port_id].hpd_status = change_status & HPD_STATUS;
             /* LBT-540 */
             anx_ucsi_hpd_event(port_id, context[port_id].hpd_status);
         }
 
-        if(change_int & DATA_ROLE_CHANGE)
+        if (change_int & DATA_ROLE_CHANGE)
             anx_drole_change_event(port_id, get_data_role());
 
-        if(change_int & VBUS_CHANGE)
+        if (change_int & VBUS_CHANGE)
         {
 //context[port_id].enable_report_power_on = 1;
             context[port_id].csc.csc.PowerDirection = 1;
             context[port_id].power_sink =
                 anx_read_reg(context[port_id].anx_spi,
                              SYSTEM_STSTUS) & SINK_STATUS;
-            if(context[port_id].power_sink)
+            if (context[port_id].power_sink)
             {
             #ifdef ReportExternalSupply
                 context[port_id].csc.csc.ExternalSupply = 1;
@@ -2904,7 +2894,7 @@ void anx_alert_message_isr()
             anx_prole_change_event(port_id, !context[port_id].power_sink);
 
             ucsi_async_notify_raise_up(100);
-            if(change_status & VBUS_CHANGE)
+            if (change_status & VBUS_CHANGE)
             {
                 context[port_id].anx_vbus_status = 1;
                 context[port_id].anx_power_role = 1;
@@ -2923,11 +2913,11 @@ void anx_alert_message_isr()
                 context[port_id].anx_vbus_status = 0;
             }
         }
-        if(change_int & CC_STATUS_CHANGE)
+        if (change_int & CC_STATUS_CHANGE)
         {
             change_status =
                 anx_read_reg(context[port_id].anx_spi, NEW_CC_STATUS);
-            if(plug_orientation(port_id))
+            if (plug_orientation(port_id))
                 context[port_id].cc_orientation = CC1_CONNECTED;
             else
                 context[port_id].cc_orientation = CC2_CONNECTED;
@@ -2978,7 +2968,7 @@ static void anx7447_pup_initial()
 void anx7447_ucsi_init()
 {
     anx7447_pup_initial();
-    for(ANX7447_i = 0; ANX7447_i < PD_MAX_INSTANCE; ANX7447_i++)
+    for (ANX7447_i = 0; ANX7447_i < PD_MAX_INSTANCE; ANX7447_i++)
     {
         port_id = ANX7447_i;
         anx7447_context_initial();

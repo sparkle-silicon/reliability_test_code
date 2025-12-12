@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2025-10-17 23:28:15
  * @Description:
  *
@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 #include "KERNEL_ADC.H"
 #include "KERNEL_MEMORY.H"
@@ -26,22 +26,22 @@ void ADC_TriggerMode_Config(uint8_t mode)
 {
       switch (mode)
       {
-      case 0:
-            ADC_CTRL &= (~(0x3 << 7));    // 软件触发
-            break;
-      case 1:
-            ADC_CTRL |= (0x1 << 7);
-            ADC_CTRL &= (~(0x1 << 8));    // 硬件触发
-            break;
-      case 2:
-            ADC_CTRL |= (0x1 << 8);
-            ADC_CTRL &= (~(0x1 << 7));    // 连续触发
-            break;
-      case 3:
-            ADC_CTRL |= (0x3 << 7);       // 自动采样
-            break;
-      default:
-            break;
+            case 0:
+                  ADC_CTRL &= (~(0x3 << 7));    // 软件触发
+                  break;
+            case 1:
+                  ADC_CTRL |= (0x1 << 7);
+                  ADC_CTRL &= (~(0x1 << 8));    // 硬件触发
+                  break;
+            case 2:
+                  ADC_CTRL |= (0x1 << 8);
+                  ADC_CTRL &= (~(0x1 << 7));    // 连续触发
+                  break;
+            case 3:
+                  ADC_CTRL |= (0x3 << 7);       // 自动采样
+                  break;
+            default:
+                  break;
       }
 }
 
@@ -56,14 +56,14 @@ void ADC_SampleMode_Config(uint8_t mode)
 {
       switch (mode)
       {
-      case 0:
-            ADC_CTRL &= (~(0x1 << 4));
-            break;
-      case 1:
-            ADC_CTRL |= (0x1 << 4);
-            break;
-      default:
-            break;
+            case 0:
+                  ADC_CTRL &= (~(0x1 << 4));
+                  break;
+            case 1:
+                  ADC_CTRL |= (0x1 << 4);
+                  break;
+            default:
+                  break;
       }
 }
 
@@ -209,36 +209,36 @@ void MatchADCChannelToData(uint8_t channelx, uint16_t ADC_Databuffer_channelx)
 {
       switch (ADC_Databuffer_channelx)
       {
-      case 0:
-            ADC_DATA_0_CHAN = channelx;
-            break;
-      case 1:
-            ADC_DATA_1_CHAN = channelx;
-            break;
-      case 2:
-            ADC_DATA_2_CHAN = channelx;
-            break;
-      case 3:
-            ADC_DATA_3_CHAN = channelx;
-            break;
-      case 4:
-            if (channelx == 4)
-                  ADC_DATA_4567_CHAN |= (0x1 << 4);
-            break;
-      case 5:
-            if (channelx == 5)
-                  ADC_DATA_4567_CHAN |= (0x1 << 5);
-            break;
-      case 6:
-            if (channelx == 6)
-                  ADC_DATA_4567_CHAN |= (0x1 << 6);
-            break;
-      case 7:
-            if (channelx == 7)
-                  ADC_DATA_4567_CHAN |= (0x1 << 7);
-            break;
-      default:
-            break;
+            case 0:
+                  ADC_DATA_0_CHAN = channelx;
+                  break;
+            case 1:
+                  ADC_DATA_1_CHAN = channelx;
+                  break;
+            case 2:
+                  ADC_DATA_2_CHAN = channelx;
+                  break;
+            case 3:
+                  ADC_DATA_3_CHAN = channelx;
+                  break;
+            case 4:
+                  if (channelx == 4)
+                        ADC_DATA_4567_CHAN |= (0x1 << 4);
+                  break;
+            case 5:
+                  if (channelx == 5)
+                        ADC_DATA_4567_CHAN |= (0x1 << 5);
+                  break;
+            case 6:
+                  if (channelx == 6)
+                        ADC_DATA_4567_CHAN |= (0x1 << 6);
+                  break;
+            case 7:
+                  if (channelx == 7)
+                        ADC_DATA_4567_CHAN |= (0x1 << 7);
+                  break;
+            default:
+                  break;
       }
 }
 
@@ -339,7 +339,7 @@ void ADC_Channelx_Set(uint8_t channelx, uint8_t sw)
       {
             ADC_CHAN_EN = (0x1 << channelx);
       }
-      else if(sw == DISABLE)
+      else if (sw == DISABLE)
       {
             ADC_CHAN_EN &= (~(0x1 << channelx));
       }
@@ -413,29 +413,29 @@ void ADC_SW_Sample_Init_Multi(uint8_t mode, uint8_t Data_Select, uint8_t Chanal_
 
       switch (Data_Select)
       {
-      case 0:
-            MatchADCChannelToData(0, 0);
-            MatchADCChannelToData(1, 1);
-            MatchADCChannelToData(2, 2);
-            MatchADCChannelToData(3, 3);
-            break;
-      case 1:
-            MatchADCChannelToData(4, 0);
-            MatchADCChannelToData(5, 1);
-            MatchADCChannelToData(6, 2);
-            MatchADCChannelToData(7, 3);
-            break;
-      case 2:
-            MatchADCChannelToData(8, 0);
-            MatchADCChannelToData(9, 1);
-            MatchADCChannelToData(10, 2);
-            MatchADCChannelToData(11, 3);
-            break;
-      case 3:
-            MatchADCChannelToData(12, 0);
-            MatchADCChannelToData(13, 1);
-            MatchADCChannelToData(14, 2);
-            break;
+            case 0:
+                  MatchADCChannelToData(0, 0);
+                  MatchADCChannelToData(1, 1);
+                  MatchADCChannelToData(2, 2);
+                  MatchADCChannelToData(3, 3);
+                  break;
+            case 1:
+                  MatchADCChannelToData(4, 0);
+                  MatchADCChannelToData(5, 1);
+                  MatchADCChannelToData(6, 2);
+                  MatchADCChannelToData(7, 3);
+                  break;
+            case 2:
+                  MatchADCChannelToData(8, 0);
+                  MatchADCChannelToData(9, 1);
+                  MatchADCChannelToData(10, 2);
+                  MatchADCChannelToData(11, 3);
+                  break;
+            case 3:
+                  MatchADCChannelToData(12, 0);
+                  MatchADCChannelToData(13, 1);
+                  MatchADCChannelToData(14, 2);
+                  break;
       }
       if (Chanal_8_mode)
       {
@@ -523,29 +523,29 @@ void ADC_Cont_Sample_Init_Multi(uint8_t mode, uint8_t Data_Select, uint8_t Chana
 
       switch (Data_Select)
       {
-      case 0:
-            MatchADCChannelToData(0, 0);
-            MatchADCChannelToData(1, 1);
-            MatchADCChannelToData(2, 2);
-            MatchADCChannelToData(3, 3);
-            break;
-      case 1:
-            MatchADCChannelToData(4, 0);
-            MatchADCChannelToData(5, 1);
-            MatchADCChannelToData(6, 2);
-            MatchADCChannelToData(7, 3);
-            break;
-      case 2:
-            MatchADCChannelToData(8, 0);
-            MatchADCChannelToData(9, 1);
-            MatchADCChannelToData(10, 2);
-            MatchADCChannelToData(11, 3);
-            break;
-      case 3:
-            MatchADCChannelToData(12, 0);
-            MatchADCChannelToData(13, 1);
-            MatchADCChannelToData(14, 2);
-            break;
+            case 0:
+                  MatchADCChannelToData(0, 0);
+                  MatchADCChannelToData(1, 1);
+                  MatchADCChannelToData(2, 2);
+                  MatchADCChannelToData(3, 3);
+                  break;
+            case 1:
+                  MatchADCChannelToData(4, 0);
+                  MatchADCChannelToData(5, 1);
+                  MatchADCChannelToData(6, 2);
+                  MatchADCChannelToData(7, 3);
+                  break;
+            case 2:
+                  MatchADCChannelToData(8, 0);
+                  MatchADCChannelToData(9, 1);
+                  MatchADCChannelToData(10, 2);
+                  MatchADCChannelToData(11, 3);
+                  break;
+            case 3:
+                  MatchADCChannelToData(12, 0);
+                  MatchADCChannelToData(13, 1);
+                  MatchADCChannelToData(14, 2);
+                  break;
       }
       if (Chanal_8_mode)
       {
@@ -626,29 +626,29 @@ void ADC_HW_Sample_Init_Multi(uint8_t mode, uint32_t timercount, uint8_t Data_Se
 
       switch (Data_Select)
       {
-      case 0:
-            MatchADCChannelToData(0, 0);
-            MatchADCChannelToData(1, 1);
-            MatchADCChannelToData(2, 2);
-            MatchADCChannelToData(3, 3);
-            break;
-      case 1:
-            MatchADCChannelToData(4, 0);
-            MatchADCChannelToData(5, 1);
-            MatchADCChannelToData(6, 2);
-            MatchADCChannelToData(7, 3);
-            break;
-      case 2:
-            MatchADCChannelToData(8, 0);
-            MatchADCChannelToData(9, 1);
-            MatchADCChannelToData(10, 2);
-            MatchADCChannelToData(11, 3);
-            break;
-      case 3:
-            MatchADCChannelToData(12, 0);
-            MatchADCChannelToData(13, 1);
-            MatchADCChannelToData(14, 2);
-            break;
+            case 0:
+                  MatchADCChannelToData(0, 0);
+                  MatchADCChannelToData(1, 1);
+                  MatchADCChannelToData(2, 2);
+                  MatchADCChannelToData(3, 3);
+                  break;
+            case 1:
+                  MatchADCChannelToData(4, 0);
+                  MatchADCChannelToData(5, 1);
+                  MatchADCChannelToData(6, 2);
+                  MatchADCChannelToData(7, 3);
+                  break;
+            case 2:
+                  MatchADCChannelToData(8, 0);
+                  MatchADCChannelToData(9, 1);
+                  MatchADCChannelToData(10, 2);
+                  MatchADCChannelToData(11, 3);
+                  break;
+            case 3:
+                  MatchADCChannelToData(12, 0);
+                  MatchADCChannelToData(13, 1);
+                  MatchADCChannelToData(14, 2);
+                  break;
       }
       if (Chanal_8_mode)
       {
@@ -715,35 +715,35 @@ void ADC_Auto_Sample_Init_Single(uint8_t channelx, uint8_t ADC_Databuffer_channe
             cmp_channelx &= 0x3;
             switch (cmp_channelx)
             {
-            case 0:
-                  ADC_CMP_0_CTRL |= 0x1 << 6;//使能comparator 0
-                  ADC_CMP_0_CTRL &= ~(0x1 << 5);
-                  ADC_CMP_0_CTRL |= cmp_rule << 5;//设置比较规则
-                  ADC_CMP_0_CTRL &= ~(0x7);
-                  ADC_CMP_0_CTRL |= ADC_Databuffer_channelx;//设置比较通道对应的ADC数据缓存通道
-                  ADC_CMP_0_THR = threshold;
-                  break;
-            case 1:
-                  ADC_CMP_1_CTRL |= 0x1 << 6;//使能comparator 1
-                  ADC_CMP_1_CTRL &= ~(0x1 << 5);
-                  ADC_CMP_1_CTRL |= cmp_rule << 5;//设置比较规则
-                  ADC_CMP_1_CTRL &= ~(0x7);
-                  ADC_CMP_1_CTRL |= ADC_Databuffer_channelx;//设置比较通道对应的ADC数据缓存通道
-                  ADC_CMP_1_THR = threshold;
-                  break;
-            case 2:
-                  ADC_CMP_2_CTRL |= 0x1 << 6;//使能comparator 2
-                  ADC_CMP_2_CTRL &= ~(0x1 << 5);
-                  ADC_CMP_2_CTRL |= cmp_rule << 5;//设置比较规则
-                  ADC_CMP_2_CTRL &= ~(0x7);
-                  ADC_CMP_2_CTRL |= ADC_Databuffer_channelx;//设置比较通道对应的ADC数据缓存通道
-                  ADC_CMP_2_THR = threshold;
-                  break;
-            default:
-                  ADC_CMP_0_CTRL &= ~(0x1 << 6);//关闭comparator 0 的使能位
-                  ADC_CMP_1_CTRL &= ~(0x1 << 6);//关闭comparator 1 的使能位
-                  ADC_CMP_2_CTRL &= ~(0x1 << 6);//关闭comparator 2 的使能位
-                  break;
+                  case 0:
+                        ADC_CMP_0_CTRL |= 0x1 << 6;//使能comparator 0
+                        ADC_CMP_0_CTRL &= ~(0x1 << 5);
+                        ADC_CMP_0_CTRL |= cmp_rule << 5;//设置比较规则
+                        ADC_CMP_0_CTRL &= ~(0x7);
+                        ADC_CMP_0_CTRL |= ADC_Databuffer_channelx;//设置比较通道对应的ADC数据缓存通道
+                        ADC_CMP_0_THR = threshold;
+                        break;
+                  case 1:
+                        ADC_CMP_1_CTRL |= 0x1 << 6;//使能comparator 1
+                        ADC_CMP_1_CTRL &= ~(0x1 << 5);
+                        ADC_CMP_1_CTRL |= cmp_rule << 5;//设置比较规则
+                        ADC_CMP_1_CTRL &= ~(0x7);
+                        ADC_CMP_1_CTRL |= ADC_Databuffer_channelx;//设置比较通道对应的ADC数据缓存通道
+                        ADC_CMP_1_THR = threshold;
+                        break;
+                  case 2:
+                        ADC_CMP_2_CTRL |= 0x1 << 6;//使能comparator 2
+                        ADC_CMP_2_CTRL &= ~(0x1 << 5);
+                        ADC_CMP_2_CTRL |= cmp_rule << 5;//设置比较规则
+                        ADC_CMP_2_CTRL &= ~(0x7);
+                        ADC_CMP_2_CTRL |= ADC_Databuffer_channelx;//设置比较通道对应的ADC数据缓存通道
+                        ADC_CMP_2_THR = threshold;
+                        break;
+                  default:
+                        ADC_CMP_0_CTRL &= ~(0x1 << 6);//关闭comparator 0 的使能位
+                        ADC_CMP_1_CTRL &= ~(0x1 << 6);//关闭comparator 1 的使能位
+                        ADC_CMP_2_CTRL &= ~(0x1 << 6);//关闭comparator 2 的使能位
+                        break;
             }
       }
 }
@@ -774,10 +774,10 @@ uint16_t ADC_ReadData(uint8_t ADC_Databuffer_channelx)
       uint16_t Data = 0;
       uint16_t timeout = ADC_TIMEOUT;
       uint16_t Stat = ADC_INTSTAT;
-      while(!(Stat&(0x1<<ADC_Databuffer_channelx)))
+      while (!(Stat & (0x1 << ADC_Databuffer_channelx)))
       {
             Stat = ADC_INTSTAT;
-            if(timeout-- == 0)
+            if (timeout-- == 0)
             {
                   dprint("Stat:0x%x, ADC_ReadData timeout\n", Stat);
                   return 0xFFFF;
@@ -785,30 +785,30 @@ uint16_t ADC_ReadData(uint8_t ADC_Databuffer_channelx)
       }
       switch (ADC_Databuffer_channelx)
       {
-      case 0:
-            Data = ADC_DATA_0;
-            break;
-      case 1:
-            Data = ADC_DATA_1;
-            break;
-      case 2:
-            Data = ADC_DATA_2;
-            break;
-      case 3:
-            Data = ADC_DATA_3;
-            break;
-      case 4:
-            Data = ADC_DATA_4;
-            break;
-      case 5:
-            Data = ADC_DATA_5;
-            break;
-      case 6:
-            Data = ADC_DATA_6;
-            break;
-      case 7:
-            Data = ADC_DATA_7;
-            break;
+            case 0:
+                  Data = ADC_DATA_0;
+                  break;
+            case 1:
+                  Data = ADC_DATA_1;
+                  break;
+            case 2:
+                  Data = ADC_DATA_2;
+                  break;
+            case 3:
+                  Data = ADC_DATA_3;
+                  break;
+            case 4:
+                  Data = ADC_DATA_4;
+                  break;
+            case 5:
+                  Data = ADC_DATA_5;
+                  break;
+            case 6:
+                  Data = ADC_DATA_6;
+                  break;
+            case 7:
+                  Data = ADC_DATA_7;
+                  break;
       }
       ADC_INTSTAT = 1 << ADC_Databuffer_channelx;
       return Data;

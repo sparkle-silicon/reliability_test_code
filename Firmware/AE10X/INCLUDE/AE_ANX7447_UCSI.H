@@ -1,6 +1,6 @@
 /*
  * @Author: Linyu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2024-03-06 19:18:39
  * @Description:
  *
@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  *
  * Portions of this firmware library utilize the ANX7447 driver, which is copyrighted by Analogix Semiconductor, Inc.
  * 本固件库的部分代码使用了 ANX7447 驱动程序，其版权归 Analogix Semiconductor, Inc. 所有。
@@ -23,8 +23,7 @@
 #define __func__    __FILE__
 #endif
 
-typedef struct u64
-{
+typedef struct u64{
     u32 word1;
     u32 word2;
 } u64;
@@ -69,8 +68,7 @@ extern struct bios_share_msg ANXXDATA ppm2bios;
 /*
  * Shared Message Data Structure
  */
-struct bios_share_msg
-{
+struct bios_share_msg{
     u16 version;
     u16 reserved;
     u32 CCI;
@@ -82,8 +80,7 @@ struct bios_share_msg
 /*
  * USB Type-C Command Status and Connector Change Indication Data Structure.
  */
-struct cci_status
-{
+struct cci_status{
     u8 Reserved1 : 1;
     u8 ConnectorChangeIndicator : 7;
     u8 DataLength;
@@ -101,8 +98,7 @@ struct cci_status
 /*
  * USB Type-C Control Data Structure header.
  */
-struct control_header
-{
+struct control_header{
     u8 Command;
     u8 DataLength;
 } ANXPACK;
@@ -150,8 +146,7 @@ struct control_header
 /*
  * PPM_RESET Command
  */
-struct reset
-{
+struct reset{
     struct control_header header;
     u16 Reserved1;
     u32 Reserved2;
@@ -160,8 +155,7 @@ struct reset
 /*
  * CANCEL Command
  */
-struct cancel
-{
+struct cancel{
     struct control_header header;
     u16 Reserved1;
     u32 Reserved2;
@@ -170,8 +164,7 @@ struct cancel
 /*
  * CONNECTOR_RESET Command
  */
-struct connector_reset
-{
+struct connector_reset{
     struct control_header header;
     u8 ConnectorNumber : 7;
     u8 HardReset : 1;
@@ -182,8 +175,7 @@ struct connector_reset
 /*
  * ACK_CC_CI Command
  */
-struct ack_cc_ci
-{
+struct ack_cc_ci{
     struct control_header header;
     u8 ConnectorChangeAcknowledge : 1;
     u8 CommandCompletedAcknowledge : 1;
@@ -195,8 +187,7 @@ struct ack_cc_ci
 /*
  * SET_NOTIFICATION_ENABLE status
  */
-struct notification_enable_status
-{
+struct notification_enable_status{
     u8 CommandCompleted : 1;
     u8 ExternalSupplyChange : 1;
     u8 PowerOperationModeChange : 1;
@@ -219,8 +210,7 @@ extern struct notification_enable_status ne;
 /*
  * SET_NOTIFICATION_ENABLE Command
  */
-struct set_notification_enable
-{
+struct set_notification_enable{
     struct control_header header;
     struct notification_enable_status status;
     u32 Reserved5;
@@ -229,8 +219,7 @@ struct set_notification_enable
 /*
  * GET_CAPABILITY Command
  */
-struct get_capability
-{
+struct get_capability{
     struct control_header header;
     u16 Reserved1;
     u32 Reserved2;
@@ -239,24 +228,19 @@ struct get_capability
 /*
  * GET_CAPABILITY DATA
  */
-struct capability_data
-{
-    union
-    {
+struct capability_data{
+    union{
         u32 v0;
-        struct
-        {
+        struct{
             u8 DisabledStateSupport : 1;
             u8 BatteryChaging : 1;
             u8 USBPowerDelivery : 1;
             u8 Reserved1 : 3;
             u8 USBTypeCCurrent : 1;
             u8 Reserved2 : 1;
-            union
-            {
+            union{
                 u8 v0;
-                struct
-                {
+                struct{
                     u8 ACSupply : 1;
                     u8 Reserved3 : 1;
                     u8 Other : 1;
@@ -284,8 +268,7 @@ struct capability_data
 /*
  * GET_CONNECTOR_CAPABILITY Command
  */
-struct get_connector_capability
-{
+struct get_connector_capability{
     struct control_header header;
     u8 ConnectorNumber : 7;
     u8 Reserved1 : 1;
@@ -296,8 +279,7 @@ struct get_connector_capability
 /*
  * GET_CONNECTOR_CAPABILITY DATA
  */
-struct connector_capability_data
-{
+struct connector_capability_data{
     u8 OperationMode : 8;
 #define OM_DFP_ONLY         (1<<0)
 #define OM_UFP_ONLY         (1<<1)
@@ -320,8 +302,7 @@ struct connector_capability_data
 /*
  * SET_UOM Command
  */
-struct set_uom
-{
+struct set_uom{
     struct control_header header;
     u16 ConnectorNumber : 7;
     u16 USBOperationMode : 3;
@@ -332,8 +313,7 @@ struct set_uom
 /*
  * SET_UOR Command
  */
-struct set_uor
-{
+struct set_uor{
     struct control_header header;
     u16 ConnectorNumber : 7;
     u16 USBOperationMode : 3;
@@ -349,8 +329,7 @@ struct set_uor
 /*
  * SET_PDM Command
  */
-struct set_pdm
-{
+struct set_pdm{
     struct control_header header;
     u16 ConnectorNumber : 7;
     u16 PowerDirectionMode : 3;
@@ -361,8 +340,7 @@ struct set_pdm
 /*
  * SET_PDR Command
  */
-struct set_pdr
-{
+struct set_pdr{
     struct control_header header;
     u16 ConnectorNumber : 7;
     u16 PowerDirectionMode : 3;
@@ -376,8 +354,7 @@ struct set_pdr
 /*
  * GET_ALTERNATE_MODES Command
  */
-struct get_alternate_modes
-{
+struct get_alternate_modes{
     struct control_header header;
     u8 Recipient : 3;
 #define R_CONNECTOR                0
@@ -396,8 +373,7 @@ struct get_alternate_modes
 /*
  * GET_ALTERNATE_MODES DATA
  */
-struct alt_modes_data
-{
+struct alt_modes_data{
     u16 SVID0;
     u32 MID0;
     u16 SVID1;
@@ -407,8 +383,7 @@ struct alt_modes_data
 /*
  * GET_CAM_SUPPORTED Command
  */
-struct get_cam_supported
-{
+struct get_cam_supported{
     struct control_header header;
     u8 ConnectorNumber : 7;
     u8 Reserved1 : 1;
@@ -419,8 +394,7 @@ struct get_cam_supported
 /*
  * GET_CURRENT_CAM Command
  */
-struct get_current_cam
-{
+struct get_current_cam{
     struct control_header header;
     u8 ConnectorNumber : 7;
     u8 Reserved1 : 1;
@@ -431,8 +405,7 @@ struct get_current_cam
 /*
  * SET_NEW_CAM Command
  */
-struct set_new_cam
-{
+struct set_new_cam{
     struct control_header header;
     u8 ConnectorNumber : 7;
     u8 EnterOrExit : 1;
@@ -443,8 +416,7 @@ struct set_new_cam
 /*
  * GET_PDOS Command
  */
-struct get_pdos
-{
+struct get_pdos{
     struct control_header header;
     u8 ConnectorNumber : 7;
     u8 PartnerPDO : 1;
@@ -464,16 +436,14 @@ struct get_pdos
 /*
  * PDOS MESSAGE
  */
-struct pdos_data
-{
+struct pdos_data{
     u32 PDO[4];
 } ANXPACK;
 
 /*
  * GET_CABLE_PROPERTY Command
  */
-struct get_cable_property
-{
+struct get_cable_property{
     struct control_header header;
     u8 ConnectorNumber : 7;
     u8 Reserved1 : 1;
@@ -484,8 +454,7 @@ struct get_cable_property
 /*
  * CABLE_PROPERTY DATA
  */
-struct cable_property_data
-{
+struct cable_property_data{
     u16 bmSpeedSupported;
 #define SPEED_b_PER_SECOND  0
 #define SPEED_Kb_PER_SECOND 1
@@ -509,8 +478,7 @@ struct cable_property_data
 /*
  * GET_CONNECTOR_STATUS Command
  */
-struct get_connector_status
-{
+struct get_connector_status{
     struct control_header header;
     u8 ConnectorNumber : 7;
     u8 Reserved1 : 1;
@@ -521,8 +489,7 @@ struct get_connector_status
 /*
  * ConnectorStatusChange Field Description
  */
-struct connector_status_change
-{
+struct connector_status_change{
     u8 reserved1 : 1;
     u8 ExternalSupply : 1;
     u8 PowerOperationMode : 1;
@@ -543,8 +510,7 @@ struct connector_status_change
 /*
  * CONNECTOR_STATUS DATA
  */
-struct connector_status_data
-{
+struct connector_status_data{
     struct connector_status_change csc;
     u8 PowerOperationMode : 3;
 #define PO_NO_CONSUMER                  0
@@ -584,8 +550,7 @@ struct connector_status_data
 /*
  * GET_ERROR_STATUS Command
  */
-struct get_error_status
-{
+struct get_error_status{
     struct control_header header;
     u16 Reserved1;
     u32 Reserved2;
@@ -594,8 +559,7 @@ struct get_error_status
 /*
  * ERROR_STATUS DATA
  */
-struct error_status_data
-{
+struct error_status_data{
     u16 ErrorInformation;
 #define ERR_UNRECOGNIZED        (1<<0)
 #define ERR_NON_EXIST           (1<<1)
@@ -611,8 +575,7 @@ extern u8 ucsi_errno;
 /*
  * UCSI state machine
  */
-enum UCSI_PPM_STATE
-{
+enum UCSI_PPM_STATE{
     PPM_IDLE_ND = 1,            //PPM IDLE, Notification disable
     PPM_IDLE_NE,                //PPM IDLE, Notification enable
     PPM_BUSY,                   //PPM Busy
@@ -626,8 +589,7 @@ enum UCSI_PPM_STATE
 #define S_CLEAR(X, S)   memset((void *)X, 0, sizeof(S))
 #define S_CLEAR_L(X, L) memset((void *)X, 0, L)
 
-struct ppm_ucsi_parameters
-{
+struct ppm_ucsi_parameters{
     struct alt_modes_data alt_mode[1];
     u8 alt_mode_support_bitmap;
     u8 alt_mode_support_num;

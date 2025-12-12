@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 
 #ifndef __KERNEL_I3C_H
@@ -393,22 +393,22 @@
 /*-----------------------------------------------------------------------------
  * Device Char Table Structure Define
  *---------------------------------------------------------------------------*/
-typedef union DEV_CHAR_TABLE {
+typedef union DEV_CHAR_TABLE{
     u32 dev_char_table1_loc[4];
-    struct {
-        struct {
+    struct{
+        struct{
             uint32_t lsb_provisional_id : 32;
         } loc1;
-        struct {
+        struct{
             uint32_t reserved_loc2;
             uint32_t lsb_provisional_id : 32;
         } loc2;
-        struct {
+        struct{
             uint32_t reserved_loc3 : 16;
             uint32_t bcr : 8;
             uint32_t dcr : 8;
         } loc3;
-        struct {
+        struct{
             uint32_t reserved_loc4 : 24;
             uint32_t dev_dynamic_addr : 8;
         } loc4;
@@ -432,25 +432,25 @@ extern BYTE I3C_WAIT_SDA_PU(BYTE i3c_mux);
 extern uint32_t I3C_Master_RespData_ERRSTS(BYTE i3c_mux);
 extern uint32_t I3C_Master_IntrStatus(BYTE i3c_mux);
 extern BYTE I3C_Legacy_Master_Init(uint32_t speed, BYTE i3c_mux);
-extern BYTE I3C_Legacy_Master_Write(uint8_t static_addr, uint8_t* data, uint16_t bytelen, BYTE i3c_mux);
-extern uint8_t I3C_Legacy_Master_Read(uint8_t static_addr, uint8_t* data, uint16_t bytelen, BYTE i3c_mux);
-extern BYTE I3C_Legacy_Master_W2R_Stream(BYTE static_addr, BYTE* w_var, WORD w_cnt, BYTE* r_var, WORD r_cnt, BYTE i3c_mux);
-extern BYTE I3C_MASTER_ENTDAA(sDEV_CHAR_TABLE* dct, BYTE* dynamic_addr, BYTE i3c_mux);
+extern BYTE I3C_Legacy_Master_Write(uint8_t static_addr, uint8_t *data, uint16_t bytelen, BYTE i3c_mux);
+extern uint8_t I3C_Legacy_Master_Read(uint8_t static_addr, uint8_t *data, uint16_t bytelen, BYTE i3c_mux);
+extern BYTE I3C_Legacy_Master_W2R_Stream(BYTE static_addr, BYTE *w_var, WORD w_cnt, BYTE *r_var, WORD r_cnt, BYTE i3c_mux);
+extern BYTE I3C_MASTER_ENTDAA(sDEV_CHAR_TABLE *dct, BYTE *dynamic_addr, BYTE i3c_mux);
 // extern BYTE I3C_MASTER_SETDASA(BYTE static_addr, BYTE dynamic_addr, BYTE i3c_mux);
-extern BYTE I3C_MASTER_BC_CCC_WRITE(uint8_t* data, uint16_t bytelen, BYTE cmd, uint8_t dbp, uint8_t db, BYTE i3c_mux);
-extern BYTE I3C_MASTER_DR_CCC_WRITE(uint8_t static_addr, uint8_t* data, uint16_t bytelen, BYTE cmd, uint8_t dbp, uint8_t db, BYTE i3c_mux);
-extern BYTE I3C_MASTER_DR_CCC_READ(uint8_t static_addr, uint8_t* data, uint16_t bytelen, BYTE cmd, uint8_t dbp, uint8_t db, BYTE i3c_mux);
-extern BYTE I3C_MASTER_PV_WRITE_WITH7E(uint8_t dynamic_addr, uint8_t* data, uint16_t bytelen, BYTE i3c_mux);
-extern BYTE I3C_MASTER_PV_READ_WITH7E(uint8_t dynamic_addr, uint8_t* data, uint16_t bytelen, BYTE i3c_mux);
-extern BYTE I3C_MASTER_PV_WRITE_THEN_READ_WITH7E(uint8_t dynamic_addr, uint8_t* wdata, uint16_t wbytelen, uint8_t* rdata, uint16_t rbytelen, BYTE i3c_mux);
+extern BYTE I3C_MASTER_BC_CCC_WRITE(uint8_t *data, uint16_t bytelen, BYTE cmd, uint8_t dbp, uint8_t db, BYTE i3c_mux);
+extern BYTE I3C_MASTER_DR_CCC_WRITE(uint8_t static_addr, uint8_t *data, uint16_t bytelen, BYTE cmd, uint8_t dbp, uint8_t db, BYTE i3c_mux);
+extern BYTE I3C_MASTER_DR_CCC_READ(uint8_t static_addr, uint8_t *data, uint16_t bytelen, BYTE cmd, uint8_t dbp, uint8_t db, BYTE i3c_mux);
+extern BYTE I3C_MASTER_PV_WRITE_WITH7E(uint8_t dynamic_addr, uint8_t *data, uint16_t bytelen, BYTE i3c_mux);
+extern BYTE I3C_MASTER_PV_READ_WITH7E(uint8_t dynamic_addr, uint8_t *data, uint16_t bytelen, BYTE i3c_mux);
+extern BYTE I3C_MASTER_PV_WRITE_THEN_READ_WITH7E(uint8_t dynamic_addr, uint8_t *wdata, uint16_t wbytelen, uint8_t *rdata, uint16_t rbytelen, BYTE i3c_mux);
 extern void I3C_MASTER_IBI_Handler(BYTE i3c_mux);
 extern void I3C_Slave_Init(BYTE static_addr, uint32_t idpartno, uint8_t dcr, uint8_t bcr, uint8_t i3c_mux);
 extern BYTE I3C_SLAVE_INT_ENABLE(DWORD tpye, BYTE i3c_mux);
 extern BYTE I3C_SLAVE_INT_DISABLE(DWORD tpye, BYTE i3c_mux);
 extern BYTE I3C_SLAVE_IBI_HOTJOIN(uint8_t addr, uint32_t idpartno, uint8_t dcr, uint8_t bcr, BYTE i3c_mux);
 extern BYTE I3C_SLAVE_IBI_DATA(uint8_t ibi_data, uint32_t idpartno, uint8_t dcr, uint8_t bcr, BYTE i3c_mux);
-extern BYTE I3C_SLAVE_WRITE(uint8_t* data, uint8_t bytelen, BYTE i3c_mux);
-extern BYTE I3C_SLAVE_READ(uint8_t* data, uint8_t bytelen, BYTE i3c_mux);
+extern BYTE I3C_SLAVE_WRITE(uint8_t *data, uint8_t bytelen, BYTE i3c_mux);
+extern BYTE I3C_SLAVE_READ(uint8_t *data, uint8_t bytelen, BYTE i3c_mux);
 // extern void I3C_LOOP_Test(void);
 
 #endif

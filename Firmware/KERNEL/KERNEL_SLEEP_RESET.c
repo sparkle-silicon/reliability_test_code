@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 #include "KERNEL_SLEEP_RESET.H"
 #include "KERNEL_TIMER.H"
@@ -434,9 +434,9 @@ void CHIP_Deep_Sleep2(void)
 	GPIO_Config(GPIOA, 11, 2, 0, 1, 0);
 	// *(volatile uint32_t *)(0x3050c) = 0x0;
 	// SYSCTL_RESERVER = BIT(28);
-	*(volatile uint8_t*)(0x2780) = 0x1 << 4;
+	*(volatile uint8_t *)(0x2780) = 0x1 << 4;
 	SYSCTL_DVDD_EN = 0xff6109;
-	*(volatile uint32_t*)(0x30510) = 0x1eff;
+	*(volatile uint32_t *)(0x30510) = 0x1eff;
 	SYSCTL_PMUCSR |= BIT(20) | BIT0;//Enable WFI Mode deepsleep2 flag
 	// SYSCTL_PIO1_CFG = 0x0;
 	// SYSCTL_RST1 |= 0x1<<16;

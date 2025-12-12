@@ -1,6 +1,6 @@
 /*
  * @Author: Linyu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2024-03-07 15:23:47
  * @Description:
  *
@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  *
  * Portions of this firmware library utilize the ANX7447 driver, which is copyrighted by Analogix Semiconductor, Inc.
  * 本固件库的部分代码使用了 ANX7447 驱动程序，其版权归 Analogix Semiconductor, Inc. 所有。
@@ -153,7 +153,7 @@ void ucsi_i2c_WRITE_DEBUG(void)
 void ucsi_i2c_debug(BYTE addr, BYTE reg, BYTE length, BYTE *data)
 {
     ucsi_debug("ADDRESS REGISTER OFFSET DATA\n");
-    for(BYTE cnt = 0; cnt < length; cnt++)
+    for (BYTE cnt = 0; cnt < length; cnt++)
         ucsi_debug(" %#2x     %#2x    %#2x  %#2x\n", addr & 0xff, reg & 0xff, cnt & 0xff, (*(data + cnt)) & 0xff);
 }
 
@@ -206,7 +206,7 @@ void ucsi_ppm_notify_opm(void)
  */
 void anx_ucsi_cc_status_event(u8 port_id, u8 cc_status, u8 typec_mode)
 {
-    if(cc_status == 0)
+    if (cc_status == 0)
         return;
 
     //customer add interrupt processing.
@@ -225,7 +225,7 @@ void anx_ucsi_cc_status_event(u8 port_id, u8 cc_status, u8 typec_mode)
 void anx_ucsi_pin_assignment_event(u8 port_id, u8 pin_assignment)
 {
     //customer add interrupt processing.
-    switch(pin_assignment)
+    switch (pin_assignment)
     {
         case SELECT_PIN_ASSIGMENT_U:
             //default 4 line USB 3.1
@@ -250,7 +250,7 @@ void anx_ucsi_pin_assignment_event(u8 port_id, u8 pin_assignment)
  */
 u8 anx_usb_state_get(u8 port_id)
 {
-    if(context[port_id].anx_power_status)
+    if (context[port_id].anx_power_status)
         return context[port_id].usb_state;
 
     return USB_INVALID;
@@ -295,13 +295,13 @@ void anx_ucsi_attach_event(u8 port_id)
 void anx_ucsi_renotify_OPM(u8 port_id)
 {
     // customer may add detach event processing, include reset MUX/HPD
-    if(context[port_id].anx_power_status == 1)
+    if (context[port_id].anx_power_status == 1)
     {
         ucsi_debug("re-notify OPM at reboot stage.\n");
         context[port_id].csc.csc.Connect = 1;
         context[port_id].csc.csc.ConnectorPartner = 1;
         context[port_id].csc.csc.BatteryChargingStatus = 1;
-        if(context[port_id].ucsi_partner_rdo)
+        if (context[port_id].ucsi_partner_rdo)
         {
         #ifdef ReportNegotiatedPowerLevel
             context[port_id].csc.csc.NegotiatedPowerLevel = 1;
@@ -347,7 +347,7 @@ void anx_ucsi_vdm_callback(u8 port_id, u8 *buf, u8 len)
     ucsi_debug("VDM header: %#x:%#x:%#x:%#x.\n", buf[0], buf[1],
                buf[2], buf[3]);
     cmd = buf[0] & VDM_CMD_AND_ACK_MASK;
-    switch(cmd)
+    switch (cmd)
     {
         case (VDM_ACK | VDM_CMD_GET_STS):
             /* VDM return status, command 0x10 */
@@ -383,9 +383,9 @@ u8 anx_request_voltage_in_100mv(u8 port_id)
 {
     u8 vol = 0;
 
-    if(self_charging_error == 1)
+    if (self_charging_error == 1)
         return vol;
-    if(context[port_id].anx_power_status == 0
+    if (context[port_id].anx_power_status == 0
             || context[port_id].anx_power_role == 1)
         return 0;
 
@@ -407,9 +407,9 @@ u8 anx_request_current_in_50ma(u8 port_id)
 {
     u8 cur = 0;
 
-    if(self_charging_error == 1)
+    if (self_charging_error == 1)
         return cur;
-    if(context[port_id].anx_power_status == 0
+    if (context[port_id].anx_power_status == 0
             || context[port_id].anx_power_role == 1)
         return cur;
 
@@ -506,7 +506,7 @@ void anx_mht_retimer_gpio_init()
 
     PORT_ROLE_SEL(1);  /* port 1 default DRP */
 
-    for(ANX7447_i = 0; ANX7447_i < PD_MAX_INSTANCE; ANX7447_i++)
+    for (ANX7447_i = 0; ANX7447_i < PD_MAX_INSTANCE; ANX7447_i++)
     {
         ucsi_debug("port(%d) power down\n", ANX7447_i);
         chip_power_down(ANX7447_i);
@@ -518,9 +518,9 @@ void anx_mht_retimer_gpio_init()
 
 void anx_mht_retimer_power_ctrl(u8 port, u8 on)
 {
-    if(port == 1)
+    if (port == 1)
     {
-        if(on)
+        if (on)
         {
             PORT0_POWER_CTRL(1);
             ucsi_debug("port(%d) power on redriver\n", port);
@@ -533,7 +533,7 @@ void anx_mht_retimer_power_ctrl(u8 port, u8 on)
     }
     else
     {
-        if(on)
+        if (on)
         {
             PORT1_POWER_CTRL(1);
             ucsi_debug("port(%d) power on redriver\n", port);
@@ -552,32 +552,32 @@ static void parade_redriver_mux_control(unsigned char mode, unsigned char cc_dir
     unsigned char buf[3];
     buf[0] = REDRIVER_ADDRESS;  //address
     buf[1] = REDRIVER_OFFSET;   //offset
-    if(cc_direction == CC1_CONNECTED)
+    if (cc_direction == CC1_CONNECTED)
     {
-        if(mode == USB3_1_DP_2LANES)
+        if (mode == USB3_1_DP_2LANES)
         {
             buf[2] = 0xf8;      //data
         }
-        else if(mode == DP_ALT_4LANES)
+        else if (mode == DP_ALT_4LANES)
         {
             buf[2] = 0xe8;      //data
         }
-        else if(mode == USB3_1_CONNECTED)
+        else if (mode == USB3_1_CONNECTED)
         {
             buf[2] = 0xb8;      //data
         }
     }
     else
     {
-        if(mode == USB3_1_DP_2LANES)
+        if (mode == USB3_1_DP_2LANES)
         {
             buf[2] = 0xfc;      //data
         }
-        else if(mode == DP_ALT_4LANES)
+        else if (mode == DP_ALT_4LANES)
         {
             buf[2] = 0xec;      //data
         }
-        else if(mode == USB3_1_CONNECTED)
+        else if (mode == USB3_1_CONNECTED)
         {
             buf[2] = 0xbc;      //data
         }
@@ -590,15 +590,15 @@ static void parade_redriver_ctrl(u8 port_id, unsigned char mode)
 {
     unsigned char mux_mode;
     //Fix JIRA LBT-302
-    if((mode == SELECT_PIN_ASSIGMENT_C)
+    if ((mode == SELECT_PIN_ASSIGMENT_C)
             || (mode == SELECT_PIN_ASSIGMENT_E))
         mux_mode = DP_ALT_4LANES;
-    else if(mode == SELECT_PIN_ASSIGMENT_D)
+    else if (mode == SELECT_PIN_ASSIGMENT_D)
         mux_mode = USB3_1_DP_2LANES;
     else
         mux_mode = USB3_1_CONNECTED;
 
-    if(context[port_id].mux_mode != mux_mode)
+    if (context[port_id].mux_mode != mux_mode)
     {
         parade_redriver_mux_control(mux_mode,
                                     context[port_id].cc_orientation);
@@ -614,7 +614,7 @@ static void parade_redriver_ctrl(u8 port_id, unsigned char mode)
  */
 void retimer_power_ctrl(u8 port_id, u8 retimer_power)
 {
-    if(context[port_id].pd_capability & PD_HAS_ANX_REDRIVER)
+    if (context[port_id].pd_capability & PD_HAS_ANX_REDRIVER)
         anx_mht_retimer_power_ctrl(port_id, retimer_power);
 
     /* Add customer defined retimer power control */
@@ -630,7 +630,7 @@ void retimer_power_ctrl(u8 port_id, u8 retimer_power)
  */
 void retimer_pin_assignment_set(u8 port_id, u8 mux)
 {
-    if(context[port_id].pd_capability & PD_HAS_PARADE_REDRIVER)
+    if (context[port_id].pd_capability & PD_HAS_PARADE_REDRIVER)
         parade_redriver_ctrl(port_id, mux);
 
     /* Add customer defined retimer control */

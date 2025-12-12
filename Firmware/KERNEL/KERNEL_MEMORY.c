@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2025-10-22 16:22:12
  * @Description:
  *
@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
  //-----------------------------------------------------------------------------
  // Common Header Include
@@ -23,11 +23,11 @@
 VBYTE SCI_Event_Buffer[10];                          // offset:HEX 0x00-0x09 SIZE:DEC 10
 VBYTE SMI_Event_Buffer[10];                          // offset:HEX 0x00-0x09 SIZE:DEC 10
 VBYTE PD_SCI_Event_Buffer[10];                       // offset:HEX 0x00-0x09 SIZE:DEC 10
-VBYTE* KBDataPending = (VBYTE*)KBData_Buff_MemBase; // offset:HEX 0x00-0x03 SIZE:DEC 4
-VBYTE* MSDataPending = (VBYTE*)MSData_Buff_MemBase; // offset:HEX 0x00-0x03 SIZE:DEC 4
-VBYTE* Tmp_code_pointer = NULL;
-VBYTE* Tmp_XPntr;
-VBYTE* Tmp_XPntr1;
+VBYTE *KBDataPending = (VBYTE *)KBData_Buff_MemBase; // offset:HEX 0x00-0x03 SIZE:DEC 4
+VBYTE *MSDataPending = (VBYTE *)MSData_Buff_MemBase; // offset:HEX 0x00-0x03 SIZE:DEC 4
+VBYTE *Tmp_code_pointer = NULL;
+VBYTE *Tmp_XPntr;
+VBYTE *Tmp_XPntr1;
 
 void Clear_Specific_Mem(void)
 {

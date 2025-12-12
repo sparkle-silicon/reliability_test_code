@@ -1,6 +1,6 @@
 /*
  * @Author: Linyu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2025-10-22 14:43:37
  * @Description:
  *
@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 #include "AE_INIT.H"
 #include "CUSTOM_INIT.H"
@@ -34,26 +34,26 @@ void SECTION(".init.dbinit") DoubleBoot_Init(void)
   // 3.Determine the current boot ID and perform the corresponding operation
   switch (id) // 选择ID
   {
-  case 0xFF0: // 直接跳转
-    (*func_ptr)();
-    break;
-  case 0xFF1:                  // 启动片区1和2的选择
-    if (SYSCTL_ESTAT & BIT(3)) // 判断是否为看门狗复位
-    {
-      if (func_ptr != (FUNCT_PTR_V_V)0x0) // 是否地址
-        (*func_ptr)();
-    }
-    break;
-  case 0xFF2:                  // 启动片区1和2的选择
-    if (SYSCTL_ESTAT & BIT(6)) // 判断是否为PWRSW复位
-    {
-      if (func_ptr != (FUNCT_PTR_V_V)0x0) // 是否地址
-        (*func_ptr)();
-    }
-    break;
-  case 0xFF3://切换FLASH后跳转选择
-  default:
-    break;
+    case 0xFF0: // 直接跳转
+      (*func_ptr)();
+      break;
+    case 0xFF1:                  // 启动片区1和2的选择
+      if (SYSCTL_ESTAT & BIT(3)) // 判断是否为看门狗复位
+      {
+        if (func_ptr != (FUNCT_PTR_V_V)0x0) // 是否地址
+          (*func_ptr)();
+      }
+      break;
+    case 0xFF2:                  // 启动片区1和2的选择
+      if (SYSCTL_ESTAT & BIT(6)) // 判断是否为PWRSW复位
+      {
+        if (func_ptr != (FUNCT_PTR_V_V)0x0) // 是否地址
+          (*func_ptr)();
+      }
+      break;
+    case 0xFF3://切换FLASH后跳转选择
+    default:
+      break;
   }
   return;
 #endif

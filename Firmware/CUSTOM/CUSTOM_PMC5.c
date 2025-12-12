@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2023-07-04 09:38:52
  * @Description: This file is used for handling CUSTOM PMC5 Commands
  *
@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 #include "CUSTOM_PMC5.H"
 #include "KERNEL_MEMORY.H"
@@ -198,7 +198,7 @@ void PMC5_Cmd_32(void)
 //----------------------------------------------------------------------------
 BYTE Set_PortPM5_Data_Handle(void)
 {
-    if(PM5Step == 0x00)
+    if (PM5Step == 0x00)
     {
         PM5Step = 0x01; // Set Next Port60 Data Handle again
         return (0);
@@ -211,7 +211,7 @@ BYTE Set_PortPM5_Data_Handle(void)
 }
 void PMC5_Cmd_33(void)
 {
-    if(Set_PortPM5_Data_Handle()) // Get PM5Data
+    if (Set_PortPM5_Data_Handle()) // Get PM5Data
     {
         PMC5_DOR = 0x00;
     }
@@ -1373,13 +1373,13 @@ const FUNCT_PTR_V_V Port7C_Table[16] =
 };
 void Service_PCI6_Main(void)
 {
-    if(PMC5_STR & C_D5)
+    if (PMC5_STR & C_D5)
     {
         PM5Cmd = PMC5_DIR;
-        #if ENABLE_DEBUGGER_SUPPORT
-        /* Debugger record */
+    #if ENABLE_DEBUGGER_SUPPORT
+    /* Debugger record */
         Debugger_KBC_PMC_Record(0, 5, PM5Cmd);
-        #endif
+    #endif
         PM5Step = 0;
     #if !(LPC_WAY_OPTION_SWITCH)
         PMC5_CTL |= IBF_INT_ENABLE;
@@ -1390,15 +1390,15 @@ void Service_PCI6_Main(void)
     else
     {
         PM5Data = PMC5_DIR;
-        #if ENABLE_DEBUGGER_SUPPORT
-        /* Debugger record */
+    #if ENABLE_DEBUGGER_SUPPORT
+    /* Debugger record */
         Debugger_KBC_PMC_Record(0, 5, PM5Data);
-        #endif
+    #endif
     #if !(LPC_WAY_OPTION_SWITCH)
         PMC5_CTL |= IBF_INT_ENABLE;
     #endif
         dprint("PMC5_STR is %#x,PM5Data is %#x 0x1419 is %#x ,0x1420 is %#x\n", PMC5_STR, PM5Data, (*(BYTE *)(0x1419)), (*(BYTE *)(1420)));
-        if(PM5Step != 0x00)
+        if (PM5Step != 0x00)
         {
             // Pls use PM5Step for Port 7C Routine Command
             (Port7C_Table[PM5Cmd >> 4]());
@@ -1406,7 +1406,7 @@ void Service_PCI6_Main(void)
         else
         {
             PM5UnProcessCnt = 0x0;
-            while(PM5UnProcessCnt < 0xFF)
+            while (PM5UnProcessCnt < 0xFF)
             {
                 PM5UnProcessCnt++;
             }
@@ -1425,14 +1425,14 @@ void __weak Service_PCI6(void)
     return;
 #endif
 #if LPC_WAY_OPTION_SWITCH
-    if(Is_FLAG_CLEAR(PMC5_STR, IBF5))
+    if (Is_FLAG_CLEAR(PMC5_STR, IBF5))
         return;
     Service_PCI6_Main();
 #else
-    if(F_Service_PCI6 == 1)
+    if (F_Service_PCI6 == 1)
     {
         F_Service_PCI6 = 0;
-        if(Is_FLAG_CLEAR(PMC5_STR, IBF5))
+        if (Is_FLAG_CLEAR(PMC5_STR, IBF5))
             return;
         Service_PCI6_Main();
     }

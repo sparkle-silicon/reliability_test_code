@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 #ifndef KERNEL_MAILBOX_H
 #define KERNEL_MAILBOX_H
@@ -22,9 +22,9 @@
  *---------------------------------------------------------------------------*/
 #define MAX_TASK_COUNT 12  //最大任务数
 #define MAX_TASK_TIMEOUT 61 //设置超时时间至少（MAX_TASK_TIMEOUT-1）秒
-typedef void (*TaskFunction)(void*); // 定义任务函数类型，接受参数
+typedef void (*TaskFunction)(void *); // 定义任务函数类型，接受参数
 // 定义一个结构体来封装多个参数
-typedef struct {
+typedef struct{
     DWORD E2C_INFO1;
     DWORD E2C_INFO2;
     DWORD E2C_INFO3;
@@ -34,12 +34,12 @@ typedef struct {
     DWORD E2C_INFO7;
 } TaskParams;
 
-typedef struct Task {
+typedef struct Task{
     TaskFunction function; // 任务函数指针
     TaskParams params;     // 任务参数
-    struct Task* next;     // 指向下一个任务
+    struct Task *next;     // 指向下一个任务
 } Task;
-extern Task* task_head; // 任务链表头
+extern Task *task_head; // 任务链表头
 extern volatile bool command_processed;
 /*-----------------------------------------------------------------------------
  * Mailbox Command&Info Define
@@ -230,39 +230,39 @@ void Mailbox_SecretKey();
 void Mailbox_Crypto();
 void Mailbox_SecureStorage();
 extern void Process_Tasks(void);
-extern Task* Add_Task(TaskFunction function, TaskParams params, Task** head);
+extern Task *Add_Task(TaskFunction function, TaskParams params, Task **head);
 extern void Mailbox_C2E_Service(void);
 extern void Mailbox_Read_FLASHID_Trigger(void);
-extern void Mailbox_APB2_Source_Alloc_Trigger(void* param);
+extern void Mailbox_APB2_Source_Alloc_Trigger(void *param);
 extern void Mailbox_Read_FLASHUID_Trigger(void);
-extern void Malibox_Switch_Flash_Quad_Dual(void* param);
-extern void Mailbox_ExecuteFirmwareUpdate(void* param);
+extern void Malibox_Switch_Flash_Quad_Dual(void *param);
+extern void Mailbox_ExecuteFirmwareUpdate(void *param);
 extern void Mailbox_WriteRootKey_Trigger(void);
 extern void Mailbox_UpdateHMACKey_Trigger(void);
 extern void Mailbox_IncrementCounter_Trigger(void);
 extern void Mailbox_RequestCounter_Trigger(void);
 extern void Mailbox_ReadParameter_Trigger(void);
 extern void Mailbox_eRPMC_Trigger(void);
-extern void Mailbox_Flash_Page_Change(void* param);
-extern void Mailbox_SimilarDMA(void* param);
-extern void Mailbox_Generate_Key(void* param);
-extern void Mailbox_Get_Key(void* param);
-extern void Mailbox_Get_Key_Id(void* param);
-extern void Mailbox_Clear_Key(void* param);
-extern void Mailbox_Clear_All_Key(void* param);
-extern void Mailbox_Digest_Or_CrcVerify(void* param);
-extern void Mailbox_Symmetrric_Key(void* param);
-extern void Mailbox_Asymmetric_Key_Pair(void* param);
-extern void Mailbox_Key_Pair_Generate(void* param);
-extern void Mailbox_Signature_Verify(void* param); //签名函数
-extern void Mailbox_MessageAuthentication(void* param);
-extern void Mailbox_KeyDerivation(void* param);
-extern void Mailbox_Diffie_Hellman(void* param);//密钥交换
-extern void Mailbox_RandomNumber_Generator(void* param);//随机数生成
-extern void Mailbox_Set_Used_RandomNumber(void* param);//设置随机数
-extern void Mailbox_Cryp_Selfcheck(void* param);
-extern void Mailbox_SetClockFrequency(void* param);
-extern void Mailbox_Generate_Key(void* param);
+extern void Mailbox_Flash_Page_Change(void *param);
+extern void Mailbox_SimilarDMA(void *param);
+extern void Mailbox_Generate_Key(void *param);
+extern void Mailbox_Get_Key(void *param);
+extern void Mailbox_Get_Key_Id(void *param);
+extern void Mailbox_Clear_Key(void *param);
+extern void Mailbox_Clear_All_Key(void *param);
+extern void Mailbox_Digest_Or_CrcVerify(void *param);
+extern void Mailbox_Symmetrric_Key(void *param);
+extern void Mailbox_Asymmetric_Key_Pair(void *param);
+extern void Mailbox_Key_Pair_Generate(void *param);
+extern void Mailbox_Signature_Verify(void *param); //签名函数
+extern void Mailbox_MessageAuthentication(void *param);
+extern void Mailbox_KeyDerivation(void *param);
+extern void Mailbox_Diffie_Hellman(void *param);//密钥交换
+extern void Mailbox_RandomNumber_Generator(void *param);//随机数生成
+extern void Mailbox_Set_Used_RandomNumber(void *param);//设置随机数
+extern void Mailbox_Cryp_Selfcheck(void *param);
+extern void Mailbox_SetClockFrequency(void *param);
+extern void Mailbox_Generate_Key(void *param);
 extern void Transfer_Mailbox_Flash_Mirror(uint8_t mirror_mode, size_t dataSize, uint32_t destAddr, uint32_t srcAddr);
 extern void Service_Mailbox(void);
 extern void Transfer_Mailbox_Cryp_Selfcheck(uint8_t mode);

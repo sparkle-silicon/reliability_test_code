@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 #include "CUSTOM_PECI.H"
 #include "CUSTOM_GPIO.H"
@@ -152,77 +152,77 @@ void Service_PECI(void)
         }
         else
         {
-#if 0
+        #if 0
             if (PECI_ReadTemp())
             {
                 Calc_CPU_Temperature();
             }
-#else
+        #else
             switch (PECI_CNT)
             {
-            case 0:
-                if (PECI_ReadTemp())
-                {
-                    Calc_CPU_Temperature();
-                }
-                PECI_CNT++;
-                break;
-            case 1:
-                if (Read_BC_ACOK() && Read_BATT_PRS_1())
-                {
-                    if (PECI_PowerLimit2 != 45)
+                case 0:
+                    if (PECI_ReadTemp())
                     {
-                        if (PECI_WritePowerLimit2(45))
+                        Calc_CPU_Temperature();
+                    }
+                    PECI_CNT++;
+                    break;
+                case 1:
+                    if (Read_BC_ACOK() && Read_BATT_PRS_1())
+                    {
+                        if (PECI_PowerLimit2 != 45)
                         {
-                            PECI_ReadPowerLimit2();
-                            if (PECI_PowerLimit2 == 0xFF)
+                            if (PECI_WritePowerLimit2(45))
                             {
-                                break;
+                                PECI_ReadPowerLimit2();
+                                if (PECI_PowerLimit2 == 0xFF)
+                                {
+                                    break;
+                                }
                             }
                         }
                     }
-                }
-                PECI_CNT++;
-                break;
-            case 2:
-                if (Read_BC_ACOK() && Read_BATT_PRS_1())
-                {
-                    if (PECI_PowerLimit4 != 66)
+                    PECI_CNT++;
+                    break;
+                case 2:
+                    if (Read_BC_ACOK() && Read_BATT_PRS_1())
                     {
-                        if (PECI_WritePowerLimit4(66))
+                        if (PECI_PowerLimit4 != 66)
                         {
-                            PECI_ReadPowerLimit4();
-                            if (PECI_PowerLimit4 == 0xFF)
+                            if (PECI_WritePowerLimit4(66))
                             {
-                                break;
+                                PECI_ReadPowerLimit4();
+                                if (PECI_PowerLimit4 == 0xFF)
+                                {
+                                    break;
+                                }
                             }
                         }
                     }
-                }
-                //                     PECI_CNT++;
-                PECI_CNT = 0;
-                break;
-                //                 case 3:
-                ////                     PECI_ReadPowerLimit3();
-                //                     PECI_CNT++;
-                //                     break;
-                //                 case 4:
-                ////                     PECI_ReadPowerLimit4();
-                //                     PECI_CNT++;
-                //                     break;
-                //                 case 5:
-                ////                     PECI_WritePowerLimit4_Offset(100);
-                //                     PECI_CNT++;
-                //                     break;
-                //                 case 6:
-                //                     PECI_ReadPowerLimit4_Offset();
-                //                     PECI_CNT = 0;
-                //                     break;
-            default:
-                PECI_CNT = 0;
-                break;
+                    //                     PECI_CNT++;
+                    PECI_CNT = 0;
+                    break;
+                    //                 case 3:
+                    ////                     PECI_ReadPowerLimit3();
+                    //                     PECI_CNT++;
+                    //                     break;
+                    //                 case 4:
+                    ////                     PECI_ReadPowerLimit4();
+                    //                     PECI_CNT++;
+                    //                     break;
+                    //                 case 5:
+                    ////                     PECI_WritePowerLimit4_Offset(100);
+                    //                     PECI_CNT++;
+                    //                     break;
+                    //                 case 6:
+                    //                     PECI_ReadPowerLimit4_Offset();
+                    //                     PECI_CNT = 0;
+                    //                     break;
+                default:
+                    PECI_CNT = 0;
+                    break;
             }
-#endif
+        #endif
         }
     }
 #endif

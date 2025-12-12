@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2025-02-08 16:07:45
  * @Description:
  *
@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
  //*****************************************************************************
  // Include all header file
@@ -72,7 +72,7 @@ BYTE  PWM_Disable(BYTE  channel)
 //			-1 : error
 //
 //*****************************************************************************
-BYTE  PWM_Get(spwm_str* pwm_ptr)
+BYTE  PWM_Get(spwm_str *pwm_ptr)
 {
 	if ((pwm_ptr == NULL) || (pwm_ptr->pwm_no > 7))
 	{
@@ -84,38 +84,38 @@ BYTE  PWM_Get(spwm_str* pwm_ptr)
 	/*scale*/
 	switch (pwm_ptr->pwm_clk_sel)
 	{
-	case 0:
-		pwm_ptr->pwm_scale = PWM_SCALER0;
-		break;
-	case 1:
-		pwm_ptr->pwm_scale = PWM_SCALER1;
-		break;
-	case 2:
-		pwm_ptr->pwm_scale = PWM_SCALER2;
-		break;
-	case 3:
-		pwm_ptr->pwm_scale = PWM_SCALER3;
-		break;
-	default:
-		return -1;
+		case 0:
+			pwm_ptr->pwm_scale = PWM_SCALER0;
+			break;
+		case 1:
+			pwm_ptr->pwm_scale = PWM_SCALER1;
+			break;
+		case 2:
+			pwm_ptr->pwm_scale = PWM_SCALER2;
+			break;
+		case 3:
+			pwm_ptr->pwm_scale = PWM_SCALER3;
+			break;
+		default:
+			return -1;
 	}
 	/*pwm_ctr*/
 	switch (pwm_ptr->pwm_ctr_sel)
 	{
-	case 0:
-		pwm_ptr->pwm_ctr = (PWM_CTR0_1 & 0xFF);
-		break;
-	case 1:
-		pwm_ptr->pwm_ctr = (PWM_CTR0_1 & (0xFF << 8)) >> (8);
-		break;
-	case 2:
-		pwm_ptr->pwm_ctr = (PWM_CTR2_3 & 0xFF);
-		break;
-	case 3:
-		pwm_ptr->pwm_ctr = (PWM_CTR2_3 & (0xff << 8)) >> (8);
-		break;
-	default:
-		return -1;
+		case 0:
+			pwm_ptr->pwm_ctr = (PWM_CTR0_1 & 0xFF);
+			break;
+		case 1:
+			pwm_ptr->pwm_ctr = (PWM_CTR0_1 & (0xFF << 8)) >> (8);
+			break;
+		case 2:
+			pwm_ptr->pwm_ctr = (PWM_CTR2_3 & 0xFF);
+			break;
+		case 3:
+			pwm_ptr->pwm_ctr = (PWM_CTR2_3 & (0xff << 8)) >> (8);
+			break;
+		default:
+			return -1;
 	}
 	pwm_ptr->pwm_clk_sel = (PWM_CLK_SEL & (0x3 << (pwm_ptr->pwm_no * 2))) >> (pwm_ptr->pwm_no * 2);
 	pwm_ptr->pwm_ctr_sel = (PWM_CTR_SEL & (0x3 << (pwm_ptr->pwm_no * 2))) >> (pwm_ptr->pwm_no * 2);

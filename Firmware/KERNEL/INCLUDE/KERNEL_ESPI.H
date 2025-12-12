@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 #ifndef KERNEL_ESPI_H
 #define KERNEL_ESPI_H
@@ -298,8 +298,7 @@
 //-----------------------------------------------------------------------------
 // RPMC-OOB Message&Response Struct define
 //-----------------------------------------------------------------------------
-typedef struct
-{
+typedef struct{
     // Byte 0
     uint8_t eSPI_Cycle_Type : 8;   // 0: eSPI Cycle Type: OOB Message = 21h
     // Byte 1
@@ -349,7 +348,7 @@ typedef struct
     uint8_t TruncatedSignature2_27[26];   // 截断签名
 } eSPI_OOB_WriteRootKet_MESSAGE1;
 
-typedef struct {
+typedef struct{
     // Byte 0
     uint8_t eSPI_Cycle_Type : 8;               // Byte 0: eSPI Cycle Type: OOB Message = 21h
     // Byte 1
@@ -388,7 +387,7 @@ typedef struct {
 
 } eSPI_OOB_WriteRootKet_MESSAGE2;
 
-typedef struct {
+typedef struct{
     // Byte 0
     uint8_t eSPI_Cycle_Type : 8;               // Byte 0: eSPI Cycle Type: OOB Message = 21h
     // Byte 1
@@ -431,8 +430,7 @@ typedef struct {
 
 } eSPI_OOB_WriteRootKet_RESPONSE;
 
-typedef struct
-{
+typedef struct{
     // Byte 0
     uint8_t eSPI_Cycle_Type : 8;   // 0: eSPI Cycle Type: OOB Message = 21h
     // Byte 1
@@ -482,7 +480,7 @@ typedef struct
     uint8_t Signature[32];
 } eSPI_OOB_UpdateHMACKey;
 
-typedef struct {
+typedef struct{
     // Byte 0
     uint8_t eSPI_Cycle_Type : 8;               // Byte 0: eSPI Cycle Type: OOB Message = 21h
     // Byte 1
@@ -525,8 +523,7 @@ typedef struct {
 
 } eSPI_OOB_UpdateHMACKey_RESPONSE;
 
-typedef struct
-{
+typedef struct{
     // Byte 0
     uint8_t eSPI_Cycle_Type : 8;   // 0: eSPI Cycle Type: OOB Message = 21h
     // Byte 1
@@ -576,7 +573,7 @@ typedef struct
     uint8_t Signature[32];
 } eSPI_OOB_IncrementCounter;
 
-typedef struct {
+typedef struct{
     // Byte 0
     uint8_t eSPI_Cycle_Type : 8;               // Byte 0: eSPI Cycle Type: OOB Message = 21h
     // Byte 1
@@ -619,8 +616,7 @@ typedef struct {
 
 } eSPI_OOB_IncrementCounter_RESPONSE;
 
-typedef struct
-{
+typedef struct{
     // Byte 0
     uint8_t eSPI_Cycle_Type : 8;   // 0: eSPI Cycle Type: OOB Message = 21h
     // Byte 1
@@ -670,7 +666,7 @@ typedef struct
     uint8_t Signature[32];
 } eSPI_OOB_RequestCounter;
 
-typedef struct {
+typedef struct{
     // Byte 0
     uint8_t eSPI_Cycle_Type : 8;               // Byte 0: eSPI Cycle Type: OOB Message = 21h
     // Byte 1
@@ -718,7 +714,7 @@ typedef struct {
     uint8_t Signature[32];
 } eSPI_OOB_RequestCounter_RESPONSE;
 
-typedef struct {
+typedef struct{
     // Byte 0
     uint8_t eSPI_Cycle_Type : 8;               // Byte 0: eSPI Cycle Type: OOB Message = 21h
     // Byte 1
@@ -759,7 +755,7 @@ typedef struct {
 
 } eSPI_OOB_ReadParameters;
 
-typedef struct {
+typedef struct{
     // Byte 0
     uint8_t eSPI_Cycle_Type : 8;               // Byte 0: eSPI Cycle Type: OOB Message = 21h
     // Byte 1
@@ -837,16 +833,16 @@ extern void Get_OOB_PCH_Temperature(void);
 extern void Get_OOB_PMC_CrashLog(void);
 
 extern BYTE eSPI_Flash_Read(BYTE add3, BYTE add2, BYTE add1, BYTE add0,
-    BYTE length, VBYTE* bufferindex);
+    BYTE length, VBYTE *bufferindex);
 extern BYTE eSPI_Flash_Erase(BYTE addr3, BYTE addr2, BYTE addr1, BYTE addr0,
     BYTE mode);
 extern BYTE eSPI_Flash_Write(BYTE addr3, BYTE addr2, BYTE addr1, BYTE addr0,
-    BYTE length, VBYTE* bufferindex);
+    BYTE length, VBYTE *bufferindex);
 
-extern BYTE OOB_PECI_RdPkgConfig(BYTE addr, BYTE* ReadData, BYTE Domain,
+extern BYTE OOB_PECI_RdPkgConfig(BYTE addr, BYTE *ReadData, BYTE Domain,
     BYTE Retry, BYTE Index, BYTE LSB,
     BYTE MSB, BYTE ReadLen, BYTE WriteLen);
-extern BYTE OOB_PECI_WrPkgConfig(BYTE addr, BYTE* WriteData, BYTE Domain,
+extern BYTE OOB_PECI_WrPkgConfig(BYTE addr, BYTE *WriteData, BYTE Domain,
     BYTE Retry, BYTE Index, BYTE LSB,
     BYTE MSB, BYTE ReadLen, BYTE WriteLen);
 
@@ -866,11 +862,11 @@ extern void EC_ACK_eSPI_SUS_WARN(void);
 extern BYTE Process_Peripheral_Message_Send(void);
 extern BYTE Process_Peripheral_Memory_Read32(void);
 extern BYTE eSPI_OOBRPMC_Handler(void);
-extern BYTE eSPI_OOB_Receive(BYTE* OOB_Meg_Table);
+extern BYTE eSPI_OOB_Receive(BYTE *OOB_Meg_Table);
 extern void eRPMC_WriteRootKey_Response(void);
 extern void eRPMC_UpdateHMACKey_Response(void);
 extern void eRPMC_IncrementCounter_Response(void);
 extern void eRPMC_RequestCounter_Response(void);
 extern void eRPMC_ReadParameter_Response(void);
-extern BYTE eSPI_OOB_Send(BYTE* OOB_Meg_Table);
+extern BYTE eSPI_OOB_Send(BYTE *OOB_Meg_Table);
 #endif

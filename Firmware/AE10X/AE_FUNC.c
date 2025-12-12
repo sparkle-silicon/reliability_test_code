@@ -1,6 +1,6 @@
 /*
  * @Author: Linyu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2025-10-08 17:41:23
  * @Description:
  *
@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 #include "AE_FUNC.H"
 #include "KERNEL_IRQ.H"
@@ -75,12 +75,14 @@ uint32_t NOINLINE measure_cpu_freq(size_t n)
   do
   {
     start_mtime = mtime_lo(); // 获取计时器改变后的值（用的32K的时钟，时间相对比较久，判断新的开始）
-  } while (start_mtime == tmp);
+  }
+  while (start_mtime == tmp);
   uint32_t start_mcycle = read_csr(mcycle); // get Lower 32 bits of Cycle counter（周期计数器）//用于反映处理器执行了多少个时钟周期。只要处理器处于执行状态时，此计数器便会不断自增计数
   do
   {
     delta_mtime = mtime_lo() - start_mtime; // 判断走了n个计时器时钟
-  } while (delta_mtime < n);
+  }
+  while (delta_mtime < n);
   register uint32_t delta_mcycle = read_csr(mcycle) - start_mcycle; // 获取时钟周期差值
   disable_mcycle_minstret();
   // 24M时钟周期/32k时钟周期*预定32k的频率+24M时钟周期%32k时钟周期*预定32k频率/32K时钟频率
@@ -125,7 +127,8 @@ static uint64_t measure_ratio(uint32_t n)
   do
   {
     start_mtime = mtime_lo();
-  } while (start_mtime == tmp);
+  }
+  while (start_mtime == tmp);
 
   start_mcycle = read_csr(mcycle);
 
@@ -137,7 +140,8 @@ static uint64_t measure_ratio(uint32_t n)
     elapsed = (end_mtime >= start_mtime) ?
       (end_mtime - start_mtime) :
       (0xFFFFFFFF - start_mtime + end_mtime + 1);
-  } while (elapsed < n);
+  }
+  while (elapsed < n);
 
   end_mcycle = read_csr(mcycle);
   disable_mcycle_minstret();

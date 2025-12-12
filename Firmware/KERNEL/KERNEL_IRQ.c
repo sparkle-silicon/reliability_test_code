@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2025-10-24 11:16:01
  * @Description:
  *
@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 #include "AE_INCLUDE.H"
 #include "KERNEL_INCLUDE.H"
@@ -158,7 +158,7 @@ void SECTION(".init.irq") Irqc_init(void)
 #endif
 }
 #if IRQC_DEBUG
-char __weak* irq_string = "ISR: %s,IRQ: %d.\n";
+char __weak *irq_string = "ISR: %s,IRQ: %d.\n";
 #endif
 void __interrupt SECTION(".interrupt.CPUS_HANDLER") CPUS_HANDLER(void)
 {
@@ -448,7 +448,7 @@ void __interrupt SECTION(".interrupt.ADC_HANDLER") ADC_HANDLER(void)
 		if (ADC_ValidStatus_1 & (1 << i))
 		{
 			(&ADC_Data0)[i] = ADC_ReadData(i);//get ADC data and clear interrupt
-			irqprint("ADC%d:%d Voltage:%.2f V\n", i, (&ADC_Data0)[i],( (&ADC_Data0)[i] * 3.3 / 4095.0));
+			irqprint("ADC%d:%d Voltage:%.2f V\n", i, (&ADC_Data0)[i], ((&ADC_Data0)[i] * 3.3 / 4095.0));
 		}
 		if (ADC_ValidStatus_2 & (1 << i))
 		{
@@ -485,9 +485,9 @@ void __interrupt SECTION(".interrupt.UART0_HANDLER") UART0_HANDLER(void)
 	if (F_Service_CMD == 1)
 	{
 		char temp = UART0_RX;
-#if (!IRQC_DEBUG)
+	#if (!IRQC_DEBUG)
 		UNUSED_VAR(temp);
-#endif
+	#endif
 		irqprint("erro of CMD_RUN:%#x,%c\n", temp, temp);
 		return;
 	}
@@ -544,9 +544,9 @@ void __interrupt SECTION(".interrupt.UARTA_HANDLER") UARTA_HANDLER(void)
 	if (F_Service_CMD == 1)
 	{
 		char temp = UARTA_RX;
-#if (!IRQC_DEBUG)
+	#if (!IRQC_DEBUG)
 		UNUSED_VAR(temp);
-#endif
+	#endif
 		irqprint("erro of CMD_RUN:%#x,%c\n", temp, temp);
 		return;
 	}
@@ -604,9 +604,9 @@ void __interrupt SECTION(".interrupt.UARTB_HANDLER") UARTB_HANDLER(void)
 	if (F_Service_CMD == 1)
 	{
 		char temp = UARTB_RX;
-#if (!IRQC_DEBUG)
+	#if (!IRQC_DEBUG)
 		UNUSED_VAR(temp);
-#endif
+	#endif
 		irqprint("erro of CMD_RUN:%#x,%c\n", temp, temp);
 		return;
 	}
@@ -783,15 +783,15 @@ void __interrupt SECTION(".interrupt.INTC1_HANDLER") INTC1_HANDLER(void)
 #endif
 #if ((PRINTF_UART_SWITCH == 1))
 	else if (intr1_service[(num)] != &intr1_uart1)
-#else
+	#else
 	else if (TRUE)
-#endif
+	#endif
 	{
 		irqprint("ISR: %s,IRQ: %d. 2nd-level IRQ[%d]\n", __FUNCTION__, 31, num);
 	}
 	(intr1_service[(num)])(); // Dispatch to service handler.
 }
-const char* Exception_Code[] = { NULL,
+const char *Exception_Code[] = { NULL,
 								"Instruction access error",
 								"Illegal instruction",
 								"Break point",
@@ -805,7 +805,7 @@ DWORD SECTION(".interrupt.kernel_trap") kernel_trap(uintptr_t mcause, uintptr_t 
 {
 	UNUSED_VAR(sp);
 	VBYTE trap_flag = 0x1f & mcause;
-	void* pc = (void*)read_csr(mepc);
+	void *pc = (void *)read_csr(mepc);
 	DWORD val;
 	if ((int)pc % 2)
 	{

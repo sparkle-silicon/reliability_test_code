@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2025-06-04 17:21:11
  * @Description:
  *
@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 #include "KERNEL_TRIM.H"
 u16 High_Clock_trim_get(void)
@@ -34,7 +34,7 @@ void High_Clock_trim_add(u16 val)
 {
     val &= 0x3ff;
     u16 oldtrim = High_Clock_trim_get();
-    if(oldtrim + val >= 0x3ff)
+    if (oldtrim + val >= 0x3ff)
     {
         High_Clock_trim_set(0x3ff);
     }
@@ -44,7 +44,7 @@ void High_Clock_trim_sub(u16 val)
 {
     val &= 0x3ff;
     u16 oldtrim = High_Clock_trim_get();
-    if(oldtrim <= val)
+    if (oldtrim <= val)
     {
         High_Clock_trim_set(0);
     }
@@ -54,7 +54,7 @@ void Low_Clock_trim_add(u16 val)
 {
     val &= 0x3ff;
     u16 oldtrim = Low_Clock_trim_get();
-    if(oldtrim + val >= 0x3ff)
+    if (oldtrim + val >= 0x3ff)
     {
         Low_Clock_trim_set(0x3ff);
     }
@@ -64,7 +64,7 @@ void Low_Clock_trim_sub(u16 val)
 {
     val &= 0x3ff;
     u16 oldtrim = Low_Clock_trim_get();
-    if(oldtrim <= val)
+    if (oldtrim <= val)
     {
         Low_Clock_trim_set(0);
     }
@@ -79,23 +79,23 @@ void Low_Clock_Autotrim(void)//必须高电平准
     do
     {
         freq = get_cpu_freq();
-        if(freq > base_freq)
+        if (freq > base_freq)
         {
             div = freq - base_freq;
-            if(div > (base_freq / 100))
+            if (div > (base_freq / 100))
                 Low_Clock_trim_add(1);
         }
-        else if(freq < base_freq)
+        else if (freq < base_freq)
         {
             div = base_freq - freq;
-            if(div > (base_freq / 100))
+            if (div > (base_freq / 100))
                 Low_Clock_trim_sub(1);
         }
         else break;
         nop; nop; nop;
     /* code */
     }
-    while(div > (base_freq / 100));
+    while (div > (base_freq / 100));
 
 
 }
@@ -108,23 +108,23 @@ void High_Clock_Autotrim(void)//必须低电平准
     do
     {
         freq = get_cpu_freq();
-        if(freq > base_freq)
+        if (freq > base_freq)
         {
             div = freq - base_freq;
-            if(div > (base_freq / 100))
+            if (div > (base_freq / 100))
                 High_Clock_trim_sub(1);
         }
-        else if(freq < base_freq)
+        else if (freq < base_freq)
         {
             div = base_freq - freq;
-            if(div > (base_freq / 100))
+            if (div > (base_freq / 100))
                 High_Clock_trim_add(1);
         }
         else break;
         nop; nop; nop;
     /* code */
     }
-    while(div > (base_freq / 100));
+    while (div > (base_freq / 100));
 }
 // int do_trim(struct cmd_tbl *cmd, int flags, int argc, char *const argv[])
 // {

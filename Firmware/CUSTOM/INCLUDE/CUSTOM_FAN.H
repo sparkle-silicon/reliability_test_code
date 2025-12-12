@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 #ifndef __CUSTOM_FAN_H
 #define __CUSTOM_FAN_H
@@ -21,15 +21,14 @@
 /*-----------------------------------------------------------------------------
  * Fan Level Structure
  *---------------------------------------------------------------------------*/
-typedef struct thermalstruct
-{
+typedef struct thermalstruct{
 	BYTE  	CSTEP;    //风扇调速step,对应风扇的转速调节系数
 	s8  	CFanOn;		//温度上限
 	s8  	CFanOff;	//温度下限
 	BYTE 	CDCR;      //初始占空比
 }thermal;
 /*-----------------------------------------------------------------------------
- * Fan Control 
+ * Fan Control
  *---------------------------------------------------------------------------*/
 #define FAN0_CTR 246//245/246/255
 #define FAN0_MAX_DCR (FAN0_CTR)

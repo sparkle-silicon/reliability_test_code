@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2023-12-22 15:45:37
  * @Description:
  *
@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 #include "KERNEL_PNP.H"
 #include "KERNEL_TIMER.H"
@@ -33,7 +33,8 @@ void Config_PNP_Access_Request(void)
 			break; /* OK */
 		udelay(1000);
 		timeout--;
-	} while (timeout);
+	}
+	while (timeout);
 	if (timeout == 0)
 		dprint("access request timeout\n");
 }
@@ -52,7 +53,8 @@ void Config_PNP_Access_Release(void)
 			break; /* OK */
 		udelay(1000);
 		timeout--;
-	} while (timeout);
+	}
+	while (timeout);
 	if (timeout == 0)
 		dprint("access request clear timeout\n");
 }
@@ -78,7 +80,8 @@ void Config_PNP_Write(BYTE idx, BYTE ldn, BYTE data)
 			break; /* OK */
 		udelay(1000);
 		timeout--;
-	} while (timeout);
+	}
+	while (timeout);
 	if (timeout == 0)
 		dprint("pnp write done timeout\n");
 	// clear write requeset
@@ -106,7 +109,8 @@ void Config_PNP_Read(BYTE idx, BYTE ldn)
 			break; /* OK */
 		udelay(1000);
 		timeout--;
-	} while (timeout);
+	}
+	while (timeout);
 	if (timeout == 0)
 		dprint("pnp read done timeout\n");
 	idx = (rdata & 0xff000000) >> 24;
@@ -122,7 +126,8 @@ void Config_PNP_Read(BYTE idx, BYTE ldn)
 			break;
 		udelay(1000);
 		timeout1--;
-	} while (timeout1);
+	}
+	while (timeout1);
 	if (timeout1 == 0)
 		dprint("pnp finish timeout\n");
 }
@@ -344,7 +349,7 @@ BYTE Sio_PNP_Table[] =
 };
 void Sio_PNP_Config(void)
 {
-	BYTE* data_pntr;
+	BYTE *data_pntr;
 	BYTE cnt = 0;
 	data_pntr = Sio_PNP_Table;
 	while (cnt < (sizeof(Sio_PNP_Table) / 3))

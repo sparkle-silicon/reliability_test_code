@@ -1,6 +1,6 @@
 /*
  * @Author: Maple
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2024-06-13 19:04:42
  * @Description:
  *
@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 #include "TEST_AUTOMATIC.H"
 #if 0//(defined(AE102) || defined(AE103))
@@ -36,20 +36,20 @@ void AUTO_TEST_PORT(BYTE channel)
 	BYTE index;
 	BYTE timeout;
 	WORD tach0;
-	switch(channel)
+	switch (channel)
 	{
 		case 0x0:
-			if(KBC_STA & 0x08)
+			if (KBC_STA & 0x08)
 			{
 				cmd = KBC_IB;
-				while(KBC_STA & 0x1)
+				while (KBC_STA & 0x1)
 					;
 				KBC_KOB = cmd;
 			#if LPC_WAY_OPTION_SWITCH
 			#else
 				SET_BIT(KBC_CTL, 3);
 			#endif
-				switch(cmd)
+				switch (cmd)
 				{
 					case 0x03: // I2C0
 						// I2c_Readb(I2C_CLR_STOP_DET_OFFSET,I2C_CHANNEL_0);//clear stop det
@@ -58,7 +58,7 @@ void AUTO_TEST_PORT(BYTE channel)
 						I2c_Master_Set_Tar(0x4C, I2C_REGADDR_7BIT, I2C_CHANNEL_0);
 						/* read temperature */
 						var = I2c_Master_Read_Byte(0x1, I2C_CHANNEL_0);
-						while(KBC_STA & 0x1)
+						while (KBC_STA & 0x1)
 							;
 						KBC_KOB = var;
 					#if LPC_WAY_OPTION_SWITCH
@@ -66,7 +66,7 @@ void AUTO_TEST_PORT(BYTE channel)
 						SET_BIT(KBC_CTL, 3);
 					#endif
 						var = I2c_Master_Read_Byte(0x10, I2C_CHANNEL_0);
-						while(KBC_STA & 0x1)
+						while (KBC_STA & 0x1)
 							;
 						KBC_KOB = var;
 					#if LPC_WAY_OPTION_SWITCH
@@ -85,7 +85,7 @@ void AUTO_TEST_PORT(BYTE channel)
 			else
 			{
 				var = KBC_IB;
-				while(KBC_STA & KBC_STA_OBF)
+				while (KBC_STA & KBC_STA_OBF)
 					;
 				KBC_MOB = var;
 			#if LPC_WAY_OPTION_SWITCH
@@ -95,40 +95,40 @@ void AUTO_TEST_PORT(BYTE channel)
 			}
 			break;
 		case 0x1:
-			if(PMC1_STR & 0x08)
+			if (PMC1_STR & 0x08)
 			{
 				cmd = PMC1_DIR;
 				// dprint("PM1 Cmd = %d\n",cmd);
-				while(PMC1_STR & 0x1)
+				while (PMC1_STR & 0x1)
 					;
 				PMC1_DOR = cmd;
 			#if LPC_WAY_OPTION_SWITCH
 			#else
 				SET_BIT(PMC1_CTL, 0);
 			#endif
-				switch(cmd)
+				switch (cmd)
 				{
 					case 0x01: // UART
 						UART0_IER = 0x0;
-						while(!(PMC1_STR & 0x2))
+						while (!(PMC1_STR & 0x2))
 							;
 						var = PMC1_DIR;
-						while(!(UART0_LSR & UART_LSR_TEMP))
+						while (!(UART0_LSR & UART_LSR_TEMP))
 							;
 						UART0_TX = var; // 写
 						timeout = 251;
-						while(--timeout)
+						while (--timeout)
 						{
-							if(UART0_LSR & UART_LSR_DR)
+							if (UART0_LSR & UART_LSR_DR)
 								break;
 							vDelayXus(1);
 						}
-						if(timeout)
+						if (timeout)
 							var = UART0_RX; // 读
 						else
 							var = 0x80;
 						// dprint("timeout = %d\n",timeout);
-						while(PMC1_STR & 0x1)
+						while (PMC1_STR & 0x1)
 							;
 						PMC1_DOR = var;
 					#if LPC_WAY_OPTION_SWITCH
@@ -143,7 +143,7 @@ void AUTO_TEST_PORT(BYTE channel)
 						I2c_Master_Set_Tar(0x4C, I2C_REGADDR_7BIT, I2C_CHANNEL_1);
 						/* read temperature */
 						var = I2c_Master_Read_Byte(0x1, I2C_CHANNEL_1);
-						while(PMC1_STR & 0x1)
+						while (PMC1_STR & 0x1)
 							;
 						PMC1_DOR = var;
 					#if LPC_WAY_OPTION_SWITCH
@@ -151,7 +151,7 @@ void AUTO_TEST_PORT(BYTE channel)
 						SET_BIT(PMC1_CTL, 0);
 					#endif
 						var = I2c_Master_Read_Byte(0x10, I2C_CHANNEL_1);
-						while(PMC1_STR & 0x1)
+						while (PMC1_STR & 0x1)
 							;
 						PMC1_DOR = var;
 					#if LPC_WAY_OPTION_SWITCH
@@ -164,7 +164,7 @@ void AUTO_TEST_PORT(BYTE channel)
 									// }
 						break;
 					case 0x05: // CAN0 CAN1
-						while(!(PMC1_STR & 0x2))
+						while (!(PMC1_STR & 0x2))
 							;
 						var = PMC1_DIR;
 						sysctl_iomux_can0();
@@ -174,25 +174,25 @@ void AUTO_TEST_PORT(BYTE channel)
 						CAN0_SendData(Standard_frame, 0x123, var, CAN_DATA);
 						CAN1_SendData(Standard_frame, 0x123, var, CAN_DATA);
 						var = 0;
-						while(!CAN1_RMC)
+						while (!CAN1_RMC)
 							;
 						index = CAN1_RXB0 & 0xf;
-						for(BYTE i = 0; i < index; i++)
+						for (BYTE i = 0; i < index; i++)
 						{
-							if(CAN_DATA[i] == (*((VBYTEP)(CAN1_REG_ADDR(CAN_RXB5_OFFECT + i)))))
+							if (CAN_DATA[i] == (*((VBYTEP)(CAN1_REG_ADDR(CAN_RXB5_OFFECT + i)))))
 								var++;
 						}
 						CAN1_CMR = (0x04);
-						while(!CAN0_RMC)
+						while (!CAN0_RMC)
 							;
 						index = CAN0_RXB0 & 0xf;
-						for(BYTE i = 0; i < index; i++)
+						for (BYTE i = 0; i < index; i++)
 						{
-							if(CAN_DATA[i] == (*((VBYTEP)(CAN0_REG_ADDR(CAN_RXB5_OFFECT + i)))))
+							if (CAN_DATA[i] == (*((VBYTEP)(CAN0_REG_ADDR(CAN_RXB5_OFFECT + i)))))
 								var++;
 						}
 						CAN0_CMR = (0x04);
-						while(PMC1_STR & 0x1)
+						while (PMC1_STR & 0x1)
 							;
 						PMC1_DOR = var;
 					#if LPC_WAY_OPTION_SWITCH
@@ -207,7 +207,7 @@ void AUTO_TEST_PORT(BYTE channel)
 			else
 			{
 				var = PMC1_DIR;
-				while(PMC1_STR & 0x1)
+				while (PMC1_STR & 0x1)
 					;
 				PMC1_DOR = var;
 			#if LPC_WAY_OPTION_SWITCH
@@ -217,40 +217,40 @@ void AUTO_TEST_PORT(BYTE channel)
 			}
 			break;
 		case 0x2:
-			if(PMC2_STR & 0x08)
+			if (PMC2_STR & 0x08)
 			{
 				cmd = PMC2_DIR;
 				// dprint("PM2 Cmd = %d\n",cmd);
-				while(PMC2_STR & 0x1)
+				while (PMC2_STR & 0x1)
 					;
 				PMC2_DOR = cmd;
 			#if LPC_WAY_OPTION_SWITCH
 			#else
 				SET_BIT(PMC2_CTL, 0);
 			#endif
-				switch(cmd)
+				switch (cmd)
 				{
 					case 0x01: // UART2
 						UART2_IER = 0x0;
-						while(!(PMC2_STR & 0x2))
+						while (!(PMC2_STR & 0x2))
 							;
 						var = PMC2_DIR;
-						while(!(UART2_LSR & UART_LSR_TEMP))
+						while (!(UART2_LSR & UART_LSR_TEMP))
 							;
 						UART2_TX = var; // 写
 						timeout = 251;
-						while(--timeout)
+						while (--timeout)
 						{
-							if(UART2_LSR & UART_LSR_DR)
+							if (UART2_LSR & UART_LSR_DR)
 								break;
 							vDelayXus(1);
 						}
-						if(timeout)
+						if (timeout)
 							var = UART2_RX; // 读
 						else
 							var = 0x80;
 						// dprint("timeout = %d\n",timeout);
-						while(PMC2_STR & 0x1)
+						while (PMC2_STR & 0x1)
 							;
 						PMC2_DOR = var;
 					#if LPC_WAY_OPTION_SWITCH
@@ -265,7 +265,7 @@ void AUTO_TEST_PORT(BYTE channel)
 						I2c_Master_Set_Tar(0x4C, I2C_REGADDR_7BIT, I2C_CHANNEL_2);
 						/* read temperature */
 						var = I2c_Master_Read_Byte(0x1, I2C_CHANNEL_2);
-						while(PMC2_STR & 0x1)
+						while (PMC2_STR & 0x1)
 							;
 						PMC2_DOR = var;
 					#if LPC_WAY_OPTION_SWITCH
@@ -273,7 +273,7 @@ void AUTO_TEST_PORT(BYTE channel)
 						SET_BIT(PMC2_CTL, 0);
 					#endif
 						var = I2c_Master_Read_Byte(0x10, I2C_CHANNEL_2);
-						while(PMC2_STR & 0x1)
+						while (PMC2_STR & 0x1)
 							;
 						PMC2_DOR = var;
 					#if LPC_WAY_OPTION_SWITCH
@@ -286,7 +286,7 @@ void AUTO_TEST_PORT(BYTE channel)
 									// }
 						break;
 					case 0x05: // CAN2 CAN3
-						while(!(PMC2_STR & 0x2))
+						while (!(PMC2_STR & 0x2))
 							;
 						var = PMC2_DIR;
 						sysctl_iomux_can0();
@@ -296,25 +296,25 @@ void AUTO_TEST_PORT(BYTE channel)
 						CAN2_SendData(Standard_frame, 0x123, var, CAN_DATA);
 						CAN3_SendData(Standard_frame, 0x123, var, CAN_DATA);
 						var = 0;
-						while(!CAN3_RMC)
+						while (!CAN3_RMC)
 							;
 						index = CAN3_RXB0 & 0xf;
-						for(BYTE i = 0; i < index; i++)
+						for (BYTE i = 0; i < index; i++)
 						{
-							if(CAN_DATA[i] == (*((VBYTEP)(CAN3_REG_ADDR(CAN_RXB5_OFFECT + i)))))
+							if (CAN_DATA[i] == (*((VBYTEP)(CAN3_REG_ADDR(CAN_RXB5_OFFECT + i)))))
 								var++;
 						}
 						CAN3_CMR = (0x04);
-						while(!CAN2_RMC)
+						while (!CAN2_RMC)
 							;
 						index = CAN2_RXB0 & 0xf;
-						for(BYTE i = 0; i < index; i++)
+						for (BYTE i = 0; i < index; i++)
 						{
-							if(CAN_DATA[i] == (*((VBYTEP)(CAN2_REG_ADDR(CAN_RXB5_OFFECT + i)))))
+							if (CAN_DATA[i] == (*((VBYTEP)(CAN2_REG_ADDR(CAN_RXB5_OFFECT + i)))))
 								var++;
 						}
 						CAN2_CMR = (0x04);
-						while(PMC2_STR & 0x1)
+						while (PMC2_STR & 0x1)
 							;
 						PMC2_DOR = var;
 					#if LPC_WAY_OPTION_SWITCH
@@ -329,7 +329,7 @@ void AUTO_TEST_PORT(BYTE channel)
 			else
 			{
 				var = PMC2_DIR;
-				while(PMC2_STR & 0x1)
+				while (PMC2_STR & 0x1)
 					;
 				PMC2_DOR = var;
 			#if LPC_WAY_OPTION_SWITCH
@@ -339,40 +339,40 @@ void AUTO_TEST_PORT(BYTE channel)
 			}
 			break;
 		case 0x3:
-			if(PMC3_STR & 0x08)
+			if (PMC3_STR & 0x08)
 			{
 				cmd = PMC3_DIR;
 				// dprint("PM3 Cmd = %d\n",cmd);
-				while(PMC3_STR & 0x1)
+				while (PMC3_STR & 0x1)
 					;
 				PMC3_DOR = cmd;
 			#if LPC_WAY_OPTION_SWITCH
 			#else
 				SET_BIT(PMC3_CTL, 0);
 			#endif
-				switch(cmd)
+				switch (cmd)
 				{
 					case 0x01: // UART3
 						UART3_IER = 0x0;
-						while(!(PMC3_STR & 0x2))
+						while (!(PMC3_STR & 0x2))
 							;
 						var = PMC3_DIR;
-						while(!(UART3_LSR & UART_LSR_TEMP))
+						while (!(UART3_LSR & UART_LSR_TEMP))
 							;
 						UART3_TX = var; // 写
 						timeout = 251;
-						while(--timeout)
+						while (--timeout)
 						{
-							if(UART3_LSR & UART_LSR_DR)
+							if (UART3_LSR & UART_LSR_DR)
 								break;
 							vDelayXus(1);
 						}
-						if(timeout)
+						if (timeout)
 							var = UART3_RX; // 读
 						else
 							var = 0x80;
 						// dprint("timeout = %d\n",timeout);
-						while(PMC3_STR & 0x1)
+						while (PMC3_STR & 0x1)
 							;
 						PMC3_DOR = var;
 					#if LPC_WAY_OPTION_SWITCH
@@ -387,7 +387,7 @@ void AUTO_TEST_PORT(BYTE channel)
 						I2c_Master_Set_Tar(0x4C, I2C_REGADDR_7BIT, I2C_CHANNEL_3);
 						/* read temperature */
 						var = I2c_Master_Read_Byte(0x1, I2C_CHANNEL_3);
-						while(PMC3_STR & 0x1)
+						while (PMC3_STR & 0x1)
 							;
 						PMC3_DOR = var;
 					#if LPC_WAY_OPTION_SWITCH
@@ -395,7 +395,7 @@ void AUTO_TEST_PORT(BYTE channel)
 						SET_BIT(PMC3_CTL, 0);
 					#endif
 						var = I2c_Master_Read_Byte(0x10, I2C_CHANNEL_3);
-						while(PMC3_STR & 0x1)
+						while (PMC3_STR & 0x1)
 							;
 						PMC3_DOR = var;
 					#if LPC_WAY_OPTION_SWITCH
@@ -414,7 +414,7 @@ void AUTO_TEST_PORT(BYTE channel)
 			else
 			{
 				var = PMC3_DIR;
-				while(PMC3_STR & 0x1)
+				while (PMC3_STR & 0x1)
 					;
 				PMC3_DOR = var;
 			#if LPC_WAY_OPTION_SWITCH
@@ -424,40 +424,40 @@ void AUTO_TEST_PORT(BYTE channel)
 			}
 			break;
 		case 0x4:
-			if(PMC4_STR & 0x08)
+			if (PMC4_STR & 0x08)
 			{
 				cmd = PMC4_DIR;
 				// dprint("PM4 Cmd = %d\n",cmd);
-				while(PMC4_STR & 0x1)
+				while (PMC4_STR & 0x1)
 					;
 				PMC4_DOR = cmd;
 			#if LPC_WAY_OPTION_SWITCH
 			#else
 				SET_BIT(PMC4_CTL, 0);
 			#endif
-				switch(cmd)
+				switch (cmd)
 				{
 					case 0x01: // UART1
 						UART1_IER = 0x0;
-						while(!(PMC4_STR & 0x2))
+						while (!(PMC4_STR & 0x2))
 							;
 						var = PMC4_DIR;
-						while(!(UART1_LSR & UART_LSR_TEMP))
+						while (!(UART1_LSR & UART_LSR_TEMP))
 							;
 						UART1_TX = var; // 写
 						timeout = 251;
-						while(--timeout)
+						while (--timeout)
 						{
-							if(UART1_LSR & UART_LSR_DR)
+							if (UART1_LSR & UART_LSR_DR)
 								break;
 							vDelayXus(1);
 						}
-						if(timeout)
+						if (timeout)
 							var = UART1_RX; // 读
 						else
 							var = 0x80;
 						// dprint("timeout = %d\n",timeout);
-						while(PMC4_STR & 0x1)
+						while (PMC4_STR & 0x1)
 							;
 						PMC4_DOR = var;
 					#if LPC_WAY_OPTION_SWITCH
@@ -468,7 +468,7 @@ void AUTO_TEST_PORT(BYTE channel)
 					case 0x02: // GPIOB
 						SYSCTL_PIO2_CFG = 0x0;
 						SYSCTL_PIO3_CFG = 0x0;
-						while(!(PMC4_STR & 0x2))
+						while (!(PMC4_STR & 0x2))
 							; // 0-7
 						var = PMC4_DIR;
 						index = 0x0;
@@ -480,14 +480,14 @@ void AUTO_TEST_PORT(BYTE channel)
 						GPIO1_DDR0 = 0xaa;
 						GPIO1_DR0 = var ? 0xaa : 0x55;
 						index |= (GPIO1_EXT0 ^ (var ? 0xff : 0x0)) & 0x55;
-						while(PMC4_STR & 0x1)
+						while (PMC4_STR & 0x1)
 							;
 						PMC4_DOR = index;
 					#if LPC_WAY_OPTION_SWITCH
 					#else
 						SET_BIT(PMC4_CTL, 0);
 					#endif
-						while(!(PMC4_STR & 0x2))
+						while (!(PMC4_STR & 0x2))
 							; // 8-15
 						var = PMC4_DIR;
 						index = 0x0;
@@ -501,14 +501,14 @@ void AUTO_TEST_PORT(BYTE channel)
 						GPIO1_DR1 = var ? 0xaa : 0x55;
 						index |= (GPIO1_EXT1 ^ (var ? 0xff : 0x0)) & 0x55;
 						// dprint("%d.ddr = %#x, dr = %#x, ext = %#x, ext^^ = %#x, index = %#x\n", var, GPIO0_DDR0, GPIO0_DR0, GPIO0_EXT0, (GPIO0_EXT0 ^ (var ? 0xff : 0x0)), index);
-						while(PMC4_STR & 0x1)
+						while (PMC4_STR & 0x1)
 							;
 						PMC4_DOR = index;
 					#if LPC_WAY_OPTION_SWITCH
 					#else
 						SET_BIT(PMC4_CTL, 0);
 					#endif
-						while(!(PMC4_STR & 0x2))
+						while (!(PMC4_STR & 0x2))
 							; // 16-23
 						var = PMC4_DIR;
 						index = 0x0;
@@ -520,14 +520,14 @@ void AUTO_TEST_PORT(BYTE channel)
 						GPIO1_DDR2 = 0xaa;
 						GPIO1_DR2 = var ? 0xaa : 0x55;
 						index |= (GPIO1_EXT2 ^ (var ? 0xff : 0x0)) & 0x55;
-						while(PMC4_STR & 0x1)
+						while (PMC4_STR & 0x1)
 							;
 						PMC4_DOR = index;
 					#if LPC_WAY_OPTION_SWITCH
 					#else
 						SET_BIT(PMC4_CTL, 0);
 					#endif
-						while(!(PMC4_STR & 0x2))
+						while (!(PMC4_STR & 0x2))
 							; // 24-31
 						var = PMC4_DIR;
 						index = 0x0;
@@ -539,7 +539,7 @@ void AUTO_TEST_PORT(BYTE channel)
 						GPIO1_DDR3 = 0xaa;
 						GPIO1_DR3 = var ? 0xaa : 0x55;
 						index |= (GPIO1_EXT3 ^ (var ? 0xff : 0x0)) & 0x55;
-						while(PMC4_STR & 0x1)
+						while (PMC4_STR & 0x1)
 							;
 						PMC4_DOR = index;
 					#if LPC_WAY_OPTION_SWITCH
@@ -554,7 +554,7 @@ void AUTO_TEST_PORT(BYTE channel)
 			else
 			{
 				var = PMC4_DIR;
-				while(PMC4_STR & 0x1)
+				while (PMC4_STR & 0x1)
 					;
 				PMC4_DOR = var;
 			#if LPC_WAY_OPTION_SWITCH
@@ -564,24 +564,24 @@ void AUTO_TEST_PORT(BYTE channel)
 			}
 			break;
 		case 0x5:
-			if(PMC5_STR & 0x08)
+			if (PMC5_STR & 0x08)
 			{
 				cmd = PMC5_DIR;
 				// dprint("PM5 Cmd = %d\n",cmd);
-				while(PMC5_STR & 0x1)
+				while (PMC5_STR & 0x1)
 					;
 				PMC5_DOR = cmd;
 			#if LPC_WAY_OPTION_SWITCH
 			#else
 				SET_BIT(PMC5_CTL, 0);
 			#endif
-				switch(cmd)
+				switch (cmd)
 				{
 					case 0x80: // ec space read
-						while(!(PMC5_STR & 0x2))
+						while (!(PMC5_STR & 0x2))
 							;
 						index = PMC5_DIR;
-						while(PMC5_STR & 0x1)
+						while (PMC5_STR & 0x1)
 							;
 						var = Read_MapECSpace(index);
 						PMC5_DOR = var;
@@ -592,22 +592,22 @@ void AUTO_TEST_PORT(BYTE channel)
 						dprint("Read_MapECSpace(%d) = %d\n", index, var);
 						break;
 					case 0x81: // ec space write
-						while(!(PMC5_STR & 0x2))
+						while (!(PMC5_STR & 0x2))
 							;
 						index = PMC5_DIR;
-						while(PMC5_STR & 0x1)
+						while (PMC5_STR & 0x1)
 							;
 						PMC5_DOR = index;
 					#if LPC_WAY_OPTION_SWITCH
 					#else
 						SET_BIT(PMC5_CTL, 0);
 					#endif
-						while(!(PMC5_STR & 0x2))
+						while (!(PMC5_STR & 0x2))
 							;
 						var = PMC5_DIR;
 						Write_MapECSpace(index, var);
 						var = Read_MapECSpace(index);
-						while(PMC5_STR & 0x1)
+						while (PMC5_STR & 0x1)
 							;
 						PMC5_DOR = var;
 					#if LPC_WAY_OPTION_SWITCH
@@ -619,7 +619,7 @@ void AUTO_TEST_PORT(BYTE channel)
 					case 0x02: // GPIOA
 						SYSCTL_PIO0_CFG = 0x0;
 						SYSCTL_PIO1_CFG = 0x0;
-						while(!(PMC5_STR & 0x2))
+						while (!(PMC5_STR & 0x2))
 							; // 0-7
 						var = PMC5_DIR;
 						index = 0x0;
@@ -633,14 +633,14 @@ void AUTO_TEST_PORT(BYTE channel)
 						GPIO0_DR0 = var ? 0xaa : 0x55;
 						index |= (GPIO0_EXT0 ^ (var ? 0xff : 0x0)) & 0x55;
 						// dprint("%d.ddr = %#x, dr = %#x, ext = %#x, ext^^ = %#x, index = %#x\n", var, GPIO0_DDR0, GPIO0_DR0, GPIO0_EXT0, (GPIO0_EXT0 ^ (var ? 0xff : 0x0)), index);
-						while(PMC5_STR & 0x1)
+						while (PMC5_STR & 0x1)
 							;
 						PMC5_DOR = index;
 					#if LPC_WAY_OPTION_SWITCH
 					#else
 						SET_BIT(PMC5_CTL, 0);
 					#endif
-						while(!(PMC5_STR & 0x2))
+						while (!(PMC5_STR & 0x2))
 							; // 8-15
 						var = PMC5_DIR;
 						index = 0x0;
@@ -654,14 +654,14 @@ void AUTO_TEST_PORT(BYTE channel)
 						GPIO0_DR1 = var ? 0xaa : 0x55;
 						index |= (GPIO0_EXT1 ^ (var ? 0xff : 0x0)) & 0x55;
 						// dprint("%d.ddr = %#x, dr = %#x, ext = %#x, ext^^ = %#x, index = %#x\n", var, GPIO0_DDR0, GPIO0_DR0, GPIO0_EXT0, (GPIO0_EXT0 ^ (var ? 0xff : 0x0)), index);
-						while(PMC5_STR & 0x1)
+						while (PMC5_STR & 0x1)
 							;
 						PMC5_DOR = index;
 					#if LPC_WAY_OPTION_SWITCH
 					#else
 						SET_BIT(PMC5_CTL, 0);
 					#endif
-						while(!(PMC5_STR & 0x2))
+						while (!(PMC5_STR & 0x2))
 							; // 16-23
 						var = PMC5_DIR;
 						index = 0x0;
@@ -675,14 +675,14 @@ void AUTO_TEST_PORT(BYTE channel)
 						GPIO0_DR2 = var ? 0xaa : 0x55;
 						index |= (GPIO0_EXT2 ^ (var ? 0xff : 0x0)) & 0x55;
 						// dprint("%d.ddr = %#x, dr = %#x, ext = %#x, ext^^ = %#x, index = %#x\n", var, GPIO0_DDR0, GPIO0_DR0, GPIO0_EXT0, (GPIO0_EXT0 ^ (var ? 0xff : 0x0)), index);
-						while(PMC5_STR & 0x1)
+						while (PMC5_STR & 0x1)
 							;
 						PMC5_DOR = index;
 					#if LPC_WAY_OPTION_SWITCH
 					#else
 						SET_BIT(PMC5_CTL, 0);
 					#endif
-						while(!(PMC5_STR & 0x2))
+						while (!(PMC5_STR & 0x2))
 							; // 24-31
 						var = PMC5_DIR;
 						index = 0x0;
@@ -696,7 +696,7 @@ void AUTO_TEST_PORT(BYTE channel)
 						GPIO0_DR3 = var ? 0xaa : 0x55;
 						index |= (GPIO0_EXT3 ^ (var ? 0xff : 0x0)) & 0x55;
 						// dprint("%d.ddr = %#x, dr = %#x, ext = %#x, ext^^ = %#x, index = %#x\n", var, GPIO0_DDR0, GPIO0_DR0, GPIO0_EXT0, (GPIO0_EXT0 ^ (var ? 0xff : 0x0)), index);
-						while(PMC5_STR & 0x1)
+						while (PMC5_STR & 0x1)
 							;
 						PMC5_DOR = index;
 					#if LPC_WAY_OPTION_SWITCH
@@ -705,20 +705,20 @@ void AUTO_TEST_PORT(BYTE channel)
 					#endif
 						break;
 					case 0x04: // PWM/tach
-						while(!(PMC5_STR & 0x2))
+						while (!(PMC5_STR & 0x2))
 							;
 						index = PMC5_DIR;
-						while(PMC5_STR & 0x1)
+						while (PMC5_STR & 0x1)
 							;
 						PMC5_DOR = index;
 					#if LPC_WAY_OPTION_SWITCH
 					#else
 						SET_BIT(PMC5_CTL, 0);
 					#endif
-						while(!(PMC5_STR & 0x2))
+						while (!(PMC5_STR & 0x2))
 							;
 						var = PMC5_DIR;
-						if(index == 0x00)
+						if (index == 0x00)
 						{
 							pwm_pmc_config(var);
 							sysctl_iomux_pwm0();
@@ -734,14 +734,14 @@ void AUTO_TEST_PORT(BYTE channel)
 						tach0 = 0x00;
 						tach0 = 0x5b8d80 / TACH0_DATA;
 						dprint("tach0 = %d\n", tach0);
-						while(PMC5_STR & 0x1)
+						while (PMC5_STR & 0x1)
 							;
 						PMC5_DOR = (BYTE)(tach0 & (0xff));
 					#if LPC_WAY_OPTION_SWITCH
 					#else
 						SET_BIT(PMC5_CTL, 0);
 					#endif
-						while(PMC5_STR & 0x1)
+						while (PMC5_STR & 0x1)
 							;
 						PMC5_DOR = (BYTE)((tach0 & (0xff00)) >> 8);
 					#if LPC_WAY_OPTION_SWITCH
@@ -759,7 +759,7 @@ void AUTO_TEST_PORT(BYTE channel)
 			{
 				var = PMC5_DIR;
 				// dprint("PM5 DATA = %d\n",var);
-				while(PMC5_STR & 0x1)
+				while (PMC5_STR & 0x1)
 					;
 				PMC5_DOR = var;
 			#if LPC_WAY_OPTION_SWITCH

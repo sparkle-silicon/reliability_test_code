@@ -1,6 +1,6 @@
 /*
  * @Author: Linyu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2025-10-21 16:25:46
  * @Description:
  *
@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 #include "AE_COMMAND.H"
 #include "KERNEL_GPIO.H"
@@ -65,9 +65,9 @@ int system(const char *string)
 static const cmd_tbl *CMD_FIND(char *cmd) // 命令查找函数
 {
     unsigned int i = 0;
-    while(i < (sizeof(cmd_menu) / sizeof(cmd_tbl)))
+    while (i < (sizeof(cmd_menu) / sizeof(cmd_tbl)))
     {
-        if(strcmp(cmd_menu[i].name, cmd))
+        if (strcmp(cmd_menu[i].name, cmd))
         {
             i++;
         }
@@ -89,13 +89,13 @@ static char *Cmd_Parse(char *buf) // 命令解析
     args = NULL;
     char *ch_p = buf;
     int i = 0;
-    while(*ch_p != '\0')
+    while (*ch_p != '\0')
     {
-        if(*ch_p != ' ' && *ch_p != '.')
+        if (*ch_p != ' ' && *ch_p != '.')
         {
             command[i++] = *ch_p;
             *ch_p++ = ' ';
-            if(i >= 16)
+            if (i >= 16)
             {
                 command[15] = '\0';
                 printf("CMD very long ,system can't call\n");
@@ -114,15 +114,15 @@ static int CMD_FLAG(char *buf) // 标志位解析
 {
     command_flag = 0;
     char buff = 0;
-    while(*buf != '\0')
+    while (*buf != '\0')
     {
-        if(*buf == '.' || *buf == '-')
+        if (*buf == '.' || *buf == '-')
         {
             *buf++ = ' ';
-            while(*buf != ' ' && *buf != '\0')
+            while (*buf != ' ' && *buf != '\0')
             {
                 buff = (*buf - 'A');
-                if(buff >= 32)
+                if (buff >= 32)
                     buff -= 32;
                 command_flag |= (1 << buff);
                 *buf++ = ' ';
@@ -137,15 +137,15 @@ static int CMD_FLAG(char *buf) // 标志位解析
 static int CMD_PARAMETER(char *buf) // 参数解析函数
 {
     int i = 0, j = 0;
-    while(*buf != '\0')
+    while (*buf != '\0')
     {
-        if(*buf != ' ' && *buf != '\0' && *buf != ',')
+        if (*buf != ' ' && *buf != '\0' && *buf != ',')
         {
-            while(*buf != ' ' && *buf != '\0' && *buf != ',')
+            while (*buf != ' ' && *buf != '\0' && *buf != ',')
             {
                 parameter[i][j++] = *buf;
                 *buf++ = ' ';
-                if(j >= 16)
+                if (j >= 16)
                 {
                     printf("Parameters for too long:%s...\n", parameter[i]);
                     break;
@@ -176,7 +176,7 @@ void CMD_RUN(volatile char *cnt, char *buf)
     flag = CMD_FLAG(args);      // 标志位解析
     argc = CMD_PARAMETER(args); // 参数解析
     DO_CMD(cmd, flag, argc, (char **)cmd_argv); // 执行
-    for(int i = 0; i < 9; i++)
+    for (int i = 0; i < 9; i++)
         memset((void *)cmd_argv[i], 0, 16); // 清空缓存
 }
 //----------------------------------------------------------------------------
@@ -185,7 +185,7 @@ void CMD_RUN(volatile char *cnt, char *buf)
 //----------------------------------------------------------------------------
 void Service_CMD(void)
 {
-    if(F_Service_CMD)
+    if (F_Service_CMD)
     {
         CMD_RUN((volatile char *)&CMD_UART_CNT, (char *)CMD_UART_BUFF);
         CMD_UART_CNT = 0;
@@ -196,10 +196,10 @@ int cmd_atoi(char *buf) // 字符串转数字
 {
     int i = 0;
     int base = 0;
-    if(*buf == '0')
+    if (*buf == '0')
     {
         buf++;
-        if(*buf == 'x' || *buf == 'X')
+        if (*buf == 'x' || *buf == 'X')
         {
             base = 16;
             buf++;
@@ -209,13 +209,13 @@ int cmd_atoi(char *buf) // 字符串转数字
     }
     else
         base = 10;
-    while(*buf != '\0')
+    while (*buf != '\0')
     {
-        if(*buf >= 'A' && *buf <= 'F')
+        if (*buf >= 'A' && *buf <= 'F')
             *buf += 32;
-        if(*buf >= '0' && *buf <= '9')
+        if (*buf >= '0' && *buf <= '9')
             i = i * base + *buf - '0';
-        else if(*buf >= 'a' && *buf <= 'f')
+        else if (*buf >= 'a' && *buf <= 'f')
             i = i * base + *buf - 'a' + 10;
         buf++;
     }
@@ -225,14 +225,14 @@ int cmd_atoi(char *buf) // 字符串转数字
 int do_help(struct cmd_tbl *cmd, int flags, int argc, char *const argv[])
 {
     UNUSED_VAR(cmd);
-    if(argc == 1)
+    if (argc == 1)
     {
         unsigned int i = 0;
-        while(i < (sizeof(cmd_menu) / 20))
+        while (i < (sizeof(cmd_menu) / 20))
         {
-            if(flags & (1 << ('h' - 'a')))
+            if (flags & (1 << ('h' - 'a')))
                 printf(" * help: %s\n", cmd_menu[i].help);
-            else if(flags & (1 << ('u' - 'a')))
+            else if (flags & (1 << ('u' - 'a')))
                 printf("* usage: %s\n", cmd_menu[i].usage);
             else
                 printf(" * help: %s\n * usage: %s\n", cmd_menu[i].help, cmd_menu[i].usage);
@@ -244,9 +244,9 @@ int do_help(struct cmd_tbl *cmd, int flags, int argc, char *const argv[])
         const cmd_tbl *tbl_p = CMD_FIND(argv[1]);
         printf("-----%s-----\n", argv[0]);
         printf("cmd name : %s\n", argv[1]);
-        if(flags & (1 << ('h' - 'a')))
+        if (flags & (1 << ('h' - 'a')))
             printf(" * help: %s\n", tbl_p->help);
-        else if(flags & (1 << ('u' - 'a')))
+        else if (flags & (1 << ('u' - 'a')))
             printf("* usage: %s\n", tbl_p->usage);
         else
             printf(" * help: %s * usage: %s\n", tbl_p->help, tbl_p->usage);
@@ -259,18 +259,18 @@ int do_md(struct cmd_tbl *cmd, int flags, int argc, char *const argv[])
     UNUSED_VAR(argc);
     int ret = 0;
     int addr = cmd_atoi(argv[1]);
-    if(argc == 3)
+    if (argc == 3)
     {
         int repeat = cmd_atoi(argv[2]);
-        while(repeat--)
+        while (repeat--)
         {
-            if(flags & (1 << ('w' - 'a')))
+            if (flags & (1 << ('w' - 'a')))
             {
                 ret = REG16(addr);
                 printf(print_mdw, addr, ret);
                 addr += 2;
             }
-            else if(flags & (1 << ('b' - 'a')))
+            else if (flags & (1 << ('b' - 'a')))
             {
                 ret = REG8(addr);
                 printf(print_mdw, addr, ret);
@@ -285,9 +285,9 @@ int do_md(struct cmd_tbl *cmd, int flags, int argc, char *const argv[])
         }
         return 0;
     }
-    if(flags & (1 << ('w' - 'a')))
+    if (flags & (1 << ('w' - 'a')))
         ret = REG16(addr);
-    else if(flags & (1 << ('b' - 'a')))
+    else if (flags & (1 << ('b' - 'a')))
         ret = REG8(addr);
     else
         ret = REG32(addr);
@@ -300,12 +300,12 @@ int do_mw(struct cmd_tbl *cmd, int flags, int argc, char *const argv[])
     UNUSED_VAR(argc);
     int addr = cmd_atoi(argv[1]);
     int val = cmd_atoi(argv[2]);
-    if(flags & (1 << ('w' - 'a')))
+    if (flags & (1 << ('w' - 'a')))
     {
         REG16(addr) = val;
         printf(print_mdw, addr, val);
     }
-    else if(flags & (1 << ('b' - 'a')))
+    else if (flags & (1 << ('b' - 'a')))
     {
         REG8(addr) = val;
         printf(print_mdw, addr, val);
@@ -327,13 +327,13 @@ int do_update(struct cmd_tbl *cmd, int flags, int argc, char *const argv[])
     UNUSED_VAR(cmd);
     UNUSED_VAR(argc);
 #if SUPPORT_FIRMWARE_UPDATE
-    if(!strcmp(argv[1], "firmware"))
+    if (!strcmp(argv[1], "firmware"))
     {
         PRINTF_LCR &= 0x7F;
         PRINTF_IER &= 0xfe;
         uart_updata_flag &= 0x0; // flag位空
         uart_updata_flag |= 0x1;
-        if(flags & (1 << ('C' - 'A')))
+        if (flags & (1 << ('C' - 'A')))
             uart_updata_flag |= 0x2; // 校验开启
         update_reg_ptr = (VDWORD)&PRINTF_TX;
         Flash_Update_Function();
@@ -441,73 +441,73 @@ int do_dbg(struct cmd_tbl *cmd, int flags, int argc, char *const argv[])
     int mode_offset = 0;
     int mode_len = strlen(argv[1]);
     char temp = argv[1][mode_len - 1];
-    if(temp >= 48 && temp <= 57)//读出设备通道号
+    if (temp >= 48 && temp <= 57)//读出设备通道号
     {
         argv[1][mode_len - 1] = '\0';
         mode_offset = temp - '0';
     }
-    if((dbg_level >= 0 && dbg_level <= 10) && (mode_flag == 0 || mode_flag == 1))//判断命令格式是否正确
+    if ((dbg_level >= 0 && dbg_level <= 10) && (mode_flag == 0 || mode_flag == 1))//判断命令格式是否正确
     {
         Debug_PRINTF_LEVEL = dbg_level;//设定level值
-        if(!strcmp("SYSCTL", argv[1]))//判断Mode类型
+        if (!strcmp("SYSCTL", argv[1]))//判断Mode类型
         {
             Mode.SYSCTL = mode_flag;
         }
-        else if(!strcmp("PNP", argv[1]))
+        else if (!strcmp("PNP", argv[1]))
         {
             Mode.PNP = mode_flag;
         }
-        else if(!strcmp("SPIF", argv[1]))
+        else if (!strcmp("SPIF", argv[1]))
         {
             Mode.SPIF = mode_flag;
         }
-        else if(!strcmp("PMC", argv[1]))
+        else if (!strcmp("PMC", argv[1]))
         {
             Mode.PMC = mode_flag;
         }
-        else if(!strcmp("KBC", argv[1]))
+        else if (!strcmp("KBC", argv[1]))
         {
             Mode.KBC = mode_flag;
         }
-        else if(!strcmp("SM", argv[1]))
+        else if (!strcmp("SM", argv[1]))
         {
             Mode.SM = mode_flag;
         }
-        else if(!strcmp("SWUC", argv[1]))
+        else if (!strcmp("SWUC", argv[1]))
         {
             Mode.SWUC = mode_flag;
         }
-        else if(!strcmp("BRAM", argv[1]))
+        else if (!strcmp("BRAM", argv[1]))
         {
             Mode.BRAM = mode_flag;
         }
-        else if(!strcmp("KBS", argv[1]))
+        else if (!strcmp("KBS", argv[1]))
         {
             Mode.KBS = mode_flag;
         }
-        else if(!strcmp("WDT", argv[1]))
+        else if (!strcmp("WDT", argv[1]))
         {
             Mode.WDT = mode_flag;
         }
-        else if(!strcmp("PPOT", argv[1]))
+        else if (!strcmp("PPOT", argv[1]))
         {
             Mode.PPORT = mode_flag;
         }
-        else if(!strcmp("ADC", argv[1]))
+        else if (!strcmp("ADC", argv[1]))
         {
             Mode.ADC = mode_flag;
         }
-        else if(!strcmp("P80", argv[1]))
+        else if (!strcmp("P80", argv[1]))
         {
             Mode.P80 = mode_flag;
         }
-        else if(!strcmp("SPIM", argv[1]))
+        else if (!strcmp("SPIM", argv[1]))
         {
             Mode.SPIM = mode_flag;
         }
-        else if(!strcmp("I2C", argv[1]))
+        else if (!strcmp("I2C", argv[1]))
         {
-            if(mode_flag & 1)
+            if (mode_flag & 1)
             {
                 Mode.I2C |= (1 << mode_offset);
             }
@@ -516,9 +516,9 @@ int do_dbg(struct cmd_tbl *cmd, int flags, int argc, char *const argv[])
                 Mode.I2C &= ~(1 << mode_offset);
             }
         }
-        else if(!strcmp("TIMER", argv[1]))
+        else if (!strcmp("TIMER", argv[1]))
         {
-            if(mode_flag & 1)
+            if (mode_flag & 1)
             {
                 Mode.TIMER |= (1 << mode_offset);
             }
@@ -527,9 +527,9 @@ int do_dbg(struct cmd_tbl *cmd, int flags, int argc, char *const argv[])
                 Mode.TIMER &= ~(1 << mode_offset);
             }
         }
-        else if(!strcmp("GPIO", argv[1]))
+        else if (!strcmp("GPIO", argv[1]))
         {
-            if(mode_flag & 1)
+            if (mode_flag & 1)
             {
                 Mode.GPIO |= (1 << mode_offset);
             }
@@ -538,9 +538,9 @@ int do_dbg(struct cmd_tbl *cmd, int flags, int argc, char *const argv[])
                 Mode.GPIO &= ~(1 << mode_offset);
             }
         }
-        else if(!strcmp("PS2", argv[1]))
+        else if (!strcmp("PS2", argv[1]))
         {
-            if(mode_flag & 1)
+            if (mode_flag & 1)
             {
                 Mode.PS2 |= (1 << mode_offset);
             }
@@ -549,9 +549,9 @@ int do_dbg(struct cmd_tbl *cmd, int flags, int argc, char *const argv[])
                 Mode.TIMER &= ~(1 << mode_offset);
             }
         }
-        else if(!strcmp("PWM", argv[1]))
+        else if (!strcmp("PWM", argv[1]))
         {
-            if(mode_flag & 1)
+            if (mode_flag & 1)
             {
                 Mode.PWM |= (1 << mode_offset);
             }
@@ -560,9 +560,9 @@ int do_dbg(struct cmd_tbl *cmd, int flags, int argc, char *const argv[])
                 Mode.PWM &= ~(1 << mode_offset);
             }
         }
-        else if(!strcmp("UART", argv[1]))
+        else if (!strcmp("UART", argv[1]))
         {
-            if(mode_flag & 1)
+            if (mode_flag & 1)
             {
                 Mode.UART |= (1 << mode_offset);
             }
@@ -571,7 +571,7 @@ int do_dbg(struct cmd_tbl *cmd, int flags, int argc, char *const argv[])
                 Mode.UART &= ~(1 << mode_offset);
             }
         }
-        else if(!strcmp("NONE", argv[1]))
+        else if (!strcmp("NONE", argv[1]))
         {
         }
     }
@@ -586,12 +586,12 @@ int do_power(struct cmd_tbl *cmd, int flags, int argc, char *const argv[])
     UNUSED_VAR(argc);
     char str1[] = "on";
     char str2[] = "off";
-    if(strcmp(argv[1], str1) == 0)
+    if (strcmp(argv[1], str1) == 0)
     {
         Custom_S5_S0_Trigger();
         printf("power on host\n");
     }
-    else if(strcmp(argv[1], str2) == 0)
+    else if (strcmp(argv[1], str2) == 0)
     {
         Custom_S0_S5_Trigger(0x01);
         printf("power off host\n");

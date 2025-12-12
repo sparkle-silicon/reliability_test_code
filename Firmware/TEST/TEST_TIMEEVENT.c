@@ -1,6 +1,6 @@
 /*
  * @Author: Maple
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2024-07-19 10:36:43
  * @Description:
  *
@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 #include "TEST_TIMEEVENT.H"
 #include "CUSTOM_LED.H"
@@ -63,26 +63,21 @@ void Hook_10msEventB(void)
 // Oem 50ms Events/Hook Here
 //-----------------------------------------------------------------------------
 void Hook_50msEventA(void)
-{
-}
+{}
 //-----------------------------------------------------------------------------
 void Hook_50msEventB(void)
-{
-}
+{}
 //-----------------------------------------------------------------------------
 void Hook_50msEventC(void)
-{
-}
+{}
 //-----------------------------------------------------------------------------
 // Oem 100ms Events/Hook Here
 //-----------------------------------------------------------------------------
 void Hook_100msEventA(void)
-{
-}
+{}
 //-----------------------------------------------------------------------------
 void Hook_100msEventB(void)
-{
-}
+{}
 //-----------------------------------------------------------------------------
 void Hook_100msEventC(void)
 {
@@ -92,8 +87,7 @@ void Hook_100msEventC(void)
 // Oem 500ms Events/Hook Here
 //-----------------------------------------------------------------------------
 void Hook_500msEventA(void)
-{
-}
+{}
 //-----------------------------------------------------------------------------
 void Hook_500msEventB(void)
 {
@@ -137,8 +131,7 @@ void Hook_500msEventC(void)
 // Oem 1sec Events/Hook Here
 //-----------------------------------------------------------------------------
 void Hook_1secEventA(void)
-{
-}
+{}
 //-----------------------------------------------------------------------------
 void Hook_1secEventB(void)
 {
@@ -172,6 +165,5 @@ void Hook_1secEventC(void)
 // 1 min events
 //-----------------------------------------------------------------------------
 void Hook_1minEvent(void)
-{
-}
+{}
 #endif

@@ -31,7 +31,7 @@ GOTO done
 cls
 ECHO    ************************************************************************************
 ECHO    *                    Embedded Controller  SPK32 Series Firmware                    *
-ECHO    * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved. *
+ECHO    * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved. *
 ECHO    ************************************************************************************
 ECHO.    
 ECHO.

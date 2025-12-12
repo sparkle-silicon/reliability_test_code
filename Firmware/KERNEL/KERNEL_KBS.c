@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2024-01-17 15:30:46
  * @Description: This file is used for handling internal keyboard scanning
  *
@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 #include "KERNEL_KBS.H"
 #include "KERNEL_XLATE.H"
@@ -227,8 +227,8 @@ void KBS_Set_KBS_INFO(VBYTE type_rate)
  * ------------------------------------------------------------------------- */
 void KBD_CLear_Buffer(void)
 {
-    memset((void*)KBS_matrix, 0, MAX_SCAN_LINES);
-    memset((void*)KBD_BUFF, 0, KBF_SIZE);
+    memset((void *)KBS_matrix, 0, MAX_SCAN_LINES);
+    memset((void *)KBD_BUFF, 0, KBF_SIZE);
     KBD_SCAN.head = 0; // Clear keyboard buffer head
     KBD_SCAN.tail = 0; // Clear keyboard buffer tail
     KBD_SCAN.keys = 0; // Clear Scan activity flag - keys active.
@@ -266,7 +266,7 @@ void KBS_Init(void)
 //-----------------------------------------------------------------
 void KBS_Clear_Break(void)
 {
-    memset((void*)Fn_BUNDLED_FLAG, 0, 16);
+    memset((void *)Fn_BUNDLED_FLAG, 0, 16);
     Scanner_State = 0;//清空按下状态
     NumLockKey = 1;//如果是锁的话NumLock默认开启
 }
@@ -279,10 +279,10 @@ void Service_KBS(void)
     if (F_Service_KBS == 1)
     {
         F_Service_KBS = 0;
-#if !(KBS_CLOCK_EN)
+    #if !(KBS_CLOCK_EN)
         dprint("KBS CLOCK NOT ENABLE\n");
         return;
-#endif
+    #endif
         if (((KB_Scan_Flag == 0) || ((Host_Flag & PS2_PORT1_KEY_EN) != 0)))
         {
         }

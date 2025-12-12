@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2025-10-22 16:13:39
  * @Description:
  *
@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 #include "AE_INCLUDE.H"
 #include "KERNEL_UART.H"
@@ -20,7 +20,7 @@
 int serial_base(BYTE uart_num)
 {
     uart_num &= 0b111;//保护机制
-    switch(uart_num)
+    switch (uart_num)
     {
         case UART0_CHANNEL:
             g_uart_base = UART0_BASE_ADDR;
@@ -66,7 +66,7 @@ int serial_config(BYTE uart_num, DWORD baudrate)
 }
 int serial_init(DWORD uart_num, DWORD baudrate)
 {
-    if(serial_base(uart_num) == 0)return -1;
+    if (serial_base(uart_num) == 0)return -1;
     return serial_config(uart_num, baudrate);
 }
 int serial_deinit(DWORD uart_num)
@@ -79,10 +79,10 @@ int serial_deinit(DWORD uart_num)
     VBYTEP uart_lsr = (VBYTEP)REG_ADDR(g_uart_base, UART_LSR_OFFSET);
     *uart_lcr &= ~UART_LCR_DLAB;
     *uart_ier = 0;//先屏蔽中断
-    while(!(*uart_lsr & UART_LSR_TEMP))//等待最后发送完成
+    while (!(*uart_lsr & UART_LSR_TEMP))//等待最后发送完成
         ;
     //reset uart 
-    switch(uart_num)
+    switch (uart_num)
     {
         case UART0_CHANNEL:
             reset_val = UART0_EN;
@@ -114,10 +114,10 @@ int serial2gpio(DWORD uart_num)
     VBYTEP uart_lsr = (VBYTEP)REG_ADDR(g_uart_base, UART_LSR_OFFSET);
     ier = *uart_ier;
     *uart_ier = 0;//先屏蔽中断
-    while(!(*uart_lsr & UART_LSR_TEMP))//等待最后发送完成
+    while (!(*uart_lsr & UART_LSR_TEMP))//等待最后发送完成
         ;
     // set pin to gpio
-    switch(uart_num)
+    switch (uart_num)
     {
         case UART0_CHANNEL:
             sysctl_iomux_disable_uart0();
@@ -149,7 +149,7 @@ int gpio2serial(DWORD uart_num)
     VBYTEP uart_lcr = (VBYTEP)REG_ADDR(g_uart_base, UART_LCR_OFFSET);
     *uart_lcr &= ~UART_LCR_DLAB;
     //set pin 2 uart
-    switch(uart_num)
+    switch (uart_num)
     {
         case UART0_CHANNEL:
             sysctl_iomux_uart0();
@@ -174,7 +174,7 @@ int gpio2serial(DWORD uart_num)
 }
 BYTE Uart_Int_Enable(BYTE channel, BYTE type)
 {
-    switch(channel)
+    switch (channel)
     {
         case UART0_CHANNEL:
             UART0_IER |= (0x1 << type);
@@ -196,7 +196,7 @@ BYTE Uart_Int_Enable(BYTE channel, BYTE type)
 }
 BYTE Uart_Int_Disable(BYTE channel, BYTE type)
 {
-    switch(channel)
+    switch (channel)
     {
         case UART0_CHANNEL:
             UART0_IER &= ~(0x1 << type);
@@ -218,7 +218,7 @@ BYTE Uart_Int_Disable(BYTE channel, BYTE type)
 }
 BYTE Uart_Int_Enable_Read(BYTE channel, BYTE type)
 {
-    switch(channel)
+    switch (channel)
     {
         case UART0_CHANNEL:
             return ((UART0_IER & (0x1 << type)) != 0);
@@ -234,7 +234,7 @@ BYTE Uart_Int_Enable_Read(BYTE channel, BYTE type)
 }
 BYTE Uart_Int_Status(BYTE channel, BYTE type)
 {
-    switch(channel)
+    switch (channel)
     {
         case UART0_CHANNEL:
             return ((UART0_IIR & (0x1 << type)) != 0);
@@ -255,16 +255,16 @@ BYTE Uart_Int_Status(BYTE channel, BYTE type)
 //----------------------------------------------------------------------------
 void Service_PUTC(void)
 {
-    if(F_Service_PUTC && (!print_number))
+    if (F_Service_PUTC && (!print_number))
         return;
       // if(print_number&&(PRINTF_LSR & UART_LSR_TEMP) )
-    while(print_number && (!(PRINTF_LSR & UART_LSR_THRE)))
+    while (print_number && (!(PRINTF_LSR & UART_LSR_THRE)))
     {
         PRINTF_TX = print_buff[PRINT_SERVICE_CNT];
         // print_buff[PRINT_SERVICE_CNT]='\0';
         PRINT_SERVICE_CNT++;
         print_number--;
-        if(PRINT_SERVICE_CNT >= PRINT_MAX_SIZE)
+        if (PRINT_SERVICE_CNT >= PRINT_MAX_SIZE)
             PRINT_SERVICE_CNT = 0;
     }
 }
@@ -281,62 +281,62 @@ WEAK int putchar(int ch) /**/
 #if PRINTF_UART_SWITCH < 6
     char str = (char)ch;
 #if SUPPORT_REAL_OR_DELAY_PRINTF
-    if(F_Service_PUTC)
+    if (F_Service_PUTC)
     {
-        if(str == '\n')
+        if (str == '\n')
         {
-            while(!(PRINTF_LSR & UART_LSR_TEMP))
+            while (!(PRINTF_LSR & UART_LSR_TEMP))
                 ;
             PRINTF_TX = '\r';
         }
-        while(!(PRINTF_LSR & UART_LSR_TEMP))
+        while (!(PRINTF_LSR & UART_LSR_TEMP))
             ; /*当此位为空发送fifo写入数据*/
         PRINTF_TX = str;
     }
     else
     {
-        if(str == '\n')
+        if (str == '\n')
         {
             // while (print_buff[print_cnt]!='\0')WDT_REG(0xC) =0x76;
             print_buff[print_cnt] = '\r';
             print_cnt++;
             print_number++;
-            if(print_cnt >= PRINT_MAX_SIZE)
+            if (print_cnt >= PRINT_MAX_SIZE)
                 print_cnt = 0;
         }
         // while (print_buff[print_cnt]!='\0')WDT_REG(0xC) =0x76;
         print_buff[print_cnt] = str;
         print_cnt++;
         print_number++;
-        if(print_cnt >= PRINT_MAX_SIZE)
+        if (print_cnt >= PRINT_MAX_SIZE)
             print_cnt = 0;
     }
 #else
-    if(str == '\n')
+    if (str == '\n')
     {
-        while(!(PRINTF_LSR & UART_LSR_TEMP))
+        while (!(PRINTF_LSR & UART_LSR_TEMP))
             ;
         PRINTF_TX = '\r';
-        }
-    while(!(PRINTF_LSR & UART_LSR_TEMP))
+    }
+    while (!(PRINTF_LSR & UART_LSR_TEMP))
         ; /*当此位为空发送fifo写入数据*/
     PRINTF_TX = str;
 #endif
     return ch;
 #endif
-    }
+}
 void DEBUGER_putchar(char ch)
 {
 #if ENABLE_DEBUGGER_SUPPORT
 #if (DEBUGGER_OUTPUT_SWITCH == 0)
 #if DEBUG_UART_SWITCH < 6
-    while(!(REG8(DEBUGGER_UART + UART_LSR_OFFSET) & 0x60));
+    while (!(REG8(DEBUGGER_UART + UART_LSR_OFFSET) & 0x60));
     /*FIFO check*/
     REG8(DEBUGGER_UART + UART_THR_OFFSET) = ch; // send by uart
 #endif
 #elif (DEBUGGER_OUTPUT_SWITCH == 1)
 #elif (DEBUGGER_OUTPUT_SWITCH == 2)
-    while(PMC3_STR & 0x1);
+    while (PMC3_STR & 0x1);
     PMC3_DOR = ch;
 #endif
 #endif
@@ -345,17 +345,17 @@ void DEBUGER_putchar(char ch)
 USED ssize_t _write(int fd, const void *ptr, size_t len)
 {
     const BYTEP str = (const BYTEP)ptr;
-    if(isatty(fd))
+    if (isatty(fd))
     {
-        for(size_t j = 0; j < len; j++)
+        for (size_t j = 0; j < len; j++)
         {
-            if(*str == '\n')
+            if (*str == '\n')
             {
-                while(!(PRINTF_LSR & UART_LSR_TEMP))
+                while (!(PRINTF_LSR & UART_LSR_TEMP))
                     ;
                 PRINTF_TX = '\r';
             }
-            while(!(PRINTF_LSR & UART_LSR_TEMP))
+            while (!(PRINTF_LSR & UART_LSR_TEMP))
                 ; /*当此位为空发送fifo写入数据*/
             PRINTF_TX = *str;
             str++;
@@ -368,11 +368,11 @@ USED ssize_t _write(int fd, const void *ptr, size_t len)
 USED int _read(int fd, void *ptr, size_t len)
 {
     BYTEP str = (BYTEP)ptr;
-    if(isatty(fd))
+    if (isatty(fd))
     {
-        for(size_t j = 0; j < len; j++)
+        for (size_t j = 0; j < len; j++)
         {
-            while(!(PRINTF_LSR & UART_LSR_DR))
+            while (!(PRINTF_LSR & UART_LSR_DR))
                 ; /*当此位为空发送fifo写入数据*/
             *str = PRINTF_RX;
         }

@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 
 #include "KERNEL_DMA.H"
@@ -20,107 +20,107 @@
 #include "KERNEL_MEMORY.H"
 void Moudle_DMA_Enable(uint32_t Module)
 {
-    
+
     switch (Module)
     {
-    case I3C0_DMA_RX://固定为MASTER模式
-        I3C_WriteREG_DWORD((I3C_ReadREG_DWORD(DEVICE_CTRL_OFFSET,0)|DEVICE_CTRL_DMA_ENABLE), DEVICE_CTRL_OFFSET, 0);
-        break;
-    case I3C0_DMA_TX://固定为MASTER模式
-        I3C_WriteREG_DWORD((I3C_ReadREG_DWORD(DEVICE_CTRL_OFFSET,0)|DEVICE_CTRL_DMA_ENABLE), DEVICE_CTRL_OFFSET, 0);
-        break;
-    case I3C1_DMA_RX://固定为MASTER模式
-        I3C_WriteREG_DWORD((I3C_ReadREG_DWORD(DEVICE_CTRL_OFFSET,0)|DEVICE_CTRL_DMA_ENABLE), DEVICE_CTRL_OFFSET, 1);
-        break;
-    case I3C1_DMA_TX://固定为MASTER模式
-        I3C_WriteREG_DWORD((I3C_ReadREG_DWORD(DEVICE_CTRL_OFFSET,0)|DEVICE_CTRL_DMA_ENABLE), DEVICE_CTRL_OFFSET, 1);
-        break;
-    case I3C2_DMA_RX://固定为SLAVE模式
-        I3C_WriteREG_DWORD(0x2, DMACTRL_OFFSET, 2);   //DMA使能
-        break;
-    case I3C2_DMA_TX://固定为SLAVE模式
-    {
-        uint32_t status=I3C_ReadREG_DWORD(STATUS_OFFSET,2);
-        uint32_t errwarn=I3C_ReadREG_DWORD(ERRWARN_OFFSET,2);
-        if(status&0x500)
-        {
-            I3C_WriteREG_DWORD((I3C_ReadREG_DWORD(STATUS_OFFSET,2)|(status&0x500)), STATUS_OFFSET, 2);
-        }
-        if(errwarn&0x14)
-        {
-            I3C_WriteREG_DWORD((I3C_ReadREG_DWORD(ERRWARN_OFFSET,2)|(errwarn&0x14)), ERRWARN_OFFSET, 2);
-        }
-        I3C_WriteREG_DWORD(0x4, DMACTRL_OFFSET, 2);   //DMA使能
-        break;
-    }
-    case I3C3_DMA_RX://固定为SLAVE模式
-        I3C_WriteREG_DWORD(0x2, DMACTRL_OFFSET, 3);   //DMA使能
-        break;
-    case I3C3_DMA_TX://固定为SLAVE模式
-    {
-        uint32_t status=I3C_ReadREG_DWORD(STATUS_OFFSET,3);
-        uint32_t errwarn=I3C_ReadREG_DWORD(ERRWARN_OFFSET,3);
-        if(status&0x500)
-        {
-            I3C_WriteREG_DWORD((I3C_ReadREG_DWORD(STATUS_OFFSET,3)|(status&0x500)), STATUS_OFFSET, 3);
-        }
-        if(errwarn&0x14)
-        {
-            I3C_WriteREG_DWORD((I3C_ReadREG_DWORD(ERRWARN_OFFSET,3)|(errwarn&0x14)), ERRWARN_OFFSET, 3);
-        }
-        I3C_WriteREG_DWORD(0x4, DMACTRL_OFFSET, 3);   //DMA使能
-        break;
-    }
-    
-    case SUBUS0_DMA_RX:
-        I2C_Write_Short(0x1, SMBUS_DMA_CR_OFFSET, 0); 
-        break;
-    case SUBUS0_DMA_TX:
-        I2C_Write_Short(0x2, SMBUS_DMA_CR_OFFSET, 0);
-        break;
-    case SUBUS1_DMA_RX:
-        I2C_Write_Short(0x1, SMBUS_DMA_CR_OFFSET, 1);
-        break;
-    case SUBUS1_DMA_TX:
-        I2C_Write_Short(0x2, SMBUS_DMA_CR_OFFSET, 1);
-        break;
-    case SUBUS2_DMA_RX:
-        I2C_Write_Short(0x1, SMBUS_DMA_CR_OFFSET, 2);
-        break;
-    case SUBUS2_DMA_TX:
-        I2C_Write_Short(0x2, SMBUS_DMA_CR_OFFSET, 2);
-        break;
-    case SUBUS3_DMA_RX:
-        I2C_Write_Short(0x1, SMBUS_DMA_CR_OFFSET, 3);
-        break;
-    case SUBUS3_DMA_TX:
-        I2C_Write_Short(0x2, SMBUS_DMA_CR_OFFSET, 3);
-        break;
-    case SUBUS4_DMA_RX:
-        I2C_Write_Short(0x1, SMBUS_DMA_CR_OFFSET, 4);
-        break;
-    case SUBUS4_DMA_TX:
-        I2C_Write_Short(0x2, SMBUS_DMA_CR_OFFSET, 4);
-        break;
-    case SUBUS5_DMA_RX:
-        I2C_Write_Short(0x1, SMBUS_DMA_CR_OFFSET, 5);
-        break;
-    case SUBUS5_DMA_TX:
-        I2C_Write_Short(0x2, SMBUS_DMA_CR_OFFSET, 5);
-        break;
-    case SUBUS6_DMA_RX:
-        I2C_Write_Short(0x1, SMBUS_DMA_CR_OFFSET, 6);
-        break;
-    case SUBUS6_DMA_TX:
-        I2C_Write_Short(0x2, SMBUS_DMA_CR_OFFSET, 6);
-        break;
-    default:
-        break;
+        case I3C0_DMA_RX://固定为MASTER模式
+            I3C_WriteREG_DWORD((I3C_ReadREG_DWORD(DEVICE_CTRL_OFFSET, 0) | DEVICE_CTRL_DMA_ENABLE), DEVICE_CTRL_OFFSET, 0);
+            break;
+        case I3C0_DMA_TX://固定为MASTER模式
+            I3C_WriteREG_DWORD((I3C_ReadREG_DWORD(DEVICE_CTRL_OFFSET, 0) | DEVICE_CTRL_DMA_ENABLE), DEVICE_CTRL_OFFSET, 0);
+            break;
+        case I3C1_DMA_RX://固定为MASTER模式
+            I3C_WriteREG_DWORD((I3C_ReadREG_DWORD(DEVICE_CTRL_OFFSET, 0) | DEVICE_CTRL_DMA_ENABLE), DEVICE_CTRL_OFFSET, 1);
+            break;
+        case I3C1_DMA_TX://固定为MASTER模式
+            I3C_WriteREG_DWORD((I3C_ReadREG_DWORD(DEVICE_CTRL_OFFSET, 0) | DEVICE_CTRL_DMA_ENABLE), DEVICE_CTRL_OFFSET, 1);
+            break;
+        case I3C2_DMA_RX://固定为SLAVE模式
+            I3C_WriteREG_DWORD(0x2, DMACTRL_OFFSET, 2);   //DMA使能
+            break;
+        case I3C2_DMA_TX://固定为SLAVE模式
+            {
+                uint32_t status = I3C_ReadREG_DWORD(STATUS_OFFSET, 2);
+                uint32_t errwarn = I3C_ReadREG_DWORD(ERRWARN_OFFSET, 2);
+                if (status & 0x500)
+                {
+                    I3C_WriteREG_DWORD((I3C_ReadREG_DWORD(STATUS_OFFSET, 2) | (status & 0x500)), STATUS_OFFSET, 2);
+                }
+                if (errwarn & 0x14)
+                {
+                    I3C_WriteREG_DWORD((I3C_ReadREG_DWORD(ERRWARN_OFFSET, 2) | (errwarn & 0x14)), ERRWARN_OFFSET, 2);
+                }
+                I3C_WriteREG_DWORD(0x4, DMACTRL_OFFSET, 2);   //DMA使能
+                break;
+            }
+        case I3C3_DMA_RX://固定为SLAVE模式
+            I3C_WriteREG_DWORD(0x2, DMACTRL_OFFSET, 3);   //DMA使能
+            break;
+        case I3C3_DMA_TX://固定为SLAVE模式
+            {
+                uint32_t status = I3C_ReadREG_DWORD(STATUS_OFFSET, 3);
+                uint32_t errwarn = I3C_ReadREG_DWORD(ERRWARN_OFFSET, 3);
+                if (status & 0x500)
+                {
+                    I3C_WriteREG_DWORD((I3C_ReadREG_DWORD(STATUS_OFFSET, 3) | (status & 0x500)), STATUS_OFFSET, 3);
+                }
+                if (errwarn & 0x14)
+                {
+                    I3C_WriteREG_DWORD((I3C_ReadREG_DWORD(ERRWARN_OFFSET, 3) | (errwarn & 0x14)), ERRWARN_OFFSET, 3);
+                }
+                I3C_WriteREG_DWORD(0x4, DMACTRL_OFFSET, 3);   //DMA使能
+                break;
+            }
+
+        case SUBUS0_DMA_RX:
+            I2C_Write_Short(0x1, SMBUS_DMA_CR_OFFSET, 0);
+            break;
+        case SUBUS0_DMA_TX:
+            I2C_Write_Short(0x2, SMBUS_DMA_CR_OFFSET, 0);
+            break;
+        case SUBUS1_DMA_RX:
+            I2C_Write_Short(0x1, SMBUS_DMA_CR_OFFSET, 1);
+            break;
+        case SUBUS1_DMA_TX:
+            I2C_Write_Short(0x2, SMBUS_DMA_CR_OFFSET, 1);
+            break;
+        case SUBUS2_DMA_RX:
+            I2C_Write_Short(0x1, SMBUS_DMA_CR_OFFSET, 2);
+            break;
+        case SUBUS2_DMA_TX:
+            I2C_Write_Short(0x2, SMBUS_DMA_CR_OFFSET, 2);
+            break;
+        case SUBUS3_DMA_RX:
+            I2C_Write_Short(0x1, SMBUS_DMA_CR_OFFSET, 3);
+            break;
+        case SUBUS3_DMA_TX:
+            I2C_Write_Short(0x2, SMBUS_DMA_CR_OFFSET, 3);
+            break;
+        case SUBUS4_DMA_RX:
+            I2C_Write_Short(0x1, SMBUS_DMA_CR_OFFSET, 4);
+            break;
+        case SUBUS4_DMA_TX:
+            I2C_Write_Short(0x2, SMBUS_DMA_CR_OFFSET, 4);
+            break;
+        case SUBUS5_DMA_RX:
+            I2C_Write_Short(0x1, SMBUS_DMA_CR_OFFSET, 5);
+            break;
+        case SUBUS5_DMA_TX:
+            I2C_Write_Short(0x2, SMBUS_DMA_CR_OFFSET, 5);
+            break;
+        case SUBUS6_DMA_RX:
+            I2C_Write_Short(0x1, SMBUS_DMA_CR_OFFSET, 6);
+            break;
+        case SUBUS6_DMA_TX:
+            I2C_Write_Short(0x2, SMBUS_DMA_CR_OFFSET, 6);
+            break;
+        default:
+            break;
     }
 }
 
 
-void DMA_Init(DMA_InitTypeDef*DMA_Init_Struct)
+void DMA_Init(DMA_InitTypeDef *DMA_Init_Struct)
 {
     uint32_t  rdata = 0;
     uint32_t  wdata = 0;
@@ -129,7 +129,7 @@ void DMA_Init(DMA_InitTypeDef*DMA_Init_Struct)
     //SYSCTL_DMA_SEL
     if (DMA_Init_Struct->DMA_Trans_Type != 0x0)
     {
-        SYSCTL_DMA_SEL=(DMA_Init_Struct->DMA_Periph_Type)&0xFFFF;
+        SYSCTL_DMA_SEL = (DMA_Init_Struct->DMA_Periph_Type) & 0xFFFF;
     }
     Moudle_DMA_Enable(DMA_Init_Struct->DMA_Periph_Type);
     //CTL0_L
@@ -153,11 +153,11 @@ void DMA_Init(DMA_InitTypeDef*DMA_Init_Struct)
 
     if (DMA_Init_Struct->DMA_Periph_Type & (0xff << 24))//tx
     {
-        dest_per=(DMA_Init_Struct->DMA_Periph_Type>>24)&0xf;
+        dest_per = (DMA_Init_Struct->DMA_Periph_Type >> 24) & 0xf;
     }
     else
     {
-        src_per=(DMA_Init_Struct->DMA_Periph_Type>>16)&0xf;
+        src_per = (DMA_Init_Struct->DMA_Periph_Type >> 16) & 0xf;
     }
     rdata |= (dest_per << 11) | (src_per << 7);
     DMA_CFG0_H = rdata;
@@ -177,7 +177,7 @@ void DMA_Init(DMA_InitTypeDef*DMA_Init_Struct)
 void DMA_Channal_EN(uint8_t DMA_Channal)
 {
     DMA_DmaCfgReg = 0x1;
-    DMA_ChEnReg  = ((0x1<<DMA_Channal)|((0x1<<DMA_Channal)<<8));
+    DMA_ChEnReg = ((0x1 << DMA_Channal) | ((0x1 << DMA_Channal) << 8));
 }
 
 /**
@@ -188,10 +188,10 @@ void DMA_Channal_EN(uint8_t DMA_Channal)
  */
 char DMA_Transfer_Done(uint8_t DMA_Channal)
 {
-    uint8_t ret=0;
-    ret=DMA_ChEnReg&0x7;
-    
-    if(ret&(0x1<<DMA_Channal))
+    uint8_t ret = 0;
+    ret = DMA_ChEnReg & 0x7;
+
+    if (ret & (0x1 << DMA_Channal))
         return 0;
     else
         return 1;

@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 #ifndef CUSTOM_BATTERY_H
 #define CUSTOM_BATTERY_H
@@ -207,26 +207,22 @@ extern VWORD    BAT_ALARM;
 /*-----------------------------------------------------------------------------
  * Battery Structure Definition
  *---------------------------------------------------------------------------*/
-typedef struct BatDevName
-{
+typedef struct BatDevName{
 	BYTE DeviceNum;
-	char* DeviceName;
+	char *DeviceName;
 } BatteryDeviceName;
 
-typedef struct Bat_ecsapce
-{
-	VBYTE* Var_L;
-	VBYTE* Var_H;
+typedef struct Bat_ecsapce{
+	VBYTE *Var_L;
+	VBYTE *Var_H;
 }Battery_Ecsapce;
 
-typedef struct BatData
-{
+typedef struct BatData{
 	VBYTE Cmd;
-	VWORD* Var;
+	VWORD *Var;
 	Battery_Ecsapce Bat_Ecsapce;
 }BatteryData;
-typedef union _word_read
-{
+typedef union _word_read{
 	VWORD data;
 	BYTE  data0[2];
 }word_read;

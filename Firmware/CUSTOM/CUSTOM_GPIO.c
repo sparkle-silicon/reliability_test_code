@@ -10,20 +10,20 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 #include "CUSTOM_GPIO.H"
 #include "KERNEL_MEMORY.H"
  /*-----------------------------------------------------------------------------
   * Data Structure
   *---------------------------------------------------------------------------*/
-typedef struct InitGPIOReg {
-    VBYTE* reg;
+typedef struct InitGPIOReg{
+    VBYTE *reg;
     BYTE value;
 } sInitGPIOReg;
-typedef struct InitGPIORegXWORD {
-    VDWORD* reg;
+typedef struct InitGPIORegXWORD{
+    VDWORD *reg;
     DWORD value;
 } sInitGPIORegXWORD;
 const sInitGPIOReg InitGPIORegXBYTE[] =
@@ -72,14 +72,14 @@ const sInitGPIORegXWORD InitGPIORegXWORD[] =
     {&SYSCTL_PIOCD_UPCFG, PinCD_PullUp},
     {&SYSCTL_PIOE_UPCFG, PinE0_23_PullUp},
 };
-typedef struct GetGPIORegInfo {
-    VBYTE* reg;
-    VBYTE* Membase;
+typedef struct GetGPIORegInfo{
+    VBYTE *reg;
+    VBYTE *Membase;
 }sGetGPIORegInfo;
 
-typedef struct GetGPIOMuxInfo {
-    VDWORD* reg;
-    VDWORD* Membase;
+typedef struct GetGPIOMuxInfo{
+    VDWORD *reg;
+    VDWORD *Membase;
 }sGetGPIOMuxInfo;
 sGetGPIORegInfo aGetGPIORegInfo[] =
 {

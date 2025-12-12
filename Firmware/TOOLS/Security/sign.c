@@ -1,6 +1,6 @@
 /*
  * @Author: Linyu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2025-03-27 22:01:43
  * @Description:
  *
@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 
 /*是长度为65字节的OCTET STRING，其中第一个字节代表ECPoint是否经过压缩，
@@ -235,13 +235,13 @@ void fill_bigint_ecc(ECC_STU_BIGINT32 *bigint, const BIGNUM *bn)
 	bigint->uLen = (num_bytes + 3) / 4; // 计算字长度
 	BN_bn2bin(bn, (unsigned char *)bigint->auValue); // 转为二进制
 		// 将字节序从大端转换为小端
-	for(int i = 0; i < (bigint->uLen >> 1); i++)
+	for (int i = 0; i < (bigint->uLen >> 1); i++)
 	{
 		bigint->auValue[bigint->uLen - i - 1] ^= bigint->auValue[i];
 		bigint->auValue[i] ^= bigint->auValue[bigint->uLen - i - 1];
 		bigint->auValue[bigint->uLen - i - 1] ^= bigint->auValue[i];
 	}
-	if(bigint->uLen & 1)bigint->auValue[bigint->uLen >> 1] = __builtin_bswap32(bigint->auValue[bigint->uLen >> 1]);
+	if (bigint->uLen & 1)bigint->auValue[bigint->uLen >> 1] = __builtin_bswap32(bigint->auValue[bigint->uLen >> 1]);
 
 }
 void fill_bigint_ecc_noswap(ECC_STU_BIGINT32 *bigint, const BIGNUM *bn)
@@ -260,13 +260,13 @@ void fill_bigint_rsa(uint32_t *dest, const BIGNUM *bn, uint32_t max_len)
 	BN_bn2bin(bn, (unsigned char *)dest); // 转为二进制
 	// 将字节序从大端转换为小端
 	uint32_t ulen = (num_bytes + 3) / 4; // 计算字长度
-	for(int i = 0; i < (ulen >> 1); i++)
+	for (int i = 0; i < (ulen >> 1); i++)
 	{
 		dest[ulen - i - 1] ^= __builtin_bswap32(dest[i]);
 		dest[i] ^= __builtin_bswap32(dest[ulen - i - 1]);
 		dest[ulen - i - 1] ^= __builtin_bswap32(dest[i]);
 	}
-	if(ulen & 1)dest[ulen >> 1] = __builtin_bswap32(dest[ulen >> 1]);
+	if (ulen & 1)dest[ulen >> 1] = __builtin_bswap32(dest[ulen >> 1]);
 }
 void fill_bigint_rsa_noswap(uint32_t *dest, const BIGNUM *bn, uint32_t max_len)
 {
@@ -278,39 +278,39 @@ void fill_bigint_rsa_noswap(uint32_t *dest, const BIGNUM *bn, uint32_t max_len)
 int hash_data(const unsigned char *data, size_t data_len, unsigned char *hash, const char *hash_alg)
 {
 #if 0
-	if(strcmp(hash_alg, "SM3") == 0)
+	if (strcmp(hash_alg, "SM3") == 0)
 	{
 		// SM3(data, data_len, hash);
 		// return SHA256_DIGEST_LENGTH;
 		return hash_data(data, data_len, hash, "SHA256");//使用sha256加密
 	}
-	else if(strcmp(hash_alg, "SHA0") == 0)
+	else if (strcmp(hash_alg, "SHA0") == 0)
 	{
 		// SHA0(data, data_len, hash);
 		// return 20;
 		return hash_data(data, data_len, hash, "SHA1");//使用sha1加密
 	}
-	else if(strcmp(hash_alg, "SHA1") == 0)
+	else if (strcmp(hash_alg, "SHA1") == 0)
 	{
 		SHA1(data, data_len, hash);
 		return 20;
 	}
-	else if(strcmp(hash_alg, "SHA224") == 0)
+	else if (strcmp(hash_alg, "SHA224") == 0)
 	{
 		SHA224(data, data_len, hash);
 		return SHA224_DIGEST_LENGTH;
 	}
-	else if(strcmp(hash_alg, "SHA256") == 0)
+	else if (strcmp(hash_alg, "SHA256") == 0)
 	{
 		SHA256(data, data_len, hash);
 		return SHA256_DIGEST_LENGTH;
 	}
-	else if(strcmp(hash_alg, "SHA384") == 0)
+	else if (strcmp(hash_alg, "SHA384") == 0)
 	{
 		SHA384(data, data_len, hash);
 		return SHA384_DIGEST_LENGTH;
 	}
-	else if(strcmp(hash_alg, "SHA512") == 0)
+	else if (strcmp(hash_alg, "SHA512") == 0)
 	{
 		SHA512(data, data_len, hash);
 		return SHA512_DIGEST_LENGTH;
@@ -322,21 +322,21 @@ int hash_data(const unsigned char *data, size_t data_len, unsigned char *hash, c
 	}
 #else
 	EVP_MD *md = EVP_MD_fetch(NULL, hash_alg, NULL);
-	if(!md)
+	if (!md)
 	{
 		fprintf(stderr, "Unsupported hash algorithm: %s\n", hash_alg);
 		return -1;
 	}
 
 	EVP_MD_CTX *ctx = EVP_MD_CTX_new();
-	if(!ctx)
+	if (!ctx)
 	{
 		fprintf(stderr, "Failed to create hash context\n");
 		EVP_MD_free(md);
 		return -1;
 	}
 
-	if(EVP_DigestInit_ex(ctx, md, NULL) != 1)
+	if (EVP_DigestInit_ex(ctx, md, NULL) != 1)
 	{
 		fprintf(stderr, "Failed to initialize hash\n");
 		EVP_MD_CTX_free(ctx);
@@ -344,7 +344,7 @@ int hash_data(const unsigned char *data, size_t data_len, unsigned char *hash, c
 		return -1;
 	}
 
-	if(EVP_DigestUpdate(ctx, data, data_len) != 1)
+	if (EVP_DigestUpdate(ctx, data, data_len) != 1)
 	{
 		fprintf(stderr, "Failed to update hash\n");
 		EVP_MD_CTX_free(ctx);
@@ -352,7 +352,7 @@ int hash_data(const unsigned char *data, size_t data_len, unsigned char *hash, c
 		return -1;
 	}
 
-	if(EVP_DigestFinal_ex(ctx, hash, NULL) != 1)
+	if (EVP_DigestFinal_ex(ctx, hash, NULL) != 1)
 	{
 		fprintf(stderr, "Failed to finalize hash\n");
 		EVP_MD_CTX_free(ctx);
@@ -371,23 +371,23 @@ int hash_data(const unsigned char *data, size_t data_len, unsigned char *hash, c
 int sign_hash(const unsigned char *hash, size_t hash_len, unsigned char **signature, size_t *sig_len, const char *private_key_file, const char *algo)
 {
 	FILE *key_file = fopen(private_key_file, "r");
-	if(!key_file)
+	if (!key_file)
 	{
 		perror("Failed to open private key file");
 		return -1;
 	}
 	uint8_t hash2endian[256] = { 0 };//根据情况可能要使用翻转的结果
-	for(size_t i = 0; i < hash_len; i++)
+	for (size_t i = 0; i < hash_len; i++)
 	{
 		hash2endian[hash_len - i - 1] = hash[i];
 	};
 	int result = -1; // 初始化返回值
 
-	if(strcmp(algo, "RSA") == 0)
+	if (strcmp(algo, "RSA") == 0)
 	{
 		RSA *rsa = PEM_read_RSAPrivateKey(key_file, NULL, NULL, NULL);
 		fclose(key_file);
-		if(!rsa)
+		if (!rsa)
 		{
 			fprintf(stderr, "Failed to read RSA private key: %s\n", ERR_error_string(ERR_get_error(), NULL));
 			return -1;
@@ -395,7 +395,7 @@ int sign_hash(const unsigned char *hash, size_t hash_len, unsigned char **signat
 
 		const BIGNUM *n = RSA_get0_n(rsa);
 		const BIGNUM *e = RSA_get0_e(rsa);
-		if(!n || !e)
+		if (!n || !e)
 		{
 			fprintf(stderr, "Failed to get RSA public key components.\n");
 			RSA_free(rsa);
@@ -409,7 +409,7 @@ int sign_hash(const unsigned char *hash, size_t hash_len, unsigned char **signat
 
 		*sig_len = RSA_size(rsa);
 		*signature = malloc(*sig_len);
-		if(!*signature)
+		if (!*signature)
 		{
 			perror("Failed to allocate memory for signature");
 			RSA_free(rsa);
@@ -420,7 +420,7 @@ int sign_hash(const unsigned char *hash, size_t hash_len, unsigned char **signat
 		BIGNUM *r = BN_new();
 		BIGNUM *a = BN_new();
 		const BIGNUM *p = RSA_get0_d(rsa);
-		if(!r || !a || !p)
+		if (!r || !a || !p)
 		{
 			fprintf(stderr, "Failed to allocate memory for RSA signature components.\n");
 			BN_free(r);
@@ -429,7 +429,7 @@ int sign_hash(const unsigned char *hash, size_t hash_len, unsigned char **signat
 			return -1;
 		}
 		BN_CTX *ctx = BN_CTX_new();
-		if(!ctx)
+		if (!ctx)
 		{
 			fprintf(stderr, "Failed to allocate memory for BN context.\n");
 			BN_free(r);
@@ -450,7 +450,7 @@ int sign_hash(const unsigned char *hash, size_t hash_len, unsigned char **signat
 		BN_free(a);
 	#elif 0
 	#if 1
-		if(RSA_private_encrypt(64, hash2endian, *signature, rsa, RSA_NO_PADDING) == -1)//RSA_NO_PADDING
+		if (RSA_private_encrypt(64, hash2endian, *signature, rsa, RSA_NO_PADDING) == -1)//RSA_NO_PADDING
 		{
 			fprintf(stderr, "Failed to sign with RSA: %s\n", ERR_error_string(ERR_get_error(), NULL));
 			free(*signature);
@@ -458,7 +458,7 @@ int sign_hash(const unsigned char *hash, size_t hash_len, unsigned char **signat
 			return -1;
 		}
 	#else
-		if(RSA_private_encrypt(64, hash, *signature, rsa, RSA_NO_PADDING) == -1)//RSA_NO_PADDING
+		if (RSA_private_encrypt(64, hash, *signature, rsa, RSA_NO_PADDING) == -1)//RSA_NO_PADDING
 		{
 			fprintf(stderr, "Failed to sign with RSA: %s\n", ERR_error_string(ERR_get_error(), NULL));
 			free(*signature);
@@ -468,7 +468,7 @@ int sign_hash(const unsigned char *hash, size_t hash_len, unsigned char **signat
 	#endif
 	#else
 	#if 1//要用该内容，需要硬件能支持补丁机制，
-		if(RSA_sign(NID_sha256, hash2endian, hash_len, *signature, (unsigned int *)sig_len, rsa) != 1)
+		if (RSA_sign(NID_sha256, hash2endian, hash_len, *signature, (unsigned int *)sig_len, rsa) != 1)
 		{
 			fprintf(stderr, "Failed to sign with RSA: %s\n", ERR_error_string(ERR_get_error(), NULL));
 			free(*signature);
@@ -476,7 +476,7 @@ int sign_hash(const unsigned char *hash, size_t hash_len, unsigned char **signat
 			return -1;
 		}
 	#else
-		if(RSA_sign(NID_sha256, hash, hash_len, *signature, (unsigned int *)sig_len, rsa) != 1)
+		if (RSA_sign(NID_sha256, hash, hash_len, *signature, (unsigned int *)sig_len, rsa) != 1)
 		{
 			fprintf(stderr, "Failed to sign with RSA: %s\n", ERR_error_string(ERR_get_error(), NULL));
 			free(*signature);
@@ -561,22 +561,22 @@ int sign_hash(const unsigned char *hash, size_t hash_len, unsigned char **signat
 int aes_encrypt(const unsigned char *data, size_t data_len, unsigned char **encrypted_data, size_t *encrypted_len, const unsigned char *key, const unsigned char *iv, int key_bits)
 {
 	EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
-	if(!ctx)
+	if (!ctx)
 	{
 		fprintf(stderr, "Failed to create AES context\n");
 		return -1;
 	}
 
 	const EVP_CIPHER *cipher;
-	if(key_bits == 128)
+	if (key_bits == 128)
 	{
 		cipher = EVP_aes_128_ecb();
 	}
-	else if(key_bits == 192)
+	else if (key_bits == 192)
 	{
 		cipher = EVP_aes_192_ecb();
 	}
-	else if(key_bits == 256)
+	else if (key_bits == 256)
 	{
 		cipher = EVP_aes_256_ecb();
 	}
@@ -587,7 +587,7 @@ int aes_encrypt(const unsigned char *data, size_t data_len, unsigned char **encr
 		return -1;
 	}
 
-	if(EVP_EncryptInit_ex(ctx, cipher, NULL, key, iv) != 1)
+	if (EVP_EncryptInit_ex(ctx, cipher, NULL, key, iv) != 1)
 	{
 		fprintf(stderr, "Failed to initialize AES encryption\n");
 		EVP_CIPHER_CTX_free(ctx);
@@ -595,7 +595,7 @@ int aes_encrypt(const unsigned char *data, size_t data_len, unsigned char **encr
 	}
 
 	*encrypted_data = malloc(data_len + AES_BLOCK_SIZE);
-	if(!*encrypted_data)
+	if (!*encrypted_data)
 	{
 		perror("Failed to allocate memory for encrypted data");
 		EVP_CIPHER_CTX_free(ctx);
@@ -603,7 +603,7 @@ int aes_encrypt(const unsigned char *data, size_t data_len, unsigned char **encr
 	}
 
 	int len, total_len = 0;
-	if(EVP_EncryptUpdate(ctx, *encrypted_data, &len, data, data_len) != 1)
+	if (EVP_EncryptUpdate(ctx, *encrypted_data, &len, data, data_len) != 1)
 	{
 		fprintf(stderr, "Failed to encrypt data\n");
 		free(*encrypted_data);
@@ -612,7 +612,7 @@ int aes_encrypt(const unsigned char *data, size_t data_len, unsigned char **encr
 	}
 	total_len += len;
 
-	if(EVP_EncryptFinal_ex(ctx, *encrypted_data + total_len, &len) != 1)
+	if (EVP_EncryptFinal_ex(ctx, *encrypted_data + total_len, &len) != 1)
 	{
 		fprintf(stderr, "Failed to finalize AES encryption\n");
 		free(*encrypted_data);
@@ -631,19 +631,19 @@ int main(int argc, char **argv)
 
 	//system("clear");
 	  //从argv[1]开始查找参数
-	for(i = 1; i < argc; i++)
+	for (i = 1; i < argc; i++)
 	{
 		//输入输出的文件名 //file
-		if((strcmp(argv[i], "-f") == 0))
+		if ((strcmp(argv[i], "-f") == 0))
 		{
-			if(argv[i][2] != '\0')
+			if (argv[i][2] != '\0')
 			{
-				if(argv[i][2] == '=')
+				if (argv[i][2] == '=')
 					file_name = &argv[i][3];
 				else
 					file_name = &argv[i][2];
 			}
-			else if(i + 1 < argc)
+			else if (i + 1 < argc)
 			{
 				i++;
 				file_name = argv[i];
@@ -651,41 +651,41 @@ int main(int argc, char **argv)
 
 		}
 		//给出bin的对齐信息，输出后填充按该对齐信息进行放置//seek
-		else if((strcmp(argv[i], "-s") == 0))
+		else if ((strcmp(argv[i], "-s") == 0))
 		{
-			if(argv[i][2] != '\0')
+			if (argv[i][2] != '\0')
 			{
-				if(argv[i][2] == '=')
+				if (argv[i][2] == '=')
 					bin_seek = atoi(&argv[i][3]);
 				else
 					bin_seek = atoi(&argv[i][2]);
 			}
-			else if(i + 1 < argc)
+			else if (i + 1 < argc)
 			{
 				i++;
 				bin_seek = atoi(argv[i]);
 			}
 
 		}
-		else if((strcmp(argv[i], "-efuse") == 0))
+		else if ((strcmp(argv[i], "-efuse") == 0))
 		{
 			efuse_secver = 1;
 		}
-		else if((strcmp(argv[i], "-no_efuse") == 0))
+		else if ((strcmp(argv[i], "-no_efuse") == 0))
 		{
 			efuse_secver = 0;
 		}
 		//输入hash的计算量，尾部信息要超过该区域 //hash 4k sector
-		else if((strcmp(argv[i], "-h") == 0))
+		else if ((strcmp(argv[i], "-h") == 0))
 		{
-			if(argv[i][2] != '\0')
+			if (argv[i][2] != '\0')
 			{
-				if(argv[i][2] == '=')
+				if (argv[i][2] == '=')
 					sector_4ksize = atoi(&argv[i][3]);
 				else
 					sector_4ksize = atoi(&argv[i][2]);
 			}
-			else if(i + 1 < argc)
+			else if (i + 1 < argc)
 			{
 				i++;
 				sector_4ksize = atoi(argv[i]);
@@ -694,67 +694,67 @@ int main(int argc, char **argv)
 		}
 		//使用的密钥
 
-		else if((strcmp(argv[i], "-key") == 0))
+		else if ((strcmp(argv[i], "-key") == 0))
 		{
-			if(argv[i][4] != '\0')
+			if (argv[i][4] != '\0')
 			{
-				if(argv[i][4] == '=')
+				if (argv[i][4] == '=')
 					aes_key = (&argv[i][5]);
 				else
 					aes_key = (&argv[i][4]);
 			}
-			else if(i + 1 < argc)
+			else if (i + 1 < argc)
 			{
 				i++;
 				aes_key = (argv[i]);
 			}
 		}
-		else if((strcmp(argv[i], "-iv") == 0))
+		else if ((strcmp(argv[i], "-iv") == 0))
 		{
-			if(argv[i][3] != '\0')
+			if (argv[i][3] != '\0')
 			{
-				if(argv[i][3] == '=')
+				if (argv[i][3] == '=')
 					aes_iv = (&argv[i][4]);
 				else
 					aes_iv = (&argv[i][3]);
 			}
-			else if(i + 1 < argc)
+			else if (i + 1 < argc)
 			{
 				i++;
 				aes_iv = (argv[i]);
 			}
 		}
-		else if((strcmp(argv[i], "-sign_key") == 0))
+		else if ((strcmp(argv[i], "-sign_key") == 0))
 		{
-			if(argv[i][9] != '\0')
+			if (argv[i][9] != '\0')
 			{
-				if(argv[i][9] == '=')
+				if (argv[i][9] == '=')
 					private_key_file = &argv[i][10];
 				else
 					private_key_file = &argv[i][9];
 
 			}
-			else if(i + 1 < argc)
+			else if (i + 1 < argc)
 			{
 				i++;
 				private_key_file = argv[i];
 			}
 		}
-		else if((strcmp(argv[i], "-addr") == 0))
+		else if ((strcmp(argv[i], "-addr") == 0))
 		{
 
 
 
-			if(argv[i][5] != '\0')
+			if (argv[i][5] != '\0')
 			{
 
-				if(argv[i][5] == '=')
+				if (argv[i][5] == '=')
 					Dy_flash_info.Info.FixedFlashInfo_Addr = strtol(&argv[i][6], NULL, 16);
 				else
 					Dy_flash_info.Info.FixedFlashInfo_Addr = strtol(&argv[i][5], NULL, 16);
 
 			}
-			else if(i + 1 < argc)
+			else if (i + 1 < argc)
 			{
 				i++;
 				Dy_flash_info.Info.FixedFlashInfo_Addr = strtol(argv[i], NULL, 16);
@@ -762,13 +762,13 @@ int main(int argc, char **argv)
 		}
 	}
 		//	保护机制
-	if(bin_seek < 256)bin_seek = 256;//最低需要256字节对齐
+	if (bin_seek < 256)bin_seek = 256;//最低需要256字节对齐
 
 		//预处理
 	{
 		//	打开文件
 		int elf_fd = open(file_name, O_RDWR);
-		if(elf_fd <= 0) { perror("file open error"); exit(-1); }
+		if (elf_fd <= 0) { perror("file open error"); exit(-1); }
 
 		{//进行文件填充对齐，对齐后方可进行加密操作
 			off_t elf_seek = lseek(elf_fd, 0, SEEK_END);
@@ -776,12 +776,12 @@ int main(int argc, char **argv)
 			bin_size = (elf_seek > ((sector_4ksize + 1) * 4096)) ? elf_seek : (sector_4ksize + 1) * 4096;//计算需要补充的大小
 			bin_size = (bin_size + ((bin_size % bin_seek) ? bin_seek : 0) - (bin_size % bin_seek));//对bin进行对齐处理
 			uint32_t temp = bin_size - elf_seek;
-			if(temp < 0)//bin所需文件大小小于实际文件大小这判断异常
+			if (temp < 0)//bin所需文件大小小于实际文件大小这判断异常
 			{
 				printf("file size padding error\n");
 				return -1;
 			}
-			else if(temp > 0)//位数不够的地方进行填充
+			else if (temp > 0)//位数不够的地方进行填充
 			{
 				padding = malloc(temp);
 				memset(padding, 0xff, temp);
@@ -797,42 +797,42 @@ int main(int argc, char **argv)
 			// {
 			lseek(elf_fd, (Fix_flash_info_addr), SEEK_SET);
 			int j = read(elf_fd, (void *)&Fix_flash_info, sizeof(sFixedFlashInfo));
-			if(j < 0) { perror("Find Fix flash info error"); exit(-1); }
-			if(!strcmp(FIX_FIRMWARE_ID, Fix_flash_info.Firmware_ID))
+			if (j < 0) { perror("Find Fix flash info error"); exit(-1); }
+			if (!strcmp(FIX_FIRMWARE_ID, Fix_flash_info.Firmware_ID))
 			{
 				//填入Dy_flash_info_addr对应Fix_flash_info的偏移值
 				Fix_flash_info.DynamicFlashInfo = Dy_flash_info_addr;
 				//将新结果写入对应位置
 				lseek(elf_fd, (Fix_flash_info_addr), SEEK_SET);
 				int j = write(elf_fd, (void *)&Fix_flash_info, sizeof(sFixedFlashInfo));
-				if(j < 0) { perror("Find Fix flash info error"); exit(-1); }
+				if (j < 0) { perror("Find Fix flash info error"); exit(-1); }
 				printf("FIRMWARE ID: %s\n", Fix_flash_info.Firmware_ID);
 				printf("Compiler Version: %s\n", Fix_flash_info.Compiler_Version);
 				printf("Interrupt Vector Table : %#08x\n", Fix_flash_info.IVT);
 				printf("Reset Start : %#08x\n", Fix_flash_info.Restart);
-				if(Fix_flash_info.BACKUP_Enable || 1)//因为无效，默认都有备份区
+				if (Fix_flash_info.BACKUP_Enable || 1)//因为无效，默认都有备份区
 					printf("Backup OFFSET  : %#08x\n", (Fix_flash_info.BACKUP_LOCACTION_Switch ? 1 : -1) * (Fix_flash_info.Backup_OFFSET));
 
 				printf("APPEND DYNAMIC FLASH INFO POSITION: %#08x\n", Dy_flash_info_addr);
-				if(!Fix_flash_info.PATCH_Disable)
+				if (!Fix_flash_info.PATCH_Disable)
 				{
 					printf("IF EFUSE ROM PATCH ENABLE,SOFTWARE ROM PATCH ENABLE\n");
-					for(uint32_t i = 0; i < 8; i++)
+					for (uint32_t i = 0; i < 8; i++)
 					{
 						printf("PATCH *0x1%02x%02x == %#08x\n", (Fix_flash_info.PATCH[i].addrh << 2), (Fix_flash_info.PATCH[i].addrl << 2), Fix_flash_info.PATCH[i].data.dword);
-						if(!Fix_flash_info.PATCH[i].last)break;
+						if (!Fix_flash_info.PATCH[i].last)break;
 					}
 				}
 				printf(" %s USED EXTERNAL FLASH TO FIND FIRMWARE\n", Fix_flash_info.EXTERNAL_FLASH_CTRL.ENABLE_USED ? "ENABLE" : "DISABLE");
 				printf(" FIND EXTERNAL FLASH START %#x\n", Fix_flash_info.EXTERNAL_FLASH_CTRL.LAST8M_DISABLE ? 0 : 8 * 1024 * 1024);
 				printf(" FIND EXTERNAL FLASH INTERVAL %#x\n", (256 * 1024) >> (Fix_flash_info.EXTERNAL_FLASH_CTRL.LowAddr_OFFSET << 1));
-				if(Fix_flash_info.EXTERNAL_FLASH_CTRL.HighAddr_SPACE == 7)printf(" FIND EXTERNAL FLASH END %#x\n", 16 * 1024 * 1024);
+				if (Fix_flash_info.EXTERNAL_FLASH_CTRL.HighAddr_SPACE == 7)printf(" FIND EXTERNAL FLASH END %#x\n", 16 * 1024 * 1024);
 				else
 					printf(" FIND EXTERNAL FLASH END %#x\n", (Fix_flash_info.EXTERNAL_FLASH_CTRL.LAST8M_DISABLE ? 0 : 8 * 1024 * 1024) + (1 << (17 + Fix_flash_info.EXTERNAL_FLASH_CTRL.HighAddr_SPACE)));
-				if(!Fix_flash_info.EXTERNAL_FLASH_CTRL.SPI_Switch)
+				if (!Fix_flash_info.EXTERNAL_FLASH_CTRL.SPI_Switch)
 				{
 					printf("USED EXTERNAL QUAD FLASH");
-					switch(Fix_flash_info.EXTERNAL_FLASH_CTRL.WP_Switch)
+					switch (Fix_flash_info.EXTERNAL_FLASH_CTRL.WP_Switch)
 					{
 						case 0:
 							printf("WP SELECT GPIOB17\n");
@@ -851,12 +851,12 @@ int main(int argc, char **argv)
 
 
 				}
-				if(Fix_flash_info.EXTERNAL_FLASH_CTRL.CS_Switch)printf("SPIF CS SELECT GPIOA16\n");
+				if (Fix_flash_info.EXTERNAL_FLASH_CTRL.CS_Switch)printf("SPIF CS SELECT GPIOA16\n");
 				else printf("SPIF CS SELECT GPIOB22\n");
 				printf(" %s\n", Fix_flash_info.EXTERNAL_FLASH_CTRL.MUST_MIRROR_DISABLE ? "ENABLE MIRROR" : "IF USED LAST 512K,CAN USED EXTERNAL FLASH");
 
 
-				if(Fix_flash_info.EXTERNAL_FLASH_CTRL.PWM_Enable)
+				if (Fix_flash_info.EXTERNAL_FLASH_CTRL.PWM_Enable)
 					printf(" MIRROR USED PWM%d\n", Fix_flash_info.EXTERNAL_FLASH_CTRL.PWMn_Switch);
 
 				// const  char *file_name = "./ec_main.bin";
@@ -865,12 +865,12 @@ int main(int argc, char **argv)
 				printf(" MIRROR SIZE %dk\n", (Fix_flash_info.EXTERNAL_FLASH_CTRL.Firmware_4KSector + 1) * 4);
 				printf(" MAIN FREQ %dHz\n", (96000000 / Fix_flash_info.MainFrequency));
 				printf("SECVER FUNCTION %s\n", (Fix_flash_info.SECVER_Enable || efuse_secver) ? "ENABLE" : "DISABLE");
-				if(Fix_flash_info.SECVER_Enable || efuse_secver)
+				if (Fix_flash_info.SECVER_Enable || efuse_secver)
 				{
 					int a = 0;
 					Fix_flash_info.SECVER_VERIFY_Switch = 1;//强制为RSA
 					printf("SECVER USED %s", (sign_algo = (Fix_flash_info.SECVER_VERIFY_Switch) ? "RSA" : "ECDSA"));
-					switch(Fix_flash_info.SECVER_BIT_Switch)
+					switch (Fix_flash_info.SECVER_BIT_Switch)
 					{
 						case 0:
 							a = Fix_flash_info.SECVER_VERIFY_Switch ? 1024 : 192;
@@ -912,12 +912,12 @@ int main(int argc, char **argv)
 
 	int elf_fd = open(file_name, O_RDONLY);
 
-	if(elf_fd <= 0) { perror("file open error"); exit(-1); }
+	if (elf_fd <= 0) { perror("file open error"); exit(-1); }
 
 	ret = fstat(elf_fd, &file_stat);
 	uint32_t msg1_len = (sector_4ksize + 1) * 4 * 1024;
 	unsigned char *msg1 = mmap(NULL, (msg1_len), PROT_READ, MAP_SHARED, elf_fd, 0);
-	if(msg1 == (void *)-1)
+	if (msg1 == (void *)-1)
 	{
 		perror("msg1 mmap error");
 		exit(-1);
@@ -936,22 +936,22 @@ int main(int argc, char **argv)
 	/*
 	* */
 	int hash_len = hash_data(msg1, msg1_len, hash, hash_alg);
-	if(hash_len < 0)
+	if (hash_len < 0)
 	{
 		close(elf_fd);
 		return EXIT_FAILURE;
 	}
 	printf("Hash (%s): ", hash_alg);
 
-	for(int i = 0; i < hash_len; i++)
+	for (int i = 0; i < hash_len; i++)
 	{
 		printf("%#02x,", hash[i]);
 	}
 	printf("\n");
-	if(Fix_flash_info.SECVER_Enable || efuse_secver)
+	if (Fix_flash_info.SECVER_Enable || efuse_secver)
 	{
 		unsigned char *signature = NULL;
-		if(sign_hash(hash, hash_len, &signature, &sig_len, private_key_file, sign_algo) != 0)
+		if (sign_hash(hash, hash_len, &signature, &sig_len, private_key_file, sign_algo) != 0)
 		{
 			close(elf_fd);
 			return EXIT_FAILURE;
@@ -959,7 +959,7 @@ int main(int argc, char **argv)
 		// if((Fix_flash_info.SECVER_VERIFY_Switch))
 		{
 			printf("SIGN (%s): ", sign_algo);
-			for(size_t i = 0; i < sig_len; i++)
+			for (size_t i = 0; i < sig_len; i++)
 			{
 				printf("%#02x,", signature[sig_len - i - 1]);
 				Dy_flash_info.sign.rsa_byte[i] = signature[sig_len - i - 1];
@@ -967,13 +967,13 @@ int main(int argc, char **argv)
 			printf("\n");
 			printf("modules (%s): ", sign_algo);
 			uint32_t public_bytelen = Dy_flash_info.publickey.rsa.bits >> 3;
-			for(size_t i = 0; i < public_bytelen; i++)
+			for (size_t i = 0; i < public_bytelen; i++)
 			{
 				printf("%#02x,", Dy_flash_info.publickey.rsa_byte.modulus[i]);
 			}
 			printf("\n");
 			printf("exponent (%s): ", sign_algo);
-			for(size_t i = 0; i < public_bytelen; i++)
+			for (size_t i = 0; i < public_bytelen; i++)
 			{
 				printf("%#02x,", Dy_flash_info.publickey.rsa_byte.exponent[i]);
 			}
@@ -981,7 +981,7 @@ int main(int argc, char **argv)
 			unsigned char public_hash[256 >> 3];
 			hash_data((uint8_t *)&Dy_flash_info.publickey, sizeof(upublickey), public_hash, "SHA256");
 			printf("PUBLIC KEY HASH (SHA256): ");
-			for(size_t i = 0; i < (256 >> 3); i++)
+			for (size_t i = 0; i < (256 >> 3); i++)
 			{
 				printf("%#02x,", public_hash[i]);
 			}
@@ -989,7 +989,7 @@ int main(int argc, char **argv)
 			AES_KEY key;
 			uint32_t aes_key_efuse[4] = { 0x5137b6ad,0x9239ca4c,0xb7d82c24,0xd50abd5d };
 			printf("AES KEY (AES-128): ");
-			for(size_t i = 0; i < 16; i++)
+			for (size_t i = 0; i < 16; i++)
 			{
 				printf("%#02x,", ((uint8_t *)aes_key_efuse)[i]);
 			}
@@ -1000,7 +1000,7 @@ int main(int argc, char **argv)
 			AES_encrypt(&public_hash[0], &public_hash_aes_key[0], &key);
 			AES_encrypt(&public_hash[16], &public_hash_aes_key[16], &key);
 			printf("PUBLIC KEY HASH AES (AES-128): ");
-			for(size_t i = 0; i < (256 >> 3); i++)
+			for (size_t i = 0; i < (256 >> 3); i++)
 			{
 				printf("%#02x,", public_hash_aes_key[i]);
 			}
@@ -1009,7 +1009,7 @@ int main(int argc, char **argv)
 			AES_ecb_encrypt(&public_hash[0], &public_hash_aes_key[0], &key, AES_ENCRYPT);
 			AES_ecb_encrypt(&public_hash[16], &public_hash_aes_key[16], &key, AES_ENCRYPT);
 			printf("PUBLIC KEY HASH AES (AES-128-ECB): ");
-			for(size_t i = 0; i < (256 >> 3); i++)
+			for (size_t i = 0; i < (256 >> 3); i++)
 			{
 				printf("%#02x,", public_hash_aes_key[i]);
 			}
@@ -1049,7 +1049,7 @@ int main(int argc, char **argv)
 	{
 		printf("SIGN (%s): ", hash_alg);
 
-		for(int i = 0; i < hash_len; i++)
+		for (int i = 0; i < hash_len; i++)
 		{
 			printf("%#02x,", hash[i]);
 			Dy_flash_info.sign.hash_byte[i] = hash[i];
@@ -1084,17 +1084,17 @@ int main(int argc, char **argv)
 	elf_fd = open(file_name, O_WRONLY);
 	lseek(elf_fd, 0, SEEK_END);
 	i = write(elf_fd, (void *)&Dy_flash_info, sizeof(sDynamicFlashInfo));
-	if(i == 0) { perror("flash_data write error"); exit(-1); }
+	if (i == 0) { perror("flash_data write error"); exit(-1); }
 	off_t elf_seek = lseek(elf_fd, 0, SEEK_END);
 
 	bin_size = (elf_seek + ((elf_seek % bin_seek) ? bin_seek : 0) - (elf_seek % bin_seek));//对bin进行对齐处理
 	uint32_t temp = bin_size - elf_seek;
-	if(temp < 0)//bin所需文件大小小于实际文件大小这判断异常
+	if (temp < 0)//bin所需文件大小小于实际文件大小这判断异常
 	{
 		printf("file size padding error\n");
 		return -1;
 	}
-	else if(temp > 0)//位数不够的地方进行填充
+	else if (temp > 0)//位数不够的地方进行填充
 	{
 		padding = malloc(temp);
 		memset(padding, 0xff, temp);

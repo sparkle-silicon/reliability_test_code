@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2025-10-21 17:40:12
  * @Description: Power sequnce control function example
  *
@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 #include "CUSTOM_POWER.H"
 #include "CUSTOM_GPIO.H"
@@ -75,40 +75,40 @@ void Copy_Power_Sequence_Record_To_Sram(VBYTE Record_Flag)
 {
     for (int i = 0; i <= 1024; i++)
     {
-        *((VBYTE*)(0x31000 + i)) = 0x0;
+        *((VBYTE *)(0x31000 + i)) = 0x0;
     }
-    BYTE* PowSeq_Mem_Ptr = (BYTE*)0x31002;
+    BYTE *PowSeq_Mem_Ptr = (BYTE *)0x31002;
     BYTE length_record;
     /*Record PowerSequence type flag to 0x31000*/
     switch (Record_Flag)
     {
-    case 1:
-        *((VBYTE*)(SRAM_BASE_ADDR)) = 0x1;
-        break;
-    case 2:
-        *((VBYTE*)(SRAM_BASE_ADDR)) = 0x2;
-        break;
-    case 3:
-        *((VBYTE*)(SRAM_BASE_ADDR)) = 0x3;
-        break;
-    case 4:
-        *((VBYTE*)(SRAM_BASE_ADDR)) = 0x4;
-        break;
-    case 5:
-        *((VBYTE*)(SRAM_BASE_ADDR)) = 0x5;
-        break;
-    case 6:
-        *((VBYTE*)(SRAM_BASE_ADDR)) = 0x6;
-        break;
-    case 7:
-        *((VBYTE*)(SRAM_BASE_ADDR)) = 0x7;
-        break;
-    default:
-        *((VBYTE*)(0x31000)) = 0x0;
-        break;
+        case 1:
+            *((VBYTE *)(SRAM_BASE_ADDR)) = 0x1;
+            break;
+        case 2:
+            *((VBYTE *)(SRAM_BASE_ADDR)) = 0x2;
+            break;
+        case 3:
+            *((VBYTE *)(SRAM_BASE_ADDR)) = 0x3;
+            break;
+        case 4:
+            *((VBYTE *)(SRAM_BASE_ADDR)) = 0x4;
+            break;
+        case 5:
+            *((VBYTE *)(SRAM_BASE_ADDR)) = 0x5;
+            break;
+        case 6:
+            *((VBYTE *)(SRAM_BASE_ADDR)) = 0x6;
+            break;
+        case 7:
+            *((VBYTE *)(SRAM_BASE_ADDR)) = 0x7;
+            break;
+        default:
+            *((VBYTE *)(0x31000)) = 0x0;
+            break;
     }
     /*Record PowerSequence Count to 0x31001 */
-    *((VBYTE*)(0x31001)) = PowSeq_Record_Cnt;
+    *((VBYTE *)(0x31001)) = PowSeq_Record_Cnt;
     PowSeq_Record_Cnt = 0;
     Debugger_PowerSequence_Step = 1;
     /*Copy PowerSequence information to Sram*/
@@ -676,14 +676,14 @@ void Custom_S5S0_Sequence(void)
                 {
                     dprint("S5->S0 Step:%d status error\n", PowerSequence_Step);
                     PowerSequence_WaitTime = Wait_Time;
-#if (!Wait_until_Correct)
+                #if (!Wait_until_Correct)
                     PowerSequence_Delay = PowerSequence_S5S0[PowerSequence_Step].delay;
                     PowerSequence_Step++;
                     if (PowerSequence_Delay != 0x00)
                     {
                         break;
                     }
-#endif
+                #endif
                 }
                 else
                 {
@@ -755,14 +755,14 @@ void Custom_S4S0_Sequence(void)
                 {
                     dprint("S4->S0 Step:%d status error\n", PowerSequence_Step);
                     PowerSequence_WaitTime = Wait_Time;
-#if (!Wait_until_Correct)
+                #if (!Wait_until_Correct)
                     PowerSequence_Delay = PowerSequence_S4S0[PowerSequence_Step].delay;
                     PowerSequence_Step++;
                     if (PowerSequence_Delay != 0x00)
                     {
                         break;
                     }
-#endif
+                #endif
                 }
                 else
                 {
@@ -834,14 +834,14 @@ void Custom_S3S0_Sequence(void)
                 {
                     dprint("S3->S0 Step:%d status error\n", PowerSequence_Step);
                     PowerSequence_WaitTime = Wait_Time;
-#if (!Wait_until_Correct)
+                #if (!Wait_until_Correct)
                     PowerSequence_Delay = PowerSequence_S3S0[PowerSequence_Step].delay;
                     PowerSequence_Step++;
                     if (PowerSequence_Delay != 0x00)
                     {
                         break;
                     }
-#endif
+                #endif
                 }
                 else
                 {
@@ -915,49 +915,49 @@ void Change_PowerState(void)
     }
     switch (CTRL_FLAG2 & (SLEEP_S3_ON + SLEEP_S4_ON + SLEEP_S5_ON))
     {
-    case 0: // goto S5
-        switch (System_PowerState)
-        {
-        case SYSTEM_S0:
-            Custom_S0_S5_Trigger(SC_S0SLPOff);
+        case 0: // goto S5
+            switch (System_PowerState)
+            {
+                case SYSTEM_S0:
+                    Custom_S0_S5_Trigger(SC_S0SLPOff);
+                    break;
+                case SYSTEM_S4:
+                    break;
+                case SYSTEM_S3:
+                    Custom_S0_S5_Trigger(SC_S3S4SLPOff);
+                    break;
+            }
             break;
-        case SYSTEM_S4:
+        case (SLEEP_S3_ON + SLEEP_S4_ON + SLEEP_S5_ON): // goto S0
+            switch (System_PowerState)
+            {
+                case SYSTEM_S3:
+                    Custom_S3_S0_Trigger();
+                    break;
+                case SYSTEM_S4:
+                    Custom_S4_S0_Trigger();
+                    break;
+                case SYSTEM_S5:
+                    Custom_S5_S0_Trigger();
+                    break;
+            }
             break;
-        case SYSTEM_S3:
-            Custom_S0_S5_Trigger(SC_S3S4SLPOff);
+        case (SLEEP_S4_ON + SLEEP_S5_ON): // goto S3
+            switch (System_PowerState)
+            {
+                case SYSTEM_S0:
+                    Custom_S0_S3_Trigger(0x30);
+                    break;
+            }
             break;
-        }
-        break;
-    case (SLEEP_S3_ON + SLEEP_S4_ON + SLEEP_S5_ON): // goto S0
-        switch (System_PowerState)
-        {
-        case SYSTEM_S3:
-            Custom_S3_S0_Trigger();
+        case SLEEP_S5_ON: // goto S4
+            switch (System_PowerState)
+            {
+                case SYSTEM_S0:
+                    Custom_S0_S4_Trigger(0x40);
+                    break;
+            }
             break;
-        case SYSTEM_S4:
-            Custom_S4_S0_Trigger();
-            break;
-        case SYSTEM_S5:
-            Custom_S5_S0_Trigger();
-            break;
-        }
-        break;
-    case (SLEEP_S4_ON + SLEEP_S5_ON): // goto S3
-        switch (System_PowerState)
-        {
-        case SYSTEM_S0:
-            Custom_S0_S3_Trigger(0x30);
-            break;
-        }
-        break;
-    case SLEEP_S5_ON: // goto S4
-        switch (System_PowerState)
-        {
-        case SYSTEM_S0:
-            Custom_S0_S4_Trigger(0x40);
-            break;
-        }
-        break;
     }
 }
 //------------------------------------------------------------------------------
@@ -965,25 +965,25 @@ void PowerState_Monitor(void)
 {
     switch (PowerState_Monitor_Index)
     {
-    case 0:
-        Sleep_S3_Monitor(); // Check SLP_S3#(or SUS_B#)
-        PowerState_Monitor_Index++;
-        break;
-    case 1:
-        Sleep_S4_Monitor(); // Check SLP_S4#
-        PowerState_Monitor_Index++;
-        break;
-    case 2:
-        Sleep_S5_Monitor(); // Check SLP_S5#(or SUS_C#)
-        PowerState_Monitor_Index++;
-        break;
-    case 3:
-        Change_PowerState();
-        PowerState_Monitor_Index = 0x00;
-        break;
-    default:
-        PowerState_Monitor_Index = 0x00;
-        break;
+        case 0:
+            Sleep_S3_Monitor(); // Check SLP_S3#(or SUS_B#)
+            PowerState_Monitor_Index++;
+            break;
+        case 1:
+            Sleep_S4_Monitor(); // Check SLP_S4#
+            PowerState_Monitor_Index++;
+            break;
+        case 2:
+            Sleep_S5_Monitor(); // Check SLP_S5#(or SUS_C#)
+            PowerState_Monitor_Index++;
+            break;
+        case 3:
+            Change_PowerState();
+            PowerState_Monitor_Index = 0x00;
+            break;
+        default:
+            PowerState_Monitor_Index = 0x00;
+            break;
     }
 }
 //----------------------------------------------------------------------------
@@ -1121,14 +1121,14 @@ void Custom_S0S3_Sequence(void)
                 {
                     dprint("S0->S3 Step:%d status error\n", PowerSequence_Step);
                     PowerSequence_WaitTime = Wait_Time;
-#if (!Wait_until_Correct)
+                #if (!Wait_until_Correct)
                     PowerSequence_Delay = PowerSequence_S0S3[PowerSequence_Step].delay;
                     PowerSequence_Step++;
                     if (PowerSequence_Delay != 0x00)
                     {
                         break;
                     }
-#endif
+                #endif
                 }
                 else
                 {
@@ -1200,14 +1200,14 @@ void Custom_S0S4_Sequence(void)
                 {
                     dprint("S0->S4 Step:%d status error\n", PowerSequence_Step);
                     PowerSequence_WaitTime = Wait_Time;
-#if (!Wait_until_Correct)
+                #if (!Wait_until_Correct)
                     PowerSequence_Delay = PowerSequence_S0S4[PowerSequence_Step].delay;
                     PowerSequence_Step++;
                     if (PowerSequence_Delay != 0x00)
                     {
                         break;
                     }
-#endif
+                #endif
                 }
                 else
                 {
@@ -1279,14 +1279,14 @@ void Custom_S0S5_Sequence(void)
                 {
                     dprint("S0->S5 Step:%d status error\n", PowerSequence_Step);
                     PowerSequence_WaitTime = Wait_Time;
-#if (!Wait_until_Correct)
+                #if (!Wait_until_Correct)
                     PowerSequence_Delay = PowerSequence_S0S5[PowerSequence_Step].delay;
                     PowerSequence_Step++;
                     if (PowerSequence_Delay != 0x00)
                     {
                         break;
                     }
-#endif
+                #endif
                 }
                 else
                 {
@@ -1355,14 +1355,14 @@ void Custom_Reboot_Sequence(void)
                 {
                     dprint("Reboot Step:%d status error\n", PowerSequence_Step);
                     PowerSequence_WaitTime = Wait_Time;
-#if (!Wait_until_Correct)
+                #if (!Wait_until_Correct)
                     PowerSequence_Delay = PowerSequence_Reboot[PowerSequence_Step].delay;
                     PowerSequence_Step++;
                     if (PowerSequence_Delay != 0x00)
                     {
                         break;
                     }
-#endif
+                #endif
                 }
                 else
                 {
@@ -1454,80 +1454,80 @@ void Sys_PowerState_Control(void)
     // Check current System PowerState and do corresponding powersequence
     switch (System_PowerState)
     {
-    case SYSTEM_S0:
-        // HWPG_Monitor();
-        break;
-    case SYSTEM_S3:
-        break;
-    case SYSTEM_S4:
-        break;
-    case SYSTEM_S5:
-        // Auto_PowerOn_Monitor();
-        break;
-    case SYSTEM_S4_S0:
-        Custom_S4S0_Sequence();
-        break;
-    case SYSTEM_S5_S0:
-        Custom_S5S0_Sequence();
-        break;
-    case SYSTEM_S3_S0:
-        Custom_S3S0_Sequence();
-        break;
-    case SYSTEM_S0_S3:
-        Custom_S0S3_Sequence();
-        break;
-    case SYSTEM_S0_S4:
-        Custom_S0S4_Sequence();
-        break;
-    case SYSTEM_S0_S5:
-        Custom_S0S5_Sequence();
-        break;
-    case SYSTEM_REBOOT:
-        Custom_Reboot_Sequence();
-        break;
-    case SYSTEM_EC_WDTRST:
-        
-        break;
-    default:
-        System_PowerState = SYSTEM_S5;
-        break;
+        case SYSTEM_S0:
+            // HWPG_Monitor();
+            break;
+        case SYSTEM_S3:
+            break;
+        case SYSTEM_S4:
+            break;
+        case SYSTEM_S5:
+            // Auto_PowerOn_Monitor();
+            break;
+        case SYSTEM_S4_S0:
+            Custom_S4S0_Sequence();
+            break;
+        case SYSTEM_S5_S0:
+            Custom_S5S0_Sequence();
+            break;
+        case SYSTEM_S3_S0:
+            Custom_S3S0_Sequence();
+            break;
+        case SYSTEM_S0_S3:
+            Custom_S0S3_Sequence();
+            break;
+        case SYSTEM_S0_S4:
+            Custom_S0S4_Sequence();
+            break;
+        case SYSTEM_S0_S5:
+            Custom_S0S5_Sequence();
+            break;
+        case SYSTEM_REBOOT:
+            Custom_Reboot_Sequence();
+            break;
+        case SYSTEM_EC_WDTRST:
+
+            break;
+        default:
+            System_PowerState = SYSTEM_S5;
+            break;
     }
 }
 void ResetSource_Monitor(void)
 {
     switch (RSTStatus & 0x03)
     {
-    case 0:
-    case 1:
-        if (GPCRA0 == 0x84)
-        {
-            ShutDnCause = SC_ECColdBoot;
-        }
-        else
-        {
-            ShutDnCause = SC_EC_0x0000;
-        }
-        break;
-    case 2:
-        if (GPCRA0 == 0x84)
-        {
-            ShutDnCause = SC_IntWatchDog;
-        }
-        else
-        {
-            ShutDnCause = SC_EC_0x0000;
-        }
-        break;
-    case 3:
-        if (GPCRA0 == 0x84)
-        {
-            ShutDnCause = SC_ExtWatchDog;
-        }
-        else
-        {
-            ShutDnCause = SC_EC_0x0000;
-        }
-        break;
+        case 0:
+        case 1:
+            if (GPCRA0 == 0x84)
+            {
+                ShutDnCause = SC_ECColdBoot;
+            }
+            else
+            {
+                ShutDnCause = SC_EC_0x0000;
+            }
+            break;
+        case 2:
+            if (GPCRA0 == 0x84)
+            {
+                ShutDnCause = SC_IntWatchDog;
+            }
+            else
+            {
+                ShutDnCause = SC_EC_0x0000;
+            }
+            break;
+        case 3:
+            if (GPCRA0 == 0x84)
+            {
+                ShutDnCause = SC_ExtWatchDog;
+            }
+            else
+            {
+                ShutDnCause = SC_EC_0x0000;
+            }
+            break;
     }
 }
 //-----------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 /*
  * @Author: Iversu
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2024-06-03 17:10:23
  * @Description: Event support
  *
@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 #include "CUSTOM_EVENT.H"
 #include "CUSTOM_GPIO.H"
@@ -22,20 +22,17 @@
  // no change function
  //-----------------------------------------------------------------------------
 void NullEvent(void)
-{
-}
+{}
 //-----------------------------------------------------------------------------
 // Adapter in function
 //-----------------------------------------------------------------------------
 void AdapterIn(void)
-{
-}
+{}
 //-----------------------------------------------------------------------------
 // Adapter out function
 //-----------------------------------------------------------------------------
 void AdapterOut(void)
-{
-}
+{}
 //-----------------------------------------------------------------------------
 // power button was pressed
 //-----------------------------------------------------------------------------
@@ -44,21 +41,21 @@ void PSWPressed(void)
 	PSW_COUNTER = T_PSWOFF;
 	switch (System_PowerState)
 	{
-	case SYSTEM_S5:
-		Custom_S5_S0_Trigger();
-		break;
-	case SYSTEM_S4:
-		Custom_S4_S0_Trigger();
-		break;
-	case SYSTEM_S3:
-		Custom_S3_S0_Trigger();
-		break;
-	case SYSTEM_S0:
-		dprint("SYSTEM_S0\n");
-		// ECQEvent();
-		break;
-	default:
-		break;
+		case SYSTEM_S5:
+			Custom_S5_S0_Trigger();
+			break;
+		case SYSTEM_S4:
+			Custom_S4_S0_Trigger();
+			break;
+		case SYSTEM_S3:
+			Custom_S3_S0_Trigger();
+			break;
+		case SYSTEM_S0:
+			dprint("SYSTEM_S0\n");
+			// ECQEvent();
+			break;
+		default:
+			break;
 	}
 }
 //-----------------------------------------------------------------------------
@@ -131,42 +128,42 @@ void Event_Center(BYTE Count_id)
 	BYTE record_flag;
 	switch (Count_id)
 	{
-	case 0:
-		// new_state = Read_PWR_SW();
-		new_state = 0x00;
-		break;
-	case 1:
-		// new_state = Read_BC_ACOK();
-		new_state = 0x00;
-		break;
-	case 2:
-		// new_state = Read_BATT_PRS_1();
-		new_state = 0x00;
-		break;
-	case 3:
-		new_state = 0x00;
-		break;
-	case 4:
-		new_state = 0x00;
-		break;
-	case 5:
-		new_state = 0x00;
-		break;
-	case 6:
-		new_state = 0x00;
-		break;
-	case 7:
-		new_state = 0x00;
-		break;
-	case 8:
-		new_state = 0x00;
-		break;
-	case 9:
-		new_state = 0x00;
-		break;
-	default:
-		new_state = 0x00;
-		break;
+		case 0:
+			// new_state = Read_PWR_SW();
+			new_state = 0x00;
+			break;
+		case 1:
+			// new_state = Read_BC_ACOK();
+			new_state = 0x00;
+			break;
+		case 2:
+			// new_state = Read_BATT_PRS_1();
+			new_state = 0x00;
+			break;
+		case 3:
+			new_state = 0x00;
+			break;
+		case 4:
+			new_state = 0x00;
+			break;
+		case 5:
+			new_state = 0x00;
+			break;
+		case 6:
+			new_state = 0x00;
+			break;
+		case 7:
+			new_state = 0x00;
+			break;
+		case 8:
+			new_state = 0x00;
+			break;
+		case 9:
+			new_state = 0x00;
+			break;
+		default:
+			new_state = 0x00;
+			break;
 	}
 	Tmp_XPntr = Event_Table[Count_id].REG_Evt;
 	Tmp_XPntr1 = Event_Table[Count_id].Cunter_Evt;

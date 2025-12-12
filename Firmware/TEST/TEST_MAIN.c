@@ -1,6 +1,6 @@
 /*
  * @Author: Maple
- * @LastEditors: daweslinyu 
+ * @LastEditors: daweslinyu
  * @LastEditTime: 2025-11-09 22:38:43
  * @Description:
  *
@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 #include "AE_INCLUDE.H"
 #include "TEST_MAIN.H"
@@ -237,24 +237,26 @@ extern void Run_All_Mailbox_Tasks_Random(void);
 
 int fill_rand_with_params(uint32_t start_addr, size_t byte_len)
 {
-    // 参数合法性检查：长度必须为正数且是4的倍数（32位数据对齐）
-    if (byte_len == 0 || (byte_len % 4) != 0) {
-        return -1;  // 非法参数
-    }
-    // 计算需要写入的32位数据个数（字节长度 / 4字节/个）
-    size_t num_32bit = byte_len / 4;
-    // 将起始地址转换为volatile 32位指针（确保写入不被编译器优化，支持硬件地址）
-    volatile uint32_t *current_addr = (volatile uint32_t *)start_addr;
-    // 循环生成随机数并写入每个32位地址
-    for (size_t i = 0; i < num_32bit; i++) {
-        // 生成随机数并转换为32位无符号数（匹配地址存储类型）
-        uint32_t rand_val = (uint32_t)rand();
-        // 写入当前地址
-        *current_addr = rand_val;
-        // 指针自增（自动偏移4字节，指向 next 32位地址）
-        current_addr++;
-    }
-    return 0;  // 成功
+	// 参数合法性检查：长度必须为正数且是4的倍数（32位数据对齐）
+	if (byte_len == 0 || (byte_len % 4) != 0)
+	{
+		return -1;  // 非法参数
+	}
+	// 计算需要写入的32位数据个数（字节长度 / 4字节/个）
+	size_t num_32bit = byte_len / 4;
+	// 将起始地址转换为volatile 32位指针（确保写入不被编译器优化，支持硬件地址）
+	volatile uint32_t *current_addr = (volatile uint32_t *)start_addr;
+	// 循环生成随机数并写入每个32位地址
+	for (size_t i = 0; i < num_32bit; i++)
+	{
+// 生成随机数并转换为32位无符号数（匹配地址存储类型）
+		uint32_t rand_val = (uint32_t)rand();
+		// 写入当前地址
+		*current_addr = rand_val;
+		// 指针自增（自动偏移4字节，指向 next 32位地址）
+		current_addr++;
+	}
+	return 0;  // 成功
 }
 
 #define RANDOM_POOL_BASE  ((uint32_t *)0x31000)
@@ -268,419 +270,419 @@ static uint16_t rand_offset = 0;
  */
 void EC_GetRandomBytes(uint32_t dst_addr, uint32_t size)
 {
-    uint32_t *dst = (uint32_t *)dst_addr;
-    uint32_t *pool = RANDOM_POOL_BASE;
+	uint32_t *dst = (uint32_t *)dst_addr;
+	uint32_t *pool = RANDOM_POOL_BASE;
 
-    for (uint32_t i = 0; i < size; i++)
-    {
-        *dst++ = pool[rand_offset++];
-        if (rand_offset >= RANDOM_POOL_SIZE)
-            rand_offset = 0; // 回绕
-    }
+	for (uint32_t i = 0; i < size; i++)
+	{
+		*dst++ = pool[rand_offset++];
+		if (rand_offset >= RANDOM_POOL_SIZE)
+			rand_offset = 0; // 回绕
+	}
 }
 
 #if RUN_TASK
 
 void Run_All_Mailbox_Tasks_Random(void)
 {
-    // extern uint8_t rsa_sequence_stage;
+	// extern uint8_t rsa_sequence_stage;
 
-    uint32_t rand_addr = 0x31000;
-    uint32_t *rand_data = ((uint32_t *)rand_addr);
-    uint32_t rand_value = *rand_data;
-    uint32_t rand_task = rand_value % 27; // 0~26 随机数
+	uint32_t rand_addr = 0x31000;
+	uint32_t *rand_data = ((uint32_t *)rand_addr);
+	uint32_t rand_value = *rand_data;
+	uint32_t rand_task = rand_value % 27; // 0~26 随机数
 	static char rsa_flag = 1;
-    static char rsa_gen_flag = 1;
-    // char lenovo_flag = 0;
-    printf("rand_task = %d\n", rand_task);
-    printf("rand_value = %x\n", rand_value);
-    if (rand_task == 0) //子系统自检
-    {
-        // if (command_processed == false) {}
-        // else
-        Transfer_Mailbox_Cryp_Selfcheck(rand_value & 0x1);
-    }
-    else if (rand_task == 1)
-    {
-        // if (command_processed == false) {}
-        // else
-            Transfer_Mailbox_APB2_Source_Alloc_Trigger(rand_value & 0x8003ffff);               
-    }
-    else if (rand_task == 2)
-    {
-        // if (command_processed == false) {}
-        // else
-            Transfer_Mailbox_Read_FLASHID_Trigger();
-    }
-    else if (rand_task == 3)
-    {
-        // if (command_processed == false) {}
-        // else
-            Transfer_Mailbox_Read_FLASHUID_Trigger();
-    }
-    else if (rand_task == 4)
-    {
-        // if (command_processed == false) {}
-        // else
-            // Transfer_Mailbox_SetClockFrequency(1);
-    }
-    else if (rand_task == 5)
-    {
-        // if (command_processed == false) {}
-        // else
-            // Transfer_Mailbox_Crypto_Secure_Boot(rand_value & 0x80000, rand_value);
-    }
-    else if (rand_task == 6)
-    {
-        // if (command_processed == false) {}
-        // else
-        // Transfer_Mailbox_Crypto_Secure_Boot(REG32(rand_addr) & 0xffffff, (REG32(rand_addr)));
-    }
-    else if (rand_task == 7)
-    {
-        // if (command_processed == false) {}
-        // else
-            Transfer_Mailbox_SimilarDMA(0, 0x31000,0xff,0x0,0x28a00);
-    }
-    else if (rand_task == 8)
-    {
-        // if (command_processed == false) {}
-        // else
-            Transfer_Mailbox_Flash_Mirror((rand_value&0x3),(rand_value&0x100) ,0x1A000, 0x12000);
-    }
-    else if (rand_task == 9)
-    {
-        // if (command_processed == false) {}
-        // else
-            Transfer_Mailbox_Flash_Page_Change((rand_value & 0xc), 0x2A000,
-                (rand_value & 0xff), (rand_value & 0xff), (rand_value & 0xff), (rand_value & 0xff),
-                (rand_value & 0xff), (rand_value & 0xff), (rand_value & 0xff), (rand_value & 0xff),
-                (rand_value & 0xff), (rand_value & 0xff), (rand_value & 0xff), (rand_value & 0xff),
-                (rand_value & 0xff), (rand_value & 0xff), (rand_value & 0xff), (rand_value & 0xff),
-                (rand_value & 0xff), (rand_value & 0xff), (rand_value & 0xff), (rand_value & 0xff),
-                (rand_value & 0xff), (rand_value & 0xff), (rand_value & 0xff), (rand_value & 0xff));
-    }
-    else if (rand_task == 10)
-    {
-        // if (command_processed == false) {}
-        // else if (lenovo_flag == 0)
-        // {
-        REG32(0x28a00) = 0x12345678;
-        REG32(0x28a04) = 0x55667788;
+	static char rsa_gen_flag = 1;
+	// char lenovo_flag = 0;
+	printf("rand_task = %d\n", rand_task);
+	printf("rand_value = %x\n", rand_value);
+	if (rand_task == 0) //子系统自检
+	{
+		// if (command_processed == false) {}
+		// else
+		Transfer_Mailbox_Cryp_Selfcheck(rand_value & 0x1);
+	}
+	else if (rand_task == 1)
+	{
+		// if (command_processed == false) {}
+		// else
+		Transfer_Mailbox_APB2_Source_Alloc_Trigger(rand_value & 0x8003ffff);
+	}
+	else if (rand_task == 2)
+	{
+		// if (command_processed == false) {}
+		// else
+		Transfer_Mailbox_Read_FLASHID_Trigger();
+	}
+	else if (rand_task == 3)
+	{
+		// if (command_processed == false) {}
+		// else
+		Transfer_Mailbox_Read_FLASHUID_Trigger();
+	}
+	else if (rand_task == 4)
+	{
+		// if (command_processed == false) {}
+		// else
+			// Transfer_Mailbox_SetClockFrequency(1);
+	}
+	else if (rand_task == 5)
+	{
+		// if (command_processed == false) {}
+		// else
+			// Transfer_Mailbox_Crypto_Secure_Boot(rand_value & 0x80000, rand_value);
+	}
+	else if (rand_task == 6)
+	{
+		// if (command_processed == false) {}
+		// else
+		// Transfer_Mailbox_Crypto_Secure_Boot(REG32(rand_addr) & 0xffffff, (REG32(rand_addr)));
+	}
+	else if (rand_task == 7)
+	{
+		// if (command_processed == false) {}
+		// else
+		Transfer_Mailbox_SimilarDMA(0, 0x31000, 0xff, 0x0, 0x28a00);
+	}
+	else if (rand_task == 8)
+	{
+		// if (command_processed == false) {}
+		// else
+		Transfer_Mailbox_Flash_Mirror((rand_value & 0x3), (rand_value & 0x100), 0x1A000, 0x12000);
+	}
+	else if (rand_task == 9)
+	{
+		// if (command_processed == false) {}
+		// else
+		Transfer_Mailbox_Flash_Page_Change((rand_value & 0xc), 0x2A000,
+			(rand_value & 0xff), (rand_value & 0xff), (rand_value & 0xff), (rand_value & 0xff),
+			(rand_value & 0xff), (rand_value & 0xff), (rand_value & 0xff), (rand_value & 0xff),
+			(rand_value & 0xff), (rand_value & 0xff), (rand_value & 0xff), (rand_value & 0xff),
+			(rand_value & 0xff), (rand_value & 0xff), (rand_value & 0xff), (rand_value & 0xff),
+			(rand_value & 0xff), (rand_value & 0xff), (rand_value & 0xff), (rand_value & 0xff),
+			(rand_value & 0xff), (rand_value & 0xff), (rand_value & 0xff), (rand_value & 0xff));
+	}
+	else if (rand_task == 10)
+	{
+		// if (command_processed == false) {}
+		// else if (lenovo_flag == 0)
+		// {
+		REG32(0x28a00) = 0x12345678;
+		REG32(0x28a04) = 0x55667788;
 
-        REG32(0x29a00) = 0x12345678;
-        REG32(0x29a04) = 0x11223344;
-        
-        Transfer_Mailbox_Generate_Key(0x80, 0x0, 0x28a00, 0x0, 0x29a00);
-        Transfer_Mailbox_Get_Key(0x80, rand_value, 0x0, 0x31000, 0x0, 0x31000);
-        // }
+		REG32(0x29a00) = 0x12345678;
+		REG32(0x29a04) = 0x11223344;
 
-    }
-    else if (rand_task == 11)
-    {
-        // if (command_processed == false) {}
-        // else
-            Transfer_Mailbox_Get_Key_Id(0x80, rand_value, 0x0, 0x31a00);
-    }
-    else if (rand_task == 12)
-    {
-        // if (command_processed == false) {}
-        // else
-            Transfer_Mailbox_Clear_Key(0x80, rand_value);  
-    }
-    else if (rand_task == 13)
-    {
-        // if (command_processed == false) {}
-        // else
-            Transfer_Mailbox_Clear_All_Key();  
-    }
-    else if (rand_task == 14)
-    {
-        // if (command_processed == false) {}
-        // else
-            // Transfer_Mailbox_Digest_Or_CrcVerify((rand_value & 0x5), (rand_value & 0x3), (rand_value & 0x7), (rand_value & 0x3),
-            //     0x0, 0x31000,
-            //     0x8,
-            //     0x0, 0x28a00);
-            Transfer_Mailbox_Digest_Or_CrcVerify(0x1,0x0,0x0,0x0,
-                0x0, 0x31000,
-                0x8,
-                0x0, 0x28a00);
-    }
-    else if (rand_task == 15)
-    {
-        uint32_t task15_rand = rand_value;
-        // if (command_processed == false) {}
-        // else
-        // {
-            //加密
-            Transfer_Mailbox_Symmetrric_Key((task15_rand & 0x4), (task15_rand & 0x2), 0x5, 0x0,
-                0x0, 0x31000,
-                0x0, 0x31000,
-                0x0, 0x31000,
-                0x20,
-                0x0,0x28a00);
-            //解密
-            Transfer_Mailbox_Symmetrric_Key((task15_rand & 0x4), (task15_rand & 0x2), 0x5, 0x1,
-                0x0, 0x31000,
-                0x0, 0x31000,
-                0x0, 0x31000,
-                0x20,
-                0x0,0x28a00);    
-        // }
-    }
-    else if (rand_task == 16)
-    {
-        // if (command_processed == false) {}
-        // else
-            Transfer_Mailbox_MessageAuthentication((rand_value & 0x5), (rand_value & 0x3), 0x0,
-                0x0, 0x31000,
-                (rand_value & 0x100),
-                0x0, 0x31000,
-                0x40,
-                0x0,0x28a00);
-    }
-    else if (rand_task == 17)
-    {
-        // if (command_processed == false) {}
-        // else
-            Transfer_Mailbox_KeyDerivation((rand_value & 0x5), (rand_value & 0x3), 0x0,
-                0x0, 0x31000,
-                0x40,
-                0x0, 0x28a00,
-                (rand_value&0x100));
-    }
-    else if (rand_task == 18)//rsa-密钥生成
-    {
-        for (size_t i = 0; i < 16; i++)
-        {
-            REG32(0x28a00 + i * 4) = 0x11223311;
-        }
-        // REG32(0x31000) = 0xaabbccdd;
-        // REG32(0x31004) = 0x11223344;
-        // REG32(0x31008) = 0x55667788;
-        // REG32(0x3100c) = 0x99aabbcc;
-        // REG32(0x31010) = 0x11223344;
-        // REG32(0x31014) = 0x55667788;
-        // REG32(0x31018) = 0x99aabbcc;
-        // REG32(0x3101c) = 0x11223344;
-        // if (rsa_sequence_stage != 0)
-        // if (command_processed == false) {}
-        // else
-        // {
-            // if (rsa_sequence_stage == 1)
-            // {
-                Transfer_Mailbox_Key_Pair_Generate(0x0, 0x10, 0x0, 0x0,
-                    0x0, 0x28000, //pubkey_addr
-                    0x29000, //privkey_addr
-                    0x0, 0x0,
-                    0x0, 0x2a000);//iv_addr
-                // rsa_sequence_stage = 2;
-            // }
-            // else if (rsa_sequence_stage == 2)
-            // {
-                //rsa-512-encrypt
-                Transfer_Mailbox_Asymmetric_Key_Pair(0x0, 0x0,
-                    0x0, 0x28a00,
-                    0x40,
-                    0x0, 0x0,
-                    0x0, 0x28000, //pubkey_addr
-                    0x0, 0x2f000,
-                    0x0, 0x0);
-                // rsa_sequence_stage = 3;
-            // }
-            // else if (rsa_sequence_stage == 3)
-            // {
-                //rsa-512-decrypt
-                Transfer_Mailbox_Asymmetric_Key_Pair(0x0, 0x1,
-                    0x0, 0x2f000,
-                    0x40,
-                    0x0, 0x0,
-                    0x0, 0x29000, //prikey_addr
-                    0x0, 0x2f000,
-                    0x0, 0x0);
-                // rsa_flag = 1;
-                // rsa_gen_flag = 1;
-                // rsa_sequence_stage = 0;
-            // }
-        // }
-        }
-    else if (rand_task == 19)//rsa-密钥生成
-    {
-        for (size_t i = 0; i < 32; i++)
-        {
-            REG32(0x28a00 + i * 4) = 0x11223311;
-        }
-        // if (command_processed == false) {}
-        // else
-        // {
-        // REG32(0x31000) = 0xaabbccdd;
-        // REG32(0x31004) = 0x11223344;
-        // REG32(0x31008) = 0x55667788;
-        // REG32(0x3100c) = 0x99aabbcc;
-        // REG32(0x31010) = 0x11223344;
-        // REG32(0x31014) = 0x55667788;
-        // REG32(0x31018) = 0x99aabbcc;
-        // REG32(0x3101c) = 0x11223344;
-            // if (rsa_gen_flag)
-            // {
-                Transfer_Mailbox_Key_Pair_Generate(0x0, 0x20, 0x0, 0x0,
-                    0x0, 0x28000, //pubkey_addr
-                    0x29000, //privkey_addr
-                    0x0, 0x0,
-                    0x0, 0x31000);//iv_addr
-                // rsa_gen_flag = 0;
-            // }
-            //rsa-1024-encrypt
-            // if (rsa_flag)
-            // {
-                Transfer_Mailbox_Asymmetric_Key_Pair(0x0, 0x0,
-                    0x0, 0x28a00,
-                    0x80,
-                    0x0, 0x0,
-                    0x0, 0x28000,//pubkey_addr
-                    0x0, 0x2f000,
-                    0x0, 0x0);
-                // rsa_flag = 0;
+		Transfer_Mailbox_Generate_Key(0x80, 0x0, 0x28a00, 0x0, 0x29a00);
+		Transfer_Mailbox_Get_Key(0x80, rand_value, 0x0, 0x31000, 0x0, 0x31000);
+		// }
 
-            // }
-            //rsa-1024-decrypt
-            // else
-            // {
-                Transfer_Mailbox_Asymmetric_Key_Pair(0x0, 0x1,
-                    0x0, 0x2f000,
-                    0x80,
-                    0x0, 0x0,
-                    0x0, 0x29000, //prikey_addr
-                    0x0, 0x2f000,
-                    0x0, 0x0);
-                // rsa_flag = 1;
-                // rsa_gen_flag = 1;
-            // }
-        // }
-    }
-    else if (rand_task == 20)//rsa-密钥生成
-    {
-        for (size_t i = 0; i < 64; i++)
-        {
-            REG32(0x28a00 + i * 4) = 0x11223311;
-        }
-        // if (command_processed == false) {}
-        // else
-        // {
-        // REG32(0x31000) = 0xaabbccdd;
-        // REG32(0x31004) = 0x11223344;
-        // REG32(0x31008) = 0x55667788;
-        // REG32(0x3100c) = 0x99aabbcc;
-        // REG32(0x31010) = 0x11223344;
-        // REG32(0x31014) = 0x55667788;
-        // REG32(0x31018) = 0x99aabbcc;
-        // REG32(0x3101c) = 0x11223344;
-            // if (rsa_gen_flag)
-            // {
-        Transfer_Mailbox_Key_Pair_Generate(0x0, 0x40, 0x0, 0x0,
-                    0x0, 0x28000, //pubkey_addr
-                    0x29000, //privkey_addr
-                    0x0, 0x0,
-                    0x0, 0x31000);//iv_addr
-                // rsa_gen_flag = 0;
-            // }
-            // if (rsa_flag)
-            // {
-                //rsa-2048-encrypt
-        Transfer_Mailbox_Asymmetric_Key_Pair(0x0, 0x0,
-                    0x0, 0x28a00,
-                    0x100,
-                    0x0, 0x0,
-                    0x0, 0x28000, //pubkey_addr
-                    0x0, 0x2f000,
-                    0x0, 0x0);
-                // rsa_flag = 0;
-            // }
-            // else
-            // {
-                //rsa-2048-decrypt
-        Transfer_Mailbox_Asymmetric_Key_Pair(0x0, 0x1,
-                    0x0, 0x2f000,
-                    0x100,
-                    0x0, 0x0,
-                    0x0, 0x29000, //prikey_addr
-                    0x0, 0x2f000,
-                    0x0, 0x0);
-                // rsa_flag = 1;
-                // rsa_gen_flag = 1;
-            // }
-        // }
-    }
-    else if (rand_task == 21)//rsa-密钥生成
-    {
-        for (size_t i = 0; i < 128; i++)
-        {
-            REG32(0x28a00 + i * 4) = 0x11223311;
-        }
-        
-        // REG32(0x31000) = 0xaabbccdd;
-        // REG32(0x31004) = 0x11223344;
-        // REG32(0x31008) = 0x55667788;
-        // REG32(0x3100c) = 0x99aabbcc;
-        // REG32(0x31010) = 0x11223344;
-        // REG32(0x31014) = 0x55667788;
-        // REG32(0x31018) = 0x99aabbcc;
-        // REG32(0x3101c) = 0x11223344;
-        //     if (command_processed == false) {}
-    //     else
-    // {
-    // if (rsa_gen_flag)
-    // {
-        Transfer_Mailbox_Key_Pair_Generate(0x0, 0x80, 0x0, 0x0,
-            0x0, 0x28000, //pubkey_addr
-            0x29000, //privkey_addr
-            0x0, 0x0,
-            0x0, 0x31000);//iv_addr
-        // rsa_gen_flag = 0;
-    // }
-    // if (rsa_flag)
-    // {
-        //rsa-4096-encrypt
-        Transfer_Mailbox_Asymmetric_Key_Pair(0x0, 0x0,
-            0x0, 0x28a00,
-            0x200,
-            0x0, 0x0,
-            0x0, 0x28000, //pubkey_addr
-            0x0, 0x2f000,
-            0x0, 0x0);
-        // rsa_flag = 0;
-    // }
-    // else
-    // {
-        //rsa-4096-decrypt
-        Transfer_Mailbox_Asymmetric_Key_Pair(0x0, 0x1,
-            0x0, 0x2f000,
-            0x200,
-            0x0, 0x0,
-            0x0, 0x29000, //prikey_addr
-            0x0, 0x2f000,
-            0x0, 0x0);
-        // rsa_flag = 1;
-        // rsa_gen_flag = 1;
-    // }
-    // }
-    }
-    else if (rand_task == 22)//kdf
-    {
-        Transfer_Mailbox_KeyDerivation((rand_value & 0x5), (rand_value & 0x3), 0x0,
-        0x0, 0x31000,
-        0x40,
-        0x0, 0x28a00,
-        (rand_value&0x100));
-    }
-    else if (rand_task == 23)//ecc-en-de
-    {
+	}
+	else if (rand_task == 11)
+	{
+		// if (command_processed == false) {}
+		// else
+		Transfer_Mailbox_Get_Key_Id(0x80, rand_value, 0x0, 0x31a00);
+	}
+	else if (rand_task == 12)
+	{
+		// if (command_processed == false) {}
+		// else
+		Transfer_Mailbox_Clear_Key(0x80, rand_value);
+	}
+	else if (rand_task == 13)
+	{
+		// if (command_processed == false) {}
+		// else
+		Transfer_Mailbox_Clear_All_Key();
+	}
+	else if (rand_task == 14)
+	{
+		// if (command_processed == false) {}
+		// else
+			// Transfer_Mailbox_Digest_Or_CrcVerify((rand_value & 0x5), (rand_value & 0x3), (rand_value & 0x7), (rand_value & 0x3),
+			//     0x0, 0x31000,
+			//     0x8,
+			//     0x0, 0x28a00);
+		Transfer_Mailbox_Digest_Or_CrcVerify(0x1, 0x0, 0x0, 0x0,
+			0x0, 0x31000,
+			0x8,
+			0x0, 0x28a00);
+	}
+	else if (rand_task == 15)
+	{
+		uint32_t task15_rand = rand_value;
+		// if (command_processed == false) {}
+		// else
+		// {
+			//加密
+		Transfer_Mailbox_Symmetrric_Key((task15_rand & 0x4), (task15_rand & 0x2), 0x5, 0x0,
+			0x0, 0x31000,
+			0x0, 0x31000,
+			0x0, 0x31000,
+			0x20,
+			0x0, 0x28a00);
+		//解密
+		Transfer_Mailbox_Symmetrric_Key((task15_rand & 0x4), (task15_rand & 0x2), 0x5, 0x1,
+			0x0, 0x31000,
+			0x0, 0x31000,
+			0x0, 0x31000,
+			0x20,
+			0x0, 0x28a00);
+	// }
+	}
+	else if (rand_task == 16)
+	{
+		// if (command_processed == false) {}
+		// else
+		Transfer_Mailbox_MessageAuthentication((rand_value & 0x5), (rand_value & 0x3), 0x0,
+			0x0, 0x31000,
+			(rand_value & 0x100),
+			0x0, 0x31000,
+			0x40,
+			0x0, 0x28a00);
+	}
+	else if (rand_task == 17)
+	{
+		// if (command_processed == false) {}
+		// else
+		Transfer_Mailbox_KeyDerivation((rand_value & 0x5), (rand_value & 0x3), 0x0,
+			0x0, 0x31000,
+			0x40,
+			0x0, 0x28a00,
+			(rand_value & 0x100));
+	}
+	else if (rand_task == 18)//rsa-密钥生成
+	{
+		for (size_t i = 0; i < 16; i++)
+		{
+			REG32(0x28a00 + i * 4) = 0x11223311;
+		}
+		// REG32(0x31000) = 0xaabbccdd;
+		// REG32(0x31004) = 0x11223344;
+		// REG32(0x31008) = 0x55667788;
+		// REG32(0x3100c) = 0x99aabbcc;
+		// REG32(0x31010) = 0x11223344;
+		// REG32(0x31014) = 0x55667788;
+		// REG32(0x31018) = 0x99aabbcc;
+		// REG32(0x3101c) = 0x11223344;
+		// if (rsa_sequence_stage != 0)
+		// if (command_processed == false) {}
+		// else
+		// {
+			// if (rsa_sequence_stage == 1)
+			// {
+		Transfer_Mailbox_Key_Pair_Generate(0x0, 0x10, 0x0, 0x0,
+			0x0, 0x28000, //pubkey_addr
+			0x29000, //privkey_addr
+			0x0, 0x0,
+			0x0, 0x2a000);//iv_addr
+		// rsa_sequence_stage = 2;
+	// }
+	// else if (rsa_sequence_stage == 2)
+	// {
+		//rsa-512-encrypt
+		Transfer_Mailbox_Asymmetric_Key_Pair(0x0, 0x0,
+			0x0, 0x28a00,
+			0x40,
+			0x0, 0x0,
+			0x0, 0x28000, //pubkey_addr
+			0x0, 0x2f000,
+			0x0, 0x0);
+		// rsa_sequence_stage = 3;
+	// }
+	// else if (rsa_sequence_stage == 3)
+	// {
+		//rsa-512-decrypt
+		Transfer_Mailbox_Asymmetric_Key_Pair(0x0, 0x1,
+			0x0, 0x2f000,
+			0x40,
+			0x0, 0x0,
+			0x0, 0x29000, //prikey_addr
+			0x0, 0x2f000,
+			0x0, 0x0);
+		// rsa_flag = 1;
+		// rsa_gen_flag = 1;
+		// rsa_sequence_stage = 0;
+	// }
+// }
+	}
+	else if (rand_task == 19)//rsa-密钥生成
+	{
+		for (size_t i = 0; i < 32; i++)
+		{
+			REG32(0x28a00 + i * 4) = 0x11223311;
+		}
+		// if (command_processed == false) {}
+		// else
+		// {
+		// REG32(0x31000) = 0xaabbccdd;
+		// REG32(0x31004) = 0x11223344;
+		// REG32(0x31008) = 0x55667788;
+		// REG32(0x3100c) = 0x99aabbcc;
+		// REG32(0x31010) = 0x11223344;
+		// REG32(0x31014) = 0x55667788;
+		// REG32(0x31018) = 0x99aabbcc;
+		// REG32(0x3101c) = 0x11223344;
+			// if (rsa_gen_flag)
+			// {
+		Transfer_Mailbox_Key_Pair_Generate(0x0, 0x20, 0x0, 0x0,
+			0x0, 0x28000, //pubkey_addr
+			0x29000, //privkey_addr
+			0x0, 0x0,
+			0x0, 0x31000);//iv_addr
+		// rsa_gen_flag = 0;
+	// }
+	//rsa-1024-encrypt
+	// if (rsa_flag)
+	// {
+		Transfer_Mailbox_Asymmetric_Key_Pair(0x0, 0x0,
+			0x0, 0x28a00,
+			0x80,
+			0x0, 0x0,
+			0x0, 0x28000,//pubkey_addr
+			0x0, 0x2f000,
+			0x0, 0x0);
+		// rsa_flag = 0;
 
-	    Transfer_Mailbox_Key_Pair_Generate(0x2, 0x2, 0x1, 0x0,
-            0x0, 0x28000, //pubkey_addr
-            0x29000, //privkey_addr
-            0x04, 0x03,//ecc_addr
+	// }
+	//rsa-1024-decrypt
+	// else
+	// {
+		Transfer_Mailbox_Asymmetric_Key_Pair(0x0, 0x1,
+			0x0, 0x2f000,
+			0x80,
+			0x0, 0x0,
+			0x0, 0x29000, //prikey_addr
+			0x0, 0x2f000,
+			0x0, 0x0);
+		// rsa_flag = 1;
+		// rsa_gen_flag = 1;
+	// }
+// }
+	}
+	else if (rand_task == 20)//rsa-密钥生成
+	{
+		for (size_t i = 0; i < 64; i++)
+		{
+			REG32(0x28a00 + i * 4) = 0x11223311;
+		}
+		// if (command_processed == false) {}
+		// else
+		// {
+		// REG32(0x31000) = 0xaabbccdd;
+		// REG32(0x31004) = 0x11223344;
+		// REG32(0x31008) = 0x55667788;
+		// REG32(0x3100c) = 0x99aabbcc;
+		// REG32(0x31010) = 0x11223344;
+		// REG32(0x31014) = 0x55667788;
+		// REG32(0x31018) = 0x99aabbcc;
+		// REG32(0x3101c) = 0x11223344;
+			// if (rsa_gen_flag)
+			// {
+		Transfer_Mailbox_Key_Pair_Generate(0x0, 0x40, 0x0, 0x0,
+					0x0, 0x28000, //pubkey_addr
+					0x29000, //privkey_addr
+					0x0, 0x0,
+					0x0, 0x31000);//iv_addr
+				// rsa_gen_flag = 0;
+			// }
+			// if (rsa_flag)
+			// {
+				//rsa-2048-encrypt
+		Transfer_Mailbox_Asymmetric_Key_Pair(0x0, 0x0,
+					0x0, 0x28a00,
+					0x100,
+					0x0, 0x0,
+					0x0, 0x28000, //pubkey_addr
+					0x0, 0x2f000,
+					0x0, 0x0);
+				// rsa_flag = 0;
+			// }
+			// else
+			// {
+				//rsa-2048-decrypt
+		Transfer_Mailbox_Asymmetric_Key_Pair(0x0, 0x1,
+					0x0, 0x2f000,
+					0x100,
+					0x0, 0x0,
+					0x0, 0x29000, //prikey_addr
+					0x0, 0x2f000,
+					0x0, 0x0);
+				// rsa_flag = 1;
+				// rsa_gen_flag = 1;
+			// }
+		// }
+	}
+	else if (rand_task == 21)//rsa-密钥生成
+	{
+		for (size_t i = 0; i < 128; i++)
+		{
+			REG32(0x28a00 + i * 4) = 0x11223311;
+		}
+
+		// REG32(0x31000) = 0xaabbccdd;
+		// REG32(0x31004) = 0x11223344;
+		// REG32(0x31008) = 0x55667788;
+		// REG32(0x3100c) = 0x99aabbcc;
+		// REG32(0x31010) = 0x11223344;
+		// REG32(0x31014) = 0x55667788;
+		// REG32(0x31018) = 0x99aabbcc;
+		// REG32(0x3101c) = 0x11223344;
+		//     if (command_processed == false) {}
+	//     else
+	// {
+	// if (rsa_gen_flag)
+	// {
+		Transfer_Mailbox_Key_Pair_Generate(0x0, 0x80, 0x0, 0x0,
+			0x0, 0x28000, //pubkey_addr
+			0x29000, //privkey_addr
+			0x0, 0x0,
+			0x0, 0x31000);//iv_addr
+		// rsa_gen_flag = 0;
+	// }
+	// if (rsa_flag)
+	// {
+		//rsa-4096-encrypt
+		Transfer_Mailbox_Asymmetric_Key_Pair(0x0, 0x0,
+			0x0, 0x28a00,
+			0x200,
+			0x0, 0x0,
+			0x0, 0x28000, //pubkey_addr
+			0x0, 0x2f000,
+			0x0, 0x0);
+		// rsa_flag = 0;
+	// }
+	// else
+	// {
+		//rsa-4096-decrypt
+		Transfer_Mailbox_Asymmetric_Key_Pair(0x0, 0x1,
+			0x0, 0x2f000,
+			0x200,
+			0x0, 0x0,
+			0x0, 0x29000, //prikey_addr
+			0x0, 0x2f000,
+			0x0, 0x0);
+		// rsa_flag = 1;
+		// rsa_gen_flag = 1;
+	// }
+	// }
+	}
+	else if (rand_task == 22)//kdf
+	{
+		Transfer_Mailbox_KeyDerivation((rand_value & 0x5), (rand_value & 0x3), 0x0,
+		0x0, 0x31000,
+		0x40,
+		0x0, 0x28a00,
+		(rand_value & 0x100));
+	}
+	else if (rand_task == 23)//ecc-en-de
+	{
+
+		Transfer_Mailbox_Key_Pair_Generate(0x2, 0x2, 0x1, 0x0,
+			0x0, 0x28000, //pubkey_addr
+			0x29000, //privkey_addr
+			0x04, 0x03,//ecc_addr
 			0x0, 0x31000);//iv_addr
 			// ecc-encrypt
 
@@ -690,81 +692,81 @@ void Run_All_Mailbox_Tasks_Random(void)
 			0x4, 0x3,
 			0x0, 0x28000,//pubkey_addr
 			0x0, 0x2a000,
-			0x0, 0x2f000);		
+			0x0, 0x2f000);
 
 			//ecc-decrypt	
 		Transfer_Mailbox_Asymmetric_Key_Pair(0x2, 0x1,
-		    0x0, 0x2f000,
+			0x0, 0x2f000,
 			0x20,
 			0x4, 0x3,
 			0x0, 0x29000, //prikey_addr
 			0x0, 0x2a000,
 			0x0, 0x2f000);
 
-    }
-    else if (rand_task == 24)//ecc-signature
-    {
-            //ecc-密钥生成
-            Transfer_Mailbox_Key_Pair_Generate(0x2, 0x2, 0x1, 0x0,
-				0x0, 0x31a00,//A公钥地址-rsa&ecc
-        	    0x28a00,//A私钥地址(0x28000-0x2ffff)-rsa&ecc
-				0x4, 0x3,//椭圆曲线地址-ecc
-				0x0,0x31000);//公钥指数地址-rsa 
+	}
+	else if (rand_task == 24)//ecc-signature
+	{
+			//ecc-密钥生成
+		Transfer_Mailbox_Key_Pair_Generate(0x2, 0x2, 0x1, 0x0,
+			0x0, 0x31a00,//A公钥地址-rsa&ecc
+			0x28a00,//A私钥地址(0x28000-0x2ffff)-rsa&ecc
+			0x4, 0x3,//椭圆曲线地址-ecc
+			0x0, 0x31000);//公钥指数地址-rsa 
 
-			//ecc-签名
-			Transfer_Mailbox_Signature_Verify(0x2, 0x3, 0x1, 0x1,
-				0x0, 0x2aa00, //ecc-message
-				0x20,//ecc-message长度
-				0x4, 0x03,//ecc_addr
-				0x0, 0x28a00,//ecc-prikey_addr
-				0x0, 0x2ca00,//ecc-r-addr
-				0x0, 0x2cc00);//ecc-s-addr
+		//ecc-签名
+		Transfer_Mailbox_Signature_Verify(0x2, 0x3, 0x1, 0x1,
+			0x0, 0x2aa00, //ecc-message
+			0x20,//ecc-message长度
+			0x4, 0x03,//ecc_addr
+			0x0, 0x28a00,//ecc-prikey_addr
+			0x0, 0x2ca00,//ecc-r-addr
+			0x0, 0x2cc00);//ecc-s-addr
 
-			//ecc-验签
-			Transfer_Mailbox_Signature_Verify(0x2, 0x3, 0x1, 0x0,
-				0x0, 0x2aa00, //ecc-message
-				0x20,//ecc-message长度
-				0x04, 0x03,//ecc_addr
-				0x0, 0x31a00,//ecc-pubkey_addr
-				0x0, 0x2ca00,//ecc-r-addr
-				0x0, 0x2cc00);//ecc-s-addr
-    }
-    else if (rand_task == 25)//rsa-signature
-    {
-            //rsa-密钥生成
-            Transfer_Mailbox_Key_Pair_Generate(0x0, 0x10, 0x0, 0x0,
-				0x0, 0x31a00,//A公钥地址-rsa&ecc
-        	    0x28a00,//A私钥地址(0x28000-0x2ffff)-rsa&ecc
-				0x4, 0x3,//椭圆曲线地址-ecc
-				0x0,0x31000);//公钥指数地址-rsa 
+		//ecc-验签
+		Transfer_Mailbox_Signature_Verify(0x2, 0x3, 0x1, 0x0,
+			0x0, 0x2aa00, //ecc-message
+			0x20,//ecc-message长度
+			0x04, 0x03,//ecc_addr
+			0x0, 0x31a00,//ecc-pubkey_addr
+			0x0, 0x2ca00,//ecc-r-addr
+			0x0, 0x2cc00);//ecc-s-addr
+	}
+	else if (rand_task == 25)//rsa-signature
+	{
+			//rsa-密钥生成
+		Transfer_Mailbox_Key_Pair_Generate(0x0, 0x10, 0x0, 0x0,
+			0x0, 0x31a00,//A公钥地址-rsa&ecc
+			0x28a00,//A私钥地址(0x28000-0x2ffff)-rsa&ecc
+			0x4, 0x3,//椭圆曲线地址-ecc
+			0x0, 0x31000);//公钥指数地址-rsa 
 
-			//rsa-签名
-			Transfer_Mailbox_Signature_Verify(0x0, 0x2, 0x0, 0x1,
-				0x0, 0x2aa00, //rsa-message
-				0x40,//rsa-message长度
-				0x4, 0x3,//ecc_addr
-				0x0, 0x28a00,//rsa-prikey_addr
-				0x0, 0x2ca00,//rsa-output-addr
-				0x0, 0x2cc00);//ecc-s-addr
+		//rsa-签名
+		Transfer_Mailbox_Signature_Verify(0x0, 0x2, 0x0, 0x1,
+			0x0, 0x2aa00, //rsa-message
+			0x40,//rsa-message长度
+			0x4, 0x3,//ecc_addr
+			0x0, 0x28a00,//rsa-prikey_addr
+			0x0, 0x2ca00,//rsa-output-addr
+			0x0, 0x2cc00);//ecc-s-addr
 
-			//rsa-验签
-			Transfer_Mailbox_Signature_Verify(0x0, 0x2, 0x0, 0x0,
-				0x0, 0x2ca00, //ecc-message
-				0x40,//ecc-message长度
-				0x4, 0x3,//ecc_addr
-				0x0, 0x31a00,//rsa-pubkey_addr
-				0x0, 0x2ca00,//rsa-output-addr
-				0x0, 0x2cc00);//ecc-s-addr
+		//rsa-验签
+		Transfer_Mailbox_Signature_Verify(0x0, 0x2, 0x0, 0x0,
+			0x0, 0x2ca00, //ecc-message
+			0x40,//ecc-message长度
+			0x4, 0x3,//ecc_addr
+			0x0, 0x31a00,//rsa-pubkey_addr
+			0x0, 0x2ca00,//rsa-output-addr
+			0x0, 0x2cc00);//ecc-s-addr
 
-    }
-    else if (rand_task == 26)//ecc-ecdh
-    {
-        Transfer_Mailbox_Key_Pair_Generate(0x2, 0x2, 0x1, 0x0,
+	}
+	else if (rand_task == 26)//ecc-ecdh
+	{
+		Transfer_Mailbox_Key_Pair_Generate(0x2, 0x2, 0x1, 0x0,
 				0x0, 0x31a00,//A公钥地址-rsa&ecc
 				0x28a00,//A私钥地址(0x28000-0x2ffff)-rsa&ecc
 				0x4, 0x3,//椭圆曲线地址-ecc
-				0x0,0x31000);//公钥指数地址-rsa 
-			
+				0x0, 0x31000);//公钥指数地址-rsa 
+
 		Transfer_Mailbox_Key_Pair_Generate(0x2, 0x2, 0x1, 0x0,
 					0x0, 0x31d00,//B公钥地址-rsa&ecc
 					0x28d00,//B私钥地址(0x28000-0x2ffff)-rsa&ecc
@@ -775,27 +777,27 @@ void Run_All_Mailbox_Tasks_Random(void)
 				0x0, 0x28a00,
 				0x0, 0x31d00,
 				0x4, 0x3,
-				0x0,0x2ca00);
-			
+				0x0, 0x2ca00);
+
 		Transfer_Mailbox_Diffie_Hellman(0x0, 0x0,
 				0x0, 0x28d00,
 				0x0, 0x31a00,
 				0x4, 0x3,
 				0x0, 0x2cb00);
-    }
-    
-    //ecc-密钥生成
-    // else if (rand_task == 29)
-    // {
-    //     Transfer_Mailbox_Custom(...);
-    // }
+	}
+
+	//ecc-密钥生成
+	// else if (rand_task == 29)
+	// {
+	//     Transfer_Mailbox_Custom(...);
+	// }
 
 }
 #endif
 
 uint32_t ToggleEndian(uint32_t data)
 {
-    return (((data & 0x000000ff) << 24) | ((data & 0x0000ff00) << 8) | ((data & 0x00ff0000) >> 8) | ((data & 0xff000000) >> 24));
+	return (((data & 0x000000ff) << 24) | ((data & 0x0000ff00) << 8) | ((data & 0x00ff0000) >> 8) | ((data & 0xff000000) >> 24));
 }
 
 
@@ -820,72 +822,72 @@ void test_service(void)
 			dprint("Data:%#x\n", lpc_stat.data);
 			LPC_EOF = 0;
 		}
-#endif
+	#endif
 
-//以下内容放在while（1）的大循环里面
-	//run task
-	char task_flag = 0;
-	int all_task_cnt = 0;
-	int all_while_lenth = 0;
-
-
-	int all_trng_cnt = 0;
-	int all_trng_while_lenth = 0;
-	//trng
+	//以下内容放在while（1）的大循环里面
+		//run task
+		char task_flag = 0;
+		int all_task_cnt = 0;
+		int all_while_lenth = 0;
 
 
-	int trng_cnt = 0;
-	// int trng_while_lenth = 125000;
-	int trng_while_lenth = 0;
-	char trng_flag = 1;
-	uint32_t base_addr = 0x31000;
-	uint32_t rand_addr = 0x31000;
+		int all_trng_cnt = 0;
+		int all_trng_while_lenth = 0;
+		//trng
 
 
-	//aes: 
-	int aes_ecnt = 0;
-	int aes_dcnt = 0;
-	char aes_flag = 0;
-	int aes_while_lenth = 0; //aes_while_lenth*2
-
-	//sha:
-	int sha_cnt = 0;
-	int sha_while_lenth = 0; //sha_while_lenth*5
-
-	//hmac
-	int hmac_cnt = 0;
-	int hmac_while_lenth = 0; //hmac_while_lenth*6
-
-	//rsa
-	int rsa_cnt = 0;
-	int rsa_while_lenth = 0;
-	char rsa_flag = 1;
-	char rsa_gen_flag = 1;
-
-	//ecc
-	int ecc_cnt = 0;
-	int ecc_while_lenth = 0;
-	char ecc_flag = 1;
-	char ecc_gen_flag = 1;
-
-	//signature
-	int ecc_signature_cnt = 0;
-	int ecc_signature_while_lenth = 0;
-	// char sinature_flag = 1;
-	int rsa_signature_cnt = 0;
-	int rsa_signature_while_lenth = 0;
-
-	//ecdh
-	int ecdh_cnt = 0;
-	int ecdh_while_lenth = 0;
+		int trng_cnt = 0;
+		// int trng_while_lenth = 125000;
+		int trng_while_lenth = 0;
+		char trng_flag = 1;
+		uint32_t base_addr = 0x31000;
+		uint32_t rand_addr = 0x31000;
 
 
-	//key manger
-	int key_manger = 0;
-	int key_manger_while_lenth = 1;
+		//aes: 
+		int aes_ecnt = 0;
+		int aes_dcnt = 0;
+		char aes_flag = 0;
+		int aes_while_lenth = 0; //aes_while_lenth*2
+
+		//sha:
+		int sha_cnt = 0;
+		int sha_while_lenth = 0; //sha_while_lenth*5
+
+		//hmac
+		int hmac_cnt = 0;
+		int hmac_while_lenth = 0; //hmac_while_lenth*6
+
+		//rsa
+		int rsa_cnt = 0;
+		int rsa_while_lenth = 0;
+		char rsa_flag = 1;
+		char rsa_gen_flag = 1;
+
+		//ecc
+		int ecc_cnt = 0;
+		int ecc_while_lenth = 0;
+		char ecc_flag = 1;
+		char ecc_gen_flag = 1;
+
+		//signature
+		int ecc_signature_cnt = 0;
+		int ecc_signature_while_lenth = 0;
+		// char sinature_flag = 1;
+		int rsa_signature_cnt = 0;
+		int rsa_signature_while_lenth = 0;
+
+		//ecdh
+		int ecdh_cnt = 0;
+		int ecdh_while_lenth = 0;
 
 
-	if (mailbox_task_count < 10)
+		//key manger
+		int key_manger = 0;
+		int key_manger_while_lenth = 1;
+
+
+		if (mailbox_task_count < 10)
 		{
 			// run all task 			
 			if (command_processed == false) {}
@@ -1094,261 +1096,261 @@ void test_service(void)
 			}
 
 	//rsa-签名		
-	if (command_processed == false) {}
-	else if (rsa_signature_cnt < rsa_signature_while_lenth)
-		{
-			
-		//rsa-密钥生成
-		for (size_t i = 0; i < 16; i++)
-		{
-			REG32((0x2aa00)+i*4) = 0x11223344;
-		}
-		// REG32(0x2aa00) = 0x12345678;
-		// REG32(0x2aa04) = 0x12345678;
-		// REG32(0x2aa08) = 0x12345678;
-		// REG32(0x2aa0c) = 0x12345678;
-		// REG32(0x2aa10) = 0x12345678;
-			Transfer_Mailbox_Key_Pair_Generate(0x0, 0x10, 0x0, 0x0,
-				0x0, 0x31a00,//A公钥地址-rsa&ecc
-				0x28a00,//A私钥地址(0x28000-0x2ffff)-rsa&ecc
-				0x4, 0x3,//椭圆曲线地址-ecc
-				0x0, 0x31000);//公钥指数地址-rsa 
+			if (command_processed == false) {}
+			else if (rsa_signature_cnt < rsa_signature_while_lenth)
+			{
 
-			//rsa-签名
-			Transfer_Mailbox_Signature_Verify(0x0, 0x2, 0x0, 0x1,
-				0x0, 0x2aa00, //rsa-message
-				0x40,//rsa-message长度
-				0x4, 0x03,//ecc_addr
-				0x0, 0x28a00,//rsa-prikey_addr
-				0x0, 0x2ca00,//rsa-output-addr
-				0x0, 0x2cc00);//ecc-s-addr
-
-			//rsa-验签
-			Transfer_Mailbox_Signature_Verify(0x0, 0x2, 0x0, 0x0,
-				0x0, 0x2ca00, //ecc-message
-				0x40,//ecc-message长度
-				0x04, 0x03,//ecc_addr
-				0x0, 0x31a00,//rsa-pubkey_addr
-				0x0, 0x2aa00,//rsa-output-addr
-				0x0, 0x2cc00);//ecc-s-addr
-			rsa_signature_cnt++;
-	}
-		//ecdh
-		if (command_processed == false) {}
-		else if (ecdh_cnt < ecdh_while_lenth)
-		{
-			Transfer_Mailbox_Key_Pair_Generate(0x2, 0x2, 0x1, 0x0,
-				0x0, 0x31a00,//A公钥地址-rsa&ecc
-				0x28a00,//A私钥地址(0x28000-0x2ffff)-rsa&ecc
-				0x4, 0x3,//椭圆曲线地址-ecc
-				0x0,0x31000);//公钥指数地址-rsa 
-			
-			Transfer_Mailbox_Key_Pair_Generate(0x2, 0x2, 0x1, 0x0,
-					0x0, 0x31d00,//B公钥地址-rsa&ecc
-					0x28d00,//B私钥地址(0x28000-0x2ffff)-rsa&ecc
+			//rsa-密钥生成
+				for (size_t i = 0; i < 16; i++)
+				{
+					REG32((0x2aa00) + i * 4) = 0x11223344;
+				}
+				// REG32(0x2aa00) = 0x12345678;
+				// REG32(0x2aa04) = 0x12345678;
+				// REG32(0x2aa08) = 0x12345678;
+				// REG32(0x2aa0c) = 0x12345678;
+				// REG32(0x2aa10) = 0x12345678;
+				Transfer_Mailbox_Key_Pair_Generate(0x0, 0x10, 0x0, 0x0,
+					0x0, 0x31a00,//A公钥地址-rsa&ecc
+					0x28a00,//A私钥地址(0x28000-0x2ffff)-rsa&ecc
 					0x4, 0x3,//椭圆曲线地址-ecc
-				0x0, 0x31000);//公钥指数地址-rsa 
+					0x0, 0x31000);//公钥指数地址-rsa 
 
-			Transfer_Mailbox_Diffie_Hellman(0x0, 0x0,
-				0x0, 0x28a00,
-				0x0, 0x31d00,
-				0x4, 0x3,
-				0x0,0x2ca00);
-			
-			Transfer_Mailbox_Diffie_Hellman(0x0, 0x0,
-				0x0, 0x28d00,
-				0x0, 0x31a00,
-				0x4, 0x3,
-				0x0, 0x2cb00);
-			ecdh_cnt++;
+				//rsa-签名
+				Transfer_Mailbox_Signature_Verify(0x0, 0x2, 0x0, 0x1,
+					0x0, 0x2aa00, //rsa-message
+					0x40,//rsa-message长度
+					0x4, 0x03,//ecc_addr
+					0x0, 0x28a00,//rsa-prikey_addr
+					0x0, 0x2ca00,//rsa-output-addr
+					0x0, 0x2cc00);//ecc-s-addr
+
+				//rsa-验签
+				Transfer_Mailbox_Signature_Verify(0x0, 0x2, 0x0, 0x0,
+					0x0, 0x2ca00, //ecc-message
+					0x40,//ecc-message长度
+					0x04, 0x03,//ecc_addr
+					0x0, 0x31a00,//rsa-pubkey_addr
+					0x0, 0x2aa00,//rsa-output-addr
+					0x0, 0x2cc00);//ecc-s-addr
+				rsa_signature_cnt++;
+			}
+				//ecdh
+			if (command_processed == false) {}
+			else if (ecdh_cnt < ecdh_while_lenth)
+			{
+				Transfer_Mailbox_Key_Pair_Generate(0x2, 0x2, 0x1, 0x0,
+					0x0, 0x31a00,//A公钥地址-rsa&ecc
+					0x28a00,//A私钥地址(0x28000-0x2ffff)-rsa&ecc
+					0x4, 0x3,//椭圆曲线地址-ecc
+					0x0, 0x31000);//公钥指数地址-rsa 
+
+				Transfer_Mailbox_Key_Pair_Generate(0x2, 0x2, 0x1, 0x0,
+						0x0, 0x31d00,//B公钥地址-rsa&ecc
+						0x28d00,//B私钥地址(0x28000-0x2ffff)-rsa&ecc
+						0x4, 0x3,//椭圆曲线地址-ecc
+					0x0, 0x31000);//公钥指数地址-rsa 
+
+				Transfer_Mailbox_Diffie_Hellman(0x0, 0x0,
+					0x0, 0x28a00,
+					0x0, 0x31d00,
+					0x4, 0x3,
+					0x0, 0x2ca00);
+
+				Transfer_Mailbox_Diffie_Hellman(0x0, 0x0,
+					0x0, 0x28d00,
+					0x0, 0x31a00,
+					0x4, 0x3,
+					0x0, 0x2cb00);
+				ecdh_cnt++;
+			}
+
+			//aes
+			if (command_processed == false) {}
+			else if (aes_ecnt < aes_while_lenth)
+			{
+				//ECB-AES128-ENCRYPT
+				Transfer_Mailbox_Symmetrric_Key(0x1, 0x0, 0x0, 0x0,
+					0x0, 0x31000,
+					0x0, 0x31a00,
+					0x0, 0x31b00,
+					0x10,
+					0x0, 0x31d00);
+				aes_flag = 0x1;
+				aes_ecnt++;
+				// printf("ecnt:%d\n", aes_ecnt);
+			}
+			if (command_processed == false) {}
+			else if ((aes_dcnt < aes_while_lenth) && aes_flag == 0x1)
+			{
+				//ECB-AES128-DECRYPT
+				Transfer_Mailbox_Symmetrric_Key(0x1, 0x0, 0x0, 0x1,
+					0x0, 0x31000,
+					0x0, 0x31a00,
+					0x0, 0x31d00,
+					0x10,
+					0x0, 0x31b00);
+				aes_flag = 0x0;
+				aes_dcnt++;
+				// printf("dcnt:%d\n",aes_dcnt);
+			}
+			//sha
+
+			// if (command_processed == false){}
+			// else if(sha_cnt < sha_while_lenth)
+			// {
+			// 	//crc32
+			// 	Transfer_Mailbox_Digest_Or_CrcVerify(0x0, 0x1, 0x0, 0x0,
+			// 		0x0, 0x31000,
+			// 		0x8,
+			// 		0x0, 0x28000);
+			// }
+			// if (command_processed == false){}
+			// else
+			// {
+			// 	//sha0
+			// 	// Transfer_Mailbox_Digest_Or_CrcVerify(0x1, 0x1, 0x0, 0x0,
+			// 	// 	0x0, 0x31000,
+			// 	// 	0x8,
+			// 	// 	0x0, 0x28a00);
+			// }
+			if (command_processed == false) {}
+			else if (sha_cnt < sha_while_lenth)
+			{
+				//sha1
+				Transfer_Mailbox_Digest_Or_CrcVerify(0x2, 0x1, 0x0, 0x0,
+					0x0, 0x31000,
+					0x8,
+					0x0, 0x28a00);
+			}
+			if (command_processed == false) {}
+			else if (sha_cnt < sha_while_lenth)
+			{
+				//sha224
+				Transfer_Mailbox_Digest_Or_CrcVerify(0x3, 0x0, 0x0, 0x0,
+					0x0, 0x31000,
+					0x8,
+					0x0, 0x28a00);
+			}
+			if (command_processed == false) {}
+			else if (sha_cnt < sha_while_lenth)
+			{
+				//sha256
+				Transfer_Mailbox_Digest_Or_CrcVerify(0x3, 0x1, 0x0, 0x0,
+					0x0, 0x31000,
+					0x8,
+					0x0, 0x28a00);
+			}
+			if (command_processed == false) {}
+			else if (sha_cnt < sha_while_lenth)
+			{
+				//sha384
+				Transfer_Mailbox_Digest_Or_CrcVerify(0x3, 0x2, 0x0, 0x0,
+					0x0, 0x31000,
+					0x8,
+					0x0, 0x28a00);
+			}
+			if (command_processed == false) {}
+			else if (sha_cnt < sha_while_lenth)
+			{
+				// sha512
+				Transfer_Mailbox_Digest_Or_CrcVerify(0x3, 0x3, 0x0, 0x0,
+					0x0, 0x31000,
+					0x8,
+					0x0, 0x28a00);
+				sha_cnt++;
+			}
+
+			//hmac
+			if (command_processed == false) {}
+			else if (hmac_cnt < hmac_while_lenth)
+			{
+				// hmac_sha1
+				Transfer_Mailbox_MessageAuthentication(0x2, 0x0, 0x0,
+					0x0, 0x31000,
+					0x10,
+					0x0, 0x28a00,
+					0x20,
+					0x0, 0x31d00);
+			}
+			if (command_processed == false) {}
+			else if (hmac_cnt < hmac_while_lenth)
+			{
+				// hmac_sha224
+				Transfer_Mailbox_MessageAuthentication(0x3, 0x0, 0x0,
+					0x0, 0x31000,
+					0x10,
+					0x0, 0x28a00,
+					0x20,
+					0x0, 0x31d00);
+			}
+			if (command_processed == false) {}
+			else if (hmac_cnt < hmac_while_lenth)
+			{
+				// hmac_sha256
+				Transfer_Mailbox_MessageAuthentication(0x3, 0x1, 0x0,
+					0x0, 0x31000,
+					0x10,
+					0x0, 0x28a00,
+					0x20,
+					0x0, 0x31d00);
+			}
+			if (command_processed == false) {}
+			else if (hmac_cnt < hmac_while_lenth)
+			{
+				// hmac_sha384
+				Transfer_Mailbox_MessageAuthentication(0x3, 0x2, 0x0,
+					0x0, 0x31000,
+					0x10,
+					0x0, 0x28a00,
+					0x20,
+					0x0, 0x31d00);
+			}
+			if (command_processed == false) {}
+			else if (hmac_cnt < hmac_while_lenth)
+			{
+				// hmac_sha512
+				Transfer_Mailbox_MessageAuthentication(0x3, 0x3, 0x0,
+					0x0, 0x31000,
+					0x10,
+					0x0, 0x28a00,
+					0x20,
+					0x0, 0x31d00);
+			}
+			if (command_processed == false) {}
+			else if (hmac_cnt < hmac_while_lenth)
+			{
+				// hmac_sm3
+				Transfer_Mailbox_MessageAuthentication(0x5, 0x3, 0x0,
+					0x0, 0x31000,
+					0x10,
+					0x0, 0x28a00,
+					0x20,
+					0x0, 0x31d00);
+				hmac_cnt++;
+			}
+			// if (command_processed == false) {}
+			// else if (hmac_cnt < hmac_while_lenth)
+			// {
+			// 	// rsa
+			// 		Transfer_Mailbox_Asymmetric_Key_Pair(0x5, 0x3, 0x0,
+			// 		0x0, 0x31000,
+			// 		0x10,
+			// 		0x0, 0x28a00,
+			// 		0x20,
+			// 		0x0,0x31d00);
+			// 	hmac_cnt++;	
+			// }
+
+
+
+
 		}
 
-		//aes
-		if (command_processed == false) {}
-		else if(aes_ecnt < aes_while_lenth)
-		{
-			//ECB-AES128-ENCRYPT
-			Transfer_Mailbox_Symmetrric_Key(0x1, 0x0, 0x0, 0x0,
-				0x0,0x31000,
-				0x0,0x31a00,
-				0x0,0x31b00,
-				0x10,
-				0x0, 0x31d00);
-			aes_flag = 0x1;
-			aes_ecnt++;
-			// printf("ecnt:%d\n", aes_ecnt);
-		}
-		if (command_processed == false) {}
-		else if((aes_dcnt < aes_while_lenth) && aes_flag == 0x1)
-		{
-			//ECB-AES128-DECRYPT
-			Transfer_Mailbox_Symmetrric_Key(0x1, 0x0, 0x0, 0x1,
-				0x0,0x31000,
-				0x0,0x31a00,
-				0x0,0x31d00,
-				0x10,
-				0x0, 0x31b00);
-			aes_flag = 0x0;
-			aes_dcnt++;
-			// printf("dcnt:%d\n",aes_dcnt);
-		}
-		//sha
-
-		// if (command_processed == false){}
-		// else if(sha_cnt < sha_while_lenth)
-		// {
-		// 	//crc32
-		// 	Transfer_Mailbox_Digest_Or_CrcVerify(0x0, 0x1, 0x0, 0x0,
-		// 		0x0, 0x31000,
-		// 		0x8,
-		// 		0x0, 0x28000);
-		// }
-		// if (command_processed == false){}
-		// else
-		// {
-		// 	//sha0
-		// 	// Transfer_Mailbox_Digest_Or_CrcVerify(0x1, 0x1, 0x0, 0x0,
-		// 	// 	0x0, 0x31000,
-		// 	// 	0x8,
-		// 	// 	0x0, 0x28a00);
-		// }
-		if (command_processed == false) {}
-		else if(sha_cnt < sha_while_lenth)
-		{
-			//sha1
-			Transfer_Mailbox_Digest_Or_CrcVerify(0x2, 0x1, 0x0, 0x0,
-				0x0, 0x31000,
-				0x8,
-				0x0, 0x28a00);
-		}
-		if (command_processed == false) {}
-		else if(sha_cnt < sha_while_lenth)
-		{
-			//sha224
-			Transfer_Mailbox_Digest_Or_CrcVerify(0x3, 0x0, 0x0, 0x0,
-				0x0, 0x31000,
-				0x8,
-				0x0, 0x28a00);
-		}
-		if (command_processed == false) {}
-		else if(sha_cnt < sha_while_lenth)
-		{
-			//sha256
-			Transfer_Mailbox_Digest_Or_CrcVerify(0x3, 0x1, 0x0, 0x0,
-				0x0, 0x31000,
-				0x8,
-				0x0, 0x28a00);
-		}
-		if (command_processed == false) {}
-		else if(sha_cnt < sha_while_lenth)
-		{
-			//sha384
-			Transfer_Mailbox_Digest_Or_CrcVerify(0x3, 0x2, 0x0, 0x0,
-				0x0, 0x31000,
-				0x8,
-				0x0, 0x28a00);
-		}
-		if (command_processed == false) {}
-		else if(sha_cnt < sha_while_lenth)
-		{
-			// sha512
-			Transfer_Mailbox_Digest_Or_CrcVerify(0x3, 0x3, 0x0, 0x0,
-				0x0, 0x31000,
-				0x8,
-				0x0, 0x28a00);
-			sha_cnt++;
-		}
-
-		//hmac
-		if (command_processed == false) {}
-		else if (hmac_cnt < hmac_while_lenth)
-		{
-			// hmac_sha1
-			Transfer_Mailbox_MessageAuthentication(0x2, 0x0, 0x0,
-				0x0, 0x31000,
-				0x10,
-				0x0, 0x28a00,
-				0x20,
-				0x0,0x31d00);
-		}
-		if (command_processed == false) {}
-		else if (hmac_cnt < hmac_while_lenth)
-		{
-			// hmac_sha224
-			Transfer_Mailbox_MessageAuthentication(0x3, 0x0, 0x0,
-				0x0, 0x31000,
-				0x10,
-				0x0, 0x28a00,
-				0x20,
-				0x0,0x31d00);
-		}
-		if (command_processed == false) {}
-		else if (hmac_cnt < hmac_while_lenth)
-		{
-			// hmac_sha256
-			Transfer_Mailbox_MessageAuthentication(0x3, 0x1, 0x0,
-				0x0, 0x31000,
-				0x10,
-				0x0, 0x28a00,
-				0x20,
-				0x0,0x31d00);
-		}
-		if (command_processed == false) {}
-		else if (hmac_cnt < hmac_while_lenth)
-		{
-			// hmac_sha384
-			Transfer_Mailbox_MessageAuthentication(0x3, 0x2, 0x0,
-				0x0, 0x31000,
-				0x10,
-				0x0, 0x28a00,
-				0x20,
-				0x0,0x31d00);
-		}
-		if (command_processed == false) {}
-		else if (hmac_cnt < hmac_while_lenth)
-		{
-			// hmac_sha512
-			Transfer_Mailbox_MessageAuthentication(0x3, 0x3, 0x0,
-				0x0, 0x31000,
-				0x10,
-				0x0, 0x28a00,
-				0x20,
-				0x0,0x31d00);
-		}
-		if (command_processed == false) {}
-		else if (hmac_cnt < hmac_while_lenth)
-		{
-			// hmac_sm3
-			Transfer_Mailbox_MessageAuthentication(0x5, 0x3, 0x0,
-				0x0, 0x31000,
-				0x10,
-				0x0, 0x28a00,
-				0x20,
-				0x0,0x31d00);
-			hmac_cnt++;	
-		}
-		// if (command_processed == false) {}
-		// else if (hmac_cnt < hmac_while_lenth)
-		// {
-		// 	// rsa
-		// 		Transfer_Mailbox_Asymmetric_Key_Pair(0x5, 0x3, 0x0,
-		// 		0x0, 0x31000,
-		// 		0x10,
-		// 		0x0, 0x28a00,
-		// 		0x20,
-		// 		0x0,0x31d00);
-		// 	hmac_cnt++;	
-		// }
 
 
 
 
-		}
-
-
-
-
-		
 	}
 }
 //----------------------------------------------------------------------------

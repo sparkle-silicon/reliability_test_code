@@ -10,8 +10,8 @@
  * Copyright has legal effects and violations will be prosecuted.
  * 版权具有法律效力，违反必究。
  *
- * Copyright ©2021-2023 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
- * 版权所有 ©2021-2023龙晶石半导体科技（苏州）有限公司
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 #ifndef __KERNEL_I2C_H
 #define __KERNEL_I2C_H
@@ -182,17 +182,17 @@ extern WORD I2C_Read_Short(WORD regoffset, WORD i2c_channel);
 extern void I2C_Mux_Set(BYTE modle);
 extern void I2C_Master_Set_Tar(WORD TAR, WORD BIT, WORD i2c_channel);
 extern void I2C_Master_Write_Byte(BYTE data, BYTE reg, WORD i2c_channel);
-extern void I2C_Master_Write_Word(BYTE* data, BYTE reg, WORD i2c_channel);
-extern void I2C_Master_Read_Word(BYTE* data, BYTE reg, WORD i2c_channel);
-extern void I2C_Master_Write_Block(BYTE* data, BYTE lenth, BYTE reg, WORD i2c_channel);
-extern void I2C_Master_Read_Block(BYTE* data, BYTE lenth, BYTE reg, WORD i2c_channel);
+extern void I2C_Master_Write_Word(BYTE *data, BYTE reg, WORD i2c_channel);
+extern void I2C_Master_Read_Word(BYTE *data, BYTE reg, WORD i2c_channel);
+extern void I2C_Master_Write_Block(BYTE *data, BYTE lenth, BYTE reg, WORD i2c_channel);
+extern void I2C_Master_Read_Block(BYTE *data, BYTE lenth, BYTE reg, WORD i2c_channel);
 extern void I2CM_Write_Byte(BYTE i2c_addr, BYTE reg, BYTE data, WORD i2c_channel);
-extern void I2CM_Write_Word(BYTE i2c_addr, BYTE* data, BYTE reg, WORD i2c_channel);
-extern void I2CM_Read_Word(BYTE i2c_addr, BYTE* data, BYTE reg, WORD i2c_channel);
-extern void I2CM_Write_Block(BYTE i2c_addr, BYTE* data, BYTE length, BYTE reg, WORD i2c_channel);
-extern void I2CM_Read_Block(BYTE i2c_addr, BYTE* data, BYTE length, BYTE reg, WORD i2c_channel);
+extern void I2CM_Write_Word(BYTE i2c_addr, BYTE *data, BYTE reg, WORD i2c_channel);
+extern void I2CM_Read_Word(BYTE i2c_addr, BYTE *data, BYTE reg, WORD i2c_channel);
+extern void I2CM_Write_Block(BYTE i2c_addr, BYTE *data, BYTE length, BYTE reg, WORD i2c_channel);
+extern void I2CM_Read_Block(BYTE i2c_addr, BYTE *data, BYTE length, BYTE reg, WORD i2c_channel);
 extern void I2C_Slave_Write_Byte(uint8_t data, WORD i2c_channel);
-extern void I2C_Slave_Write_Block(uint8_t* data, BYTE  length, WORD i2c_channel);
+extern void I2C_Slave_Write_Block(uint8_t *data, BYTE  length, WORD i2c_channel);
 extern void I2C_Master_Controller_Init(WORD i2c_channel, DWORD speed, BYTE spklen);
 extern void I2C_Slave_Init(WORD i2c_channel, DWORD speed, BYTE spklen);
 extern void I2C_Channel_Init(BYTE channel, DWORD speed, BYTE role, BYTE addr, BYTE spklen);
