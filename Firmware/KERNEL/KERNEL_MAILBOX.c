@@ -1,6 +1,416 @@
 #include "KERNEL_INCLUDE.H"
+
+//pingpong
+#if (AES_PING_PONG||SHA_PING_PONG)
+
+//sha-aes 4k
+// #define BLOCK_SIZE         4096       // 4 KB per block
+// #define BLOCK_WORDS         (BLOCK_SIZE / 4)
+
+//aes 8k
+#define BLOCK_SIZE           (1024 * 8)       // 8 KB per block
+#define BLOCK_WORDS         (BLOCK_SIZE / 4)
+
+//sha 16k
+// #define BLOCK_SIZE           (1024 * 16)       // 16 KB per block
+// #define BLOCK_WORDS         (BLOCK_SIZE / 4)
+
+
+// #define FIXED_SRC_ADDR  ((uint32_t*)0x31000)
+// #define FIXED_DST_ADDR  ((uint32_t*)0x28000)
+
+#define FIXED_SRC_ADDR  ((uint32_t*)0x20000)
+#define FIXED_DST_ADDR  ((uint32_t*)0x28000)
+
+// 状态机
+// A：准备ping，状态置B
+// B：发送ping，准备pong,状态置C
+// C：(等待ping完成后)收回ping结果，状态置D
+// D：发送pong，准备ping ，状态置E
+// E：(等待pong完成后)收回pong结果，状态置B
+typedef enum
+{
+    PP_IDLE = 0,
+    PP_PREPARE_PING,   // 主准备 ping 输入（还没发任务）//A
+    PP_SEND_PING_PREPARE_PONG,        // ping 已发//B
+    PP_RECIVE_PING_RESULT,//C
+    PP_SEND_PONG_PREPARE_PING,//D
+    PP_RECIVE_PONG_RESULT,//E
+    PP_FINISHED            // 全部完成
+} pp_state_t;
+
+//sha-aes 4k
+// #define PING_INPUT_ADDR    0x28000
+// #define PONG_INPUT_ADDR    0x29000
+// #define PING_OUTPUT_ADDR   0x2a000
+// #define PONG_OUTPUT_ADDR   0x2b000
+
+//aes 8k
+#define PING_INPUT_ADDR    0x28000
+#define PONG_INPUT_ADDR    0x2a000
+#define PING_OUTPUT_ADDR   0x2c000
+#define PONG_OUTPUT_ADDR   0x2e000
+
+//sha 16k
+// #define PING_INPUT_ADDR    0x28000
+// #define PONG_INPUT_ADDR    0x2c000
+// #define PING_OUTPUT_ADDR   0x28000
+// #define PONG_OUTPUT_ADDR   0x2c000
+
+static uint32_t *ping_input = (uint32_t *)PING_INPUT_ADDR;
+static uint32_t *pong_input  = (uint32_t *)PONG_INPUT_ADDR;
+static uint32_t *ping_output = (uint32_t *)PING_OUTPUT_ADDR;
+static uint32_t *pong_output = (uint32_t *)PONG_OUTPUT_ADDR;
+
+// 外部源/目标缓冲
+static uint32_t pp_total_blocks = 0;
+static uint32_t pp_done_blocks = 0;
+static volatile pp_state_t pp_state = PP_IDLE;
+
+
+static inline void memcpy32(uint32_t *dst, uint32_t *src, uint32_t word_count)
+{
+    for (uint32_t i = 0; i < word_count; i++)
+    {
+        dst[i] = src[i];
+    }
+}
+
+// 写回目标
+static void write_back_output(uint32_t *output_buf)
+{
+    // 假设输出目标固定在 0x28000
+    memcpy32((uint32_t *)0x28000, output_buf, BLOCK_WORDS);
+}
+
+static void write_sha_back_output(uint32_t *output_buf)
+{
+    // 假设输出目标固定在 0x28000
+    memcpy32((uint32_t *)0x28000, output_buf, 8);
+}
+
+void PingPong_Start(uint32_t total_bytes)
+{
+    if (total_bytes == 0) return;
+    pp_total_blocks = total_bytes / BLOCK_SIZE;
+    // printf("pp_total_blocks:%d\n", pp_total_blocks);
+    pp_done_blocks = 0;
+    pp_state = PP_PREPARE_PING;
+}
+#endif
+
+#if SHA_PING_PONG
+void PingPong_Sha_Schedule(void)//SHA-ping pong
+{
+    switch (pp_state)
+    {
+        case PP_IDLE:
+        case PP_FINISHED:
+            break;
+        case PP_PREPARE_PING: //第一次准备数据
+        {
+            // printf("A\n");
+            GPIO_Config(GPIOA, 4, 1, 1, 0, 0);
+            memcpy32(ping_input, FIXED_SRC_ADDR, BLOCK_WORDS); //87us
+            MAILBOX_SELF_INFO1 = ((0x3 & 0xff) << 24) | ((0x1 & 0xff) << 16) | ((0x0 & 0xff) << 8) | (0x1 & 0xff);
+            MAILBOX_SELF_INFO2 = ((0x0 & 0xff) << 24) | ((uint32_t)ping_input & 0xffffff);
+            MAILBOX_SELF_INFO3 = BLOCK_SIZE;
+            MAILBOX_SELF_INFO4 = ((0x0 & 0xff)<<24) | ((uint32_t)ping_output & 0xffffff);
+            MAILBOX_SELF_CMD = MAILBOX_CMD_DIGEST_VERIFY;
+            MAILBOX_SET_IRQ(MAILBOX_Crypto_IRQ_NUMBER);
+            pp_state = PP_SEND_PING_PREPARE_PONG;
+            break;
+        }
+        case PP_SEND_PING_PREPARE_PONG: //发送ping准备pong
+        {
+            // printf("B\n");
+            // GPIO_Config(GPIOA, 2, 1, 1, 0, 0);
+            if (!command_processed)
+                return;
+            else
+            {
+                pp_done_blocks++;
+                if (pp_done_blocks >= pp_total_blocks)
+                {
+                    // printf("B1\n");
+                    MAILBOX_SELF_INFO1 = ((0x3 & 0xff) << 24) | ((0x1 & 0xff) << 16) | ((0x0 & 0xff) << 8) | (0x3 & 0xff);
+                    MAILBOX_SELF_INFO2 = ((0x0 & 0xff) << 24) | ((uint32_t)ping_input & 0xffffff);
+                    MAILBOX_SELF_INFO3 = BLOCK_SIZE;
+                    MAILBOX_SELF_INFO4 = ((0x0 & 0xff) << 24) | ((uint32_t)ping_output & 0xffffff);
+                    MAILBOX_SELF_CMD = MAILBOX_CMD_DIGEST_VERIFY;
+                    MAILBOX_SET_IRQ(MAILBOX_Crypto_IRQ_NUMBER);
+                    pp_state = PP_RECIVE_PING_RESULT;
+                    break;
+                }
+                // printf("B2\n");
+                MAILBOX_SELF_INFO1 = ((0x3 & 0xff) << 24) | ((0x1 & 0xff) << 16) | ((0x0 & 0xff) << 8) | (0x2 & 0xff);
+                MAILBOX_SELF_INFO2 = ((0x0 & 0xff) << 24) | ((uint32_t)ping_input & 0xffffff);
+                MAILBOX_SELF_INFO3 = BLOCK_SIZE;
+                MAILBOX_SELF_INFO4 = ((0x0 & 0xff) << 24) | ((uint32_t)ping_output & 0xffffff);
+                MAILBOX_SELF_CMD = MAILBOX_CMD_DIGEST_VERIFY;
+                MAILBOX_SET_IRQ(MAILBOX_Crypto_IRQ_NUMBER);
+                memcpy32(pong_input, FIXED_SRC_ADDR, BLOCK_WORDS);
+            // printf("pp_done_blocks: %d\n", pp_done_blocks);
+            // GPIO_Config(GPIOA, 2, 1, 0, 0, 0);
+            pp_state = PP_SEND_PONG_PREPARE_PING;
+            }
+            break;
+        }
+        case PP_SEND_PONG_PREPARE_PING: //发送pong，准备ping
+        {
+            // printf("C\n");
+            // GPIO_Config(GPIOA, 3, 1, 1, 0, 0);
+            // GPIO_Config(GPIOA, 3, 1, 0, 0, 0);
+            if (!command_processed)
+                return;
+            else
+            {
+                pp_done_blocks++;
+                if (pp_done_blocks >= pp_total_blocks)
+                {
+                    // printf("C1\n");
+                    MAILBOX_SELF_INFO1 = ((0x3 & 0xff) << 24) | ((0x1 & 0xff) << 16) | ((0x0 & 0xff) << 8) | (0x3 & 0xff);
+                    MAILBOX_SELF_INFO2 = ((0x0 & 0xff) << 24) | ((uint32_t)pong_input & 0xffffff);
+                    MAILBOX_SELF_INFO3 = BLOCK_SIZE;
+                    MAILBOX_SELF_INFO4 = ((0x0 & 0xff) << 24) | ((uint32_t)pong_output & 0xffffff);
+                    MAILBOX_SELF_CMD = MAILBOX_CMD_DIGEST_VERIFY;
+                    MAILBOX_SET_IRQ(MAILBOX_Crypto_IRQ_NUMBER);  
+                    pp_state = PP_RECIVE_PONG_RESULT;
+                    break;
+                }
+                //sha
+                // printf("C2\n");
+                MAILBOX_SELF_INFO1 = ((0x3 & 0xff) << 24) | ((0x1 & 0xff) << 16) | ((0x0 & 0xff) << 8) | (0x2 & 0xff);
+                MAILBOX_SELF_INFO2 = ((0x0 & 0xff) << 24) | ((uint32_t)pong_input & 0xffffff);
+                MAILBOX_SELF_INFO3 = BLOCK_SIZE;
+                MAILBOX_SELF_INFO4 = ((0x0 & 0xff) << 24) | ((uint32_t)pong_output & 0xffffff);
+                MAILBOX_SELF_CMD = MAILBOX_CMD_DIGEST_VERIFY;
+                MAILBOX_SET_IRQ(MAILBOX_Crypto_IRQ_NUMBER);
+                memcpy32(ping_input, FIXED_SRC_ADDR, BLOCK_WORDS);
+                // GPIO_Config(GPIOA, 3, 1, 0, 0, 0);
+                pp_state = PP_SEND_PING_PREPARE_PONG; // 回到 prepare ping
+            }
+            break;
+        }
+        case PP_RECIVE_PING_RESULT: //接受ping结果
+        {
+            // printf("D\n");
+            if (!command_processed)
+                return;
+            else
+            {
+                // printf("D1\n");
+
+                // GPIO_Config(GPIOA, 5, 1, 1, 0, 0);
+                // printf("ping_output\n");
+                write_sha_back_output(ping_output);
+                pp_state = PP_FINISHED;
+                // GPIO_Config(GPIOA, 5, 1, 0, 0, 0);
+            }
+                break;
+        }
+        case PP_RECIVE_PONG_RESULT:
+        {
+            // printf("E\n");
+            // GPIO_Config(GPIOA, 6, 1, 1, 0, 0);
+            if (!command_processed)
+                return;
+            else
+            {
+                // printf("pong_output\n");
+                // GPIO_Config(GPIOA, 6, 1, 1, 0, 0);
+                // printf("E1\n");
+                write_sha_back_output(pong_output);
+
+                GPIO_Config(GPIOA, 4, 1, 0, 0, 0);
+                // GPIO_Config(GPIOA, 3, 1, 0, 0, 0);
+                // GPIO_Config(GPIOA, 6, 1, 0, 0, 0);
+                // GPIO_Config(GPIOA, 7, 1, 0, 0, 0);
+                // GPIO_Config(GPIOA, 4, 1, 0, 0, 0);
+                pp_state = PP_FINISHED;
+            }
+            break;
+        }
+        default:
+            break;
+    }
+}
+#endif
+
+#if AES_PING_PONG
+void PingPong_AES_Schedule(void) //AES-ping pong
+
+{
+    switch (pp_state)
+    {
+        case PP_IDLE:
+        case PP_FINISHED:
+            break;
+        case PP_PREPARE_PING: //第一次准备数据
+        {
+            // printf("A\n");
+            GPIO_Config(GPIOA, 4, 1, 1, 0, 0);
+            if (pp_done_blocks >= pp_total_blocks)
+            {
+                pp_state = PP_FINISHED;
+                break;
+            }
+            memcpy32(ping_input, FIXED_SRC_ADDR, BLOCK_WORDS); //87us
+            // GPIO_Config(GPIOA, 4, 1, 0, 0, 0);
+            pp_state = PP_SEND_PING_PREPARE_PONG;
+            break;
+        }
+        case PP_SEND_PING_PREPARE_PONG: //发送ping准备pong
+        {
+            // printf("B\n");
+            // GPIO_Config(GPIOA, 7, 1, 1, 0, 0);
+            GPIO_Config(GPIOA, 2, 1, 1, 0, 0);
+            // GPIO_Config(GPIOA, 2, 1, 0, 0, 0);
+            if (!command_processed)
+                return;
+            else
+            {
+                //AES
+                // Transfer_Mailbox_Symmetrric_Key(0x0, 0x2, 0x5, 0x0,
+                // 0x0, 0x31000,
+			    // 0x0,0x31a00,
+		        // 0x0,(uint32_t)ping_input,
+		        // BLOCK_WORDS,
+                // 0x0, (uint32_t)ping_output);
+                
+                MAILBOX_SELF_INFO1 = ((0x0 & 0xff) << 24) | (((0x2 & 0xff) << 16)) | (((0x5 & 0xff) << 8)) | (0x0 & 0xff);
+                MAILBOX_SELF_INFO2 = ((0x0 & 0xff) << 24) | (0x31000 & 0xffffff);
+                MAILBOX_SELF_INFO3 = ((0x0&0xff)<<24)|(0x31a00&0xffffff);
+                MAILBOX_SELF_INFO4 = ((0x0&0xff)<<24)|((uint32_t)ping_input&0xffffff);
+                MAILBOX_SELF_INFO5= BLOCK_WORDS;
+                MAILBOX_SELF_INFO6 =((0x0&0xff)<<24)|((uint32_t)ping_output&0xffffff);
+                MAILBOX_SELF_CMD = MAILBOX_CMD_SYMMETRIC_KEY;
+                MAILBOX_SET_IRQ(MAILBOX_Crypto_IRQ_NUMBER);
+                
+            // GPIO_Config(GPIOA, 7, 1, 0, 0, 0);
+            memcpy32(pong_input, FIXED_SRC_ADDR, BLOCK_WORDS);
+            GPIO_Config(GPIOA, 2, 1, 0, 0, 0);
+            // GPIO_Config(GPIOA, 7, 1, 0, 0, 0);
+            pp_state = PP_RECIVE_PING_RESULT;
+            }
+            break;
+        }
+        case PP_RECIVE_PING_RESULT: //接受ping结果
+        {
+            // printf("C1\n");
+            GPIO_Config(GPIOA, 5, 1, 1, 0, 0);
+            if (!command_processed)
+                return;
+            else
+            {
+                // printf("ping_output\n");
+                write_back_output(ping_output);
+                // printf("C2\n");
+                pp_done_blocks++;
+                if (pp_done_blocks >= pp_total_blocks)
+                {
+                    GPIO_Config(GPIOA, 4, 1, 0, 0, 0);
+                    // Transfer_Mailbox_Digest_Or_CrcVerify(0x3, 0x1, 0x0, 0x3,
+                    // 0x0, (uint32_t)ping_input,
+                    // BLOCK_WORDS,
+                    // 0x0, (uint32_t)ping_output);
+                    // if (task_head != NULL)//执行处理任务
+                    // {
+                    //     Process_Tasks();
+                    // }
+
+                    pp_state = PP_FINISHED;
+                    break;
+                }
+                pp_state = PP_SEND_PONG_PREPARE_PING;
+                GPIO_Config(GPIOA, 5, 1, 0, 0, 0);
+            }
+                break;
+        }
+        case PP_SEND_PONG_PREPARE_PING:
+        {
+            // printf("D\n");
+            // memcpy32(ping_input, FIXED_SRC_ADDR, BLOCK_WORDS); //87us
+            GPIO_Config(GPIOA, 3, 1, 1, 0, 0);
+            // while (command_processed != true)
+            //     ;
+            // GPIO_Config(GPIOA, 3, 1, 0, 0, 0);
+
+            if (!command_processed)
+                return;
+            else
+            {
+                //AES
+                // Transfer_Mailbox_Symmetrric_Key(0, 2, 5, 0,
+                // 0, 0x31000,
+                // 0, 0x31a00,
+                // 0, (uint32_t)pong_input,
+                // BLOCK_WORDS,
+                // 0, (uint32_t)pong_output);
+                
+                MAILBOX_SELF_INFO1 = ((0x0 & 0xff) << 24) | (((0x2 & 0xff) << 16)) | (((0x5 & 0xff) << 8)) | (0x0 & 0xff);
+                MAILBOX_SELF_INFO2 = ((0x0 & 0xff) << 24) | (0x31000 & 0xffffff);
+                MAILBOX_SELF_INFO3 = ((0x0&0xff)<<24)|(0x31a00&0xffffff);
+                MAILBOX_SELF_INFO4 = ((0x0&0xff)<<24)|((uint32_t)pong_input&0xffffff);
+                MAILBOX_SELF_INFO5= BLOCK_WORDS;
+                MAILBOX_SELF_INFO6 =((0x0&0xff)<<24)|((uint32_t)pong_output&0xffffff);
+                MAILBOX_SELF_CMD = MAILBOX_CMD_SYMMETRIC_KEY;
+                MAILBOX_SET_IRQ(MAILBOX_Crypto_IRQ_NUMBER);
+
+        
+                memcpy32(ping_input, FIXED_SRC_ADDR, BLOCK_WORDS);
+
+                GPIO_Config(GPIOA, 3, 1, 0, 0, 0);
+                pp_state = PP_RECIVE_PONG_RESULT; // 回到 prepare ping
+            }
+            break;
+        }
+        case PP_RECIVE_PONG_RESULT:
+        {
+            // printf("E\n");
+
+            GPIO_Config(GPIOA, 6, 1, 1, 0, 0);
+            if (!command_processed)
+                return;
+            else
+            {
+                // printf("pong_output\n");
+                // GPIO_Config(GPIOA, 6, 1, 1, 0, 0);
+                write_back_output(pong_output);
+                // printf("E2\n");
+                pp_done_blocks++;
+                if (pp_done_blocks >= pp_total_blocks)
+                {
+                    GPIO_Config(GPIOA, 4, 1, 0, 0, 0);
+
+                    // Transfer_Mailbox_Digest_Or_CrcVerify(0x3, 0x1, 0x0, 0x3,
+                    // 0x0, (uint32_t)pong_input,
+                    // BLOCK_WORDS,
+                    // 0x0, (uint32_t)pong_output);
+
+                    // if (task_head != NULL)//执行处理任务
+                    // {
+                    //     Process_Tasks();
+                    // }
+                    pp_state = PP_FINISHED;
+                    break;
+                }
+                GPIO_Config(GPIOA, 6, 1, 0, 0, 0);
+                // GPIO_Config(GPIOA, 7, 1, 0, 0, 0);
+                // GPIO_Config(GPIOA, 4, 1, 0, 0, 0);
+                pp_state = PP_SEND_PING_PREPARE_PONG;
+            }
+            break;
+        }
+        default:
+            break;
+    }
+}
+#endif
+
+
 volatile bool command_processed = true; // 用于标志子系统是否处理完命令
-Task* task_head = NULL;                 // 任务链表头
+Task *task_head = NULL;                 // 任务链表头
 volatile char mailbox_task_count = 0; // 全局计数
 uint8_t mailbox_timeout_s = 0;
 // 添加任务到链表
@@ -144,6 +554,7 @@ void Mailbox_ExecuteFirmwareUpdate(void* param)
             SPIFE_CTL0 &= ~BIT1; // 失败使用二线模式
         }
     }
+    printf("%x;%x;%x;%x\n",MAILBOX_SELF_INFO1,MAILBOX_SELF_INFO2,MAILBOX_SELF_INFO3,MAILBOX_SELF_INFO4);
     MAILBOX_SET_IRQ(MAILBOX_Firmware_IRQ_NUMBER);                                 // 触发对应中断
 }
 
@@ -286,12 +697,19 @@ void Mailbox_Clear_All_Key(void *param)//密钥管理-清除所有密钥
 
 void Mailbox_Digest_Or_CrcVerify(void *param)//摘要算法
 {
+    // GPIO_Config(GPIOA, 3, 1, 1, 0, 0);
     TaskParams *params = (TaskParams *)param;
     MAILBOX_SELF_INFO1 = params->E2C_INFO1;
     MAILBOX_SELF_INFO2 = params->E2C_INFO2; 
     MAILBOX_SELF_INFO3 = params->E2C_INFO3;
     MAILBOX_SELF_INFO4 = params->E2C_INFO4;
     MAILBOX_SELF_CMD = MAILBOX_CMD_DIGEST_VERIFY;
+    // REG32(0x31000) = 0x11111111;
+    // REG32(0x31004) = 0x11111111;
+    // REG32(0x31008) = 0x11111111;
+    // REG32(0x3100c) = 0x11111111;
+    // uint32_t *data_in = (uint32_t *)MAILBOX_SELF_INFO2;
+    // printf("data_in = 0x"); for (int j = 0;j < 0x10; j++) { printf("%02x", data_in[j]); }putchar('\n');
     MAILBOX_SET_IRQ(MAILBOX_Crypto_IRQ_NUMBER);
     command_processed = false;
 }
@@ -299,6 +717,8 @@ void Mailbox_Digest_Or_CrcVerify(void *param)//摘要算法
 void Mailbox_Symmetrric_Key(void *param)//对称加密
 {
     TaskParams *params = (TaskParams *)param;
+    // printf("对称加密\n");
+    // GPIO_Config(GPIOA, 0, 1, 1, 0, 0);
     MAILBOX_SELF_INFO1 = params->E2C_INFO1;
     MAILBOX_SELF_INFO2 = params->E2C_INFO2; 
     MAILBOX_SELF_INFO3 = params->E2C_INFO3;
@@ -306,6 +726,10 @@ void Mailbox_Symmetrric_Key(void *param)//对称加密
     MAILBOX_SELF_INFO5 = params->E2C_INFO5;
     MAILBOX_SELF_INFO6 = params->E2C_INFO6;
     MAILBOX_SELF_CMD = MAILBOX_CMD_SYMMETRIC_KEY;
+    // uint32_t *key_in = (uint32_t *)MAILBOX_SELF_INFO2;
+    // printf("key_in = 0x"); for (int j = 0;j < 0x8; j++) { printf("%02x", key_in[j]); }putchar('\n');
+    // uint32_t *data_in = (uint32_t *)MAILBOX_SELF_INFO4;
+    // printf("data_in = 0x"); for (int j = 0;j < 0x8; j++) { printf("%02x", data_in[j]); }putchar('\n');
     MAILBOX_SET_IRQ(MAILBOX_Crypto_IRQ_NUMBER);
     command_processed = false;
 }
@@ -340,6 +764,7 @@ void Mailbox_Key_Pair_Generate(void *param)//非对称加解密-密钥生成
 
 void Mailbox_Signature_Verify(void *param) //非对称加解密-签名函数
 {
+    GPIO_Config(GPIOA,2,1,1,0,0);
     TaskParams *params = (TaskParams *)param;
     MAILBOX_SELF_INFO1 = params->E2C_INFO1;
     MAILBOX_SELF_INFO2 = params->E2C_INFO2; 
@@ -1053,7 +1478,7 @@ void Mailbox_Control(void)
         else
         {
             APB_ShareMod_Cry = APB_ShareMod_temp;
-            dprint("apb_share_mod_cry:0x%x\n", APB_ShareMod_Cry);
+            // dprint("apb_share_mod_cry:0x%x\n", APB_ShareMod_Cry);
         }
     }
     else if (C2E_CMD == MAILBOX_CMD_READ_FLASHUID)
@@ -1088,6 +1513,15 @@ void Mailbox_Control(void)
     {
         printf("MAILBOX_CMD_SECURE_BOOT\n");
         printf("cmd_result: 0x%08x\n", MAILBOX_OTHER_INFO1);
+    }
+    else if (C2E_CMD == MAILBOX_CMD_SIMILARDMA)
+    {
+        printf("MAILBOX_CMD_SIMILARDMA\n");
+        printf("cmd_result: 0x%08x\n", MAILBOX_OTHER_INFO1);
+        printf("output_addr: 0x%08x\n", MAILBOX_OTHER_INFO2);
+        uint32_t *output = (uint32_t *)MAILBOX_OTHER_INFO2;
+        printf("output_len: 0x%08x\n", MAILBOX_OTHER_INFO3);
+        printf("output=\n");for (size_t i = 0; i < 0x20; i++){printf("%08x", output[i]);}putchar('\n');
     }
 }
 
@@ -1141,6 +1575,8 @@ void Mailbox_SecretKey(void)
         printf("MAILBOX_CMD_GET_KEY\n");
         printf("cmd_result: 0x%08x\n", MAILBOX_OTHER_INFO1);
         printf("output_addr: 0x%08x\n", MAILBOX_OTHER_INFO2);
+        uint32_t *out_put = (uint32_t *)MAILBOX_OTHER_INFO2;
+        printf("out_put = 0x"); for (int j = 0;j < 0x2; j++) { printf("%02x", out_put[j]); }putchar('\n');
 
     }
     if (C2E_CMD == MAILBOX_CMD_GET_KEYID)
@@ -1148,6 +1584,8 @@ void Mailbox_SecretKey(void)
         printf("MAILBOX_CMD_GET_KEYID\n");
         printf("cmd_result: 0x%08x\n", MAILBOX_OTHER_INFO1);
         printf("output_addr: 0x%08x\n", MAILBOX_OTHER_INFO2);
+        uint32_t *out_put = (uint32_t *)MAILBOX_OTHER_INFO2;
+        printf("out_put = 0x"); for (int j = 0;j < 0x2; j++) { printf("%02x", out_put[j]); }putchar('\n');
 
     }
     if (C2E_CMD == MAILBOX_CMD_CLEAR_KEY)
@@ -1169,15 +1607,35 @@ void Mailbox_Crypto(void)
 {
     if (C2E_CMD == MAILBOX_CMD_DIGEST_VERIFY)
     {
-        printf("MAILBOX_CMD_DIGEST_VERIFY\n");
-        printf("cmd_result: 0x%08x\n", MAILBOX_OTHER_INFO1);
-        printf("output_addr: 0x%08x\n", MAILBOX_OTHER_INFO2);
+        // GPIO_Config(GPIOA, 3, 1, 0, 0, 0);
+        // printf("init time: %d\n", MAILBOX_OTHER_INFO3);
+        // printf("update time: %d\n", MAILBOX_OTHER_INFO4);
+        // printf("final time: %d\n", MAILBOX_OTHER_INFO5);
+        // printf("MAILBOX_CMD_DIGEST_VERIFY\n");
+        // printf("cmd_result: %x\n", MAILBOX_OTHER_INFO1);
+        // printf("output_addr: 0x%08x\n", MAILBOX_OTHER_INFO2);
+        // uint32_t *out_put = (uint32_t *)MAILBOX_OTHER_INFO2;
+        // printf("out_put = 0x"); for (int j = 0;j < 0x10; j++) { printf("%02x", out_put[j]); }putchar('\n');
     }
     else if(C2E_CMD == MAILBOX_CMD_SYMMETRIC_KEY)
     {
-        printf("MAILBOX_CMD_SYMMETRIC_KEY\n");
-        printf("cmd_result: 0x%08x\n", MAILBOX_OTHER_INFO1);
-        printf("output_addr: 0x%08x\n", MAILBOX_OTHER_INFO2);
+        GPIO_Config(GPIOA, 0, 1, 0, 0, 0);
+        // uint32_t size = 1024;
+	    // uint32_t Address = 0x31000;
+	    // uint32_t Input = MAILBOX_OTHER_INFO2;
+        // printf("input time:%d\n", MAILBOX_OTHER_INFO3);
+        // printf("aes time:%d\n", MAILBOX_OTHER_INFO4);
+        // printf("output time:%d\n", MAILBOX_OTHER_INFO5);
+        // printf("all time:%d\n", MAILBOX_OTHER_INFO6);
+        // printf("MAILBOX_CMD_SYMMETRIC_KEY\n");
+        // printf("cmd_result: 0x%08x\n", MAILBOX_OTHER_INFO1);
+        // printf("output_addr: 0x%08x\n", MAILBOX_OTHER_INFO2);
+        // uint32_t *out_put = (uint32_t *)MAILBOX_OTHER_INFO2;
+        // printf("out_put = 0x"); for (int j = 0;j < 0x8; j++) { printf("%02x", out_put[j]); }putchar('\n');
+        // for (uint32_t offset = 0; offset < size; offset++)
+		// {
+		// 	((uint32_t *)Address)[offset] = ((uint32_t *)Input)[offset];
+		// }
     }
     else if(C2E_CMD == MAILBOX_CMD_ASYMMETRIC_KEY)
     {
@@ -1195,6 +1653,7 @@ void Mailbox_Crypto(void)
     }
     else if(C2E_CMD == MAILBOX_CMD_SIGNATURE_VERIFY)
     {
+        GPIO_Config(GPIOA,2,1,0,0,0);
         printf("MAILBOX_CMD_SIGNATURE_VERIFY\n");
         printf("cmd_result: 0x%08x\n", MAILBOX_OTHER_INFO1);
         printf("signature_result: 0x%08x\n", MAILBOX_OTHER_INFO2);
@@ -1220,15 +1679,17 @@ void Mailbox_Crypto(void)
     }
     else if (C2E_CMD == MAILBOX_CMD_RANDOM_NUMBER)
     {
-        printf("MAILBOX_CMD_RANDOM_NUMBER\n");
-        printf("cmd_result: 0x%08x\n", MAILBOX_OTHER_INFO1);
-        printf("output_addr: 0x%08x\n", MAILBOX_OTHER_INFO2);
+        // printf("MAILBOX_CMD_RANDOM_NUMBER\n");
+        // printf("cmd_result: 0x%08x\n", MAILBOX_OTHER_INFO1);
+        // printf("output_addr: 0x%08x\n", MAILBOX_OTHER_INFO2);
+        // uint32_t *random_number = (uint32_t *)MAILBOX_OTHER_INFO2;
+        // printf("random_number = 0x"); for (int j = 0;j < 256; j++) { printf("%08lx", random_number[j]); }putchar('\n');
     }
     else if (C2E_CMD == MAILBOX_CMD_USE_RAND)
     {
-        printf("MAILBOX_CMD_USE_RAND\n");
-        printf("cmd_result: 0x%08x\n", MAILBOX_OTHER_INFO1);
-        printf("output_addr: 0x%08x\n", MAILBOX_OTHER_INFO2);
+        // printf("MAILBOX_CMD_USE_RAND\n");
+        // printf("cmd_result: 0x%08x\n", MAILBOX_OTHER_INFO1);
+        // printf("output_addr: 0x%08x\n", MAILBOX_OTHER_INFO2);
     }
     else
     {
@@ -1296,6 +1757,13 @@ void Service_Mailbox(void)
     {
         Process_Tasks();
     }
+#if AES_PING_PONG
+    PingPong_AES_Schedule();
+#endif
+
+#if SHA_PING_PONG
+    PingPong_Sha_Schedule();
+#endif
 
 #endif
 }
