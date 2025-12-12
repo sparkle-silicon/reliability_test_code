@@ -205,6 +205,19 @@ while(MAILBOX_OTHER_INT&MAILBOX_IRQ_BIT(irq_number)); \
 #define APB_ERR BIT(29)
 #define APB_REL BIT(30)
 #define APB_REQ BIT(31)
+
+#define AES_PING_PONG 0
+#define SHA_PING_PONG 0
+
+#ifdef AES_PING_PONG 
+extern void PingPong_AES_Schedule(void);
+#endif 
+
+#ifdef SHA_PING_PONG
+extern void PingPong_Sha_Schedule(void);//SHA-ping pong
+#endif 
+
+extern void PingPong_Start(uint32_t total_bytes);
 /*-----------------------------------------------------------------------------
  * External Calling Prototype
  *---------------------------------------------------------------------------*/

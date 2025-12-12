@@ -1647,7 +1647,12 @@ void intr1_mailbox(void)
 		MAILBOX_C2EINT = MAILBOX_C2EINT;
 		nop;
 	} while (MAILBOX_C2EINT); // 清除中断
-	F_Service_Mailbox = 1;
+	//主体轮询置标志位
+	#if (AES_PING_PONG||SHA_PING_PONG)
+		command_processed = true;
+	#else
+		F_Service_Mailbox = 1;
+	#endif
 }
 
 void intr1_espi(void)
