@@ -14,6 +14,7 @@
  * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 #include "AE_INCLUDE.H"
+#include "KERNEL_MAILBOX.H"
 #include "KERNEL_INCLUDE.H"
 #include "CUSTOM_INCLUDE.H"
 #define printf_instructions_msg " \
