@@ -164,7 +164,7 @@ SIGN = $(TOPDIR)/$(SIGN_NAME)
 
 compile: software 
 ifeq ($(OS),Linux) #Linux
-#	 @$(GCC) ./TOOLS/Security/sign.c ./TOOLS/Security/sign.h -D$(CHIP) -I/usr/include/openssl/ -L /usr/lib/x86_64-linux-gnu/ -lcrypto  -o sign #-D_DEBUG
+#	 @$(GCC) $(SECURITY_DIR)/sign.c $(SECURITY_DIR)/sign.h -D$(CHIP) -I/usr/include/openssl/ -L /usr/lib/x86_64-linux-gnu/ -lcrypto  -o $(SIGN_NAME) #-D_DEBUG
 #	 @$(COPY) $(SIGN) $(SECURITY_DIR)
 	@if [ -f $(SIGN_SL) ]; then \
 		$(COPY)  $(SIGN_SL) $(TOPDIR); \
