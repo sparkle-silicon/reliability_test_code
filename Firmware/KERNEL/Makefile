@@ -13,13 +13,13 @@
  # 版权所有 ©2021-2025龙晶石半导体科技(苏州)有限公司
 
 ## Add ASM Source Files:
-## ASM_SRCS += $(AE10X_DIR)/xxx.S
+## ASM_SRCS += $(KERNEL_DIR)/xxx.S
 ## Add C Source Files:
-## C_SRCS += $(AE10X_DIR)/xxx.c
+## C_SRCS += $(KERNEL_DIR)/xxx.c
 ## Add O Source Files:
-## O_SRCS += $(AE10X_DIR)/xxx.o
+## O_SRCS += $(KERNEL_DIR)/xxx.o
 ## Add H Source Files:
-## HEADERS += $(AE10X_DIR)/INCLUDE/xxx.H
+## HEADERS += $(KERNEL_DIR)/INCLUDE/xxx.H
 ##################################### C and S Source Files ##############################
 ifeq ($(VERSION),0.0.0)#未发布版本
 #Main
