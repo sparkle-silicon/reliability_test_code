@@ -1,10 +1,17 @@
 /*
- * @Author: daweslinyu 
- * @Date: 2024-09-27 15:43:56
- * @LastEditors: daweslinyu 
- * @LastEditTime: 2025-03-27 22:00:54
- * @FilePath: /ROM/home/riscv/work_git/SPK32AE103/Firmware/TOOLS/SMx/103fm_sign.h
- * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ * @Author: Linyu
+ * @LastEditors: daweslinyu daowes.ly@qq.com
+ * @LastEditTime: 2025-12-24 15:18:25
+ * @Description:
+ *
+ *
+ * The following is the Chinese and English copyright notice, encoded as UTF-8.
+ * 以下是中文及英文版权同步声明，编码为UTF-8。
+ * Copyright has legal effects and violations will be prosecuted.
+ * 版权具有法律效力，违反必究。
+ *
+ * Copyright ©2021-2025 Sparkle Silicon Technology Corp., Ltd. All Rights Reserved.
+ * 版权所有 ©2021-2025龙晶石半导体科技（苏州）有限公司
  */
 #ifndef __SPK32GLE01__SIGN__H__
 #define __SPK32GLE01__SIGN__H__
@@ -45,26 +52,22 @@ typedef volatile unsigned char VBYTE;
 typedef volatile unsigned short VWORD;
 typedef volatile unsigned int VDWORD;
 
-typedef struct _sign
-{
+typedef struct _sign{
     DWORD r[8];
     DWORD s[8];
 } ssign;
-typedef struct _sign_string
-{
+typedef struct _sign_string{
     char head[2];
     char space1;
     char r[64];
     char space2;
     char s[64];
 } ssign_string;
-typedef struct _point
-{
+typedef struct _point{
     DWORD x[8];
     DWORD y[8];
 } spoint;
-typedef struct _Bit
-{
+typedef struct _Bit{
     BYTE bit0 : 1;
     BYTE bit1 : 1;
     BYTE bit2 : 1;
@@ -74,19 +77,16 @@ typedef struct _Bit
     BYTE bit6 : 1;
     BYTE bit7 : 1;
 } sBit;
-typedef union _Byte
-{
+typedef union _Byte{
     BYTE byte;
     sBit bit;
 } uByte;
-typedef union _Word
-{
+typedef union _Word{
     WORD word;
     BYTE byte[2];
     sBit bit[2];
 } uWord;
-typedef union _Dword
-{
+typedef union _Dword{
     DWORD dword;
     WORD word[2];
     BYTE byte[4];
@@ -141,20 +141,17 @@ typedef struct//2*52=104byte/2*68=136byte
     ECC_STU_BIGINT32_BYTE  stuQy;
 } ECC_STU_PUBKEY_BYTE;
 
-typedef struct
-{
+typedef struct{
     uint32_t bits;                     /* length in bits of modulus */
     uint32_t modulus[RSA_MODULUS_LEN_MAX];  /* modulus */
     uint32_t exponent[RSA_MODULUS_LEN_MAX]; /* public exponent */
 } STU_RSA_PUBKEY;
-typedef struct
-{
+typedef struct{
     uint32_t bits;                     /* length in bits of modulus */
     uint8_t modulus[RSA_MODULUS_LEN_MAX << 2];  /* modulus */
     uint8_t exponent[RSA_MODULUS_LEN_MAX << 2]; /* public exponent */
 } STU_RSA_PUBKEY_BYTE;
-typedef struct
-{
+typedef struct{
     uint32_t bits;                     /* length in bits of modulus */
     uint32_t modulus[RSA_MODULUS_LEN_MAX];  /* modulus */
     uint32_t publicExponent[RSA_MODULUS_LEN_MAX];     /* public exponent */
@@ -163,8 +160,7 @@ typedef struct
     uint32_t primeExponent[2][RSA_PRIME_LEN_MAX];     /* exponents for CRT */
     uint32_t coefficient[RSA_PRIME_LEN_MAX];//inv          /* CRT coefficient */
 } STU_RSA_PRIVKEY;
-typedef struct
-{
+typedef struct{
     uint32_t bits;                     /* length in bits of modulus */
     uint8_t modulus[RSA_MODULUS_LEN_MAX << 2];  /* modulus *///n：模数
     uint8_t publicExponent[RSA_MODULUS_LEN_MAX << 2];     /* public exponent */// e：公钥指数
@@ -173,8 +169,7 @@ typedef struct
     uint8_t primeExponent[2][RSA_PRIME_LEN_MAX << 2];     /* exponents for CRT */ // dmp1：e*dmp1 = 1 (mod (p-1)), dmq1：e*dmq1 = 1 (mod (q-1))
     uint8_t coefficient[RSA_PRIME_LEN_MAX << 2];//inv          /* CRT coefficient */ q*iqmp = 1 (mod p ) : coefficient*prime1 mod modulus =1 
 } STU_RSA_PRIVKEY_BYTE;
-typedef struct
-{
+typedef struct{
     uint32_t bits;                           /* length in bits of modulus */
     int useFermat4;                              /* public exponent (1 = F4, 0 = 3) */
 } STU_RSA_KEY;
@@ -185,32 +180,27 @@ typedef struct _rom_data//关于FLASH的一些信息
     uint32_t EXTFlash_ID;//外部FLASH ID如果外部FLASH ID发生变动，需要除了版本号以外校验签名是否一致
     uint32_t FixedFlashInfo_Addr : 24;//外部flash中固件的相对位置位置(上次MIRROR位置,绝对地址)
 } srom_data;
-typedef union _publickey
-{
+typedef union _publickey{
     STU_RSA_PUBKEY rsa;
     STU_RSA_PUBKEY_BYTE rsa_byte;
     ECC_STU_PUBKEY ecc;//含SM2的椭圆曲线公钥
     ECC_STU_PUBKEY_BYTE ecc_byte;//含SM2的椭圆曲线公钥
 } upublickey;
-typedef union _signature
-{
+typedef union _signature{
     uint32_t rsa[RSA_MODULUS_LEN_MAX];//rsa
     uint8_t rsa_byte[RSA_MODULUS_LEN_MAX << 2];//rsa
     uint32_t hash[512 >> 5];
     uint8_t hash_byte[512 >> 3];
-    struct
-    {
+    struct{
         ECC_STU_BIGINT32 R;
         ECC_STU_BIGINT32 S;
     }ecc;
-    struct
-    {
+    struct{
         ECC_STU_BIGINT32_BYTE R;
         ECC_STU_BIGINT32_BYTE S;
     }ecc_byte;
 } usignature;
-typedef struct _patch_typdef
-{
+typedef struct _patch_typdef{
     uDword data;
     BYTE addrl;
     BYTE addrh : 5;
@@ -219,8 +209,7 @@ typedef struct _patch_typdef
 } spatch_typdef;
 
 
-typedef struct _DynamicFlashInfo
-{
+typedef struct _DynamicFlashInfo{
     uint8_t Firmware_ID[16]; // 识别码，确认安全验签位置，和开头识别码做区分
     usignature sign;     // 安全签名
     upublickey publickey;// 公钥
@@ -241,8 +230,7 @@ typedef struct _DynamicFlashInfo
 #define Firmware_nKsize 512
 
 #define MIRROR_ADDR 0x0
-typedef struct _FixedFlashInfo
-{
+typedef struct _FixedFlashInfo{
     uint8_t Firmware_ID[11]; // 识别码
     uint8_t Compiler_Version[21]; // 版本号-根据这个识别要不要更新外部FLASH
     uint32_t IVT;//中断向量表起始位置Interrupt_Vector_Table（相对Mirror_Addr的起始地址）
@@ -250,11 +238,9 @@ typedef struct _FixedFlashInfo
     uint32_t Backup_OFFSET;//备份区的相对位置（相对Mirror_Addr的偏移地址）
     uint32_t DynamicFlashInfo;//尾部FLASH相关位置 
     spatch_typdef PATCH[8];
-    union
-    {
+    union{
         uint32_t SYSCTL_RESERVERD;
-        struct
-        {
+        struct{
             uint32_t ENABLE_USED : 1;//:0：禁止外部FLASH使用（内部FLASH信息权限）1：允许外部FLASH使用
             uint32_t LAST8M_DISABLE : 1;//0:从后8M开始读取 1: 全16M
             uint32_t LowAddr_OFFSET : 2;//低4位选择0:只MIRROR上次地址，1:64k为间隔，2:16k查找范围，3:4k查找范围（默认）
@@ -329,13 +315,11 @@ typedef struct _FixedFlashInfo
 #define INVALID_SM2_SIGNATURE       0x1006
 #define VERIFY_SM2_SIGNATURE_FAIL   0x1007
 
-typedef struct sm2_sig_structure
-{
+typedef struct sm2_sig_structure{
     unsigned char r_coordinate[32];
     unsigned char s_coordinate[32];
 } SM2_SIGNATURE_STRUCT;
-typedef struct sm2_key_pair_structure
-{
+typedef struct sm2_key_pair_structure{
 /* Private key is a octet string of 32-byte length. */
     unsigned char pri_key[64];
 /* Public key is a octet string of 65 byte length. It is a

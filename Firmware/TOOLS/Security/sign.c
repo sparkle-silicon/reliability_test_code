@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
- * @LastEditors: daweslinyu
- * @LastEditTime: 2025-03-27 22:01:43
+ * @LastEditors: daweslinyu daowes.ly@qq.com
+ * @LastEditTime: 2025-12-24 15:18:25
  * @Description:
  *
  *
@@ -18,7 +18,7 @@
 如果为0x04，代表没有压缩。剩下的64个字节，
 前32个字节，表示ECPoint的X坐标，后32个字节表示ECPoint的Y坐标。
 OCTET STRING类型的ECPoint在转换为BIT STRING类型的subjectPublicKey时，按照大端字节序转换*/
-//gcc ./gle01_sign.c ./gle01_sign.h -I/usr/include/openssl/ -L /usr/lib/x86_64-linux-gnu/ -lcrypto -lssl -D_DEBUG -o gle01_sign
+//gcc ./sign.c ./sign.h -I/usr/include/openssl/ -L /usr/lib/x86_64-linux-gnu/ -lcrypto -lssl -D_DEBUG -o sign
 
 /*
 * echo "-----BEGIN PRIVATE KEY-----" >private_key.pem
@@ -54,7 +54,7 @@ echo "-----END PRIVATE KEY-----" >>private_key.pem
   </OCTET_STRING>
  </SEQUENCE>
  * */
-#include "gle01_sign.h"
+#include "sign.h"
 #define HASH_SIZE 64 // 最大支持 SHA-512
 #define AES_BLOCK_SIZE 16
 // sFixedFlashInfo Fix_flash_info;
