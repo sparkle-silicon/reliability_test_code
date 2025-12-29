@@ -257,6 +257,11 @@ else #Windows or other commands
 	@$(RM) /q /f /s ..\$(release_dir)\AE10X\*.c
 	@$(XCOPY) .\AE10X\AE_FLASHINFO.c  ..\$(release_dir)\AE10X
 	@$(RM) /q /f /s ..\$(release_dir)\AE10X\*.S
+	@$(RM) /q /f /s ..\$(release_dir)\AE10X\*.o
+	@$(RM) /q /f /s ..\$(release_dir)\AE10X\*.d
+	@$(RM) /q /f /s ..\$(release_dir)\AE10X\*.i
+	@$(RM) /q /f /s ..\$(release_dir)\AE10X\*.asm
+	@$(RM) /q /f /s ..\$(release_dir)\AE10X\*.s
 	@$(RMDIR) /s /q ..\$(release_dir)\TEST
 	@$(RM) /q /f /s ..\$(release_dir)\*.sh
 	@$(RMDIR) /s /q ..\$(release_dir)\TOOLS\app
@@ -342,12 +347,6 @@ ifeq ($(OS),Linux) #Linux
 	@$(ECHO) RM -F *.RES
 	@$(RM) -f $(shell find -name "*.tags")
 	@$(ECHO) RM -F *.TAGS
-	@$(RM) -f $(shell find -name "*.d")
-	@$(RM) -f $(shell find -name "*.i")
-	@$(RM) -f $(shell find -name "*.s")
-	@$(ECHO) RM -F *.[IDS]
-	@$(RM) -f $(shell find -name "*.asm")
-	@$(ECHO) RM -F *.ASM
 else #Windows or other commands
 	@$(RM) /q /f /s *.verilog
 	@$(RM) /q /f /s *.readelf
@@ -357,10 +356,7 @@ else #Windows or other commands
 	@$(RM) /q /f /s *.s19
 	@$(RM) /q /f /s *.map
 	@$(RM) /q /f /s *.elf
-	@$(RM) /q /f /s  *.res
-	@$(RM) /q /f /s  *.d
-	@$(RM) /q /f /s  *.i
-	@$(RM) /q /f /s  *.s
-	@$(RM) /q /f /s  *.asm
+	@$(RM) /q /f /s *.res
+	@$(RM) /q /f /s *.tags
 endif
 		
