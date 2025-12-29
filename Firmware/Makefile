@@ -245,7 +245,7 @@ release_dir := release_v$(VERSION)_$(BUILD_DATE)
 release:
 ifeq ($(OS),Linux) #Linux
 	@$(COPY) ./ ../$(release_dir) -r
-	@$(RM) -f ../$(release_dir)/AE10X/*.c ../$(release_dir)/AE10X/*.S
+	@$(RM) -f ../$(release_dir)/AE10X/*.c ../$(release_dir)/AE10X/*.S ../$(release_dir)/AE10X/*.o ../$(release_dir)/AE10X/*.d
 	@$(COPY) ./AE10X/AE_FLASHINFO.c ../$(release_dir)/AE10X/
 	@$(RMDIR) ../$(release_dir)/TEST
 	@$(RMDIR) ../$(release_dir)/release.sh ../$(release_dir)/rom.sh
