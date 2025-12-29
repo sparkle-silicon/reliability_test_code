@@ -253,7 +253,7 @@ ifeq ($(OS),Linux) #Linux
 	@$(RMDIR) ../$(release_dir)/.v* ../$(release_dir)/.s*  ../$(release_dir)/.c* ../$(release_dir)/.g* ../$(release_dir)/.p* 
 else #Windows or other commands
 	@if not exist ..\$(release_dir) $(MKDIR) ..\$(release_dir)
-	@xcopy **\* ..\$(release_dir) /s /e /i /y
+	@$(XCOPY) **\* ..\$(release_dir) /s /e /i /y
 	@$(RM) /q /f /s ..\$(release_dir)\AE10X\*.c
 	@$(XCOPY) .\AE10X\AE_FLASHINFO.c  ..\$(release_dir)\AE10X
 	@$(RM) /q /f /s ..\$(release_dir)\AE10X\*.S
