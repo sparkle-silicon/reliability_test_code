@@ -3,7 +3,7 @@
  # @Author: daweslinyu 
  # @Date: 2024-05-31 14:37:40
  # @LastEditors: daweslinyu daowes.ly@qq.com
- # @LastEditTime: 2025-12-30 14:49:19
+ # @LastEditTime: 2025-12-30 16:00:02
  # @FilePath: /Firmware/make.sh
  # @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 ### 
@@ -15,8 +15,8 @@ binname="./ec_main.bin"
 hexname="./ec_main.hex"
 s19name="./ec_main.s19"
 # clear
-# make clean -j4 DOWNLOAD=crypto
-make compile -j4 DOWNLOAD=crypto
+# make clean -j4 
+make compile -j4 
 ##sed 's/cc.*/& eeeee/g' ./ec_main.bin
 if [ -d "$folder0" ] ; then #存在目录/home/Share
     if [ -f "$binname" ]; then cp "$binname" "$folder0";fi
