@@ -184,10 +184,18 @@ software: copyright_notice
 
 	@$(ECHO) SHELL = $(SHELL_TYPE)
 #更新编译时间
+ifeq ($(OS),Linux) #Linux
 	@$(RM) $(AE10X_DIR)/AE_FLASHINFO.o 
 	@$(RM) $(KERNEL_DIR)/KERNEL_MAIN.o 
 ifeq ($(VERSION),0.0.0)#未发布版本
 	@$(RM) $(TEST_DIR)/TEST_MAIN.o 
+endif
+else #Windows or other commands
+	@$(RM) $(subst /,\,$(AE10X_DIR)/AE_FLASHINFO.o)>nul 2>&1
+	@$(RM) $(subst /,\,$(KERNEL_DIR)/KERNEL_MAIN.o)>nul 2>&1
+ifeq ($(VERSION),0.0.0)#未发布版本
+	@$(RM) $(subst /,\,$(TEST_DIR)/TEST_MAIN.o)>nul 2>&1
+endif
 endif
 #编译
 	@$(ECHO) make -f $(TOPDIR)/common.mk
@@ -355,15 +363,35 @@ ifeq ($(OS),Linux) #Linux
 	@$(RM) $(shell find -name "*.tags")
 	@$(ECHO) RM *.TAGS
 else #Windows or other commands
-	@$(RM) *.verilog
-	@$(RM) *.readelf
-	@$(RM) *.dump
-	@$(RM) *.bin
-	@$(RM) *.hex
-	@$(RM) *.s19
-	@$(RM) *.map
-	@$(RM) *.elf
-	@$(RM) *.res
-	@$(RM) *.tags
+	@$(RM) *.verilog>nul 2>&1
+	@$(ECHO) RM *.VERILOG
+	@$(RM) *.readelf>nul 2>&1
+	@$(ECHO) RM *.READELF
+	@$(RM) *.dump>nul 2>&1
+	@$(ECHO) RM *.DUMP
+	@$(RM) *.bin>nul 2>&1
+	@$(ECHO) RM *.BIN
+	@$(RM) *.hex>nul 2>&1
+	@$(ECHO) RM *.HEX
+	@$(RM) *.s19>nul 2>&1
+	@$(ECHO) RM *.S19
+	@$(RM) *.map>nul 2>&1
+	@$(ECHO) RM *.MAP
+	@$(RM) *.elf>nul 2>&1
+	@$(ECHO) RM *.ELF
+	@$(RM) *.res>nul 2>&1
+	@$(ECHO) RM *.RES
+	@$(RM) *.tags>nul 2>&1
+	@$(ECHO) RM *.TAGS
+# 	@$(RM) *.verilog 2>nul
+# 	@$(RM) *.readelf 2>nul
+# 	@$(RM) *.dump 2>nul
+# 	@$(RM) *.bin 2>nul
+# 	@$(RM) *.hex 2>nul
+# 	@$(RM) *.s19 2>nul
+# 	@$(RM) *.map 2>nul
+# 	@$(RM) *.elf 2>nul
+# 	@$(RM) *.res 2>nul
+# 	@$(RM) *.tags 2>nul
 endif
 		

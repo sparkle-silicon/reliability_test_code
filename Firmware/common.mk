@@ -506,7 +506,8 @@ endif
 clean:
 ifeq ($(OS),Linux) #Linux
 	@$(RM) -f $(CLEAN_OBJS)
-	@$(ECHO) RM  CLEAN_OBJS
 else #Windows or other commands
-	@$(RM) /q /f /s $(CLEAN_OBJS)
+#	@$(RM) /q /f /s $(CLEAN_OBJS) 2>nul
+	@$(RM) /q /f /s $(CLEAN_OBJS)>nul 2>&1
 endif
+	@$(ECHO) RM  CLEAN_OBJS
