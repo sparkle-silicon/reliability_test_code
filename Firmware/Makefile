@@ -93,7 +93,7 @@ DD       := dd
 else
 COPY     := copy
 RM       := del /q /f /s
-RMDIR    := rmdir
+RMDIR    := rmdir /s /q
 MKDIR    := mkdir
 CLEAR    := cls
 DD       := dd
@@ -269,12 +269,12 @@ else #Windows or other commands
 	@$(RM) ..\$(release_dir)\AE10X\*.i
 	@$(RM) ..\$(release_dir)\AE10X\*.asm
 	@$(RM) ..\$(release_dir)\AE10X\*.s
-	@$(RMDIR) /s /q ..\$(release_dir)\TEST
+	@$(RMDIR) ..\$(release_dir)\TEST
 	@$(RM) ..\$(release_dir)\*.sh
-	@$(RMDIR) /s /q ..\$(release_dir)\TOOLS\app
-	@$(RMDIR) /s /q ..\$(release_dir)\TOOLS\auto_test
-	@$(RMDIR) /s /q ..\$(release_dir)\TOOLS\drive
-	@$(RMDIR) /s /q ..\$(release_dir)\TOOLS\classic_benchmarks
+	@$(RMDIR) ..\$(release_dir)\TOOLS\app
+	@$(RMDIR) ..\$(release_dir)\TOOLS\auto_test
+	@$(RMDIR) ..\$(release_dir)\TOOLS\drive
+	@$(RMDIR) ..\$(release_dir)\TOOLS\classic_benchmarks
 	@$(RM) ..\$(release_dir)\TOOLS\check_and_concatenate.sh
 endif
 ##############################################################
