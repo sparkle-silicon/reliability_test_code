@@ -1,7 +1,7 @@
 /*
  * @Author: Linyu
  * @LastEditors: daweslinyu daowes.ly@qq.com
- * @LastEditTime: 2025-12-01 17:26:37
+ * @LastEditTime: 2025-12-30 14:37:03
  * @Description: 
  * 
  * 
@@ -150,6 +150,20 @@ __scatterload_shareram://将SRAM的空间清零
 	sw zero, (a0)
 	addi a0, a0, 4
 	bltu a0, a1, 1b
+#if 1
+__scatterload_ivt://赋值IVT的空间清零
+2:
+	la a0, vector_base
+	la a1, 0x30800
+	la a2, 0x30884
+	bgeu a1, a2, 2f
+1:
+	lw t0, (a0)
+	sw t0, (a1)
+	addi a0, a0, 4
+	addi a1, a1, 4
+	bltu a1, a2, 1b
+#endif
 #if 0 //将FLASH中ROM代码拷贝到ROM中 ,暂时保留,测试代码,正式无效
 #if (!defined(DUBLE_FIRMWARE2))   
 __scatterload_rom:

@@ -86,13 +86,13 @@ GCC           	:= gcc
 ECHO     		:= echo
 ifeq ($(OS),Linux)
 COPY     := cp
-RM       := rm
+RM       := rm -f
 RMDIR    := rm -rf
 CLEAR    := clear
 DD       := dd
 else
 COPY     := copy
-RM       := del
+RM       := del /q /f /s
 RMDIR    := rmdir
 MKDIR    := mkdir
 CLEAR    := cls
@@ -183,6 +183,13 @@ endif
 software: copyright_notice
 
 	@$(ECHO) SHELL = $(SHELL_TYPE)
+#更新编译时间
+	@$(RM) $(AE10X_DIR)/AE_FLASHINFO.o 
+	@$(RM) $(KERNEL_DIR)/KERNEL_MAIN.o 
+ifeq ($(VERSION),0.0.0)#未发布版本
+	@$(RM) $(TEST_DIR)/TEST_MAIN.o 
+endif
+#编译
 	@$(ECHO) make -f $(TOPDIR)/common.mk
 	@$(MAKE) -f $(TOPDIR)/common.mk --no-print-directory 
 
@@ -245,30 +252,30 @@ release_dir := release_v$(VERSION)_$(BUILD_DATE)
 release:
 ifeq ($(OS),Linux) #Linux
 	@$(COPY) ./ ../$(release_dir) -r
-	@$(RM) -f ../$(release_dir)/AE10X/*.c ../$(release_dir)/AE10X/*.S ../$(release_dir)/AE10X/*.o ../$(release_dir)/AE10X/*.d ../$(release_dir)/AE10X/*.i ../$(release_dir)/AE10X/*.asm ../$(release_dir)/AE10X/*.s
+	@$(RM) ../$(release_dir)/AE10X/*.c ../$(release_dir)/AE10X/*.S ../$(release_dir)/AE10X/*.o ../$(release_dir)/AE10X/*.d ../$(release_dir)/AE10X/*.i ../$(release_dir)/AE10X/*.asm ../$(release_dir)/AE10X/*.s
 	@$(COPY) ./AE10X/AE_FLASHINFO.c ../$(release_dir)/AE10X/
 	@$(RMDIR) ../$(release_dir)/TEST
-	@$(RMDIR) ../$(release_dir)/release.sh ../$(release_dir)/rom.sh
+	@$(RM)  ../$(release_dir)/release.sh ../$(release_dir)/rom.sh
 	@$(RMDIR) ../$(release_dir)/TOOLS/app ../$(release_dir)/TOOLS/auto_test ../$(release_dir)/TOOLS/drive ../$(release_dir)/TOOLS/classic_benchmarks
 	@$(RMDIR) ../$(release_dir)/.v* ../$(release_dir)/.s*  ../$(release_dir)/.c* ../$(release_dir)/.g* ../$(release_dir)/.p* 
 else #Windows or other commands
 	@if not exist ..\$(release_dir) $(MKDIR) ..\$(release_dir)
 	@$(XCOPY) **\* ..\$(release_dir) /s /e /i /y
-	@$(RM) /q /f /s ..\$(release_dir)\AE10X\*.c
+	@$(RM) ..\$(release_dir)\AE10X\*.c
 	@$(XCOPY) .\AE10X\AE_FLASHINFO.c  ..\$(release_dir)\AE10X
-	@$(RM) /q /f /s ..\$(release_dir)\AE10X\*.S
-	@$(RM) /q /f /s ..\$(release_dir)\AE10X\*.o
-	@$(RM) /q /f /s ..\$(release_dir)\AE10X\*.d
-	@$(RM) /q /f /s ..\$(release_dir)\AE10X\*.i
-	@$(RM) /q /f /s ..\$(release_dir)\AE10X\*.asm
-	@$(RM) /q /f /s ..\$(release_dir)\AE10X\*.s
+	@$(RM) ..\$(release_dir)\AE10X\*.S
+	@$(RM) ..\$(release_dir)\AE10X\*.o
+	@$(RM) ..\$(release_dir)\AE10X\*.d
+	@$(RM) ..\$(release_dir)\AE10X\*.i
+	@$(RM) ..\$(release_dir)\AE10X\*.asm
+	@$(RM) ..\$(release_dir)\AE10X\*.s
 	@$(RMDIR) /s /q ..\$(release_dir)\TEST
-	@$(RM) /q /f /s ..\$(release_dir)\*.sh
+	@$(RM) ..\$(release_dir)\*.sh
 	@$(RMDIR) /s /q ..\$(release_dir)\TOOLS\app
 	@$(RMDIR) /s /q ..\$(release_dir)\TOOLS\auto_test
 	@$(RMDIR) /s /q ..\$(release_dir)\TOOLS\drive
 	@$(RMDIR) /s /q ..\$(release_dir)\TOOLS\classic_benchmarks
-	@$(RM) /q /f /s ..\$(release_dir)\TOOLS\check_and_concatenate.sh
+	@$(RM) ..\$(release_dir)\TOOLS\check_and_concatenate.sh
 endif
 ##############################################################
 #############################################################
@@ -327,36 +334,36 @@ help: copyright_notice
 clean: copyright_notice
 	@$(MAKE) -f $(TOPDIR)/common.mk --no-print-directory clean
 ifeq ($(OS),Linux) #Linux
-	@$(RM) -f $(shell find -name "*.verilog")
-	@$(ECHO) RM -F *.VERILOG
-	@$(RM) -f $(shell find -name "*.readelf")
-	@$(ECHO) RM -F *.READELF
-	@$(RM) -f $(shell find -name "*.dump")
-	@$(ECHO) RM -F *.DUMP
-	@$(RM) -f $(shell find -name "*.bin")
-	@$(ECHO) RM -F *.BIN
-	@$(RM) -f $(shell find -name "*.hex")
-	@$(ECHO) RM -F *.HEX
-	@$(RM) -f $(shell find -name "*.s19")
-	@$(ECHO) RM -F *.S19
-	@$(RM) -f $(shell find -name "*.map")
-	@$(ECHO) RM -F *.MAP
-	@$(RM) -f $(shell find -name "*.elf")
-	@$(ECHO) RM -F *.ELF
-	@$(RM) -f $(shell find -name "*.res")
-	@$(ECHO) RM -F *.RES
-	@$(RM) -f $(shell find -name "*.tags")
-	@$(ECHO) RM -F *.TAGS
+	@$(RM) $(shell find -name "*.verilog")
+	@$(ECHO) RM *.VERILOG
+	@$(RM) $(shell find -name "*.readelf")
+	@$(ECHO) RM *.READELF
+	@$(RM) $(shell find -name "*.dump")
+	@$(ECHO) RM *.DUMP
+	@$(RM) $(shell find -name "*.bin")
+	@$(ECHO) RM *.BIN
+	@$(RM) $(shell find -name "*.hex")
+	@$(ECHO) RM *.HEX
+	@$(RM) $(shell find -name "*.s19")
+	@$(ECHO) RM *.S19
+	@$(RM) $(shell find -name "*.map")
+	@$(ECHO) RM *.MAP
+	@$(RM) $(shell find -name "*.elf")
+	@$(ECHO) RM *.ELF
+	@$(RM) $(shell find -name "*.res")
+	@$(ECHO) RM *.RES
+	@$(RM) $(shell find -name "*.tags")
+	@$(ECHO) RM *.TAGS
 else #Windows or other commands
-	@$(RM) /q /f /s *.verilog
-	@$(RM) /q /f /s *.readelf
-	@$(RM) /q /f /s *.dump
-	@$(RM) /q /f /s *.bin
-	@$(RM) /q /f /s *.hex
-	@$(RM) /q /f /s *.s19
-	@$(RM) /q /f /s *.map
-	@$(RM) /q /f /s *.elf
-	@$(RM) /q /f /s *.res
-	@$(RM) /q /f /s *.tags
+	@$(RM) *.verilog
+	@$(RM) *.readelf
+	@$(RM) *.dump
+	@$(RM) *.bin
+	@$(RM) *.hex
+	@$(RM) *.s19
+	@$(RM) *.map
+	@$(RM) *.elf
+	@$(RM) *.res
+	@$(RM) *.tags
 endif
 		
