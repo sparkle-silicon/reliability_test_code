@@ -48,6 +48,9 @@ typedef struct Flash_Firmware_Info
 } sFlash_Firmware_Info;
 sFlash_Firmware_Info flashAndFWInfo;
 
+char update_cmd[16] = { 0x75 ,0x70 ,0x64 ,0x61 ,0x74 ,0x65 ,0x20 ,0x66 ,0x69 ,0x6d ,0x77 ,0x61 ,0x72 ,0x65 ,0x2D ,0x69};
+ssize_t send_data(int fd, const void *data, size_t length);
+
 // 函数：接收数据，使用select()避免阻塞
 int receive_data(int fd, unsigned char *buffer, size_t length)
 {
@@ -337,7 +340,6 @@ int send_file_data(int fd, const char *file_path)
     }
 
     //发送开始进行更新的命令
-    char update_cmd[16] = { 0x75 ,0x70 ,0x64 ,0x61 ,0x74 ,0x65 ,0x20 ,0x66 ,0x69 ,0x6d ,0x77 ,0x61 ,0x72 ,0x65 ,0x2D ,0x69};
     if(send_data(fd, update_cmd, sizeof(update_cmd)) < 0)
     {
         printf("Failed to send update command\n");

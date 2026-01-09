@@ -56,11 +56,5 @@ void SECTION(".init.mem") Specific_Mem_init(void)
         TP_ACK_Timeout = 40000;
         PowerSequence_WaitTime = Wait_Time;
         ROM_COPY_CNT = 0;
-
-        //clear sharememory
-        for (int i = 0; i < 4 * 1024; i++)
-        {
-                *((VBYTEP)(SRAM_BASE_ADDR + i)) = 0x0;
-        }
         dprint("Specific Variable&Memory init End.\n");
 }

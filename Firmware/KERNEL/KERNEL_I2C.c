@@ -797,6 +797,7 @@ void I2C_Slave_Write_Block(uint8_t *data, BYTE length, WORD i2c_channel)
 //*****************************************************************************
 void I2C_Master_Controller_Init(WORD i2c_channel, DWORD speed, BYTE spklen)
 {
+	uint16_t hd_dat=300;//ns
 	uint16_t hcnt, lcnt;
 	uint16_t control;
 	/*Disable*/
@@ -809,6 +810,7 @@ void I2C_Master_Controller_Init(WORD i2c_channel, DWORD speed, BYTE spklen)
 
 	if (speed <= 100000)//100kHz
 	{
+		SMBUSn_SDA_HOLD0(i2c_channel)=((SMUBUS_CLOCK*hd_dat)/1000000000);//SMDAT hold time > 300ns
 		SMBUSn_FS_SPKLEN0(i2c_channel) = spklen;
 		SMBUSn_SS_SCL_HCNT0(i2c_channel) = hcnt;
 		SMBUSn_SS_SCL_LCNT0(i2c_channel) = lcnt;
@@ -816,6 +818,7 @@ void I2C_Master_Controller_Init(WORD i2c_channel, DWORD speed, BYTE spklen)
 	}
 	else if (speed <= 400000)//400kHz
 	{
+		SMBUSn_SDA_HOLD0(i2c_channel)=((SMUBUS_CLOCK*hd_dat)/1000000000);//SMDAT hold time > 300ns
 		SMBUSn_FS_SPKLEN0(i2c_channel) = spklen;
 		SMBUSn_FS_SCL_HCNT0(i2c_channel) = hcnt;
 		SMBUSn_FS_SCL_LCNT0(i2c_channel) = lcnt;
