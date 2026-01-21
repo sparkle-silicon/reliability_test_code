@@ -49,17 +49,17 @@ DWORD I3C_Channel_Baseaddr(BYTE i3c_mux)
 {
     switch (i3c_mux)
     {
-        case I3C_MASTER0:
-            return I3C_MASTER0_BASE_ADDR;
-        case I3C_MASTER1:
-            return I3C_MASTER1_BASE_ADDR;
-        case I3C_SLAVE0:
-            return I3C_SLAVE0_BASE_ADDR;
-        case I3C_SLAVE1:
-            return I3C_SLAVE1_BASE_ADDR;
-        default:
-            i3c_dprint("i3c_mux error \n");
-            return 0;
+    case I3C_MASTER0:
+        return I3C_MASTER0_BASE_ADDR;
+    case I3C_MASTER1:
+        return I3C_MASTER1_BASE_ADDR;
+    case I3C_SLAVE0:
+        return I3C_SLAVE0_BASE_ADDR;
+    case I3C_SLAVE1:
+        return I3C_SLAVE1_BASE_ADDR;
+    default:
+        i3c_dprint("i3c_mux error \n");
+        return 0;
     }
 }
 
@@ -187,39 +187,39 @@ uint32_t I3C_Master_RespData_ERRSTS(BYTE i3c_mux)
         i3c_error = 1;
         switch (err_sts)
         {
-            case RESPONSE_QUEUE_PORT_ERR_STS_NO_ERROR:
-                i3c_dprint("I3C_MASTER%d_RESPONSE_QUEUE_PORT_ERR_STS_NO_ERROR\n", i3c_mux);
-                break;
-            case RESPONSE_QUEUE_PORT_ERR_STS_CRC_ERROR:
-                i3c_dprint("I3C_MASTER%d_RESPONSE_QUEUE_PORT_ERR_STS_CRC_ERROR\n", i3c_mux);
-                break;
-            case RESPONSE_QUEUE_PORT_ERR_STS_PARITY_ERROR:
-                i3c_dprint("I3C_MASTER%d_RESPONSE_QUEUE_PORT_ERR_STS_PARITY_ERROR\n", i3c_mux);
-                break;
-            case RESPONSE_QUEUE_PORT_ERR_STS_FRAME_ERROR:
-                i3c_dprint("I3C_MASTER%d_RESPONSE_QUEUE_PORT_ERR_STS_FRAME_ERROR\n", i3c_mux);
-                break;
-            case RESPONSE_QUEUE_PORT_ERR_STS_I3C_BROADCAST_ADDRESS_NACK_ERROR:
-                i3c_dprint("I3C_MASTER%d_RESPONSE_QUEUE_PORT_ERR_STS_I3C_BROADCAST_ADDRESS_NACK_ERROR\n", i3c_mux);
-                break;
-            case RESPONSE_QUEUE_PORT_ERR_STS_ADDRESS_NACKED:
-                i3c_dprint("I3C_MASTER%d_RESPONSE_QUEUE_PORT_ERR_STS_ADDRESS_NACKED\n", i3c_mux);
-                break;
-            case RESPONSE_QUEUE_PORT_ERR_STS_RECELVE_BUFFER_OVERFLOWTRANSMIT_BUFFER_UNDERFLOW:
-                i3c_dprint("I3C_MASTER%d_RESPONSE_QUEUE_PORT_ERR_STS_RECELVE_BUFFER_OVERFLOWTRANSMIT_BUFFER_UNDERFLOW\n", i3c_mux);
-                break;
-            case RESPONSE_QUEUE_PORT_ERR_STS_TRANSFER_ABORTED:
-                i3c_dprint("I3C_MASTER%d_RESPONSE_QUEUE_PORT_ERR_STS_TRANSFER_ABORTED\n", i3c_mux);
-                break;
-            case RESPONSE_QUEUE_PORT_ERR_STS_I2C_SLAVE_WRITE_DATA_NACK_ERROR:
-                i3c_dprint("I3C_MASTER%d_RESPONSE_QUEUE_PORT_ERR_STS_I2C_SLAVE_WRITE_DATA_NACK_ERROR\n", i3c_mux);
-                break;
-            case RESPONSE_QUEUE_PORT_ERR_STS_PEC_ERROR:
-                i3c_dprint("I3C_MASTER%d_RESPONSE_QUEUE_PORT_ERR_STS_PEC_ERROR\n", i3c_mux);
-                break;
-            default:
-                i3c_dprint("I3C_MASTER%d_RESPONSE_QUEUE_PORT_ERR_STS_RESERVED\n", i3c_mux);
-                break;
+        case RESPONSE_QUEUE_PORT_ERR_STS_NO_ERROR:
+            i3c_dprint("I3C_MASTER%d_RESPONSE_QUEUE_PORT_ERR_STS_NO_ERROR\n", i3c_mux);
+            break;
+        case RESPONSE_QUEUE_PORT_ERR_STS_CRC_ERROR:
+            i3c_dprint("I3C_MASTER%d_RESPONSE_QUEUE_PORT_ERR_STS_CRC_ERROR\n", i3c_mux);
+            break;
+        case RESPONSE_QUEUE_PORT_ERR_STS_PARITY_ERROR:
+            i3c_dprint("I3C_MASTER%d_RESPONSE_QUEUE_PORT_ERR_STS_PARITY_ERROR\n", i3c_mux);
+            break;
+        case RESPONSE_QUEUE_PORT_ERR_STS_FRAME_ERROR:
+            i3c_dprint("I3C_MASTER%d_RESPONSE_QUEUE_PORT_ERR_STS_FRAME_ERROR\n", i3c_mux);
+            break;
+        case RESPONSE_QUEUE_PORT_ERR_STS_I3C_BROADCAST_ADDRESS_NACK_ERROR:
+            i3c_dprint("I3C_MASTER%d_RESPONSE_QUEUE_PORT_ERR_STS_I3C_BROADCAST_ADDRESS_NACK_ERROR\n", i3c_mux);
+            break;
+        case RESPONSE_QUEUE_PORT_ERR_STS_ADDRESS_NACKED:
+            i3c_dprint("I3C_MASTER%d_RESPONSE_QUEUE_PORT_ERR_STS_ADDRESS_NACKED\n", i3c_mux);
+            break;
+        case RESPONSE_QUEUE_PORT_ERR_STS_RECELVE_BUFFER_OVERFLOWTRANSMIT_BUFFER_UNDERFLOW:
+            i3c_dprint("I3C_MASTER%d_RESPONSE_QUEUE_PORT_ERR_STS_RECELVE_BUFFER_OVERFLOWTRANSMIT_BUFFER_UNDERFLOW\n", i3c_mux);
+            break;
+        case RESPONSE_QUEUE_PORT_ERR_STS_TRANSFER_ABORTED:
+            i3c_dprint("I3C_MASTER%d_RESPONSE_QUEUE_PORT_ERR_STS_TRANSFER_ABORTED\n", i3c_mux);
+            break;
+        case RESPONSE_QUEUE_PORT_ERR_STS_I2C_SLAVE_WRITE_DATA_NACK_ERROR:
+            i3c_dprint("I3C_MASTER%d_RESPONSE_QUEUE_PORT_ERR_STS_I2C_SLAVE_WRITE_DATA_NACK_ERROR\n", i3c_mux);
+            break;
+        case RESPONSE_QUEUE_PORT_ERR_STS_PEC_ERROR:
+            i3c_dprint("I3C_MASTER%d_RESPONSE_QUEUE_PORT_ERR_STS_PEC_ERROR\n", i3c_mux);
+            break;
+        default:
+            i3c_dprint("I3C_MASTER%d_RESPONSE_QUEUE_PORT_ERR_STS_RESERVED\n", i3c_mux);
+            break;
         }
         I3C_WriteREG_DWORD((I3C_ReadREG_DWORD(DEVICE_CTRL_OFFSET, i3c_mux) | DEVICE_CTRL_RESUME), DEVICE_CTRL_OFFSET, i3c_mux);//清除错误并且复位
         for (uint32_t timeout = I3C_TIMEOUT; (I3C_ReadREG_DWORD(DEVICE_CTRL_OFFSET, i3c_mux) & DEVICE_CTRL_RESUME); timeout--)
@@ -348,9 +348,9 @@ BYTE I3C_Legacy_Master_Init(uint32_t speed, BYTE i3c_mux)
 *
 * @note 无
 */
-BYTE I3C_Legacy_Master_Write(uint8_t static_addr, uint8_t *data, uint16_t bytelen, BYTE i3c_mux)
+BYTE I3C_Legacy_Master_Write(uint8_t static_addr, uint8_t* data, uint16_t bytelen, BYTE i3c_mux)
 {
-    uint8_t *data_ptr = data;
+    uint8_t* data_ptr = data;
     uint32_t data_len = bytelen;
     uint32_t temp_data = 0;
     if (((i3c_mux != I3C_MASTER0) && (i3c_mux != I3C_MASTER1)) || (data_ptr == NULL) || (data_len == 0))
@@ -439,9 +439,9 @@ BYTE I3C_Legacy_Master_Write(uint8_t static_addr, uint8_t *data, uint16_t bytele
 *
 * @note 无
 */
-uint8_t I3C_Legacy_Master_Read(uint8_t static_addr, uint8_t *data, uint16_t bytelen, BYTE i3c_mux)
+uint8_t I3C_Legacy_Master_Read(uint8_t static_addr, uint8_t* data, uint16_t bytelen, BYTE i3c_mux)
 {
-    uint8_t *data_ptr = data;
+    uint8_t* data_ptr = data;
     uint32_t data_len = bytelen;
     uint32_t temp_data = 0;
     if (((i3c_mux != I3C_MASTER0) && (i3c_mux != I3C_MASTER1)) || (data_ptr == NULL) || (data_len == 0))
@@ -533,7 +533,7 @@ uint8_t I3C_Legacy_Master_Read(uint8_t static_addr, uint8_t *data, uint16_t byte
 *
 * @note 无
 */
-BYTE I3C_Legacy_Master_W2R_Stream(BYTE static_addr, BYTE *w_var, WORD w_cnt, BYTE *r_var, WORD r_cnt, BYTE i3c_mux)
+BYTE I3C_Legacy_Master_W2R_Stream(BYTE static_addr, BYTE* w_var, WORD w_cnt, BYTE* r_var, WORD r_cnt, BYTE i3c_mux)
 {
     if ((i3c_mux != I3C_MASTER0) && (i3c_mux != I3C_MASTER1))
     {
@@ -625,7 +625,7 @@ BYTE I3C_SDR_Master_Init(uint32_t speed, BYTE i3c_mux)
 *
 * @note 初始化配置设备动态地址
 */
-BYTE I3C_MASTER_ENTDAA(sDEV_CHAR_TABLE *dct, BYTE *dynamic_addr, BYTE i3c_mux)
+BYTE I3C_MASTER_ENTDAA(sDEV_CHAR_TABLE* dct, BYTE* dynamic_addr, BYTE i3c_mux)
 {
     uint32_t temp_data = 0;
     BYTE dev_tmpcnt = 0;
@@ -809,9 +809,9 @@ BYTE I3C_MASTER_ENTDAA(sDEV_CHAR_TABLE *dct, BYTE *dynamic_addr, BYTE i3c_mux)
 *
 * @note 无
 */
-BYTE I3C_MASTER_BC_CCC_WRITE(uint8_t *data, uint16_t bytelen, BYTE cmd, uint8_t dbp, uint8_t db, BYTE i3c_mux)
+BYTE I3C_MASTER_BC_CCC_WRITE(uint8_t* data, uint16_t bytelen, BYTE cmd, uint8_t dbp, uint8_t db, BYTE i3c_mux)
 {
-    uint8_t *data_ptr = data;
+    uint8_t* data_ptr = data;
     uint32_t data_len = bytelen;
     uint32_t temp_data = 0;
     if (((i3c_mux != I3C_MASTER0) && (i3c_mux != I3C_MASTER1)) || (data_ptr == NULL) || (cmd > BROADCAST_CMD_MAX))
@@ -892,9 +892,9 @@ BYTE I3C_MASTER_BC_CCC_WRITE(uint8_t *data, uint16_t bytelen, BYTE cmd, uint8_t 
 *
 * @note 无
 */
-BYTE I3C_MASTER_DR_CCC_WRITE(uint8_t dynamic_addr, uint8_t *data, uint16_t bytelen, BYTE cmd, uint8_t dbp, uint8_t db, BYTE i3c_mux)
+BYTE I3C_MASTER_DR_CCC_WRITE(uint8_t dynamic_addr, uint8_t* data, uint16_t bytelen, BYTE cmd, uint8_t dbp, uint8_t db, BYTE i3c_mux)
 {
-    uint8_t *data_ptr = data;
+    uint8_t* data_ptr = data;
     uint32_t data_len = bytelen;
     uint32_t temp_data = 0;
     uint8_t match_cnt = 0;
@@ -989,9 +989,9 @@ BYTE I3C_MASTER_DR_CCC_WRITE(uint8_t dynamic_addr, uint8_t *data, uint16_t bytel
 *
 * @note 无
 */
-BYTE I3C_MASTER_DR_CCC_READ(uint8_t dynamic_addr, uint8_t *data, uint16_t bytelen, BYTE cmd, uint8_t dbp, uint8_t db, BYTE i3c_mux)
+BYTE I3C_MASTER_DR_CCC_READ(uint8_t dynamic_addr, uint8_t* data, uint16_t bytelen, BYTE cmd, uint8_t dbp, uint8_t db, BYTE i3c_mux)
 {
-    uint8_t *data_ptr = data;
+    uint8_t* data_ptr = data;
     uint32_t data_len = bytelen;
     uint32_t temp_data = 0;
     uint8_t match_cnt = 0;
@@ -1090,9 +1090,9 @@ BYTE I3C_MASTER_DR_CCC_READ(uint8_t dynamic_addr, uint8_t *data, uint16_t bytele
 *
 * @note 无
 */
-BYTE I3C_MASTER_PV_WRITE_WITH7E(uint8_t dynamic_addr, uint8_t *data, uint16_t bytelen, BYTE i3c_mux)
+BYTE I3C_MASTER_PV_WRITE_WITH7E(uint8_t dynamic_addr, uint8_t* data, uint16_t bytelen, BYTE i3c_mux)
 {
-    uint8_t *data_ptr = data;
+    uint8_t* data_ptr = data;
     uint32_t data_len = bytelen;
     uint32_t temp_data = 0;
     uint8_t match_cnt = 0;
@@ -1178,9 +1178,9 @@ BYTE I3C_MASTER_PV_WRITE_WITH7E(uint8_t dynamic_addr, uint8_t *data, uint16_t by
 *
 * @note 无
 */
-BYTE I3C_MASTER_PV_READ_WITH7E(uint8_t dynamic_addr, uint8_t *data, uint16_t bytelen, BYTE i3c_mux)
+BYTE I3C_MASTER_PV_READ_WITH7E(uint8_t dynamic_addr, uint8_t* data, uint16_t bytelen, BYTE i3c_mux)
 {
-    uint8_t *data_ptr = data;
+    uint8_t* data_ptr = data;
     uint32_t data_len = bytelen;
     uint32_t temp_data = 0;
     uint8_t match_cnt = 0;
@@ -1274,11 +1274,11 @@ BYTE I3C_MASTER_PV_READ_WITH7E(uint8_t dynamic_addr, uint8_t *data, uint16_t byt
 *
 * @note 无
 */
-BYTE I3C_MASTER_PV_WRITE_THEN_READ_WITH7E(uint8_t dynamic_addr, uint8_t *wdata, uint16_t wbytelen, uint8_t *rdata, uint16_t rbytelen, BYTE i3c_mux)
+BYTE I3C_MASTER_PV_WRITE_THEN_READ_WITH7E(uint8_t dynamic_addr, uint8_t* wdata, uint16_t wbytelen, uint8_t* rdata, uint16_t rbytelen, BYTE i3c_mux)
 {
-    uint8_t *wdata_ptr = wdata;
+    uint8_t* wdata_ptr = wdata;
     uint32_t wdata_len = wbytelen;
-    uint8_t *rdata_ptr = rdata;
+    uint8_t* rdata_ptr = rdata;
     uint32_t rdata_len = rbytelen;
     uint32_t temp_data = 0;
 
@@ -1341,9 +1341,11 @@ void I3C_MASTER_IBI_Handler(BYTE i3c_mux)
 repeat_ibi:
     ibi_queue_status = I3C_ReadREG_DWORD(IBI_QUEUE_STATUS_OFFSET, i3c_mux);
     data_length = ibi_queue_status & IBI_QUEUE_STATUS_DATA_LENGTH;
+
     if (((ibi_queue_status & IBI_QUEUE_STATUS_IBI_STATUS) == 0) && (data_length > 0))
     {
-        uint8_t *ibi_ptr = (uint8_t *)malloc(data_length);
+        uint8_t ibi_buf[data_length];
+        uint8_t* ibi_ptr = ibi_buf;
         while (data_length)
         {
             register uint32_t len = (data_length <= 4 ? data_length : 4);
@@ -1551,9 +1553,9 @@ BYTE I3C_SLAVE_IBI_DATA(uint8_t ibi_data, uint32_t idpartno, uint8_t dcr, uint8_
 *
 * @note 调用此接口发起ibi 发送data
 */
-BYTE I3C_SLAVE_WRITE(uint8_t *data, uint8_t bytelen, BYTE i3c_mux)
+BYTE I3C_SLAVE_WRITE(uint8_t* data, uint8_t bytelen, BYTE i3c_mux)
 {
-    uint8_t *data_ptr = data;
+    uint8_t* data_ptr = data;
     uint32_t data_len = bytelen;
     uint32_t temp_data = 0;
 
@@ -1586,9 +1588,9 @@ BYTE I3C_SLAVE_WRITE(uint8_t *data, uint8_t bytelen, BYTE i3c_mux)
 *
 * @note 调用此接口发起ibi 发送data
 */
-BYTE I3C_SLAVE_READ(uint8_t *data, uint8_t bytelen, BYTE i3c_mux)
+BYTE I3C_SLAVE_READ(uint8_t* data, uint8_t bytelen, BYTE i3c_mux)
 {
-    uint8_t *data_ptr = data;
+    uint8_t* data_ptr = data;
     uint32_t data_len = bytelen;
 
     if ((data_ptr == NULL || data_len == 0) || ((i3c_mux != I3C_SLAVE0) && (i3c_mux != I3C_SLAVE1)))
