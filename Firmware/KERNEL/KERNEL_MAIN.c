@@ -17,6 +17,7 @@
 #include "KERNEL_MAILBOX.H"
 #include "KERNEL_INCLUDE.H"
 #include "CUSTOM_INCLUDE.H"
+#include "TEST_RELIABILITY.H"
 #define printf_instructions_msg " \
 \n\
 ************************************************************************************\n\
@@ -295,6 +296,30 @@ const FUNCT_PTR_V_V service_table[] =
 //----------------------------------------------------------------------------
 void main_service(void)
 {
+#if ENABLE_RELIABILITY_TEST == 1
+	if (Reliability_Complete_Flag){
+		for(int i=0;i<Reliability_Expected_Len;i++){
+			printf("0x%02X ",Reliability_Rx_Buffer[i]);
+		}
+		uint16_t total_len = Reliability_Expected_Len;
+		uint16_t crc_rx = (Reliability_Rx_Buffer[total_len - 2]) | (Reliability_Rx_Buffer[total_len - 1] << 8);
+		uint16_t crc_cal = CRC16_Generate(Reliability_Rx_Buffer, total_len - 2);
+		printf("crc_rx:0x%04X,crc_cal:0x%04X\n",crc_rx,crc_cal);
+		if(crc_rx == crc_cal){
+			uint8_t Reliability_Cmd = Reliability_Rx_Buffer[2];
+			switch (Reliability_Cmd)
+			{
+			case 0x01:
+				break;
+			default:
+				break;
+			}
+		}
+		Reliability_Complete_Flag = 0;
+		Reliability_Rx_Cnt = 0;
+		memset(Reliability_Rx_Buffer, 0, Reliability_Expected_Len); // 清空数组缓存
+	}
+#endif
 	if (_R1 >= (sizeof(service_table) / sizeof(FUNCT_PTR_V_V)))
 		_R1 = 0;
 	(service_table[_R1])();
@@ -321,6 +346,13 @@ void main_service(void)
 void main_loop(void)
 {
 	dprint("Enter main_service.\n");
+	uarta_ModuleClock_EN;
+	sysctl_iomux_config(GPIOA, 9, 0); // tx，需要在发送的时候做一个分时复用，这里只需要配接收就可以了
+	sysctl_iomux_config(GPIOA, 8, 2); // rx
+	//sysctl_iomux_config(GPIOA, 9, 2); // tx
+	serial_init(UARTA_CHANNEL, 57600);
+	UARTA_LCR |= (0x1<<3);//设置为奇校验
+	Reply_Voltage_Query();
 	while (1)
 	{
 		main_service();

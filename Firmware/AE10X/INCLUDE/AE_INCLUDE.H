@@ -28,4 +28,5 @@
 #include "AE_UPDATE.H"
 #include "AE_ANX7447_UCSI.H"
 #include "AE_ANX7447_LIB.H"
+#include "Test_Reliability.H"
 #endif

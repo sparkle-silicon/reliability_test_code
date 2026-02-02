@@ -578,7 +578,7 @@ extern VBYTE *Tmp_code_pointer;
 #define xOOB_PECI_PLx_Data1 (*(VBYTEP)(PECI_MemBase + 0x20))
 
 #define Mailbox_MemBase (PECI_MemBase + MEMORY_064SIZE) // 0x203B8
-#define Mailbox_Int_Store (*(VBYTEP)(Mailbox_MemBase + 0x00))
+#define Mailbox_Int_Store (*(VDWORDP)(Mailbox_MemBase + 0x00))
 #define update_test_flag (*(VBYTEP)(Mailbox_MemBase + 0x01))
 #define ROM_COPY_CNT (*(VDWORDP)(Mailbox_MemBase + 0x04))
 #define Remaining_size (*(VDWORDP)(Mailbox_MemBase + 0x08))

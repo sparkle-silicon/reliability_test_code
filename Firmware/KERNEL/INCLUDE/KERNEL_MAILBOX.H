@@ -120,6 +120,7 @@ extern volatile bool command_processed;
 #define MAILBOX_SecretKey_IRQ_NUMBER 4
 #define MAILBOX_Crypto_IRQ_NUMBER 5
 #define MAILBOX_SecureStorage_IRQ_NUMBER 6
+#define MAILBOX_Read_falsh_Mcu_Id 8
 
 #define MAILBOX_IRQ_BIT(irq_number) (1 << (irq_number&0x1F))
 
@@ -176,6 +177,9 @@ while(MAILBOX_OTHER_INT&MAILBOX_IRQ_BIT(irq_number)); \
 #define MAILBOX_CMD_RANDOM_NUMBER 0x88 //TRNG随机数生成算法
 #define MAILBOX_CMD_USE_RAND 0x89 //指向代码中默认调度随机数的生成方式
 
+//bit8
+#define MAILBOX_CMD_READ_MCU_ID 0xD3//读MCU ID 
+
 // #define MAILBOX_CMD 0x40//密钥管理
 // #define MAILBOX_CMD 0x100//加解密算法
 // #define MAILBOX_CMD//安全存储
@@ -209,6 +213,7 @@ while(MAILBOX_OTHER_INT&MAILBOX_IRQ_BIT(irq_number)); \
 #define AES_PING_PONG 0
 #define SHA_PING_PONG 0
 
+extern uint8_t MCU_ID;
 #ifdef AES_PING_PONG 
 extern void PingPong_AES_Schedule(void);
 #endif 
@@ -229,6 +234,7 @@ void Mailbox_eRPMC();
 void Mailbox_SecretKey();
 void Mailbox_Crypto();
 void Mailbox_SecureStorage();
+void Mailbox_Read_MCU();
 extern void Process_Tasks(void);
 extern Task *Add_Task(TaskFunction function, TaskParams params, Task **head);
 extern void Mailbox_C2E_Service(void);
@@ -251,6 +257,7 @@ extern void Mailbox_Get_Key_Id(void *param);
 extern void Mailbox_Clear_Key(void *param);
 extern void Mailbox_Clear_All_Key(void *param);
 extern void Mailbox_Digest_Or_CrcVerify(void *param);
+extern void Mailbox_Read_Flash_Mcu_Id(void *param);//读取MCU ID
 extern void Mailbox_Symmetrric_Key(void *param);
 extern void Mailbox_Asymmetric_Key_Pair(void *param);
 extern void Mailbox_Key_Pair_Generate(void *param);
@@ -297,6 +304,7 @@ extern void Transfer_Mailbox_Get_Key_Id(uint32_t switch_key, uint32_t key_num,
     uint32_t switch_input, uint32_t IDdata_addr);
 extern void Transfer_Mailbox_Clear_Key(uint32_t switch_key, uint32_t key_num);
 extern void Transfer_Mailbox_Clear_All_Key(void);
+extern void Transfer_Mailbox_Read_Mcu_Id(uint32_t switch_input, uint32_t input_addr,uint32_t DATA_ByteLength,uint32_t switch_output, uint32_t output_addr);
 extern void Transfer_Mailbox_Digest_Or_CrcVerify(uint32_t switch_mode, uint32_t mode_lenth, uint32_t crc_init, uint32_t switch_code,
     uint32_t switch_input, uint32_t input_addr,
     uint32_t DATA_ByteLength,

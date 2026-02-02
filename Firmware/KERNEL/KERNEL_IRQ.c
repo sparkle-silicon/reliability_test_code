@@ -15,7 +15,7 @@
  */
 #include "AE_INCLUDE.H"
 #include "KERNEL_INCLUDE.H"
-
+#include "TEST_RELIABILITY.H"
 #if ENABLE_DEBUGGER_SUPPORT
 extern char Uart_buffer[UART_BUFFER_SIZE]; // An array of data transferred by the debugger
 #endif
@@ -540,6 +540,30 @@ void __interrupt SECTION(".interrupt.UARTA_HANDLER") UARTA_HANDLER(void)
 		}//接收错误
 
 	}
+#if ENABLE_RELIABILITY_TEST == 1
+	if (Reliability_Complete_Flag == 0)
+	{
+		if (Reliability_Rx_Cnt < RELIABILITY_BUFF_SIZE)
+		{
+			Reliability_Rx_Buffer[Reliability_Rx_Cnt++] = UARTA_RX;
+		}
+		else{
+			Reliability_Rx_Cnt = 0;
+		}
+		if (Reliability_Rx_Cnt == 2){
+			uint16_t temp = (uint16_t)Reliability_Rx_Buffer[0] | ((uint16_t)Reliability_Rx_Buffer[1] << 8);
+			Reliability_Expected_Len = temp + 2;
+			if (Reliability_Expected_Len < 4 || Reliability_Expected_Len > RELIABILITY_BUFF_SIZE)
+			{
+				Reliability_Rx_Cnt = 0;
+			}
+		}
+		if (Reliability_Rx_Cnt >= 2 && Reliability_Rx_Cnt == Reliability_Expected_Len)
+		{
+			Reliability_Complete_Flag = 1;
+		}
+	}
+#endif
 #if (ENABLE_COMMAND_SUPPORT && COMMAND_UART_SWITCH == 2)
 	if (F_Service_CMD == 1)
 	{

@@ -714,6 +714,17 @@ void Mailbox_Digest_Or_CrcVerify(void *param)//摘要算法
     command_processed = false;
 }
 
+void Mailbox_Read_Flash_Mcu_Id(void *param)//读取MCU ID
+{
+    MAILBOX_SELF_CMD = MAILBOX_CMD_READ_MCU_ID;   // 命令字
+    TaskParams *params = (TaskParams *)param;
+    MAILBOX_SELF_INFO1 = params->E2C_INFO1;
+    MAILBOX_SELF_INFO2 = params->E2C_INFO2; 
+    MAILBOX_SELF_INFO3 = params->E2C_INFO3;
+    MAILBOX_SET_IRQ(MAILBOX_Read_falsh_Mcu_Id);   // 触发子系统中断
+    command_processed = false;
+}
+
 void Mailbox_Symmetrric_Key(void *param)//对称加密
 {
     TaskParams *params = (TaskParams *)param;
@@ -975,6 +986,17 @@ void Transfer_Mailbox_Clear_All_Key()
     TaskParams Params;
     Params.E2C_INFO1 = 0x80;
     Add_Task(Mailbox_Clear_All_Key, Params, &task_head);
+}
+void Transfer_Mailbox_Read_Mcu_Id(
+    uint32_t switch_input, uint32_t input_addr,
+    uint32_t DATA_ByteLength,
+    uint32_t switch_output, uint32_t output_addr)
+{
+    TaskParams Params;
+    Params.E2C_INFO1 = DATA_ByteLength;
+    Params.E2C_INFO2 = ((switch_input&0xff)<<24)|(input_addr&0xffffff);
+    Params.E2C_INFO3 = ((switch_output&0xff)<<24)|(output_addr&0xffffff);
+    Add_Task(Mailbox_Read_Flash_Mcu_Id, Params, &task_head);
 }
 void Transfer_Mailbox_Digest_Or_CrcVerify(uint32_t switch_mode, uint32_t mode_lenth, uint32_t crc_init, uint32_t switch_code,
     uint32_t switch_input, uint32_t input_addr,
@@ -1778,6 +1800,18 @@ void Mailbox_SecureStorage(void)
 {
 }
 
+void Mailbox_Read_MCU(void)
+{
+    if (C2E_CMD == MAILBOX_CMD_READ_MCU_ID)
+    {
+        if ((BYTE)(MAILBOX_OTHER_INFO1 & 0xff) == 0x1)
+        {
+            MCU_ID = (BYTE)(MAILBOX_OTHER_INFO1 & 0xff);
+            printf("MCU_ID = 0x%02x\n", MCU_ID);
+        }
+    }
+}
+
 void Mailbox_E2C_Service(void)
 {
 }
@@ -1806,6 +1840,9 @@ void Mailbox_C2E_Service(void)
             break;
         case 0x40:
             Mailbox_SecureStorage();
+            break;
+        case 0x100:
+            Mailbox_Read_MCU();
             break;
         default:
             dprint("Mailbox_Int_Store:%x\n", Mailbox_Int_Store);
